@@ -185,3 +185,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b13528b194ccc1d61ca7d2e85f65983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Progression.ExperiencePickup
+  _attractionSpeed: 8

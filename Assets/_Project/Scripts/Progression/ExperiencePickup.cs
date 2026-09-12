@@ -7,9 +7,38 @@ namespace ProjectFirstRun.Progression
     [RequireComponent(typeof(SphereCollider), typeof(Rigidbody))]
     public sealed class ExperiencePickup : MonoBehaviour
     {
+        [SerializeField, Min(0.01f)] private float _attractionSpeed = 8f;
+        private Rigidbody _body;
+
+        public float AttractionSpeed => _attractionSpeed;
         public int Amount { get; private set; }
         public bool IsInitialized { get; private set; }
         public bool IsCollected { get; private set; }
+
+        public bool AttractTowards(PlayerExperienceCollector collector, float deltaTime)
+        {
+            if (float.IsNaN(deltaTime) || float.IsInfinity(deltaTime) || deltaTime < 0f)
+                throw new ArgumentOutOfRangeException(nameof(deltaTime));
+            if (!isActiveAndEnabled || !IsInitialized || IsCollected || deltaTime == 0f ||
+                collector == null || !collector.CanAttract(transform.position))
+                return false;
+
+            Vector3 target = collector.CollectionPosition;
+            Vector3 nextPosition = Vector3.MoveTowards(transform.position, target, _attractionSpeed * deltaTime);
+            if (nextPosition == target)
+                return TryCollect(collector);
+
+            if (_body == null)
+                _body = GetComponent<Rigidbody>();
+            _body.MovePosition(nextPosition);
+            return true;
+        }
+
+        private void OnValidate()
+        {
+            if (float.IsNaN(_attractionSpeed) || float.IsInfinity(_attractionSpeed) || _attractionSpeed <= 0f)
+                _attractionSpeed = 8f;
+        }
 
         public void Initialize(int amount)
         {

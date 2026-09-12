@@ -24,6 +24,7 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
             Assert.That(prefab, Is.Not.Null);
             Assert.That(prefab.activeSelf, Is.True);
             Assert.That(prefab.GetComponent<ExperiencePickup>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<ExperiencePickup>().AttractionSpeed, Is.EqualTo(8f));
             SphereCollider trigger = prefab.GetComponent<SphereCollider>();
             Assert.That(trigger.isTrigger, Is.True);
             Assert.That(trigger.radius, Is.EqualTo(0.85f));
@@ -44,6 +45,7 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
                 "Assets/_Project/Prefabs/Player/Player.prefab");
             Assert.That(player.GetComponent<PlayerExperienceController>(), Is.Not.Null);
             Assert.That(player.GetComponent<PlayerExperienceCollector>(), Is.Not.Null);
+            Assert.That(player.GetComponent<PlayerExperienceCollector>().AttractionRadius, Is.EqualTo(3f));
             Assert.That(player.GetComponent<HealthComponent>(), Is.Not.Null);
             var interactor = new SerializedObject(player.GetComponent<PlayerChestInteractor>());
             Assert.That(interactor.FindProperty("_interactionLayers").intValue & (1 << 2), Is.Zero);

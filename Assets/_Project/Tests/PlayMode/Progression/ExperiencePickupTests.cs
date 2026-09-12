@@ -23,6 +23,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
             _previousTimeScale = Time.timeScale;
             Time.timeScale = 1f;
             _collector = NewObject("Collector").AddComponent<PlayerExperienceCollector>();
+            _collector.SetAttractionRadius(0f); // These tests isolate contact collection from attraction.
             _experience = _collector.Experience;
         }
 

@@ -13,7 +13,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
 - Run XP and level rules: configurable increasing costs, carry-over XP, multi-level gains, and notifications.
-- Enemy death XP drops, one-time proximity collection, death/pause gating, and a development XP/level indicator in Test_Waves. Level-up chest spawning is not connected yet.
+- Enemy death XP drops, configurable range-based attraction, one-time collection, death/pause gating, and a development XP/level indicator in Test_Waves. Level-up chest spawning is not connected yet.
 
 ## Run the prototype
 
@@ -22,7 +22,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 3. Let Unity restore the packages and import the assets.
 4. Open `Assets/_Project/Scenes/Tests/Test_Waves.unity` and enter Play mode.
 5. Look at the chest in front of the player and press **E** (gamepad South) to open reward selection. Claim a reward to resume gameplay. Use **Q** (gamepad North) to switch weapons after acquiring a second weapon.
-6. Kill chasers and walk into their cyan XP orbs. Each grants 25 XP; four orbs reach level 2. Follow level and XP at the bottom center of the screen.
+6. Kill chasers and approach their cyan XP orbs. Within a 3-metre radius, orbs fly toward you and grant 25 XP on arrival/contact; four orbs reach level 2. Follow level and XP at the bottom center of the screen.
 
 The chest bootstrap is an Editor-only development fixture. This scene demonstrates the gameplay foundations; it is not a packaged game or a complete run progression flow.
 
@@ -42,7 +42,7 @@ Content configuration is separated from mutable runtime state. Pure C# objects o
 
 ## Verification
 
-Run both suites through Unity's Test Runner window. XP pickup validation on **2026-09-12** passed **556 EditMode** and **260 PlayMode** tests in an isolated Unity 6000.3.9f1 project. This includes 29 new pickup/composition/regression tests. These are recorded automated results, not a live CI badge or a manual visual playtest.
+Run both suites through Unity's Test Runner window. XP attraction validation on **2026-09-12** passed **556 EditMode** and **281 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Attraction adds 21 tests on top of the existing pickup and gameplay coverage. These are recorded automated results, not a live CI badge or a manual visual playtest.
 
 ## Development history
 

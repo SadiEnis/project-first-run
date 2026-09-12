@@ -12,6 +12,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Enemy spawning, attacks, death handling, and wave progression.
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
+- Run XP and level rules: configurable increasing costs, carry-over XP, multi-level gains, and notifications. This foundation is not yet connected to pickups or the test scene.
 
 ## Run the prototype
 
@@ -31,6 +32,7 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - `Assets/_Project/Tests/`: EditMode and PlayMode test suites.
 - [English technical design](Docs/TDD/EN/README.md) / [Turkish technical design](Docs/TDD/TR/README.md).
 - [Chest foundation](Docs/TDD/EN/Chest-Foundation.md) and [reward selection UI](Docs/TDD/EN/Reward-Selection-UI.md).
+- [Experience and level foundation](Docs/TDD/EN/Experience-Level-Foundation.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.

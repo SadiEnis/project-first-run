@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c20f12559f34a4393bea249b69d8b02, type: 3}
+  m_Name: ArenaWaveDefinition
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Waves.ArenaWaveDefinition
+  _stableId: AW_TestArena
+  _waves:
+  - {fileID: 11400000, guid: 8ddbd8190bebb1443aa3591d72c85edd, type: 2}
+  - {fileID: 11400000, guid: 08f66c0234aca6d44961f610b76501ca, type: 2}

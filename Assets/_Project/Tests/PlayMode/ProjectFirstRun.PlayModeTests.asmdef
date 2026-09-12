@@ -1,0 +1,22 @@
+{
+    "name": "ProjectFirstRun.PlayModeTests",
+    "rootNamespace": "ProjectFirstRun.Tests.PlayMode",
+    "references": [
+        "GUID:99c0f5aaa71e3b2419b526c88662f8ba",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

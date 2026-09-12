@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
+  m_Name: WD_PlasmaRifle
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
+  _stableId: weapon.plasma-rifle
+  _displayName: PlasmaRifle
+  _gameplayEffect: Automatic rifle. Deals 25 damage at 5 shots per second.
+  _triggerMode: 1
+  _baseDamage: 25
+  _range: 100
+  _damageMask:
+    serializedVersion: 2
+    m_Bits: 247
+  _magazineCapacity: 12
+  _startingReserveAmmo: 48
+  _shotsPerSecond: 5
+  _reloadDuration: 1.5

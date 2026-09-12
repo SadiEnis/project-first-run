@@ -1,0 +1,26 @@
+# Normalize source text in Git without forcing checkout line endings.
+* text=auto
+*.cs text diff=csharp
+*.md text
+*.json text
+*.asmdef text
+*.asmref text
+*.inputactions text
+*.meta text
+*.unity text
+*.prefab text
+
+# Some .asset files (for example NavMesh data) are binary: keep auto detection.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tga binary
+*.psd binary
+*.fbx binary
+*.blend binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.mp4 binary
+*.zip binary

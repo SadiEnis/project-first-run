@@ -16,3 +16,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 10. [Wave Foundation](Wave-Foundation.md)
 11. [XP ve Seviye Temeli](Experience-Level-Foundation.md)
 12. [XP Düşürme ve Toplama](Experience-Pickups.md)
+13. [Level Atlama Kaynaklı Sandık](Level-Up-Chest-Source.md)

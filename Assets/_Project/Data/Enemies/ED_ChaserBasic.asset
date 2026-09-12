@@ -15,8 +15,12 @@ MonoBehaviour:
   _stableId: enemy.chaser-basic
   _displayName: BasicChaser
   _maximumHealth: 100
+  _experienceReward: 25
   _movementSpeed: 3.5
   _acceleration: 12
   _angularSpeed: 720
   _stoppingDistance: 1.5
   _destinationUpdateInterval: 0.1
+  _attackDamage: 10
+  _attackRange: 1.75
+  _attackCooldown: 1

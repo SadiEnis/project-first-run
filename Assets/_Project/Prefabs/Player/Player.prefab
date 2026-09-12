@@ -58,6 +58,8 @@ GameObject:
   - component: {fileID: 2226837809779595297}
   - component: {fileID: 3735477217416442066}
   - component: {fileID: 7872245193048340383}
+  - component: {fileID: 4415958744459970661}
+  - component: {fileID: 4176090071755457054}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -332,7 +334,36 @@ MonoBehaviour:
   _interactionDistance: 3
   _interactionLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967291
+--- !u!114 &4415958744459970661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539692866985262834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ebd430a76ba3270550c9d7b6c46e4f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Progression.PlayerExperienceController
+--- !u!114 &4176090071755457054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539692866985262834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba98ab0130ceb7b8cef70ee64baa75e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Progression.PlayerExperienceCollector
+  _attractionRadius: 3
+  _collectionOffset: {x: 0, y: 0.75, z: 0}
+  _pickupLayers:
+    serializedVersion: 2
+    m_Bits: 4
 --- !u!1 &5882451232048729355
 GameObject:
   m_ObjectHideFlags: 0

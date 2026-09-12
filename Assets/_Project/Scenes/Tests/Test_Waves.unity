@@ -239,6 +239,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b5c881e21243fa9be7b314d22ef74f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Combat.HealthComponent
+--- !u!1 &77960588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 77960589}
+  - component: {fileID: 77960590}
+  m_Layer: 0
+  m_Name: ExperienceDebug
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &77960589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77960588}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 476343270}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &77960590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77960588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a593e54cb905f66a0155418e8a8e67a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Development.ExperienceDebugPresenter
+  _playerExperience: {fileID: 6938050018431126422}
 --- !u!1 &111865209
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,6 +513,7 @@ Transform:
   - {fileID: 1863881049}
   - {fileID: 1373645206}
   - {fileID: 911521814}
+  - {fileID: 77960589}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &496520972
@@ -645,6 +691,52 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633091940}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &673889734
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 673889736}
+  - component: {fileID: 673889735}
+  m_Layer: 0
+  m_Name: ExperienceRun
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &673889735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 673889734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b152b580092a9cf2231ad1c8f1426a1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Progression.ExperienceRunBootstrap
+  _playerExperience: {fileID: 6938050018431126422}
+  _definition: {fileID: 11400000, guid: fe20bca4125ba2047b3376f547de652e, type: 2}
+--- !u!4 &673889736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 673889734}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &767813255
 GameObject:
   m_ObjectHideFlags: 0
@@ -1634,6 +1726,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93d8ac7464654e52aee92dadffaf8471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Upgrades.PlayerUpgradeController
+--- !u!114 &6938050018431126422 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4415958744459970661, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+  m_PrefabInstance: {fileID: 6938050018431126417}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64608187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ebd430a76ba3270550c9d7b6c46e4f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Progression.PlayerExperienceController
 --- !u!114 &6938050018431126424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1944,3 +2047,4 @@ SceneRoots:
   - {fileID: 1005050288}
   - {fileID: 476343270}
   - {fileID: 8115000000000000000}
+  - {fileID: 673889736}

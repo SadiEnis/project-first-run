@@ -14,6 +14,8 @@ Unity-generated directories, builds, local IDE state, credentials, `.plastic/`, 
 
 ## Each subsequent development increment
 
+Start each new development stage from the latest integrated Plastic `/main/dev`, after the preceding work has been merged there. Verify the actual base changeset; a branch name beneath `/main/dev/` alone does not establish that it was created from the current `dev` head. Use the corresponding integrated Git baseline for its Git feature branch. Preserve any branch-specific exception explicitly agreed with the project owner.
+
 1. Finish a coherent change and run checks appropriate to that change.
 2. Review the Plastic diff and explicitly check in only the intended paths.
 3. Stage the same source changes in Git, including required `.meta` files and documentation. Inspect `git diff --cached` and `git diff --cached --stat` before committing.

@@ -13,4 +13,6 @@ Project First Run is the current development codename. The final commercial titl
 7. [Enemy, Wave, and Arena System](Enemy-Wave-Arena.md)
 8. [Player Death System](Player-Death-System.md)
 9. [Enemy Spawning System](Enemy-Spawning-System.md)
-10. 10. [Wave Foundation](Wave-Foundation.md)
+10. [Wave Foundation](Wave-Foundation.md)
+11. [Experience and Level Foundation](Experience-Level-Foundation.md)
+12. [Experience Pickups](Experience-Pickups.md)

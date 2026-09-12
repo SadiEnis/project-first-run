@@ -6,6 +6,7 @@ using ProjectFirstRun.Chests;
 using ProjectFirstRun.Chests.Interaction;
 using ProjectFirstRun.Input;
 using ProjectFirstRun.Player;
+using ProjectFirstRun.Progression;
 using ProjectFirstRun.Rewards;
 using ProjectFirstRun.UI.Rewards;
 using UnityEngine;
@@ -177,6 +178,22 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Interaction
                 _interactor.TryInteract(
                     out _),
                 Is.False);
+        }
+
+        [Test]
+        public void TryInteract_WithXPPickupInFront_StillReachesChest()
+        {
+            _interactor.Initialize(_originObject.transform, 3f, Physics.DefaultRaycastLayers);
+            _blockerObject = new GameObject("XP Pickup");
+            _blockerObject.layer = 2;
+            _blockerObject.transform.position = new Vector3(0f, 1f, 1f);
+            _blockerObject.AddComponent<ExperiencePickup>().Initialize(25);
+            _blockerObject.GetComponent<SphereCollider>().isTrigger = true;
+            _blockerObject.GetComponent<Rigidbody>().isKinematic = true;
+            Physics.SyncTransforms();
+
+            Assert.That(_interactor.TryInteract(out ChestOpenResult result), Is.True);
+            Assert.That(result, Is.EqualTo(ChestOpenResult.NoEligibleRewards));
         }
 
         [UnityTest]

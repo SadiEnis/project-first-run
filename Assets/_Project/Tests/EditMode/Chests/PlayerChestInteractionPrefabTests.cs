@@ -36,7 +36,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
 
             Assert.That(
                 serializedInteractor.FindProperty("_interactionLayers").intValue,
-                Is.EqualTo(-1));
+                Is.EqualTo(Physics.DefaultRaycastLayers));
         }
     }
 }

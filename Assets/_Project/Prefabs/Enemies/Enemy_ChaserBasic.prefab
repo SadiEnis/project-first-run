@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6438832796799986877}
   - component: {fileID: 698709537120004872}
   - component: {fileID: 374404520601038828}
+  - component: {fileID: 3804923725767723255}
   m_Layer: 6
   m_Name: Enemy_ChaserBasic
   m_TagString: Untagged
@@ -163,6 +164,20 @@ MonoBehaviour:
   _destroyDelay: 1
   _collidersToDisable:
   - {fileID: 126441242702194694}
+--- !u!114 &3804923725767723255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705300962026560741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba6d1ed3dd8c6228b4f60083f853c10d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Progression.EnemyExperienceDrop
+  _pickupPrefab: {fileID: 6778892090975693941, guid: 1adf6a0afd99650489b193a87898a7da, type: 3}
+  _spawnOffset: {x: 0, y: 0.35, z: 0}
 --- !u!1 &2768494096819827545
 GameObject:
   m_ObjectHideFlags: 0

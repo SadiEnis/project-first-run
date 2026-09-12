@@ -21,7 +21,7 @@ namespace ProjectFirstRun.Chests.Interaction
         private float _interactionDistance = 3f;
 
         [SerializeField]
-        private LayerMask _interactionLayers = ~0;
+        private LayerMask _interactionLayers = Physics.DefaultRaycastLayers;
 
         private PlayerInputReader _inputReader;
         private PlayerController _playerController;

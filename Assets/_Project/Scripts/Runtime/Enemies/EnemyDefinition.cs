@@ -18,6 +18,12 @@ namespace ProjectFirstRun.Enemies
         [SerializeField, Min(0.01f)]
         private float _maximumHealth = 100f;
 
+        [Header("Experience")]
+        [SerializeField, Min(0)]
+        private int _experienceReward;
+
+        public int ExperienceReward => _experienceReward;
+
         [Header("Movement")]
         [SerializeField, Min(0.01f)]
         private float _movementSpeed = 3.5f;
@@ -63,6 +69,7 @@ namespace ProjectFirstRun.Enemies
         {
             _stableId = _stableId?.Trim();
             _displayName = _displayName?.Trim();
+            _experienceReward = Mathf.Max(0, _experienceReward);
 
             _maximumHealth = SanitizePositive(
                 _maximumHealth,

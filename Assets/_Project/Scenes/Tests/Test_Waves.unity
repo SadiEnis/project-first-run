@@ -2035,6 +2035,92 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f81131572c49420baa90ba4820cf89ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectFirstRun.Player.PlayerController
+--- !u!1 &8126000000000000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8126000000000000001}
+  - component: {fileID: 8126000000000000003}
+  - component: {fileID: 8126000000000000002}
+  - component: {fileID: 8126000000000000004}
+  m_Layer: 0
+  m_Name: LevelUpChestSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8126000000000000001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8126000000000000000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8126000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8126000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07090e346b40c6456e016b5bf05cdd53, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.LevelUpChestSource
+  _playerExperience: {fileID: 6938050018431126422}
+  _playerHealth: {fileID: 64608191}
+  _spawner: {fileID: 911521816}
+  _definition: {fileID: 11400000, guid: 99bc8fffc14c056449d7fd5f9adda24b, type: 2}
+  _placement: {fileID: 8126000000000000003}
+--- !u!114 &8126000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8126000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 918bac50832e10438d936585f0d7f621, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.ChestSpawnPlacement
+  _firstRingRadius: 2.5
+  _ringSpacing: 1.75
+  _groundLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  _obstructionLayers:
+    serializedVersion: 2
+    m_Bits: 4294967291
+--- !u!114 &8126000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8126000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 732e58ad36d1baa86c24ce563fbdb845, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.ChestSpawnerBootstrap
+  _spawner: {fileID: 911521816}
+  _playerBuild: {fileID: 6938050018431126420}
+  _selection: {fileID: 8115000000000000002}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2048,3 +2134,4 @@ SceneRoots:
   - {fileID: 476343270}
   - {fileID: 8115000000000000000}
   - {fileID: 673889736}
+  - {fileID: 8126000000000000001}

@@ -12,8 +12,9 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Enemy spawning, attacks, death handling, and wave progression.
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
+- Level-up chest source: one chest per gained run level, including multi-level gains, queued until nearby supported and unobstructed placement is available.
 - Run XP and level rules: configurable increasing costs, carry-over XP, multi-level gains, and notifications.
-- Enemy death XP drops, configurable range-based attraction, one-time collection, death/pause gating, and a development XP/level indicator in Test_Waves. Level-up chest spawning is not connected yet.
+- Enemy death XP drops, configurable range-based attraction, one-time collection, death/pause gating, and a development XP/level indicator in Test_Waves.
 
 ## Run the prototype
 
@@ -23,6 +24,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 4. Open `Assets/_Project/Scenes/Tests/Test_Waves.unity` and enter Play mode.
 5. Look at the chest in front of the player and press **E** (gamepad South) to open reward selection. Claim a reward to resume gameplay. Use **Q** (gamepad North) to switch weapons after acquiring a second weapon.
 6. Kill chasers and approach their cyan XP orbs. Within a 3-metre radius, orbs fly toward you and grant 25 XP on arrival/contact; four orbs reach level 2. Follow level and XP at the bottom center of the screen.
+7. Each level-up spawns an additional chest on nearby free ground. Look at it and press E to select a reward; level-up itself does not open the UI. The small development pool can run out of eligible rewards; gold fallback and item-level rewards are not implemented yet.
 
 The chest bootstrap is an Editor-only development fixture. This scene demonstrates the gameplay foundations; it is not a packaged game or a complete run progression flow.
 
@@ -36,13 +38,14 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Chest foundation](Docs/TDD/EN/Chest-Foundation.md) and [reward selection UI](Docs/TDD/EN/Reward-Selection-UI.md).
 - [Experience and level foundation](Docs/TDD/EN/Experience-Level-Foundation.md).
 - [Experience drops and collection](Docs/TDD/EN/Experience-Pickups.md).
+- [Level-up chest source](Docs/TDD/EN/Level-Up-Chest-Source.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.
 
 ## Verification
 
-Run both suites through Unity's Test Runner window. XP attraction validation on **2026-09-12** passed **556 EditMode** and **281 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Attraction adds 21 tests on top of the existing pickup and gameplay coverage. These are recorded automated results, not a live CI badge or a manual visual playtest.
+Run both suites through Unity's Test Runner window. Level-up chest validation on **2026-09-12** passed **565 EditMode** and **301 PlayMode** tests in an isolated Unity 6000.3.9f1 project. This stage adds 29 tests for entitlement tracking, placement, lifecycle and scene integration. These are recorded automated results, not a live CI badge or a manual visual playtest.
 
 ## Development history
 

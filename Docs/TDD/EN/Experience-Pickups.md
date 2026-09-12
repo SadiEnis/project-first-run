@@ -2,7 +2,7 @@
 
 ## Scope
 
-This extends [Experience and Level Foundation](Experience-Level-Foundation.md) on the same XP branch. Enemy death produces world XP, walking into a pickup awards it once, and Test_Waves displays run progress. Level-up chest spawning remains the next stage; this layer does not spawn chests.
+This extends [Experience and Level Foundation](Experience-Level-Foundation.md) on the same XP branch. Enemy death produces world XP, walking into a pickup awards it once, and Test_Waves displays run progress. This layer does not spawn chests; the subsequent [Level-Up Chest Source](Level-Up-Chest-Source.md) now handles that separately.
 
 ## Ownership and flow
 
@@ -30,4 +30,4 @@ Player prefab: XP controller and collector. Chaser prefab: drop adapter referenc
 
 Automated coverage: validation, exactly-once awards, unrelated colliders, dead/uninitialized/paused/disabled players, resuming while overlapping, multi-level pickups, observer failure, death versus disable/destruction, and asset/scene wiring. Run full EditMode and PlayMode suites after composition changes.
 
-Manual Test_Waves check: kill a chaser outside pickup range, observe a stationary cyan orb, then approach within 3 metres of its center and watch it fly toward you before receiving 25 XP. Four orbs reach level 2; the next level costs 150 XP. Chest rewards and weapon switching preserve XP. Death stops flight and collection. Level-up does not yet spawn a chest.
+Manual Test_Waves check: kill a chaser outside pickup range, observe a stationary cyan orb, then approach within 3 metres of its center and watch it fly toward you before receiving 25 XP. Four orbs reach level 2; the next level costs 150 XP. Chest rewards and weapon switching preserve XP. Death stops flight and collection. The separate level-up source now supplies a chest for each gained level.

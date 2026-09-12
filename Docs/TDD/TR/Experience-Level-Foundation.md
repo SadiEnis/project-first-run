@@ -1,5 +1,7 @@
 # XP ve Seviye Temeli
 
+Aşağıdaki ilk temel kapsamı, aynı branch'te [XP Düşürme ve Toplama](Experience-Pickups.md) ile genişletildi. Güncel sahne bağlantıları o dokümanda anlatılır.
+
 ## Kapsam ve sahiplik
 
 Run XP'si; eşya seviyelerinden, build sahipliğinden ve kalıcı ilerlemeden ayrıdır. Asıl veri sahibi saf C# `ExperienceState` nesnesidir. `PlayerExperienceController` sahne adaptörüdür; ileride run yöneticisi oyuncuyu yeniden oluşturduğunda mevcut state'e bağlanabilir. Singleton veya `DontDestroyOnLoad` eklenmez.

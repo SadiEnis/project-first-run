@@ -1,5 +1,7 @@
 # Experience and Level Foundation
 
+The original foundation below is extended on the same branch by [Experience Pickups](Experience-Pickups.md). See that document for current scene integration.
+
 ## Scope and ownership
 
 Run experience is separate from item levels, build ownership, and permanent progression. `ExperienceState` is the authoritative pure C# run state. `PlayerExperienceController` is a scene-facing adapter; it can bind an existing state when a future run coordinator recreates the player. No singleton or `DontDestroyOnLoad` is introduced.

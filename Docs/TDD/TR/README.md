@@ -13,4 +13,6 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 7. [Düşman, Wave ve Arena Sistemi](Enemy-Wave-Arena.md)
 8. [Oyuncu Ölüm Sistemi](Player-Death-System.md)
 9. [Düşman Oluşturma Sistemi](Enemy-Spawning-System.md)
-10. 10. [Wave Foundation](Wave-Foundation.md)
+10. [Wave Foundation](Wave-Foundation.md)
+11. [XP ve Seviye Temeli](Experience-Level-Foundation.md)
+12. [XP Düşürme ve Toplama](Experience-Pickups.md)

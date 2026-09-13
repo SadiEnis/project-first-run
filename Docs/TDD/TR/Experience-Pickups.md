@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu çalışma aynı XP branch'inde [XP ve Seviye Temeli](Experience-Level-Foundation.md) aşamasını genişletir. Düşman ölümü dünyaya XP bırakır, oyuncu yakına giderek bunu bir kez toplar ve Test_Waves run ilerlemesini gösterir. Level-up kaynaklı sandık üretimi sonraki aşamadır; bu katman sandık üretmez.
+Bu çalışma aynı XP branch'inde [XP ve Seviye Temeli](Experience-Level-Foundation.md) aşamasını genişletir. Düşman ölümü dünyaya XP bırakır, oyuncu yakına giderek bunu bir kez toplar ve Test_Waves run ilerlemesini gösterir. Bu katman sandık üretmez; sonraki [Level Atlama Kaynaklı Sandık](Level-Up-Chest-Source.md) aşaması bu işi ayrı olarak bağlar.
 
 ## Sorumluluklar ve akış
 
@@ -30,4 +30,4 @@ Player prefab'ı: XP controller ve collector. Chaser prefab'ı: pickup prefab re
 
 Otomatik testler: geçersiz değerler, tek seferlik toplama, ilgisiz collider, ölü/initialize edilmemiş/duraklatılmış/etkin olmayan oyuncu, temas sırasında devam etme, çoklu level, dinleyici hatası, ölüm ile disable/destroy ayrımı ve asset/sahne bağlantıları. Bağlantı değişikliklerinden sonra tüm EditMode ve PlayMode testleri çalıştırılır.
 
-Manuel Test_Waves kontrolü: toplama menzili dışında chaser öldür, sabit duran camgöbeği küreyi gör, merkezine 3 metre yaklaştığında sana doğru uçmasını ve ulaştığında 25 XP vermesini doğrula. Dört küreyle level 2 olur; sonraki level 150 XP ister. Sandık ödülleri ve silah değiştirmek XP'yi korur. Ölümden sonra uçuş ve toplama durur. Level atlamak henüz sandık oluşturmaz.
+Manuel Test_Waves kontrolü: toplama menzili dışında chaser öldür, sabit duran camgöbeği küreyi gör, merkezine 3 metre yaklaştığında sana doğru uçmasını ve ulaştığında 25 XP vermesini doğrula. Dört küreyle level 2 olur; sonraki level 150 XP ister. Sandık ödülleri ve silah değiştirmek XP'yi korur. Ölümden sonra uçuş ve toplama durur. Ayrı level-up kaynağı artık kazanılan her level için sandık sağlar.

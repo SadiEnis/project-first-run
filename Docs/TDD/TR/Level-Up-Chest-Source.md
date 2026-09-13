@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-GDD'ye uygun olarak kazanılan her run level'ı bir dünya sandığı garanti eder. Bu aşama mevcut XP ve sandık temellerini bağlar; ağırlıklı sandık türleri, düşman/elite/boss drop'ları, eşya level ödülleri, altın fallback veya otomatik ödül popup'ı eklemez. Test_Waves mevcut geliştirme sandığı tanımını ve ödül havuzunu kullanır.
+GDD'ye uygun olarak kazanılan her run level'ı bir dünya sandığı garanti eder. İlk aşama XP ve sandık temellerini tek tanımla bağlamıştı. [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md) artık `ChestDropTable` üzerinden ağırlıklı seçim sağlar: ilk uygun işleme denemesinde bir kez çekilir, seçilen tanım o hak başarıyla spawn edilene kadar korunur. Test_Waves hâlâ yalnızca mevcut geliştirme sandığını ve ödül havuzunu seçer. Eşya seviyesi ödülleri, altın telafisi ve otomatik ödül popup'ı bu kaynağın dışındadır.
 
 Branch tabanı: Plastic `/main/dev` **cs:148**, Git `main` **cad6518**. Bu yeni bir aşamadır; chest-foundation altından devam edilmez.
 

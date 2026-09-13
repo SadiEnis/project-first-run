@@ -14,6 +14,9 @@ namespace ProjectFirstRun.Chests
         [SerializeField]
         private string _stableId;
 
+        [SerializeField] private ChestRarity _rarity = ChestRarity.Common;
+        public ChestRarity Rarity => _rarity;
+
         [Header("Reward")]
         [SerializeField]
         private RewardItemPool _rewardItemPool;
@@ -40,6 +43,9 @@ namespace ProjectFirstRun.Chests
 
         public void Validate()
         {
+            if (!Enum.IsDefined(typeof(ChestRarity), _rarity))
+                throw new InvalidOperationException("Chest rarity must be a supported serialized value.");
+
             if (string.IsNullOrWhiteSpace(
                     _stableId))
             {

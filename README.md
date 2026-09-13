@@ -14,6 +14,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
 - Level-up chest source: one chest per gained run level, including multi-level gains, queued until nearby supported and unobstructed placement is available.
 - Enemy death chest drops: per-definition probability profiles, independent weighted chest selection, and queued placement near the death position without rerolls or duplicate death rewards.
+- Chest tier foundation: validated rarity metadata and shared weighted selection tables, independently configured for level-up, normal and elite sources. Dedicated chest-type content and visuals are still planned.
 - Run XP and level rules: configurable increasing costs, carry-over XP, multi-level gains, and notifications.
 - Enemy death XP drops, configurable range-based attraction, one-time collection, death/pause gating, and a development XP/level indicator in Test_Waves.
 
@@ -42,13 +43,14 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Experience drops and collection](Docs/TDD/EN/Experience-Pickups.md).
 - [Level-up chest source](Docs/TDD/EN/Level-Up-Chest-Source.md).
 - [Enemy chest drop profiles and death source](Docs/TDD/EN/Enemy-Chest-Drops.md).
+- [Chest rarity and shared-table foundation](Docs/TDD/EN/Chest-Tier-Foundation.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.
 
 ## Verification
 
-Run both suites through Unity's Test Runner window. Enemy chest drop validation on **2026-09-13** passed **587 EditMode** and **322 PlayMode** tests in an isolated Unity 6000.3.9f1 project. This stage adds 43 tests for probability boundaries, weighted selection, death lifecycle, pending placement, dependency injection and scene integration. These are recorded automated results, not a live CI badge or a manual visual playtest. The preceding XP, pickup attraction and level-up chest stages have also been manually validated by the project owner; enemy chest drops await their own gameplay check.
+Run both suites through Unity's Test Runner window. Chest tier foundation validation on **2026-09-13** passed **604 EditMode** and **326 PlayMode** tests in an isolated Unity 6000.3.9f1 project. This stage adds 21 tests for rarity metadata, shared weighted selection, independent level-up draws and selection retention across retries/errors. These are recorded automated results, not a live CI badge or a manual visual playtest. The preceding XP, pickup attraction, level-up chest and enemy death drop stages have been manually validated by the project owner; the shared-table migration awaits its own gameplay regression check.
 
 ## Development history
 

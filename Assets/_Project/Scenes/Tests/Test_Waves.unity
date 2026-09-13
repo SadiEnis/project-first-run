@@ -2101,7 +2101,7 @@ MonoBehaviour:
   _playerExperience: {fileID: 6938050018431126422}
   _playerHealth: {fileID: 64608191}
   _spawner: {fileID: 911521816}
-  _definition: {fileID: 11400000, guid: 99bc8fffc14c056449d7fd5f9adda24b, type: 2}
+  _dropTable: {fileID: 11400000, guid: b19d8eab3e514b07a1b7789f8f337618, type: 2}
   _placement: {fileID: 8126000000000000003}
 --- !u!114 &8126000000000000003
 MonoBehaviour:

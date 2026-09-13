@@ -83,6 +83,35 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
                 Is.SameAs(_worldPrefab));
         }
 
+        [Test]
+        public void DefaultRarity_PreservesExistingCommonChestConfiguration()
+        {
+            Assert.That(_definition.Rarity, Is.EqualTo(ChestRarity.Common));
+            Assert.That(_definition.RequestedChoiceCount, Is.EqualTo(3));
+        }
+
+        [TestCase(ChestRarity.Common, 0)]
+        [TestCase(ChestRarity.Uncommon, 1)]
+        [TestCase(ChestRarity.Rare, 2)]
+        [TestCase(ChestRarity.Legendary, 3)]
+        public void Rarity_HasStableSerializedValueWithoutChangingRewardPolicy(ChestRarity rarity, int value)
+        {
+            SetField("_rarity", rarity);
+            Assert.DoesNotThrow(() => _definition.Validate());
+            Assert.That((int)_definition.Rarity, Is.EqualTo(value));
+            Assert.That(_definition.RewardItemPool, Is.SameAs(_rewardItemPool));
+            Assert.That(_definition.RequestedChoiceCount, Is.EqualTo(3));
+        }
+
+        [TestCase(-1)]
+        [TestCase(4)]
+        [TestCase(int.MaxValue)]
+        public void UnknownRarity_IsRejected(int value)
+        {
+            SetField("_rarity", (ChestRarity)value);
+            Assert.Throws<System.InvalidOperationException>(() => _definition.Validate());
+        }
+
         [TestCase(null)]
         [TestCase("")]
         [TestCase("   ")]

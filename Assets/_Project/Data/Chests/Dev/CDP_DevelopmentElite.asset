@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: CDP_DevelopmentElite
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.EnemyChestDropProfile
   _chanceBasisPoints: 5000
-  _entries:
-  - _definition: {fileID: 11400000, guid: 99bc8fffc14c056449d7fd5f9adda24b, type: 2}
-    _weight: 1
+  _dropTable: {fileID: 11400000, guid: b211d164b5f84456b359a0f977b45c65, type: 2}

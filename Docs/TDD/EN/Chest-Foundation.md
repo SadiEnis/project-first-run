@@ -1,5 +1,7 @@
 # Chest Foundation
 
+Later extension: [Chest Tier Foundation](Chest-Tier-Foundation.md) adds validated rarity metadata to `ChestDefinition` and shared weighted selection for spawn sources. It does not yet implement the eight chest types, colors, evolution, multi-claim sessions or gold rewards. The original foundation scope below records the initial increment.
+
 ## Purpose
 
 Turn the existing reward offer, claim, and selection systems into a world-owned

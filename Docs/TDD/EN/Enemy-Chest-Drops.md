@@ -1,5 +1,7 @@
 # Enemy chest drops
 
+Current selection data: profiles now reference a reusable `ChestDropTable`; the former embedded entries were migrated to separate normal/elite assets in [Chest Tier Foundation](Chest-Tier-Foundation.md). Chance values and death/queue contracts below are unchanged. Rarity is metadata and does not alter the chance roll.
+
 ## Scope and baseline
 
 Branch baseline: Plastic `/main/dev` **cs:151**, Git `main` **6e42508**, after the player validated level-up chests. Enemy death drops are additional to XP and guaranteed level-up chests.

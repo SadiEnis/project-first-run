@@ -2,7 +2,7 @@
 
 ## Scope
 
-One world chest is guaranteed per gained run level, matching the GDD. This stage connects the existing XP and chest foundations; it does not add weighted chest types, enemy/elite/boss drops, item-level rewards, gold fallback, or automatic reward popups. Test_Waves uses the existing development chest definition and reward pool.
+One world chest is guaranteed per gained run level, matching the GDD. The initial stage connected XP and chest foundations with a single definition. [Chest Tier Foundation](Chest-Tier-Foundation.md) now supplies weighted selection through `ChestDropTable`: draw once at the first eligible processing attempt and retain the selected definition until that entitlement spawns successfully. Test_Waves still selects only the existing development chest and reward pool. Item-level rewards, gold fallback and automatic reward popups remain outside this source.
 
 Branch baseline: Plastic `/main/dev` **cs:148**, Git `main` **cad6518**. This is a new stage, not a continuation under chest-foundation.
 

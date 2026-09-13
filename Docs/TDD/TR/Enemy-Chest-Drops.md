@@ -1,5 +1,7 @@
 # Düşman kaynaklı sandık drop'ları
 
+Güncel seçim verisi: profiller artık ortak `ChestDropTable` yapısına referans verir; eski gömülü girişler [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md) aşamasında ayrı normal/elit asset'lerine taşınmıştır. Aşağıdaki ihtimal değerleri ve ölüm/kuyruk sözleşmeleri değişmez. Nadirlik bir etikettir; ihtimal çekilişini değiştirmez.
+
 ## Kapsam ve başlangıç
 
 Branch tabanı: oyuncunun level-up sandıklarını doğrulamasından sonra Plastic `/main/dev` **cs:151**, Git `main` **6e42508**. Düşman ölümü sandıkları, XP ve garantili level-up sandıklarına ektir.

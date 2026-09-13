@@ -1,6 +1,7 @@
 using System;
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Progression;
+using ProjectFirstRun.Rewards;
 using UnityEngine;
 
 namespace ProjectFirstRun.Chests.Spawning
@@ -12,35 +13,41 @@ namespace ProjectFirstRun.Chests.Spawning
         [SerializeField] private PlayerExperienceController _playerExperience;
         [SerializeField] private HealthComponent _playerHealth;
         [SerializeField] private ChestSpawner _spawner;
-        [SerializeField] private ChestDefinition _definition;
+        [SerializeField] private ChestDropTable _dropTable;
         [SerializeField] private ChestSpawnPlacement _placement;
 
         private LevelUpChestTracker _tracker;
         private bool _isListening;
         private float _nextAttemptTime;
+        private IRandomSource _random;
+        private ChestDefinition _pendingDefinition;
+        private bool _hasPendingSelection;
 
         public bool IsInitialized => _tracker != null;
         public int PendingChestCount => _tracker?.PendingCount ?? 0;
         public int SpawnedChestCount => _tracker?.SpawnedCount ?? 0;
 
         public void Initialize(PlayerExperienceController experience, HealthComponent health,
-            ChestSpawner spawner, ChestDefinition definition, ChestSpawnPlacement placement)
+            ChestSpawner spawner, ChestDropTable dropTable, ChestSpawnPlacement placement, IRandomSource random)
         {
             if (IsInitialized) throw new InvalidOperationException("Level-up chest source is already initialized.");
             if (experience == null) throw new ArgumentNullException(nameof(experience));
             if (health == null) throw new ArgumentNullException(nameof(health));
             if (spawner == null) throw new ArgumentNullException(nameof(spawner));
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            if (dropTable == null) throw new ArgumentNullException(nameof(dropTable));
             if (placement == null) throw new ArgumentNullException(nameof(placement));
+            if (random == null) throw new ArgumentNullException(nameof(random));
             if (experience.gameObject != health.gameObject)
                 throw new InvalidOperationException("XP and health must belong to the same player.");
-            definition.Validate();
-            placement.ValidatePrefab(definition.WorldPrefab);
+            dropTable.Validate();
+            foreach (WeightedChestEntry entry in dropTable.Entries)
+                placement.ValidatePrefab(entry.Definition.WorldPrefab);
 
             _playerExperience = experience;
             _playerHealth = health;
             _spawner = spawner;
-            _definition = definition;
+            _dropTable = dropTable;
+            _random = random;
             _placement = placement;
             _tracker = new LevelUpChestTracker(experience.IsInitialized ? experience.Level : 1);
             if (isActiveAndEnabled) StartListening();
@@ -49,14 +56,17 @@ namespace ProjectFirstRun.Chests.Spawning
         private void Awake()
         {
             if (!IsInitialized && _playerExperience != null)
-                Initialize(_playerExperience, _playerHealth, _spawner, _definition, _placement);
+                InitializeSerialized();
         }
 
         private void Start()
         {
             if (!IsInitialized)
-                Initialize(_playerExperience, _playerHealth, _spawner, _definition, _placement);
+                InitializeSerialized();
         }
+
+        private void InitializeSerialized() =>
+            Initialize(_playerExperience, _playerHealth, _spawner, _dropTable, _placement, new UnityRandomSource());
 
         private void OnEnable() => StartListening();
         private void OnDisable()
@@ -114,11 +124,22 @@ namespace ProjectFirstRun.Chests.Spawning
                 !_spawner.IsInitialized || _placement == null || !_placement.isActiveAndEnabled)
                 return false;
 
-            if (!_placement.TryFind(_playerExperience.transform, _definition.WorldPrefab,
+            if (!_hasPendingSelection)
+            {
+                if (_dropTable == null) throw new InvalidOperationException("Level-up chest drop table was destroyed.");
+                _pendingDefinition = _dropTable.Select(_random);
+                _hasPendingSelection = true;
+            }
+            if (_pendingDefinition == null)
+                throw new InvalidOperationException("Selected level-up chest definition was destroyed.");
+
+            if (!_placement.TryFind(_playerExperience.transform, _pendingDefinition.WorldPrefab,
                     out Vector3 position, out Quaternion rotation)) return false;
-            ChestSpawnRequest request = new ChestSpawnRequest(_definition, position, rotation);
+            ChestSpawnRequest request = new ChestSpawnRequest(_pendingDefinition, position, rotation);
             chest = _spawner.Spawn(in request).ChestController;
             _tracker.RecordSpawned();
+            _pendingDefinition = null;
+            _hasPendingSelection = false;
             Physics.SyncTransforms();
             return true;
         }

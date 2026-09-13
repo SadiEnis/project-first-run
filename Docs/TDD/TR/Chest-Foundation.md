@@ -1,5 +1,7 @@
 # Sandık Temeli
 
+Sonraki genişletme: [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md), `ChestDefinition` için doğrulanan nadirlik bilgisini ve spawn kaynakları için ortak ağırlıklı seçimi ekler. Sekiz sandık türü, renkler, evrim, çoklu seçim oturumları ve altın ödülleri henüz uygulanmaz. Aşağıdaki temel kapsam ilk geliştirme aşamasını kaydeder.
+
 ## Amaç
 
 Mevcut reward offer, claim ve selection sistemlerini dünyaya ait bir sandık

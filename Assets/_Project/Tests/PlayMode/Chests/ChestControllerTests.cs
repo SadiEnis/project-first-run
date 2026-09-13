@@ -13,6 +13,7 @@ using ProjectFirstRun.Rewards;
 using ProjectFirstRun.Rewards.Claims;
 using ProjectFirstRun.UI.Rewards;
 using ProjectFirstRun.Upgrades;
+using ProjectFirstRun.Weapons;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -138,6 +139,23 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
             Assert.That(
                 _selectionView.IsVisible,
                 Is.True);
+        }
+
+        [Test]
+        public void PoolChangedAfterInitialization_CannotLeakAnotherCategoryIntoAnOffer()
+        {
+            var weapon = ScriptableObject.CreateInstance<WeaponDefinition>();
+            try
+            {
+                SetPrivateField(weapon, typeof(ItemDefinition), "_stableId", "weapon.cross-category-test");
+                SetPrivateField(_chestDefinition, typeof(ChestDefinition), "_rewardCategory", ChestRewardCategory.Upgrade);
+                SetPrivateField(_rewardItemPool, typeof(RewardItemPool), "_items", new List<ItemDefinition> { weapon });
+                Assert.Throws<System.InvalidOperationException>(() => _chestController.TryOpen());
+                Assert.That(_chestController.Status, Is.EqualTo(ChestStatus.Available));
+                Assert.That(_selectionController.IsOpen, Is.False);
+                Assert.That(_chestController.ActiveSession, Is.Null);
+            }
+            finally { Object.DestroyImmediate(weapon); }
         }
 
         [Test]

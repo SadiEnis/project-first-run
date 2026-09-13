@@ -25,6 +25,9 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
         private PlayerBuildController _build;
         private RewardSelectionController _selection;
         private ChestDefinition _definition;
+        private ChestDropTable _table;
+        private readonly Queue<int> _rolls = new Queue<int>();
+        private CountingRandom _random;
         private RewardItemPool _pool;
         private GameObject _prefab;
         private GameObject _ground;
@@ -57,6 +60,10 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             SetField(_definition, "_stableId", "chest.level-test");
             SetField(_definition, "_rewardItemPool", _pool);
             SetField(_definition, "_worldPrefab", _prefab);
+            _table = ScriptableObject.CreateInstance<ChestDropTable>();
+            SetField(_table, "_entries", new[] { new WeightedChestEntry(_definition, 1) });
+            _rolls.Clear();
+            _random = new CountingRandom(_rolls);
             _ground = Cube("Ground", new Vector3(0f, -0.1f, 0f), new Vector3(40f, 0.2f, 40f), 7);
             CreateSource();
             Physics.SyncTransforms();
@@ -73,6 +80,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             _objects.Clear();
             Object.DestroyImmediate(_definition);
             Object.DestroyImmediate(_pool);
+            Object.DestroyImmediate(_table);
             Time.timeScale = _previousTimeScale;
         }
 
@@ -117,6 +125,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             if (reason == "spawner_disabled") _spawner.enabled = false;
             Assert.That(_source.TrySpawnPendingChest(out _), Is.False);
             Assert.That(_source.PendingChestCount, Is.EqualTo(1));
+            Assert.That(_random.Calls, Is.Zero, "Ineligible processing must not draw a chest yet.");
             Time.timeScale = 1f;
             _health.ResetHealth();
             _source.enabled = true;
@@ -165,7 +174,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
         {
             _xp.GainExperience(100);
             Assert.Throws<InvalidOperationException>(() =>
-                _source.Initialize(_xp, _health, _spawner, _definition, _placement));
+                _source.Initialize(_xp, _health, _spawner, _table, _placement, _random));
             Assert.That(_source.PendingChestCount, Is.EqualTo(1));
         }
 
@@ -302,7 +311,85 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
         {
             _source = NewObject("Level-up source").AddComponent<LevelUpChestSource>();
             _placement = _source.GetComponent<ChestSpawnPlacement>();
-            _source.Initialize(_xp, _health, _spawner, _definition, _placement);
+            _source.Initialize(_xp, _health, _spawner, _table, _placement, _random);
+        }
+
+        [Test]
+        public void WeightedMultiLevelRewards_SelectIndependentlyOncePerEntitlement()
+        {
+            var rare = ScriptableObject.CreateInstance<ChestDefinition>();
+            SetField(rare, "_stableId", "chest.rare-test");
+            SetField(rare, "_rarity", ChestRarity.Rare);
+            SetField(rare, "_rewardItemPool", _pool);
+            SetField(rare, "_worldPrefab", _prefab);
+            SetField(_table, "_entries", new[] { new WeightedChestEntry(_definition, 2), new WeightedChestEntry(rare, 1) });
+            try
+            {
+                _rolls.Enqueue(2);
+                _rolls.Enqueue(0);
+                _rolls.Enqueue(2);
+                _xp.GainExperience(500);
+                Assert.That(_random.Calls, Is.Zero, "XP observers must not roll or instantiate.");
+                foreach (var expected in new[] { rare, _definition, rare })
+                {
+                    Assert.That(_source.TrySpawnPendingChest(out var chest), Is.True);
+                    Assert.That(chest.Definition, Is.SameAs(expected));
+                    _objects.Add(chest.gameObject);
+                }
+                Assert.That(_random.Calls, Is.EqualTo(3));
+                Assert.That(_source.PendingChestCount, Is.Zero);
+                Assert.That(_selection.IsOpen, Is.False);
+            }
+            finally { Object.DestroyImmediate(rare); }
+        }
+
+        [Test]
+        public void PlacementRetryAndDisable_KeepSelectedDefinitionEvenIfTableChanges()
+        {
+            _ground.SetActive(false);
+            _xp.GainExperience(100);
+            Assert.That(_source.TrySpawnPendingChest(out _), Is.False);
+            Assert.That(_random.Calls, Is.EqualTo(1));
+            _source.enabled = false;
+            SetField(_table, "_entries", Array.Empty<WeightedChestEntry>());
+            _xp.GainExperience(150);
+            _source.enabled = true;
+            _ground.SetActive(true);
+            Physics.SyncTransforms();
+            Assert.That(_source.TrySpawnPendingChest(out var chest), Is.True);
+            Assert.That(chest.Definition, Is.SameAs(_definition));
+            Assert.That(_source.PendingChestCount, Is.EqualTo(1));
+            Assert.That(_random.Calls, Is.EqualTo(1));
+            Assert.Throws<InvalidOperationException>(() => _source.TrySpawnPendingChest(out _),
+                "The next entitlement must validate and use the new table, not reuse the previous choice.");
+        }
+
+        [Test]
+        public void SpawnError_AfterSelectionDoesNotRerollOrConsumeEntitlement()
+        {
+            _ground.SetActive(false);
+            _xp.GainExperience(100);
+            Assert.That(_source.TrySpawnPendingChest(out _), Is.False);
+            _ground.SetActive(true);
+            Physics.SyncTransforms();
+            SetField(_definition, "_rewardItemPool", null);
+            Assert.Throws<InvalidOperationException>(() => _source.TrySpawnPendingChest(out _));
+            Assert.That(_source.PendingChestCount, Is.EqualTo(1));
+            SetField(_definition, "_rewardItemPool", _pool);
+            Assert.That(_source.TrySpawnPendingChest(out _), Is.True);
+            Assert.That(_random.Calls, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void DestroyedSelection_IsNotSilentlyReplacedWithANewRoll()
+        {
+            _ground.SetActive(false);
+            _xp.GainExperience(100);
+            Assert.That(_source.TrySpawnPendingChest(out _), Is.False);
+            Object.DestroyImmediate(_definition);
+            Assert.Throws<InvalidOperationException>(() => _source.TrySpawnPendingChest(out _));
+            Assert.That(_random.Calls, Is.EqualTo(1));
+            Assert.That(_source.PendingChestCount, Is.EqualTo(1));
         }
 
         private void InitializeSpawner(ChestSpawner spawner) =>
@@ -328,5 +415,17 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
 
         private static void SetField(object target, string name, object value) =>
             target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
+
+        private sealed class CountingRandom : IRandomSource
+        {
+            private readonly Queue<int> _rolls;
+            public int Calls;
+            public CountingRandom(Queue<int> rolls) => _rolls = rolls;
+            public int Next(int minInclusive, int maxExclusive)
+            {
+                Calls++;
+                return _rolls.Count > 0 ? _rolls.Dequeue() : 0;
+            }
+        }
     }
 }

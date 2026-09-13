@@ -1,4 +1,5 @@
 using System;
+using ProjectFirstRun.Items;
 using ProjectFirstRun.Rewards;
 using UnityEngine;
 
@@ -13,6 +14,14 @@ namespace ProjectFirstRun.Chests
         [Header("Identity")]
         [SerializeField]
         private string _stableId;
+
+        [SerializeField] private string _displayName;
+        [SerializeField] private ChestRewardCategory _rewardCategory;
+        public string DisplayName => string.IsNullOrWhiteSpace(_displayName) ? _stableId : _displayName;
+        public ChestRewardCategory RewardCategory => _rewardCategory;
+
+        [SerializeField] private ChestRarity _rarity = ChestRarity.Common;
+        public ChestRarity Rarity => _rarity;
 
         [Header("Reward")]
         [SerializeField]
@@ -40,6 +49,11 @@ namespace ProjectFirstRun.Chests
 
         public void Validate()
         {
+            if (!Enum.IsDefined(typeof(ChestRarity), _rarity))
+                throw new InvalidOperationException("Chest rarity must be a supported serialized value.");
+            if (!Enum.IsDefined(typeof(ChestRewardCategory), _rewardCategory))
+                throw new InvalidOperationException("Chest reward category must be a supported serialized value.");
+
             if (string.IsNullOrWhiteSpace(
                     _stableId))
             {
@@ -88,13 +102,25 @@ namespace ProjectFirstRun.Chests
                     $"requires a {nameof(ChestController)} component.");
             }
 
-            _rewardItemPool.ValidateContents();
+            foreach (ItemDefinition item in _rewardItemPool.GetValidatedItems())
+                if (!AllowsCategory(item.Category))
+                    throw new InvalidOperationException($"Chest '{_stableId}' contains an item outside its {_rewardCategory} category.");
         }
+
+        public bool AllowsCategory(ItemCategory category) => _rewardCategory switch
+        {
+            ChestRewardCategory.Mixed => category == ItemCategory.Weapon || category == ItemCategory.Ability || category == ItemCategory.Upgrade,
+            ChestRewardCategory.Weapon => category == ItemCategory.Weapon,
+            ChestRewardCategory.Ability => category == ItemCategory.Ability,
+            ChestRewardCategory.Upgrade => category == ItemCategory.Upgrade,
+            _ => throw new InvalidOperationException("Unsupported chest reward category.")
+        };
 
         private void OnValidate()
         {
             _stableId =
                 _stableId?.Trim();
+            _displayName = _displayName?.Trim();
         }
     }
 }

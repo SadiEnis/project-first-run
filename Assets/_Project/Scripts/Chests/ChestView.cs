@@ -18,6 +18,66 @@ namespace ProjectFirstRun.Chests
         private Collider _interactionCollider;
 
         private bool _isListening;
+        private ChestDefinition _presentedDefinition;
+        private TextMesh _typeLabel;
+
+        public void ApplyDefinition(ChestDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            ValidateReferences();
+            if (_presentedDefinition == definition) return;
+            _presentedDefinition = definition;
+            if (definition.RewardCategory == ChestRewardCategory.Mixed) return;
+
+            // Per-instance property blocks leave shared prefab materials unchanged.
+            if (definition.Rarity == ChestRarity.Common)
+            {
+                var tint = new MaterialPropertyBlock();
+                foreach (Renderer renderer in _visualRoot.GetComponentsInChildren<Renderer>(true))
+                {
+                    renderer.GetPropertyBlock(tint);
+                    tint.SetColor("_BaseColor", new Color(0.55f, 0.55f, 0.55f, 1f));
+                    tint.SetColor("_Color", new Color(0.55f, 0.55f, 0.55f, 1f));
+                    renderer.SetPropertyBlock(tint);
+                }
+            }
+            _typeLabel = CreateLabel("Type label", new Vector3(0f, 1.65f, 0f), Quaternion.identity, definition.DisplayName);
+            AlignLabelToCamera();
+        }
+
+        private void LateUpdate()
+        {
+            AlignLabelToCamera();
+        }
+
+        private void AlignLabelToCamera()
+        {
+            if (_typeLabel == null || !_typeLabel.gameObject.activeInHierarchy) return;
+            Camera viewingCamera = Camera.main;
+            if (viewingCamera == null) return;
+
+            // One camera-facing label avoids mirrored text from double-sided font materials.
+            _typeLabel.transform.rotation = viewingCamera.transform.rotation;
+        }
+
+        private TextMesh CreateLabel(string objectName, Vector3 position, Quaternion rotation, string text)
+        {
+            var labelObject = new GameObject(objectName);
+            labelObject.layer = gameObject.layer;
+            labelObject.transform.SetParent(_visualRoot.transform, false);
+            labelObject.transform.localPosition = position;
+            labelObject.transform.localRotation = rotation;
+            var label = labelObject.AddComponent<TextMesh>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.GetComponent<MeshRenderer>().sharedMaterial = label.font.material;
+            label.fontSize = 48;
+            label.characterSize = 0.05f;
+            label.anchor = TextAnchor.MiddleCenter;
+            label.alignment = TextAlignment.Center;
+            label.color = Color.white;
+            label.text = text;
+            return label;
+        }
 
         public GameObject VisualRoot =>
             _visualRoot;
@@ -95,6 +155,7 @@ namespace ProjectFirstRun.Chests
 
             _interactionCollider.enabled =
                 !isOpened;
+            if (_chestController.IsInitialized) ApplyDefinition(_chestController.Definition);
         }
 
         private void SetOpenedPresentation()

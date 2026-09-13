@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using ProjectFirstRun.Builds;
 using ProjectFirstRun.Chests;
 using ProjectFirstRun.Chests.Spawning;
@@ -29,6 +30,11 @@ namespace ProjectFirstRun.Development.Chests
 
         [SerializeField]
         private ChestDefinition _chestDefinition;
+
+        [SerializeField] private ChestDefinition[] _additionalChestDefinitions = Array.Empty<ChestDefinition>();
+        private readonly List<ChestController> _spawnedChests = new List<ChestController>();
+        private bool _hasSpawnedBatch;
+        public IReadOnlyList<ChestController> SpawnedChests => _spawnedChests.AsReadOnly();
 
         [SerializeField]
         private Transform _spawnPoint;
@@ -90,7 +96,7 @@ namespace ProjectFirstRun.Development.Chests
                     "Chest development references are incomplete.");
             }
 
-            if (HasSpawnedChest)
+            if (_hasSpawnedBatch)
             {
                 throw new InvalidOperationException(
                     "The development chest has already been spawned.");
@@ -104,19 +110,40 @@ namespace ProjectFirstRun.Development.Chests
             }
 
             EnsureSpawnerInitialized();
-
-            ChestSpawnRequest request =
-                new ChestSpawnRequest(
-                    _chestDefinition,
-                    _spawnPoint.position,
-                    _spawnPoint.rotation);
-
-            SpawnedChest =
-                _chestSpawner.Spawn(
-                        in request)
-                    .ChestController;
-
-            return SpawnedChest;
+            _chestDefinition.Validate();
+            if (_additionalChestDefinitions == null)
+                throw new InvalidOperationException("Additional development chest definitions cannot be null.");
+            foreach (ChestDefinition definition in _additionalChestDefinitions)
+            {
+                if (definition == null) throw new InvalidOperationException("Additional development chest definition is missing.");
+                definition.Validate();
+            }
+            try
+            {
+                for (int i = 0; i <= _additionalChestDefinitions.Length; i++)
+                {
+                    ChestDefinition definition = i == 0 ? _chestDefinition : _additionalChestDefinitions[i - 1];
+                    float offset = i == 0 ? 0f : ((i + 1) / 2) * 3f * (i % 2 == 1 ? -1f : 1f);
+                    var request = new ChestSpawnRequest(definition,
+                        _spawnPoint.position + _spawnPoint.right * offset, _spawnPoint.rotation);
+                    _spawnedChests.Add(_chestSpawner.Spawn(in request).ChestController);
+                }
+                SpawnedChest = _spawnedChests[0];
+                _hasSpawnedBatch = true;
+                return SpawnedChest;
+            }
+            catch
+            {
+                foreach (ChestController chest in _spawnedChests)
+                {
+                    if (chest == null) continue;
+                    chest.gameObject.SetActive(false);
+                    if (Application.isPlaying) Destroy(chest.gameObject);
+                    else DestroyImmediate(chest.gameObject);
+                }
+                _spawnedChests.Clear();
+                throw;
+            }
         }
 
         private void EnsureSpawnerInitialized()

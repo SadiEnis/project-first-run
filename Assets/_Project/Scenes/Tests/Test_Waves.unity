@@ -776,7 +776,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 767813255}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c2b86419340410eb0fe3680db94bebf, type: 3}
   m_Name: 
@@ -832,7 +832,10 @@ MonoBehaviour:
   _chestSpawner: {fileID: 911521816}
   _playerBuildController: {fileID: 6938050018431126420}
   _rewardSelectionController: {fileID: 8115000000000000002}
-  _chestDefinition: {fileID: 11400000, guid: 99bc8fffc14c056449d7fd5f9adda24b, type: 2}
+  _chestDefinition: {fileID: 11400000, guid: 1710c972359c443b9d34891f2042100f, type: 2}
+  _additionalChestDefinitions:
+  - {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}
+  - {fileID: 11400000, guid: e1dca4d76d9649a6ad60669b9b8ad921, type: 2}
   _spawnPoint: {fileID: 1138363012}
 --- !u!114 &911521816
 MonoBehaviour:
@@ -1613,6 +1616,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Development.Abilities.FireballDevelopmentBootstrap
   _fireballDefinition: {fileID: 11400000, guid: d8030a403a11f6c4684ddb91f6b829ec, type: 2}
+  _grantStartingAbility: 0
   _playerAbilityAcquisitionController: {fileID: 6938050018431126419}
   _playerStatsController: {fileID: 6938050018431126430}
   _damageSource: {fileID: 64608187}
@@ -2101,7 +2105,7 @@ MonoBehaviour:
   _playerExperience: {fileID: 6938050018431126422}
   _playerHealth: {fileID: 64608191}
   _spawner: {fileID: 911521816}
-  _definition: {fileID: 11400000, guid: 99bc8fffc14c056449d7fd5f9adda24b, type: 2}
+  _dropTable: {fileID: 11400000, guid: b19d8eab3e514b07a1b7789f8f337618, type: 2}
   _placement: {fileID: 8126000000000000003}
 --- !u!114 &8126000000000000003
 MonoBehaviour:

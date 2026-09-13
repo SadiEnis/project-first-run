@@ -16,6 +16,9 @@ namespace ProjectFirstRun.Development.Abilities
         [SerializeField]
         private FireballDefinition _fireballDefinition;
 
+        [SerializeField]
+        private bool _grantStartingAbility = true;
+
         [Header("Player")]
         [SerializeField]
         private PlayerAbilityAcquisitionController
@@ -90,16 +93,18 @@ namespace ProjectFirstRun.Development.Abilities
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);
 
-            AbilityAcquireResult acquireResult =
-                _playerAbilityAcquisitionController.TryAcquire(
-                    _fireballDefinition);
-
-            if (acquireResult !=
-                AbilityAcquireResult.Acquired)
+            if (_grantStartingAbility)
             {
-                throw new InvalidOperationException(
-                    $"Development Fireball could not be acquired. " +
-                    $"Result: {acquireResult}.");
+                AbilityAcquireResult acquireResult =
+                    _playerAbilityAcquisitionController.TryAcquire(
+                        _fireballDefinition);
+
+                if (acquireResult != AbilityAcquireResult.Acquired)
+                {
+                    throw new InvalidOperationException(
+                        $"Development Fireball could not be acquired. " +
+                        $"Result: {acquireResult}.");
+                }
             }
 
             IsInstalled = true;

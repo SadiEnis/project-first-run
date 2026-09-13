@@ -13,6 +13,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
     public sealed class EnemyChestDropProfileTests
     {
         private EnemyChestDropProfile _profile;
+        private ChestDropTable _table;
         private ChestDefinition _first;
         private ChestDefinition _second;
         private RewardItemPool _pool;
@@ -22,18 +23,21 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
         public void SetUp()
         {
             _profile = ScriptableObject.CreateInstance<EnemyChestDropProfile>();
+            _table = ScriptableObject.CreateInstance<ChestDropTable>();
+            SetField(_profile, "_dropTable", _table);
             _pool = ScriptableObject.CreateInstance<RewardItemPool>();
             _prefab = new GameObject("Chest template", typeof(ChestController));
             _first = Definition("first");
             _second = Definition("second");
             SetField(_profile, "_chanceBasisPoints", 2500);
-            SetField(_profile, "_entries", new[] { new WeightedChestEntry(_first, 2), new WeightedChestEntry(_second, 3) });
+            SetField(_table, "_entries", new[] { new WeightedChestEntry(_first, 2), new WeightedChestEntry(_second, 3) });
         }
 
         [TearDown]
         public void TearDown()
         {
             Object.DestroyImmediate(_profile);
+            Object.DestroyImmediate(_table);
             Object.DestroyImmediate(_first);
             Object.DestroyImmediate(_second);
             Object.DestroyImmediate(_pool);
@@ -44,7 +48,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
         public void ZeroChance_NeedsNoEntriesOrRandomCalls()
         {
             SetField(_profile, "_chanceBasisPoints", 0);
-            SetField(_profile, "_entries", null);
+            SetField(_profile, "_dropTable", null);
             var random = new SequenceRandom();
             Assert.That(_profile.TryRoll(random, out var definition), Is.False);
             Assert.That(definition, Is.Null);
@@ -101,7 +105,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
                 "negative_weight" => new[] { new WeightedChestEntry(_first, -1) },
                 _ => new[] { new WeightedChestEntry(_first, int.MaxValue), new WeightedChestEntry(_second, 1) }
             };
-            SetField(_profile, "_entries", entries);
+            SetField(_table, "_entries", entries);
             Assert.Throws<InvalidOperationException>(() => _profile.Validate());
         }
 
@@ -109,7 +113,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
         public void LargestSupportedTotal_SelectsLastValueWithoutOverflow()
         {
             SetField(_profile, "_chanceBasisPoints", 10000);
-            SetField(_profile, "_entries", new[] { new WeightedChestEntry(_first, int.MaxValue) });
+            SetField(_table, "_entries", new[] { new WeightedChestEntry(_first, int.MaxValue) });
             Assert.That(_profile.TryRoll(new SequenceRandom(int.MaxValue - 1), out var definition), Is.True);
             Assert.That(definition, Is.SameAs(_first));
         }
@@ -122,6 +126,43 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
         [Test]
         public void NullRandom_IsRejected() =>
             Assert.Throws<ArgumentNullException>(() => _profile.TryRoll(null, out _));
+
+        [Test]
+        public void EnabledProfile_RequiresExplicitTable()
+        {
+            SetField(_profile, "_dropTable", null);
+            Assert.Throws<InvalidOperationException>(() => _profile.Validate());
+        }
+
+        [TestCase(0, false)]
+        [TestCase(1, false)]
+        [TestCase(2, true)]
+        [TestCase(4, true)]
+        public void SharedTable_SelectsOneDefinitionWithoutAChanceRoll(int roll, bool second)
+        {
+            var random = new SequenceRandom(roll);
+            Assert.That(_table.Select(random), Is.SameAs(second ? _second : _first));
+            Assert.That(random.Maximums, Is.EqualTo(new[] { 5 }));
+        }
+
+        [TestCase(-1)]
+        [TestCase(5)]
+        public void SharedTable_RejectsOutOfRangeWeightedRoll(int roll) =>
+            Assert.Throws<InvalidOperationException>(() => _table.Select(new SequenceRandom(roll)));
+
+        [Test]
+        public void SharedTable_NullRandomIsRejected() =>
+            Assert.Throws<ArgumentNullException>(() => _table.Select(null));
+
+        [Test]
+        public void Rarity_DoesNotOverrideExplicitTableWeights()
+        {
+            SetField(_first, "_rarity", ChestRarity.Legendary);
+            SetField(_second, "_rarity", ChestRarity.Common);
+            Assert.That(_table.Validate(), Is.EqualTo(5));
+            Assert.That(_table.Select(new SequenceRandom(1)), Is.SameAs(_first));
+            Assert.That(_table.Select(new SequenceRandom(2)), Is.SameAs(_second));
+        }
 
         private ChestDefinition Definition(string id)
         {

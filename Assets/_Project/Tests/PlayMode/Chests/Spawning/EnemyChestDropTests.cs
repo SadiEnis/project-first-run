@@ -29,6 +29,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
         private RewardSelectionController _selection;
         private ChestSpawnPlacement _placement;
         private EnemyChestDropProfile _profile;
+        private ChestDropTable _table;
         private ChestDefinition _chestDefinition;
         private RewardItemPool _pool;
         private EnemyDefinition _enemyDefinition;
@@ -62,8 +63,10 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             SetField(_chestDefinition, "_rewardItemPool", _pool);
             SetField(_chestDefinition, "_worldPrefab", prefab);
             _profile = Asset<EnemyChestDropProfile>();
+            _table = Asset<ChestDropTable>();
+            SetField(_profile, "_dropTable", _table);
             SetField(_profile, "_chanceBasisPoints", 10000);
-            SetField(_profile, "_entries", new[] { new WeightedChestEntry(_chestDefinition, 1) });
+            SetField(_table, "_entries", new[] { new WeightedChestEntry(_chestDefinition, 1) });
             _ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _objects.Add(_ground);
             _ground.layer = 7;
@@ -230,7 +233,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             template.GetComponent<Rigidbody>().isKinematic = true;
             SetField(_enemy.gameObject.AddComponent<EnemyExperienceDrop>(), "_pickupPrefab", template);
             SetField(_enemyDefinition, "_experienceReward", 25);
-            SetField(_profile, "_entries", Array.Empty<WeightedChestEntry>());
+            SetField(_table, "_entries", Array.Empty<WeightedChestEntry>());
             LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex("requires weighted entries"));
             Assert.DoesNotThrow(() => Damage(1000f));
             Assert.That(_source.PendingChestCount, Is.Zero);

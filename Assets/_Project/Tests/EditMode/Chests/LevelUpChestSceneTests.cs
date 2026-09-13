@@ -5,8 +5,11 @@ using ProjectFirstRun.Builds;
 using ProjectFirstRun.Chests;
 using ProjectFirstRun.Chests.Spawning;
 using ProjectFirstRun.Combat;
+using ProjectFirstRun.Enemies;
+using ProjectFirstRun.Enemies.Spawning;
 using ProjectFirstRun.Progression;
 using ProjectFirstRun.UI.Rewards;
+using ProjectFirstRun.Waves;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -16,6 +19,46 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
 {
     public sealed class LevelUpChestSceneTests
     {
+        [Test]
+        public void EnemyDrops_HaveIndependentProfilesAndExplicitSceneAndPrefabDependencies()
+        {
+            var normal = AssetDatabase.LoadAssetAtPath<EnemyChestDropProfile>(
+                "Assets/_Project/Data/Chests/Dev/CDP_DevelopmentNormal.asset");
+            var elite = AssetDatabase.LoadAssetAtPath<EnemyChestDropProfile>(
+                "Assets/_Project/Data/Chests/Dev/CDP_DevelopmentElite.asset");
+            Assert.That(normal, Is.Not.Null);
+            Assert.That(elite, Is.Not.Null.And.Not.EqualTo(normal));
+            Assert.That(normal.ChanceBasisPoints, Is.EqualTo(2500));
+            Assert.That(elite.ChanceBasisPoints, Is.EqualTo(5000));
+            Assert.That(normal.Validate(), Is.EqualTo(1));
+            Assert.That(elite.Validate(), Is.EqualTo(1));
+            var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserChestDropTest.asset");
+            Assert.That(enemy.ChestDropProfile, Is.EqualTo(normal));
+            foreach (string path in new[] { "EW_Test_01", "EW_Test_02" })
+            {
+                var wave = AssetDatabase.LoadAssetAtPath<EnemyWaveDefinition>($"Assets/_Project/Data/Waves/Test/{path}.asset");
+                Assert.That(wave.Entries, Is.Not.Empty);
+                Assert.That(wave.Entries.All(entry => entry.EnemyDefinition == enemy), Is.True);
+            }
+            Assert.That(AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserBasic.asset").ChestDropProfile,
+                Is.Null, "Legacy attack-only scenes must not require the chest scene services.");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Prefabs/Enemies/Enemy_ChaserBasic.prefab");
+            Assert.That(prefab.GetComponent<EnemyChestDrop>(), Is.Not.Null);
+            Scene scene = EditorSceneManager.OpenScene("Assets/_Project/Scenes/Tests/Test_Waves.unity", OpenSceneMode.Additive);
+            try
+            {
+                var source = FindSingle<EnemyChestDropSource>(scene);
+                var serialized = new SerializedObject(source);
+                Assert.That(serialized.FindProperty("_spawner").objectReferenceValue, Is.EqualTo(FindSingle<ChestSpawner>(scene)));
+                Assert.That(serialized.FindProperty("_placement").objectReferenceValue, Is.EqualTo(FindSingle<ChestSpawnPlacement>(scene)));
+                Assert.That(serialized.FindProperty("_playerHealth").objectReferenceValue,
+                    Is.EqualTo(FindSingle<PlayerExperienceController>(scene).GetComponent<HealthComponent>()));
+                Assert.That(new SerializedObject(FindSingle<EnemySpawner>(scene)).FindProperty("_chestDropSource").objectReferenceValue,
+                    Is.EqualTo(source));
+            }
+            finally { EditorSceneManager.CloseScene(scene, true); }
+        }
+
         [Test]
         public void TestWaves_WiresRuntimeSourceAndBootstrapToExistingPlayerAndSpawner()
         {

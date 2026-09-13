@@ -18,6 +18,8 @@ Bu aşama ölümde sandık düşme ihtimalini ve ağırlıklı sandık tanımı 
 
 ## Geliştirme bağlantıları ve elle doğrulama
 
+İki test dalgası ayrı `ED_ChaserChestDropTest` tanımını kullanır. Chest servislerini içermeyen eski saldırı test sahneleri için `ED_ChaserBasic` profilsiz kalır; savaş ve XP değerleri değişmez.
+
 `Test_Waves` mevcut chest spawner, placement ve oyuncu sağlığını paylaşır. Chaser, geçici **%25** ihtimalli ve tek geliştirme sandığına ağırlık 1 veren `CDP_DevelopmentNormal` kullanır. `CDP_DevelopmentElite`, gelecekteki elit tanımları için bağımsız **%50** örneğidir; dalgalarda şu anda elit düşman yoktur. Yeni sandık içerikleri ertelendiğinden iki profil de aynı sandığı seçer.
 
 1. XP toplamadan chaser öldür: bazı ölümler, level-up'tan bağımsız olarak ölüm yerine yakın sandık üretmelidir. Kısa bir seride hiç sandık çıkmaması mümkündür.

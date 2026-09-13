@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19eb141af824c24989e4b77a349088d, type: 3}
+  m_Name: ED_ChaserChestDropTest
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Enemies.EnemyDefinition
+  _stableId: enemy.chaser-chest-drop-test
+  _displayName: BasicChaser
+  _maximumHealth: 100
+  _experienceReward: 25
+  _chestDropProfile: {fileID: 11400000, guid: 5a520fbedc93422a994c64eb24e509b7, type: 2}
+  _movementSpeed: 3.5
+  _acceleration: 12
+  _angularSpeed: 720
+  _stoppingDistance: 1.5
+  _destinationUpdateInterval: 0.1
+  _attackDamage: 10
+  _attackRange: 1.75
+  _attackCooldown: 1

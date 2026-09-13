@@ -18,6 +18,8 @@ This stage adds configurable death-drop probability and weighted chest-definitio
 
 ## Development composition and manual verification
 
+The two test waves use the dedicated `ED_ChaserChestDropTest` definition. `ED_ChaserBasic` remains profile-free for older attack-only scenes without chest services; combat and XP values are unchanged.
+
 `Test_Waves` shares the existing chest spawner, placement and player health. Chaser content uses `CDP_DevelopmentNormal` with a provisional **25%** chance and one development-chest entry of weight 1. `CDP_DevelopmentElite` is a separate **50%** example for future elite definitions, not an enemy currently spawned by waves. Both currently select the same chest because additional chest content is deferred.
 
 1. Kill chasers without collecting their XP: some deaths should produce a chest near the death position, independently of level-up. A short streak without chests is valid.

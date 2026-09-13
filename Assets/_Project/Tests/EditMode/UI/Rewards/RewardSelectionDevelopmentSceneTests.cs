@@ -25,7 +25,7 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
             "Assets/_Project/Prefabs/UI/RewardSelectionUI.prefab";
 
         private const string ChestDefinitionPath =
-            "Assets/_Project/Data/Chests/Dev/CD_DevelopmentChest.asset";
+            "Assets/_Project/Data/Chests/Dev/CD_WeaponChest.asset";
 
         [Test]
         public void TestWaves_WiresChestBootstrapToSceneOwnedSelectionUI()

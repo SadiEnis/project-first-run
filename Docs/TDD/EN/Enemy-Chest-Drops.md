@@ -1,5 +1,7 @@
 # Enemy chest drops
 
+Current content: [Common Category Chests](Common-Chest-Types.md) fills both source tables with Weapon/Ability/Upgrade definitions at equal weights. The original single-development-entry example below is superseded; normal/elite chance values and death processing remain unchanged.
+
 Current selection data: profiles now reference a reusable `ChestDropTable`; the former embedded entries were migrated to separate normal/elite assets in [Chest Tier Foundation](Chest-Tier-Foundation.md). Chance values and death/queue contracts below are unchanged. Rarity is metadata and does not alter the chance roll.
 
 ## Scope and baseline

@@ -1,5 +1,7 @@
 # Level-up chest source
 
+Current content: [Common Category Chests](Common-Chest-Types.md) replaces the table's development-only choice with Weapon/Ability/Upgrade definitions at equal weights and replaces the single starter fixture with three labelled examples. Entitlement, selection retention and placement contracts below are unchanged; the original development-only examples describe the earlier increment.
+
 ## Scope
 
 One world chest is guaranteed per gained run level, matching the GDD. The initial stage connected XP and chest foundations with a single definition. [Chest Tier Foundation](Chest-Tier-Foundation.md) now supplies weighted selection through `ChestDropTable`: draw once at the first eligible processing attempt and retain the selected definition until that entitlement spawns successfully. Test_Waves still selects only the existing development chest and reward pool. Item-level rewards, gold fallback and automatic reward popups remain outside this source.

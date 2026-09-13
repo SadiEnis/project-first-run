@@ -1,5 +1,7 @@
 # Düşman kaynaklı sandık drop'ları
 
+Güncel içerik: [Common Kategori Sandıkları](Common-Chest-Types.md) iki kaynak tablosuna eşit ağırlıklı Weapon/Ability/Upgrade tanımlarını koyar. Aşağıdaki eski tek geliştirme girişi örneği artık geçerli değildir; normal/elit ihtimalleri ve ölüm işleme akışı değişmez.
+
 Güncel seçim verisi: profiller artık ortak `ChestDropTable` yapısına referans verir; eski gömülü girişler [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md) aşamasında ayrı normal/elit asset'lerine taşınmıştır. Aşağıdaki ihtimal değerleri ve ölüm/kuyruk sözleşmeleri değişmez. Nadirlik bir etikettir; ihtimal çekilişini değiştirmez.
 
 ## Kapsam ve başlangıç

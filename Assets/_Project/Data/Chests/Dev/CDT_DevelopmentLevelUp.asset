@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: CDT_DevelopmentLevelUp
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.ChestDropTable
   _entries:
-  - _definition: {fileID: 11400000, guid: 99bc8fffc14c056449d7fd5f9adda24b, type: 2}
+  - _definition: {fileID: 11400000, guid: 1710c972359c443b9d34891f2042100f, type: 2}
+    _weight: 1
+  - _definition: {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}
+    _weight: 1
+  - _definition: {fileID: 11400000, guid: e1dca4d76d9649a6ad60669b9b8ad921, type: 2}
     _weight: 1

@@ -30,8 +30,8 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
             Assert.That(elite, Is.Not.Null.And.Not.EqualTo(normal));
             Assert.That(normal.ChanceBasisPoints, Is.EqualTo(2500));
             Assert.That(elite.ChanceBasisPoints, Is.EqualTo(5000));
-            Assert.That(normal.Validate(), Is.EqualTo(1));
-            Assert.That(elite.Validate(), Is.EqualTo(1));
+            Assert.That(normal.Validate(), Is.EqualTo(3));
+            Assert.That(elite.Validate(), Is.EqualTo(3));
             Assert.That(normal.DropTable, Is.Not.EqualTo(elite.DropTable));
             var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserChestDropTest.asset");
             Assert.That(enemy.ChestDropProfile, Is.EqualTo(normal));
@@ -77,11 +77,11 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
                 Assert.That(serialized.FindProperty("_spawner").objectReferenceValue, Is.EqualTo(spawner));
                 Assert.That(serialized.FindProperty("_placement").objectReferenceValue, Is.EqualTo(placement));
                 ChestDefinition definition = AssetDatabase.LoadAssetAtPath<ChestDefinition>(
-                    "Assets/_Project/Data/Chests/Dev/CD_DevelopmentChest.asset");
+                    "Assets/_Project/Data/Chests/Dev/CD_WeaponChest.asset");
                 var table = AssetDatabase.LoadAssetAtPath<ChestDropTable>(
                     "Assets/_Project/Data/Chests/Dev/CDT_DevelopmentLevelUp.asset");
                 Assert.That(serialized.FindProperty("_dropTable").objectReferenceValue, Is.EqualTo(table));
-                Assert.That(table.Validate(), Is.EqualTo(1));
+                Assert.That(table.Validate(), Is.EqualTo(3));
                 Assert.That(table.Entries[0].Definition, Is.EqualTo(definition));
                 Assert.That(definition.Rarity, Is.EqualTo(ChestRarity.Common));
                 foreach (string suffix in new[] { "Normal", "Elite" })

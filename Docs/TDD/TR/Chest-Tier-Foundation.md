@@ -1,5 +1,7 @@
 # Sandık seviyesi temeli
 
+Aynı branch'te devam: kullanıcı bu branch merge edilmeden [Common Kategori Sandıkları](Common-Chest-Types.md) adımının da tamamlanmasını seçti. Bu adım tek geliştirme girişlerini üç kategori tanımıyla değiştirir ve geçici sunum ekler. Aşağıdaki bölümler önceki temel adımını kaydeder.
+
 ## Başlangıç ve kapsam
 
 Oyuncunun düşman ölümü drop'larını doğrulamasından sonra birleştirilmiş Plastic `/main/dev` **cs:154**, Git `main` **204745f** tabanından başlar. Bu aşama GDD bölüm 15'teki sekiz sandık türünün uygulanmasından önceki temeldir; türlerin tamamlandığı anlamına gelmez.

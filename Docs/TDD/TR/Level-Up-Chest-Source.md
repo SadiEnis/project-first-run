@@ -1,5 +1,7 @@
 # Level atlama kaynaklı sandık
 
+Güncel içerik: [Common Kategori Sandıkları](Common-Chest-Types.md) tablonun tek geliştirme seçimini eşit ağırlıklı Weapon/Ability/Upgrade tanımlarıyla, tek başlangıç düzeneğini üç etiketli örnekle değiştirir. Aşağıdaki hak, seçimin korunması ve konum sözleşmeleri değişmez; tek geliştirme sandığı örnekleri önceki adımı anlatır.
+
 ## Kapsam
 
 GDD'ye uygun olarak kazanılan her run level'ı bir dünya sandığı garanti eder. İlk aşama XP ve sandık temellerini tek tanımla bağlamıştı. [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md) artık `ChestDropTable` üzerinden ağırlıklı seçim sağlar: ilk uygun işleme denemesinde bir kez çekilir, seçilen tanım o hak başarıyla spawn edilene kadar korunur. Test_Waves hâlâ yalnızca mevcut geliştirme sandığını ve ödül havuzunu seçer. Eşya seviyesi ödülleri, altın telafisi ve otomatik ödül popup'ı bu kaynağın dışındadır.

@@ -84,6 +84,8 @@ namespace ProjectFirstRun.Chests
             _state =
                 new ChestState();
 
+            if (TryGetComponent(out ChestView view)) view.ApplyDefinition(_definition);
+
             StartListening();
         }
 
@@ -102,6 +104,7 @@ namespace ProjectFirstRun.Chests
             }
 
             ValidateRuntimeReferences();
+            _definition.Validate();
 
             if (_selectionController.IsOpen)
             {

@@ -1,5 +1,7 @@
 # Chest tier foundation
 
+Same-branch continuation: the owner chose to implement [Common Category Chests](Common-Chest-Types.md) before merging this branch. That increment replaces the single development entries with three category definitions and adds placeholder presentation. The sections below record the preceding foundation increment.
+
 ## Baseline and scope
 
 Starts from integrated Plastic `/main/dev` **cs:154** and Git `main` **204745f**, after the owner validated enemy death drops. This is the foundation before implementing the eight chest types in GDD section 15, not the complete chest-type milestone.

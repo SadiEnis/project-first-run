@@ -1,4 +1,5 @@
 using System;
+using ProjectFirstRun.Chests.Spawning;
 using UnityEngine;
 
 namespace ProjectFirstRun.Enemies.Spawning
@@ -6,12 +7,23 @@ namespace ProjectFirstRun.Enemies.Spawning
     [DisallowMultipleComponent]
     public sealed class EnemySpawner : MonoBehaviour
     {
+        [SerializeField] private EnemyChestDropSource _chestDropSource;
+
         public EnemySpawnResult Spawn(
             in EnemySpawnRequest request)
         {
             // A previously valid request may contain Unity objects
             // that were destroyed after its construction.
             request.Validate();
+
+            EnemyChestDropProfile dropProfile = request.Definition.ChestDropProfile;
+            if (dropProfile != null)
+            {
+                dropProfile.Validate();
+                if (dropProfile.ChanceBasisPoints > 0 && (_chestDropSource == null ||
+                    !request.Prefab.TryGetComponent<EnemyChestDrop>(out _)))
+                    throw new InvalidOperationException("Enabled enemy chest drops require a scene source and prefab drop component.");
+            }
 
             EnemyController spawnedEnemy = null;
 
@@ -32,6 +44,9 @@ namespace ProjectFirstRun.Enemies.Spawning
                         $"Spawned enemy '{spawnedEnemy.name}' requires an " +
                         $"{nameof(EnemyAttackController)} component.");
                 }
+
+                if (_chestDropSource != null && spawnedEnemy.TryGetComponent(out EnemyChestDrop chestDrop))
+                    chestDrop.Initialize(_chestDropSource);
 
                 spawnedEnemy.Initialize(
                     request.Definition,

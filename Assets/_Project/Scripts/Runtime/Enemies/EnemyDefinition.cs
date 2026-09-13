@@ -1,3 +1,4 @@
+using ProjectFirstRun.Chests.Spawning;
 using UnityEngine;
 
 namespace ProjectFirstRun.Enemies
@@ -23,6 +24,10 @@ namespace ProjectFirstRun.Enemies
         private int _experienceReward;
 
         public int ExperienceReward => _experienceReward;
+
+        [Header("Chest drops")]
+        [SerializeField] private EnemyChestDropProfile _chestDropProfile;
+        public EnemyChestDropProfile ChestDropProfile => _chestDropProfile;
 
         [Header("Movement")]
         [SerializeField, Min(0.01f)]

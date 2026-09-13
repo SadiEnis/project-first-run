@@ -28,25 +28,33 @@ namespace ProjectFirstRun.Chests.Spawning
         public bool TryFind(Transform player, GameObject prefab, out Vector3 position, out Quaternion rotation)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
+            return TryFind(player.position, player.forward, prefab, false, out position, out rotation);
+        }
+
+        public bool TryFind(Vector3 origin, Vector3 facing, GameObject prefab, bool includeOrigin,
+            out Vector3 position, out Quaternion rotation)
+        {
+            if (!IsFinite(origin) || !IsFinite(facing))
+                throw new ArgumentException("Chest placement origin and facing must be finite.");
             ValidatePrefab(prefab);
             position = default;
-            Vector3 forward = Vector3.ProjectOnPlane(player.forward, Vector3.up).normalized;
+            Vector3 forward = Vector3.ProjectOnPlane(facing, Vector3.up).normalized;
             if (forward.sqrMagnitude < 0.01f) forward = Vector3.forward;
             rotation = Quaternion.LookRotation(forward);
             BoxCollider box = prefab.GetComponent<BoxCollider>();
             Vector3 half = Vector3.Scale(box.size, prefab.transform.localScale) * 0.5f;
             Vector3 localCenter = Vector3.Scale(box.center, prefab.transform.localScale);
 
-            for (int ring = 0; ring < 3; ring++)
+            for (int ring = includeOrigin ? -1 : 0; ring < 3; ring++)
             {
-                float radius = _firstRingRadius + ring * _ringSpacing;
-                for (int sample = 0; sample < 8; sample++)
+                float radius = ring < 0 ? 0f : _firstRingRadius + ring * _ringSpacing;
+                for (int sample = 0; sample < (ring < 0 ? 1 : 8); sample++)
                 {
                     // Front, front-right, front-left, right, left, then the rear candidates.
                     float angle = sample == 0 ? 0f : ((sample + 1) / 2) * 45f * (sample % 2 == 1 ? 1f : -1f);
-                    Vector3 candidate = player.position + Quaternion.AngleAxis(angle, Vector3.up) * forward * radius;
+                    Vector3 candidate = origin + Quaternion.AngleAxis(angle, Vector3.up) * forward * radius;
                     if (!TryGround(candidate, out RaycastHit ground) ||
-                        Mathf.Abs(ground.point.y - player.position.y) > 1.5f)
+                        Mathf.Abs(ground.point.y - origin.y) > 1.5f)
                         continue;
 
                     Vector3 root = ground.point + Vector3.up * (half.y - localCenter.y + 0.02f);
@@ -54,7 +62,7 @@ namespace ProjectFirstRun.Chests.Spawning
                     if (!HasFootprintSupport(center, half, rotation, ground.point.y)) continue;
                     if (Physics.CheckBox(center, half + new Vector3(0.1f, 0f, 0.1f), rotation,
                             _obstructionLayers, QueryTriggerInteraction.Ignore)) continue;
-                    if (Physics.Linecast(player.position + Vector3.up, center,
+                    if (Physics.Linecast(origin + Vector3.up, center,
                             _obstructionLayers, QueryTriggerInteraction.Ignore)) continue;
 
                     position = root;
@@ -84,5 +92,8 @@ namespace ProjectFirstRun.Chests.Spawning
 
         private static bool IsPositive(float value) =>
             !float.IsNaN(value) && !float.IsInfinity(value) && value > 0f;
+
+        private static bool IsFinite(Vector3 value) =>
+            float.IsFinite(value.x) && float.IsFinite(value.y) && float.IsFinite(value.z);
     }
 }

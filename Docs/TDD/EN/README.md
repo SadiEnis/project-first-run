@@ -17,3 +17,4 @@ Project First Run is the current development codename. The final commercial titl
 11. [Experience and Level Foundation](Experience-Level-Foundation.md)
 12. [Experience Pickups](Experience-Pickups.md)
 13. [Level-Up Chest Source](Level-Up-Chest-Source.md)
+14. [Enemy Chest Drops](Enemy-Chest-Drops.md)

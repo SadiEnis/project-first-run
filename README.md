@@ -56,6 +56,8 @@ Run both suites through Unity's Test Runner window. Common category chest valida
 
 ## Development history
 
+The owner verified all three Common starter chest types in gameplay on **2026-09-14** and approved integrating this milestone. Item-level rewards remain planned; the automated results above record the implementation before that gameplay acceptance.
+
 Development started in Unity Version Control (Plastic SCM). GitHub begins with a source snapshot of the chest-foundation milestone, based on **cs:138**. Earlier work remains in Plastic history; subsequent development will be recorded here as meaningful commits referencing the corresponding Plastic changesets.
 
 See [the version-control workflow](Docs/Development/Version-Control.md) for synchronization, repository scope, and large-asset handling.

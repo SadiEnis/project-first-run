@@ -30,6 +30,8 @@ Item-level rewards, additional item content, mixed Green/Purple content, evoluti
 
 ## Verification
 
+Owner acceptance on 2026-09-14: all three starter chest types behaved as expected in gameplay. The chest foundation/Common acquisition increment is approved for integration. Item-level rewards remain the next stage.
+
 An isolated Unity render preview was visually inspected on 2026-09-14: all three grey placeholders show one readable name label each, without the earlier mirrored duplicate. This was a presentation check, not a Test_Waves gameplay session.
 
 Automated tests cover category validation (including cross-category data), legacy Mixed compatibility, real content/table/scene wiring, opening category-pure offers and claiming once, post-spawn pool corruption, placeholder labels/tint, and starter-fixture batch behavior. Run both full suites before check-in.

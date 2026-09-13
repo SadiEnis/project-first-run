@@ -30,6 +30,8 @@ Eşya seviyesi ödülleri, yeni eşya içerikleri, karma Green/Purple içerikler
 
 ## Doğrulama
 
+2026-09-14 kullanıcı onayı: üç başlangıç sandığı da oynanışta beklendiği gibi çalıştı. Sandık temeli/Common edinme adımının birleştirilmesi onaylandı. Eşya seviyesi ödülleri sonraki aşamadır.
+
 2026-09-14 tarihinde izole Unity render önizlemesi gözle incelendi: üç gri örneğin her birinde tek okunabilir ad etiketi var; önceki ters/çift yazı giderildi. Bu bir sunum kontrolüdür, Test_Waves oynanış denemesi değildir.
 
 Otomatik testler kategori doğrulaması/yanlış kategorili havuz, eski Mixed uyumluluğu, gerçek içerik/tablo/sahne bağlantıları, doğru kategorili teklif ve tek seçim, spawn sonrası havuz bozulması, geçici etiket/renk ve başlangıç grubunun davranışını kapsar. Check-in öncesi iki test paketi tam çalıştırılır.

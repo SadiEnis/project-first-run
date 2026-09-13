@@ -18,3 +18,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 12. [XP Düşürme ve Toplama](Experience-Pickups.md)
 13. [Level Atlama Kaynaklı Sandık](Level-Up-Chest-Source.md)
 14. [Düşman Kaynaklı Sandık Drop'ları](Enemy-Chest-Drops.md)
+15. [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md)

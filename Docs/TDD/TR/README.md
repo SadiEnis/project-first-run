@@ -20,3 +20,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 14. [Düşman Kaynaklı Sandık Drop'ları](Enemy-Chest-Drops.md)
 15. [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md)
 16. [Common Kategori Sandıkları](Common-Chest-Types.md)
+17. [Eşya Seviyesi Temeli](Item-Level-Foundation.md)

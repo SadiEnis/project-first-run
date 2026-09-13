@@ -19,3 +19,4 @@ Project First Run is the current development codename. The final commercial titl
 13. [Level-Up Chest Source](Level-Up-Chest-Source.md)
 14. [Enemy Chest Drops](Enemy-Chest-Drops.md)
 15. [Chest Tier Foundation](Chest-Tier-Foundation.md)
+16. [Common Category Chests](Common-Chest-Types.md)

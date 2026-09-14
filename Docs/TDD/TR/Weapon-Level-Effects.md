@@ -1,5 +1,9 @@
 # Silah seviyesi etkileri
 
+## Doğrulama — 2026-09-14
+
+İzole Unity 6000.3.9f1 projesinde 666 EditMode ve 340 PlayMode testi geçti; bu adım 11 yeni EditMode ve sekiz yeni PlayMode testi içerir. Aktif/pasif silahlar, hasar geliştirmeleri, edinme anındaki kopyalar, hatalı ilerleme, maksimum seviye, tutarsız sahiplik ve mermi/süre korunması kapsanır. Bu otomatik runtime doğrulamasıdır; henüz uygulanmayan sandıktan seviye ödülleri veya UI için manuel kabul değildir.
+
 Veri temeli cs162 / fd6fd4b sonrasında `/main/dev/item-level-foundation` / `codex/item-level-foundation` üzerinde devam eder. Bu adım önce silah etkilerini uygular; yetenek/geliştirme etkileri ve sandıktan seviye artırma seçenekleri aynı branch'te sonraki işlerdir.
 
 ## Sözleşme

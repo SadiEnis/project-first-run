@@ -1,5 +1,7 @@
 # Item level foundation
 
+Continuation: [Weapon Level Effects](Weapon-Level-Effects.md) now connects the state to weapon damage and timing/capacity profiles on this same branch. The sections below describe the preceding state-only increment; ability/upgrade effects and level-up rewards remain next.
+
 ## Baseline and sequence
 
 Starts from integrated Plastic `/main/dev` **cs:160** and Git `main` **80699d2**, after owner acceptance and integration of the three Common chests. Branches: `/main/dev/item-level-foundation` and `codex/item-level-foundation`. Neither starts from the previous feature branch.

@@ -1,5 +1,9 @@
 # Weapon level effects
 
+## Validation — 2026-09-14
+
+The isolated Unity 6000.3.9f1 project passed 666 EditMode and 340 PlayMode tests, including 11 new EditMode and eight new PlayMode cases. Coverage includes active/inactive weapons, damage modifiers, acquisition-time snapshots, malformed progression, maximum level, inconsistent ownership and ammo/timer preservation. This is automated runtime validation, not manual acceptance of chest level-up rewards or UI, which are not implemented yet.
+
 Continuation on `/main/dev/item-level-foundation` / `codex/item-level-foundation` after state foundation cs162 / fd6fd4b. This increment implements weapon effects first; ability/upgrade effects and chest level-up choices remain subsequent work on this branch.
 
 ## Contract

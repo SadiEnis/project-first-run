@@ -1,5 +1,7 @@
 # Eşya seviyesi temeli
 
+Devam adımı: [Silah Seviyesi Etkileri](Weapon-Level-Effects.md), aynı branch'te seviye verisini silah hasarı ve süre/kapasite profillerine bağlar. Aşağıdaki bölümler önceki yalnızca veri adımını anlatır; yetenek/geliştirme etkileri ve seviye ödülleri sonraki işlerdir.
+
 ## Başlangıç ve sıra
 
 Üç Common sandığın kullanıcı onayı ve merge'i sonrasında birleşmiş Plastic `/main/dev` **cs:160**, Git `main` **80699d2** tabanından başlar. Branch'ler `/main/dev/item-level-foundation` ve `codex/item-level-foundation`dır; önceki feature branch taban alınmaz.

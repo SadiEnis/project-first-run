@@ -144,6 +144,32 @@ namespace ProjectFirstRun.Weapons
                 entry);
         }
 
+        public ItemLevelUpResult TryLevelUp(WeaponDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            EnsureReady();
+            ValidateCurrentRuntimeConsistency();
+
+            bool owns = _buildController.Build.TryGetItem(ItemCategory.Weapon, definition.StableId, out var owned);
+            bool hasRuntime = _loadout.Contains(definition);
+            if (owns != hasRuntime)
+                throw new InvalidOperationException("Weapon ownership/runtime mismatch before level-up.");
+            if (!owns) return ItemLevelUpResult.NotOwned;
+
+            var entry = _loadout.GetEntry(definition);
+            if (entry == null || entry.Level != owned.Level || entry.MaximumLevel != owned.MaximumLevel)
+                throw new InvalidOperationException("Weapon level-up requires matching definition, level and maximum.");
+            if (owned.IsAtMaximumLevel) return ItemLevelUpResult.MaximumLevelReached;
+
+            // No callbacks between preflight and commit. Both mutations are guaranteed by this preflight.
+            entry.ValidateNextLevel();
+            var result = _buildController.Build.TryLevelUp(ItemCategory.Weapon, definition.StableId);
+            if (result != ItemLevelUpResult.LevelIncreased)
+                throw new InvalidOperationException("Weapon level changed after preflight.");
+            entry.AdvanceLevel();
+            return result;
+        }
+
         private void ValidateCurrentRuntimeConsistency()
         {
             if (_loadout.HasActiveWeapon)

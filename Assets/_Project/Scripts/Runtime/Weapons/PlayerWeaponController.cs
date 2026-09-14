@@ -296,7 +296,7 @@ namespace ProjectFirstRun.Weapons
             float damage =
                 _statsController.Evaluate(
                     PlayerStatType.WeaponDamage,
-                    _activeDefinition.BaseDamage);
+                    _activeEntry.BaseDamage);
 
             if (float.IsNaN(damage) ||
                 float.IsInfinity(damage) ||

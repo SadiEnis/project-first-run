@@ -124,7 +124,10 @@ namespace ProjectFirstRun.Chests
 
             RewardClaimSession session =
                 new RewardClaimSession(
-                    offer);
+                    offer,
+                    Math.Min(
+                        _definition.MaxSelections,
+                        offer.ChoiceCount));
 
             _state.BeginSelection();
             _activeSession = session;

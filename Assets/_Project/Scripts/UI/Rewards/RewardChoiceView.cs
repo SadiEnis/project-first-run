@@ -95,8 +95,20 @@ namespace ProjectFirstRun.UI.Rewards
             _categoryText.text = definition.Category.ToString();
             _effectText.text = definition.GameplayEffect;
             _stateText.text = string.IsNullOrWhiteSpace(stateLabel) ? "NEW" : stateLabel;
+            _button.interactable = true;
 
             gameObject.SetActive(true);
+        }
+
+        public void SetInteractable(bool interactable)
+        {
+            if (_button == null)
+            {
+                throw new InvalidOperationException(
+                    "Reward choice view button is not configured.");
+            }
+
+            _button.interactable = interactable;
         }
 
         public void Clear()
@@ -121,6 +133,11 @@ namespace ProjectFirstRun.UI.Rewards
             if (_stateText != null)
             {
                 _stateText.text = string.Empty;
+            }
+
+            if (_button != null)
+            {
+                _button.interactable = false;
             }
 
             gameObject.SetActive(false);

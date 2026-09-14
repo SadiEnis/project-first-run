@@ -26,7 +26,7 @@ Test_Waves'te `FireballDevelopmentBootstrap.Grant Starting Ability` false yapıl
 
 Sandık hâlâ E/gamepad South ile açılır. Boş teklif sandığı kullanılabilir bırakır ve modal açmaz; altın telafisi veya başka kategoriye yeniden çekiliş yoktur. Üç örnek edinildikten sonra sonraki birçok sandıkta uygun ödül kalmaması normaldir; drop kaynağı hatası değildir.
 
-Eşya seviyesi ödülleri, yeni eşya içerikleri, karma Green/Purple içerikleri, evrim, Legendary/Boss çoklu seçimi, Golden Chest ve altın telafisi ayrı adımlardır. Enum veya gri renk bunları eklemiş sayılmaz.
+Eşya seviyesi ödülleri, yeni eşya içerikleri, evolution, Golden Chest ve altın telafisi ayrı adımlardır. Karma Green/Purple içerikleri ile Legendary/Boss çoklu seçimi [Gelişmiş Sandık Türleri](Advanced-Chest-Types.md) içinde tanımlanır. Enum veya gri renk bu davranışları tek başına eklemiş sayılmaz.
 
 ## Doğrulama
 

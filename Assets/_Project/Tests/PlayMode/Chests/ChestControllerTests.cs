@@ -44,6 +44,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
         private RewardItemPool _rewardItemPool;
         private ChestDefinition _chestDefinition;
         private UpgradeDefinition _rewardDefinition;
+        private UpgradeDefinition _secondRewardDefinition;
         private TestRewardClaimHandler _claimHandler;
 
         [UnitySetUp]
@@ -105,6 +106,12 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
             {
                 Object.DestroyImmediate(
                     _rewardDefinition);
+            }
+
+            if (_secondRewardDefinition != null)
+            {
+                Object.DestroyImmediate(
+                    _secondRewardDefinition);
             }
 
             Time.timeScale = 1f;
@@ -220,6 +227,74 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
             Assert.That(
                 _chestController.ActiveSession,
                 Is.SameAs(activeSession));
+        }
+
+        [Test]
+        public void MultiClaimChest_RemainsSelectingUntilFinalClaim()
+        {
+            _secondRewardDefinition =
+                ScriptableObject.CreateInstance<UpgradeDefinition>();
+
+            SetPrivateField(
+                _secondRewardDefinition,
+                typeof(ItemDefinition),
+                "_stableId",
+                "upgrade.chest-controller-test-second");
+
+            SetPrivateField(
+                _secondRewardDefinition,
+                typeof(ItemDefinition),
+                "_displayName",
+                "Second Chest Controller Test Upgrade");
+
+            SetPrivateField(
+                _rewardItemPool,
+                typeof(RewardItemPool),
+                "_items",
+                new List<ItemDefinition>
+                {
+                    _rewardDefinition,
+                    _secondRewardDefinition
+                });
+
+            SetPrivateField(
+                _chestDefinition,
+                typeof(ChestDefinition),
+                "_requestedChoiceCount",
+                2);
+
+            SetPrivateField(
+                _chestDefinition,
+                typeof(ChestDefinition),
+                "_maxSelections",
+                2);
+
+            _claimHandler.AddSupportedDefinition(
+                _secondRewardDefinition);
+
+            Assert.That(
+                _chestController.TryOpen(),
+                Is.EqualTo(ChestOpenResult.SelectionOpened));
+
+            Assert.That(
+                _chestController.ActiveSession.SelectionsRemaining,
+                Is.EqualTo(2));
+
+            Assert.That(
+                _selectionController.Select(_rewardDefinition),
+                Is.EqualTo(RewardClaimResult.Claimed));
+
+            Assert.That(_chestController.Status, Is.EqualTo(ChestStatus.Selecting));
+            Assert.That(_selectionController.IsOpen, Is.True);
+            Assert.That(_chestController.ActiveSession.SelectionsRemaining, Is.EqualTo(1));
+
+            Assert.That(
+                _selectionController.Select(_secondRewardDefinition),
+                Is.EqualTo(RewardClaimResult.Claimed));
+
+            Assert.That(_chestController.Status, Is.EqualTo(ChestStatus.Opened));
+            Assert.That(_selectionController.IsOpen, Is.False);
+            Assert.That(_chestController.ActiveSession, Is.Null);
         }
 
         [Test]
@@ -485,6 +560,10 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
                 CreateChoiceView(
                     modalRoot.transform);
 
+            RewardChoiceView secondChoiceView =
+                CreateChoiceView(
+                    modalRoot.transform);
+
             Text header =
                 CreateText(
                     modalRoot.transform,
@@ -509,7 +588,8 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
                 feedback,
                 new[]
                 {
-                    _choiceView
+                    _choiceView,
+                    secondChoiceView
                 });
 
             _selectionController.Initialize(
@@ -709,6 +789,9 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
         {
             private readonly ItemDefinition
                 _supportedDefinition;
+            private readonly List<ItemDefinition>
+                _additionalSupportedDefinitions =
+                new List<ItemDefinition>();
 
             public RewardClaimResult Result
             {
@@ -726,9 +809,13 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests
             public bool Supports(
                 ItemDefinition definition)
             {
-                return ReferenceEquals(
-                    definition,
-                    _supportedDefinition);
+                return ReferenceEquals(definition, _supportedDefinition) ||
+                       _additionalSupportedDefinitions.Contains(definition);
+            }
+
+            public void AddSupportedDefinition(ItemDefinition definition)
+            {
+                _additionalSupportedDefinitions.Add(definition);
             }
 
             public RewardClaimResult TryClaim(

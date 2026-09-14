@@ -31,6 +31,10 @@ namespace ProjectFirstRun.Chests
         [Min(1)]
         private int _requestedChoiceCount = 3;
 
+        [SerializeField]
+        [Min(1)]
+        private int _maxSelections = 1;
+
         [Header("World")]
         [SerializeField]
         private GameObject _worldPrefab;
@@ -43,6 +47,9 @@ namespace ProjectFirstRun.Chests
 
         public int RequestedChoiceCount =>
             _requestedChoiceCount;
+
+        public int MaxSelections =>
+            _maxSelections;
 
         public GameObject WorldPrefab =>
             _worldPrefab;
@@ -84,6 +91,20 @@ namespace ProjectFirstRun.Chests
                 throw new InvalidOperationException(
                     $"{nameof(ChestDefinition)} '{name}' " +
                     "requires a positive choice count.");
+            }
+
+            if (_maxSelections <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(ChestDefinition)} '{name}' " +
+                    "requires a positive maximum selection count.");
+            }
+
+            if (_maxSelections > _requestedChoiceCount)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(ChestDefinition)} '{name}' " +
+                    "cannot allow more selections than requested choices.");
             }
 
             if (_worldPrefab == null)

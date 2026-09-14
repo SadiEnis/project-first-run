@@ -138,7 +138,8 @@ namespace ProjectFirstRun.UI.Rewards
 
                 _view.Show(
                     session.Offer,
-                    _claimController.GetChoiceState);
+                    _claimController.GetChoiceState,
+                    session.SelectionsRemaining);
             }
             catch
             {
@@ -176,8 +177,17 @@ namespace ProjectFirstRun.UI.Rewards
             {
                 case RewardClaimResult.Claimed:
                 case RewardClaimResult.AlreadyClaimed:
-                    CloseWithResult(
-                        result);
+                    if (_activeSession.IsClaimed)
+                    {
+                        CloseWithResult(
+                            result);
+                    }
+                    else
+                    {
+                        _view.MarkSelectionCommitted(
+                            definition,
+                            _activeSession.SelectionsRemaining);
+                    }
 
                     return result;
 

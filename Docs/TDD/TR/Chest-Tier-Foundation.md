@@ -26,11 +26,11 @@ Mevcut tracker sandık haklarının sayısını yönetmeye devam eder. Kaynak ya
 - Takip edilen profiller, sahne ve test bağlantıları birlikte güncellenir. Eski gömülü alanı kullanan takip dışı özel profiller için elle tablo oluşturulup atanmalıdır; eksik yapılandırmayı gizleyen çalışma zamanı telafisi yoktur.
 - Renkli yeni prefablar, ödül havuzları, düşme sıklığı dengesi ve rank bazlı düşman davranışı eklenmez. Mevcut sandıkların görünümü ve davranışı bu aşamada aynıdır.
 
-## Sonraki sandık türü aşaması
+## Sonraki sandık çalışmaları
 
-Önce üç Common kategori sandığı (Weapon, Ability, Upgrade), ardından gerekli ödül altyapıları hazır oldukça karma Green/Purple ve Legendary/Boss politikaları uygulanır. Nadirlik, kategori filtresi, sunulan seçenek sayısı, yapılabilen seçim sayısı, evrim politikası ve sunum ayrı tutulur. GDD'deki “Purple Chest” çalışma adı şu anda Rare ve planlanan mavi görsel anlamındadır; Legendary mordur. Renk veya addan kural çıkarılmaz.
+Common kategori sandıkları ile karma Green/Purple/Legendary/Boss politikaları artık [Gelişmiş Sandık Türleri](Advanced-Chest-Types.md) adımında uygulanmıştır. Nadirlik, kategori filtresi, sunulan seçenek sayısı, yapılabilen seçim sayısı, evrim politikası ve sunum ayrı tutulur. GDD'deki “Purple Chest” çalışma adı şu anda Rare ve planlanan mavi görsel anlamındadır; Legendary mordur. Renk veya addan kural çıkarılmaz.
 
-Eşya seviyesi ödülleri, evrim, iki seçimli oturumlar, altın telafisi ve Golden Chest henüz uygulanmamıştır. Nadirlik etiketinin eklenmesi bu davranışların çalıştığı anlamına gelmez.
+Kalan sandık çalışması kaynak dengelemesi ve ilerideki oynanış bağlantılarıdır. Evrim seçenekleri, altın telafisi ve Golden Chest bilerek sonraya bırakılmıştır. Nadirlik etiketi veya çoklu seçim desteği bu davranışların da uygulandığı anlamına gelmez.
 
 ## Doğrulama
 

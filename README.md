@@ -22,6 +22,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Enemy death chest drops: per-definition probability profiles, independent weighted chest selection, and queued placement near the death position without rerolls or duplicate death rewards.
 - Chest tier foundation: validated rarity metadata and shared weighted selection tables, independently configured for level-up, normal and elite sources.
 - Common Weapon, Ability and Upgrade chests: category-validated acquisition pools, up to three eligible choices, one claim, grey labelled placeholder presentation, and `NEW` / `LEVEL UP` choices.
+- Advanced chest types: Green/Uncommon, Purple-working-name/Rare, Legendary and Boss definitions with mixed reward pools, explicit offer/claim counts, and multi-claim sessions for Legendary/Boss chests. Evolution and gold policies remain separate.
 - Run XP and level rules: configurable increasing costs, carry-over XP, multi-level gains, and notifications.
 - Enemy death XP drops, configurable range-based attraction, one-time collection, death/pause gating, and a development XP/level indicator in Test_Waves.
 
@@ -31,7 +32,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 2. Open it with **Unity 6000.3.9f1**, as recorded in `ProjectSettings/ProjectVersion.txt`.
 3. Let Unity restore the packages and import the assets.
 4. Open `Assets/_Project/Scenes/Tests/Test_Waves.unity` and enter Play mode.
-5. The test fixture starts with three labelled chests: Weapon in front, Ability to its left, Upgrade to its right. Look at one and press **E** (gamepad South), then claim its reward to resume. Current samples are Development Secondary, Fireball and Development Damage Boost; neither Fireball nor the upgrade is granted automatically in this scene. Use **Q** (gamepad North) to switch weapons after acquiring the secondary.
+5. The test fixture starts with three Common labelled chests (Weapon in front, Ability to its left, Upgrade to its right) and four advanced mixed chests for policy testing. Look at one and press **E** (gamepad South), then claim its reward to resume. Green/Purple close after one claim; Legendary/Boss require two claims when enough eligible choices exist. Current samples are Development Secondary, Fireball and Development Damage Boost; neither Fireball nor the upgrade is granted automatically in this scene. Use **Q** (gamepad North) to switch weapons after acquiring the secondary.
 6. Kill chasers and approach their cyan XP orbs. Within a 3-metre radius, orbs fly toward you and grant 25 XP on arrival/contact; four orbs reach level 2. Follow level and XP at the bottom center of the screen.
 7. Each level-up spawns an additional chest on nearby free ground. Look at it and press E to select a reward; level-up itself does not open the UI. The small development pool can offer either new items or level-up choices.
 8. Chasers also have a provisional 25% chance to drop a chest near their death position, independently of XP collection. For a deterministic test, set `CDP_DevelopmentNormal`'s Chance Basis Points to 10000 before Play, then restore 2500. Level-up, normal and elite tables currently select the three Common categories with equal weights; the elite profile still has no spawned elite enemy. After acquiring a sample item, later chests can offer its next level until it reaches maximum.
@@ -58,6 +59,7 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Fireball level effects and runtime snapshot](Docs/TDD/EN/Fireball-Level-Effects.md).
 - [Reward level-up choices and claim routing](Docs/TDD/EN/Reward-Level-Up-Choices.md).
 - [Evolution foundation and same-slot replacement](Docs/TDD/EN/Evolution-Foundation.md).
+- [Advanced chest types and multi-claim policies](Docs/TDD/EN/Advanced-Chest-Types.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.
@@ -67,6 +69,8 @@ Content configuration is separated from mutable runtime state. Pure C# objects o
 Run both suites through Unity's Test Runner window. Fireball level effects validation on **2026-09-14** passed **666 EditMode** and **351 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Three new PlayMode cases cover cooldown progression, runtime snapshots, alias/duplicate boundaries and single-entry ownership. These are recorded automated results, not a live CI badge; manual gameplay acceptance of the `NEW` / `LEVEL UP` reward flow was also completed on this date. The preceding upgrade level effects passed 666 EditMode / 348 PlayMode; weapon level effects passed 666 EditMode / 340 PlayMode; item level state foundation passed 655 EditMode / 332 PlayMode.
 
 The preceding Common chest stage passed 626 EditMode / 332 PlayMode tests and its three starter chest types were subsequently accepted in gameplay by the owner. Earlier XP, pickup attraction, level-up chest and enemy death drop stages were also manually validated.
+
+Advanced chest types validation on **2026-09-14** passed **681 EditMode / 355 PlayMode** tests in the isolated Unity 6000.3.9f1 project. This includes mixed Uncommon/Rare/Legendary/Boss definitions, the six-choice UI capacity, multi-claim sessions, duplicate-choice boundaries, and the Test_Waves showcase wiring.
 
 ## Development history
 

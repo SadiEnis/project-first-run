@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db5d4f2158445a3959d6a6199d7a21c, type: 3}
+  m_Name: CDT_DevelopmentAdvanced
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.ChestDropTable
+  _entries:
+  - _definition: {fileID: 11400000, guid: 2d8f8f96d6f74891886c9a16f264c3d1, type: 2}
+    _weight: 1
+  - _definition: {fileID: 11400000, guid: 45b5403b7a8f4f16a12b340ee0578d1a, type: 2}
+    _weight: 1
+  - _definition: {fileID: 11400000, guid: c2cb2f9e84784a7c9c84e4f8a1fcb3a7, type: 2}
+    _weight: 1
+  - _definition: {fileID: 11400000, guid: 7a3e6af8f7cb447aa3b173d1d1d6e9db, type: 2}
+    _weight: 1

@@ -26,7 +26,7 @@ Test_Waves sets `FireballDevelopmentBootstrap.Grant Starting Ability` to false: 
 
 Opening is still explicit with E/gamepad South. Empty offers leave the chest available with no modal; there is no gold fallback or reroll into a different category. After the three sample acquisitions, many subsequent chests legitimately have no eligible rewards. Do not interpret this as a drop-source bug.
 
-Item-level rewards, additional item content, mixed Green/Purple content, evolution, Legendary/Boss multi-claim rules, Golden Chest and gold fallback remain separate increments. Neither enum nor grey tint adds these behaviors.
+Item-level rewards, additional item content, evolution, Golden Chest and gold fallback remain separate increments. Mixed Green/Purple content and Legendary/Boss multi-claim rules are defined in [Advanced Chest Types](Advanced-Chest-Types.md). Neither enum nor grey tint adds those behaviors by itself.
 
 ## Verification
 

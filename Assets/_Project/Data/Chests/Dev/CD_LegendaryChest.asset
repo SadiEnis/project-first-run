@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d76d7ee174c46f4a99da8344ffcb906, type: 3}
+  m_Name: CD_LegendaryChest
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.ChestDefinition
+  _stableId: chest.advanced.legendary
+  _displayName: Legendary Chest
+  _rewardCategory: 0
+  _rarity: 3
+  _rewardItemPool: {fileID: 11400000, guid: 8f5188b93966c8044a4a3d6063f31784, type: 2}
+  _requestedChoiceCount: 5
+  _maxSelections: 2
+  _worldPrefab: {fileID: 6386746686322530341, guid: c34adc04c31a4694d990f2a84bd49ef2, type: 3}

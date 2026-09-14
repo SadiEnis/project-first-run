@@ -1,6 +1,6 @@
 # Eşya seviyesi temeli
 
-Devam adımı: [Silah Seviyesi Etkileri](Weapon-Level-Effects.md), aynı branch'te seviye verisini silah hasarı ve süre/kapasite profillerine bağlar. Aşağıdaki bölümler önceki yalnızca veri adımını anlatır; yetenek/geliştirme etkileri ve seviye ödülleri sonraki işlerdir.
+Devam adımı: [Silah Seviyesi Etkileri](Weapon-Level-Effects.md), [Geliştirme Seviyesi Etkileri](Upgrade-Level-Effects.md), [Fireball Seviye Etkileri](Fireball-Level-Effects.md) ve [Ödül Seviye Artırma Seçenekleri](Reward-Level-Up-Choices.md) aynı branch'te runtime etkilerini ve sandık claim'lerini bağlar.
 
 ## Başlangıç ve sıra
 
@@ -12,7 +12,7 @@ Bağımlılık sırası:
 2. Mevcut silah/yetenek/geliştirme örneklerinde seviyeye özel gerçek etkiler; mermi, şarjör doldurma/bekleme süresi ve slot sahipliğinin korunması.
 3. Açık edinme/seviye artırma ödülleri, atomik claim, mevcut/sonraki seviye gösterimi ve maksimum seviye uygunluğu.
 
-Bu adım yalnızca 1'i uygular. Sandıklar hâlâ yeni eşya verir; seviye artırmaz. Sadece veri temeli bitince eşya seviyesi ödüllerinin tamamlandığı söylenmez veya bütün özellik bitmiş gibi merge yapılmaz.
+Üç bağımlılık adımı da bu branch'te uygulanmıştır: run'a ait durum, runtime etkileri ve açık ödül seviye artırma seçenekleri. Sandık tier/evolution ödülleri ayrı sistemler olarak kalır.
 
 ## Veri sözleşmesi
 

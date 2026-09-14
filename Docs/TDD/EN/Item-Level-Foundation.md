@@ -1,6 +1,6 @@
 # Item level foundation
 
-Continuation: [Weapon Level Effects](Weapon-Level-Effects.md) now connects the state to weapon damage and timing/capacity profiles on this same branch. The sections below describe the preceding state-only increment; ability/upgrade effects and level-up rewards remain next.
+Continuation: [Weapon Level Effects](Weapon-Level-Effects.md), [Upgrade Level Effects](Upgrade-Level-Effects.md), [Fireball Level Effects](Fireball-Level-Effects.md) and [Reward Level-Up Choices](Reward-Level-Up-Choices.md) now connect the state to runtime effects and chest claims on this same branch.
 
 ## Baseline and sequence
 
@@ -12,7 +12,7 @@ Implement in dependency order:
 2. Level-specific runtime effects and content for the implemented weapon/ability/upgrade samples, preserving ammunition, reload/cooldown and slot ownership.
 3. Explicit acquire/level-up reward choices and transactional claims, current/next-level UI, and max-level eligibility.
 
-Only step 1 is implemented in this increment. Existing chests still offer acquisitions, not level-ups. Do not merge or describe the entire item-level reward feature as complete after the state foundation alone.
+All three dependency steps are implemented on this branch: run-owned state, runtime effects and explicit reward level-up choices. Chest tier/evolution rewards remain separate systems.
 
 ## State contract
 

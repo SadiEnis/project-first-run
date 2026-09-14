@@ -15,6 +15,31 @@ namespace ProjectFirstRun.Enemies
         [SerializeField]
         private string _displayName;
 
+        [SerializeField] private EnemyRank _rank = EnemyRank.Normal;
+        [SerializeField] private EnemyBehavior _behavior = EnemyBehavior.Chaser;
+        public EnemyRank Rank => _rank;
+        public EnemyBehavior Behavior => _behavior;
+
+        [Header("Charger")]
+        [SerializeField, Min(0.01f)] private float _chargeActivationRange = 7f;
+        [SerializeField, Min(0.01f)] private float _chargeWindup = 0.8f;
+        [SerializeField, Min(0.01f)] private float _chargeSpeed = 10f;
+        [SerializeField, Min(0.01f)] private float _chargeDistance = 8f;
+        [SerializeField, Min(0.01f)] private float _chargeHitRadius = 0.7f;
+        [SerializeField, Min(0.01f)] private float _chargeRecovery = 1.2f;
+
+        public EnemyChargeConfig CreateChargeConfig() => new EnemyChargeConfig(
+            _chargeActivationRange, _chargeWindup, _chargeSpeed,
+            _chargeDistance, _chargeHitRadius, _chargeRecovery);
+
+        public void ValidateBehavior()
+        {
+            if (!System.Enum.IsDefined(typeof(EnemyRank), _rank) ||
+                !System.Enum.IsDefined(typeof(EnemyBehavior), _behavior))
+                throw new System.InvalidOperationException("Unknown enemy rank or behavior.");
+            if (_behavior == EnemyBehavior.Charger) CreateChargeConfig();
+        }
+
         [Header("Health")]
         [SerializeField, Min(0.01f)]
         private float _maximumHealth = 100f;

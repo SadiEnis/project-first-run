@@ -15,6 +15,9 @@ namespace ProjectFirstRun.Enemies
         private UnityEngine.Object _targetDamageableObject;
 
         private EnemyAttackState _attackState;
+        private EnemyChargeState _chargeState;
+        private EnemyMotor _motor;
+        public EnemyChargeState ChargeState => _chargeState;
 
         private bool _isInitialized;
         private bool _attackEnabled;
@@ -61,11 +64,24 @@ namespace ProjectFirstRun.Enemies
                 _enemyController.Died -= HandleEnemyDied;
             }
 
-            _attackEnabled = false;
+            Stop();
         }
 
         private void Update()
         {
+            Tick(Time.deltaTime);
+        }
+
+        public void Tick(float deltaTime)
+        {
+            if (!float.IsFinite(deltaTime) || deltaTime < 0)
+                throw new ArgumentOutOfRangeException(nameof(deltaTime));
+            if (_chargeState != null)
+            {
+                TickCharge(deltaTime);
+                return;
+            }
+            if (deltaTime == 0f || _enemyController.IsDead || !_enemyController.isActiveAndEnabled) return;
             if (!_isInitialized ||
                 !_attackEnabled ||
                 _target == null ||
@@ -75,7 +91,7 @@ namespace ProjectFirstRun.Enemies
                 return;
             }
 
-            _attackState.Tick(Time.deltaTime);
+            _attackState.Tick(deltaTime);
 
             if (!_attackState.IsReady)
             {
@@ -143,6 +159,11 @@ namespace ProjectFirstRun.Enemies
             EnemyAttackConfig config =
                 definition.CreateAttackConfig();
 
+            definition.ValidateBehavior();
+            _chargeState = definition.Behavior == EnemyBehavior.Charger
+                ? new EnemyChargeState(definition.CreateChargeConfig()) : null;
+            _motor = GetComponent<EnemyMotor>();
+
             _target = target;
             _targetDamageable = targetDamageable;
             _targetDamageableObject = damageableObject;
@@ -170,6 +191,58 @@ namespace ProjectFirstRun.Enemies
         public void Stop()
         {
             _attackEnabled = false;
+            if (_chargeState != null)
+            {
+                _chargeState.Cancel();
+                if (_motor != null) _motor.Stop();
+            }
+        }
+
+        private void TickCharge(float deltaTime)
+        {
+            if (!_isInitialized || !_attackEnabled) return;
+            if (_enemyController.IsDead || !_enemyController.isActiveAndEnabled ||
+                _target == null || !_target.gameObject.activeInHierarchy || _targetDamageableObject == null ||
+                (_targetDamageableObject is HealthComponent health && health.IsDead))
+            {
+                _chargeState.Cancel();
+                _motor.Stop();
+                return;
+            }
+            if (deltaTime == 0) return;
+
+            switch (_chargeState.Phase)
+            {
+                case EnemyChargePhase.Pursuing:
+                    if (_motor.CanNavigate && _chargeState.TryBegin(_target.position - transform.position))
+                    {
+                        _motor.Stop();
+                        transform.rotation = Quaternion.LookRotation(_chargeState.Direction);
+                    }
+                    else if (!_motor.IsMovementEnabled) _motor.Resume();
+                    break;
+                case EnemyChargePhase.Windup:
+                    _motor.Stop();
+                    _chargeState.Tick(deltaTime);
+                    break;
+                case EnemyChargePhase.Charging:
+                    Vector3 start = transform.position;
+                    float moved = _motor.MoveCharge(_chargeState.Direction, _chargeState.StepDistance(deltaTime), out bool blocked);
+                    Vector3 end = transform.position;
+                    // Sweep against the target position so a long frame cannot skip a hit.
+                    Vector3 segment = end - start;
+                    float t = segment.sqrMagnitude > 0.000001f
+                        ? Mathf.Clamp01(Vector3.Dot(_target.position - start, segment) / segment.sqrMagnitude) : 0;
+                    if (Vector3.Distance(_target.position, start + segment * t) <= _chargeState.Config.HitRadius &&
+                        _chargeState.TryCommitHit()) PerformAttack(_chargeState.Direction);
+                    _chargeState.Advance(moved, blocked);
+                    break;
+                case EnemyChargePhase.Recovery:
+                    _motor.Stop();
+                    _chargeState.Tick(deltaTime);
+                    if (_chargeState.Phase == EnemyChargePhase.Pursuing) _motor.Resume();
+                    break;
+            }
         }
 
         private void PerformAttack(

@@ -16,6 +16,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Reward level-up choices: owned non-max items can appear as `LEVEL UP` choices; maxed items stay filtered, and claiming upgrades the existing runtime without consuming another slot.
 - Evolution foundation: optional definitions can atomically replace a max-level owned item with an unowned same-category result in the same slot. No real evolution item assets or gameplay replacement behavior are connected yet.
 - Enemy spawning, attacks, death handling, and wave progression.
+- Enemy rank and behavior separation; normal/elite Chargers with direction-locked wind-up, obstacle-limited charge, one-hit sweep, recovery, and a visible warning.
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
 - Level-up chest source: one chest per gained run level, including multi-level gains, queued until nearby supported and unobstructed placement is available.
@@ -35,7 +36,8 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 5. The test fixture starts with three Common labelled chests (Weapon in front, Ability to its left, Upgrade to its right) and four advanced mixed chests for policy testing. Look at one and press **E** (gamepad South), then claim its reward to resume. Green/Purple close after one claim; Legendary/Boss require two claims when enough eligible choices exist. Current samples are Development Secondary, Fireball and Development Damage Boost; neither Fireball nor the upgrade is granted automatically in this scene. Use **Q** (gamepad North) to switch weapons after acquiring the secondary.
 6. Kill chasers and approach their cyan XP orbs. Within a 3-metre radius, orbs fly toward you and grant 25 XP on arrival/contact; four orbs reach level 2. Follow level and XP at the bottom center of the screen.
 7. Each level-up spawns an additional chest on nearby free ground. Look at it and press E to select a reward; level-up itself does not open the UI. The small development pool can offer either new items or level-up choices.
-8. Chasers also have a provisional 25% chance to drop a chest near their death position, independently of XP collection. For a deterministic test, set `CDP_DevelopmentNormal`'s Chance Basis Points to 10000 before Play, then restore 2500. Level-up, normal and elite tables currently select the three Common categories with equal weights; the elite profile still has no spawned elite enemy. After acquiring a sample item, later chests can offer its next level until it reaches maximum.
+8. Normal enemies have a provisional 25% chest-drop chance; Elite Charger uses the existing 50% elite profile. Level-up, normal and elite tables currently select the three Common categories with equal weights. After acquiring a sample item, later chests can offer its next level until it reaches maximum.
+9. Wave 2 mixes one Chaser, one orange Charger and one purple Elite Charger. A yellow ground line warns of the locked charge direction; move sideways during the warning. Charger grants 25 XP and Elite Charger 50 XP. Attack and loot values are provisional.
 
 The chest bootstrap is an Editor-only development fixture. This scene demonstrates the gameplay foundations; it is not a packaged game or a complete run progression flow.
 
@@ -60,11 +62,14 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Reward level-up choices and claim routing](Docs/TDD/EN/Reward-Level-Up-Choices.md).
 - [Evolution foundation and same-slot replacement](Docs/TDD/EN/Evolution-Foundation.md).
 - [Advanced chest types and multi-claim policies](Docs/TDD/EN/Advanced-Chest-Types.md).
+- [Enemy variety, Charger and elite foundation](Docs/TDD/EN/Enemy-Variety-Foundation.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.
 
 ## Verification
+
+Charger foundation validation on **2026-09-14** passed **695 EditMode / 371 PlayMode** tests in the isolated Unity 6000.3.9f1 project, including direction locking, swept one-hit damage, obstacle/NavMesh limits, cancellation, warning presentation and normal/elite death rewards. Manual gameplay acceptance and balance tuning remain pending.
 
 Run both suites through Unity's Test Runner window. Fireball level effects validation on **2026-09-14** passed **666 EditMode** and **351 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Three new PlayMode cases cover cooldown progression, runtime snapshots, alias/duplicate boundaries and single-entry ownership. These are recorded automated results, not a live CI badge; manual gameplay acceptance of the `NEW` / `LEVEL UP` reward flow was also completed on this date. The preceding upgrade level effects passed 666 EditMode / 348 PlayMode; weapon level effects passed 666 EditMode / 340 PlayMode; item level state foundation passed 655 EditMode / 332 PlayMode.
 

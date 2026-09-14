@@ -48,6 +48,8 @@ namespace ProjectFirstRun.Enemies.Spawning
                     nameof(Definition));
             }
 
+            Definition.ValidateBehavior();
+
             if (Target == null)
             {
                 throw new ArgumentNullException(

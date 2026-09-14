@@ -96,6 +96,7 @@ namespace ProjectFirstRun.Enemies
                     nameof(registry));
             }
 
+            definition.ValidateBehavior();
             EnsureReferences();
             Unregister();
 

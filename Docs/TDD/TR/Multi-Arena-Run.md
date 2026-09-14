@@ -1,5 +1,7 @@
 # Çoklu arena run temeli
 
+> 15 Eylül 2026 tasarım güncellemesi: Bu belge mevcut wave şartlı prototipi kaydeder. Gelecek ilerleme kuralları için [harita/bölge/karşılaşma planı](Map-Region-Encounter-Plan.md) geçerlidir. Yeni tasarım henüz uygulanmadı; aşağıdaki doğrulamalar mevcut prototipe aittir.
+
 ## Genel geçiş adımı (uygulama sözleşmesi)
 
 `ArenaTransitionTrigger` mekanın görselinden bağımsızdır. Herhangi bir trigger collider şekli çıkışı temsil edebilir. Bir `ArenaTransitionController` ve sıfır tabanlı kaynak arena index'i alır. Yalnızca açıkça atanmış oyuncunun collider'ları geçiş isteyebilir. Çıkış sadece kendi arenası tamamlanıp run geçiş beklerken kullanılabilir. Final Victory, Defeat, pause, devre dışı bileşenler ve tekrarlanan girişler run'ı ilerletemez. Kilitli çıkışın içinde bekleyen oyuncu, kilit açıldıktan sonra çıkıp tekrar girmelidir.

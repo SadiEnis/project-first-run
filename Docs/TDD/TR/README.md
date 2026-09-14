@@ -31,3 +31,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 25. [Ranger / Menzilli Düşman Temeli](Ranged-Enemy-Foundation.md)
 26. [Arena ve Run Akışı Temeli](Arena-Run-Flow.md)
 27. [Çoklu Arena Run Temeli](Multi-Arena-Run.md)
+28. [Harita, Bölge ve Karşılaşma İlerleme Planı](Map-Region-Encounter-Plan.md)

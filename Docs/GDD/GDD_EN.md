@@ -123,6 +123,8 @@ The desired emotional progression is:
 
 ## 8. Core Gameplay Loop
 
+Updated progression (15 September 2026): Start run → enter map → explore and optionally fight/build → reach an eligible exit → enter the next map → complete the final objective. Combat, XP and chest rewards form a local growth loop, not mandatory steps at every exit. The earlier detailed sequence below remains a content/pacing reference, not a required progression chain; gold and meta progression remain deferred.
+
 ```
 Start Run
     ↓
@@ -163,9 +165,11 @@ Start a New Run
 
 ## 9. Run Structure
 
-A run consists of multiple connected combat arenas.
+A run consists of connected explorable maps. In the first prototype, each map is a Unity scene with multiple main and optional side regions.
 
-Each arena contains waves of enemies and may include elite encounters, environmental mechanics, or arena-specific modifiers. Completing the required encounters allows the player to progress.
+Regions contain enemy groups or wave-based encounters. Players may skip optional combat and reach an exit with fewer growth opportunities. Clearing all enemies is not a universal progression condition; only explicitly encounter-gated passages require completion.
+
+Same-scene connectors can be returnable or one-way and need not teleport the player. Preparation ahead of entry should hide enemy setup from view, with performance verified through profiling. A map exit may load another scene. One-way travel does not imply a checkpoint. Begin with one handcrafted layout per map rather than procedural generation or mandatory variants.
 
 Bosses appear at planned intervals. The final objective is to reach and defeat the final boss.
 
@@ -789,9 +793,9 @@ Features may be reconsidered only if they clearly support the core design pillar
 
 ### GDD-002 — Arena-Based Run Structure
 
-**Decision:** Runs progress through changing combat arenas rather than one continuous static map.
+**Decision (revised 15 September 2026):** Runs progress through explorable maps with optional regions and selective encounter gates. Reaching an eligible exit, rather than universally clearing waves, advances the route. See the [staged technical plan](../TDD/EN/Map-Region-Encounter-Plan.md).
 
-**Reason:** Arena changes improve pacing, variety, encounter identity, and long-term engagement.
+**Reason:** Support exploration versus faster, less-developed routes while retaining special locked encounters and varied map identities.
 
 ### GDD-003 — Shared Upgrade Slots
 

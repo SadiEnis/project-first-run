@@ -123,6 +123,8 @@ Hedeflenen duygusal gelişim:
 
 ## 8. Temel Oynanış Döngüsü
 
+Güncel ilerleme (15 Eylül 2026): Tura başla → haritaya gir → keşfet ve isteğe bağlı savaş/güçlen → uygun çıkışa ulaş → sonraki haritaya geç → nihai hedefi tamamla. Savaş, XP ve sandık ödülleri yerel güçlenme döngüsüdür; her çıkışın zorunlu adımları değildir. Aşağıdaki eski ayrıntılı sıra zorunlu ilerleme zinciri değil, içerik/tempo referansıdır; altın ve meta geliştirmeler ertelenmiştir.
+
 ```
 Tura Başla
     ↓
@@ -163,9 +165,11 @@ Yeni Bir Tura Başla
 
 ## 9. Tur Yapısı
 
-Bir tur, birbirine bağlı birden fazla savaş arenasından oluşur.
+Bir tur, birbirine bağlı keşfedilebilir haritalardan oluşur. İlk prototipte her harita, ana ve isteğe bağlı yan bölgeler içeren bir Unity sahnesidir.
 
-Her arena düşman dalgaları içerir ve elit karşılaşmalara, çevresel mekaniklere veya arenaya özel değiştiricilere sahip olabilir. Gerekli karşılaşmalar tamamlandığında oyuncu ilerleyebilir.
+Bölgelerde düşman grupları veya wave tabanlı karşılaşmalar bulunur. Oyuncu isteğe bağlı savaşları atlayıp daha az güçlenerek çıkışa ulaşabilir. Tüm düşmanları temizlemek genel ilerleme şartı değildir; yalnızca açıkça karşılaşma şartlı tasarlanan geçişler tamamlanmayı bekler.
+
+Aynı sahnedeki bağlantılar geri dönülebilir veya tek yönlü olabilir; oyuncuyu teleport etmek zorunda değildir. Girişten önce hazırlık, düşmanların kuruluşunu görüş dışında tutmalı ve performans ölçülmelidir. Harita çıkışı başka sahne yükleyebilir. Tek yönlü geçiş checkpoint anlamına gelmez. Prosedürel üretim veya zorunlu varyantlar yerine harita başına tek el yapımı düzenle başlanır.
 
 Boss'lar planlanan aralıklarda ortaya çıkar. Nihai amaç son boss'a ulaşmak ve onu yenmektir.
 
@@ -789,9 +793,9 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 
 ### GDD-002 — Arena Tabanlı Tur Yapısı
 
-**Karar:** Turlar tek bir sabit harita yerine değişen savaş arenalarında ilerleyecektir.
+**Karar (15 Eylül 2026 güncellemesi):** Turlar, isteğe bağlı bölgeler ve seçili karşılaşma kilitleri içeren keşfedilebilir haritalarda ilerler. Rotayı ilerleten genel koşul wave temizlemek değil uygun çıkışa ulaşmaktır. Bkz. [aşamalı teknik plan](../TDD/TR/Map-Region-Encounter-Plan.md).
 
-**Gerekçe:** Arena değişiklikleri tempo, çeşitlilik, karşılaşma kimliği ve uzun vadeli ilgi sağlar.
+**Gerekçe:** Özel kilitli karşılaşmaları ve harita kimliklerini korurken keşif ile daha hızlı fakat daha az güçlenilen rotalar arasında seçim sunmak.
 
 ### GDD-003 — Ortak Güçlendirme Slotları
 

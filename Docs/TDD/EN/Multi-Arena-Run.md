@@ -1,5 +1,7 @@
 # Multi-arena run foundation
 
+> Design update, 15 September 2026: This document records the existing wave-gated prototype. The [map/region/encounter plan](Map-Region-Encounter-Plan.md) supersedes its assumptions for future progression. That redesign is not implemented yet; validation below concerns the existing prototype only.
+
 ## Universal transition increment (implementation contract)
 
 `ArenaTransitionTrigger` is independent of environment art. Any trigger collider shape can represent an exit. It references an `ArenaTransitionController` and a zero-based source arena index. Only the explicitly assigned player's colliders may request a transition; enemies and unrelated colliders are ignored. An exit is available only while its own arena is completed and the run awaits transition. Final victory, defeat, pause, disabled components and duplicate entries cannot advance the run. Standing inside a locked exit requires leaving and re-entering once unlocked.

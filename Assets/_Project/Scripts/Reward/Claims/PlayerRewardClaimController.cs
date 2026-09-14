@@ -106,6 +106,15 @@ namespace ProjectFirstRun.Rewards.Claims
             }
         }
 
+        public string GetChoiceState(ItemDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            var buildController = GetComponent<ProjectFirstRun.Builds.PlayerBuildController>();
+            if (buildController == null || !buildController.IsInitialized) return "NEW";
+            if (!buildController.Build.TryGetItem(definition.Category, definition.StableId, out var owned)) return "NEW";
+            return owned.IsAtMaximumLevel ? "MAX" : "LEVEL UP";
+        }
+
         private void CommitSuccessfulClaim(
             RewardClaimSession session,
             ItemDefinition definition)
@@ -164,15 +173,18 @@ namespace ProjectFirstRun.Rewards.Claims
 
             registry.Register(
                 new WeaponRewardClaimHandler(
-                    weaponAcquisitionController.TryAcquire));
+                    weaponAcquisitionController.TryAcquire,
+                    weaponAcquisitionController.TryLevelUp));
 
             registry.Register(
                 new AbilityRewardClaimHandler(
-                    abilityAcquisitionController.TryAcquire));
+                    abilityAcquisitionController.TryAcquire,
+                    abilityAcquisitionController.TryLevelUp));
 
             registry.Register(
                 new UpgradeRewardClaimHandler(
-                    upgradeController.TryAcquire));
+                    upgradeController.TryAcquire,
+                    upgradeController.TryLevelUp));
 
             _registry = registry;
         }

@@ -1,4 +1,5 @@
 using System;
+using ProjectFirstRun.Builds;
 using ProjectFirstRun.Items;
 using ProjectFirstRun.Weapons;
 
@@ -10,15 +11,24 @@ namespace ProjectFirstRun.Rewards.Claims
         private readonly Func<
             WeaponDefinition,
             WeaponAcquireResult> _tryAcquire;
+        private readonly Func<WeaponDefinition, ItemLevelUpResult> _tryLevelUp;
 
         public WeaponRewardClaimHandler(
             Func<WeaponDefinition, WeaponAcquireResult>
                 tryAcquire)
+            : this(tryAcquire, null)
+        {
+        }
+
+        public WeaponRewardClaimHandler(
+            Func<WeaponDefinition, WeaponAcquireResult> tryAcquire,
+            Func<WeaponDefinition, ItemLevelUpResult> tryLevelUp)
         {
             _tryAcquire =
                 tryAcquire ??
                 throw new ArgumentNullException(
                     nameof(tryAcquire));
+            _tryLevelUp = tryLevelUp;
         }
 
         public bool Supports(
@@ -44,6 +54,13 @@ namespace ProjectFirstRun.Rewards.Claims
                     $"does not support item category " +
                     $"'{definition.Category}'.",
                     nameof(definition));
+            }
+
+            if (_tryLevelUp != null)
+            {
+                ItemLevelUpResult levelResult = _tryLevelUp(weaponDefinition);
+                if (levelResult == ItemLevelUpResult.LevelIncreased) return RewardClaimResult.Claimed;
+                if (levelResult == ItemLevelUpResult.MaximumLevelReached) return RewardClaimResult.AlreadyOwned;
             }
 
             WeaponAcquireResult result =

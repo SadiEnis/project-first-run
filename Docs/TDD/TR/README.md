@@ -24,3 +24,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 18. [Silah Seviyesi Etkileri](Weapon-Level-Effects.md)
 19. [Geliştirme Seviyesi Etkileri](Upgrade-Level-Effects.md)
 20. [Fireball Seviye Etkileri](Fireball-Level-Effects.md)
+21. [Ödül Seviye Artırma Seçenekleri](Reward-Level-Up-Choices.md)

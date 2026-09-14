@@ -24,3 +24,4 @@ Project First Run is the current development codename. The final commercial titl
 18. [Weapon Level Effects](Weapon-Level-Effects.md)
 19. [Upgrade Level Effects](Upgrade-Level-Effects.md)
 20. [Fireball Level Effects](Fireball-Level-Effects.md)
+21. [Reward Level-Up Choices](Reward-Level-Up-Choices.md)

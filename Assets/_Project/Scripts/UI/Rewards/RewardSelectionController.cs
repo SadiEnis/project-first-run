@@ -137,7 +137,8 @@ namespace ProjectFirstRun.UI.Rewards
                     false);
 
                 _view.Show(
-                    session.Offer);
+                    session.Offer,
+                    _claimController.GetChoiceState);
             }
             catch
             {

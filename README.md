@@ -14,6 +14,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Upgrade level effects: complete snapshotted modifier sets replace previous effects without stacking or consuming extra slots. Development Damage Boost uses three provisional levels (+20%, +30%, +40%).
 - Fireball level effects: eight provisional snapshotted levels apply damage, cooldown and projectile speed through the existing automatic runtime. Projectile count and burn/evolution behavior remain separate follow-up work.
 - Reward level-up choices: owned non-max items can appear as `LEVEL UP` choices; maxed items stay filtered, and claiming upgrades the existing runtime without consuming another slot.
+- Evolution foundation: optional definitions can atomically replace a max-level owned item with an unowned same-category result in the same slot. No real evolution item assets or gameplay replacement behavior are connected yet.
 - Enemy spawning, attacks, death handling, and wave progression.
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
@@ -56,6 +57,7 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Upgrade level effects and modifier replacement](Docs/TDD/EN/Upgrade-Level-Effects.md).
 - [Fireball level effects and runtime snapshot](Docs/TDD/EN/Fireball-Level-Effects.md).
 - [Reward level-up choices and claim routing](Docs/TDD/EN/Reward-Level-Up-Choices.md).
+- [Evolution foundation and same-slot replacement](Docs/TDD/EN/Evolution-Foundation.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.

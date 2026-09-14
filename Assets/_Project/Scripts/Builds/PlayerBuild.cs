@@ -128,6 +128,27 @@ namespace ProjectFirstRun.Builds
                 : ItemLevelUpResult.MaximumLevelReached;
         }
 
+        public PlayerBuildReplaceResult TryReplace(
+            ItemCategory slotType,
+            string sourceStableId,
+            string resultStableId,
+            int resultMaximumLevel = 1)
+        {
+            ValidateStableId(sourceStableId);
+            ValidateStableId(resultStableId);
+            if (resultMaximumLevel < 1) throw new ArgumentOutOfRangeException(nameof(resultMaximumLevel));
+            if (!TryGetItem(slotType, sourceStableId, out var source)) return PlayerBuildReplaceResult.SourceNotOwned;
+            if (Contains(slotType, resultStableId)) return PlayerBuildReplaceResult.TargetAlreadyOwned;
+
+            List<string> items = GetMutableItems(slotType);
+            int index = items.IndexOf(sourceStableId);
+            if (index < 0) throw new InvalidOperationException("Owned item list and state are inconsistent.");
+            items[index] = resultStableId;
+            _itemStates.Remove((slotType, sourceStableId));
+            _itemStates.Add((slotType, resultStableId), new PlayerBuildItem(slotType, resultStableId, resultMaximumLevel));
+            return PlayerBuildReplaceResult.Replaced;
+        }
+
         public int GetCount(
             ItemCategory slotType)
         {

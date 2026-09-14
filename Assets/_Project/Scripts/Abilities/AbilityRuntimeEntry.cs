@@ -9,6 +9,7 @@ namespace ProjectFirstRun.Abilities
     {
         private readonly IAbilityTargetSelector _targetSelector;
         private readonly IAbilityExecutor _executor;
+        private readonly IAbilityLevelRuntime _levelRuntime;
 
         public AbilityDefinition Definition { get; }
 
@@ -17,10 +18,14 @@ namespace ProjectFirstRun.Abilities
         public bool IsReady =>
             State.IsReady;
 
+        public int Level => _levelRuntime?.Level ?? 1;
+        public int MaximumLevel => _levelRuntime?.MaximumLevel ?? 1;
+
         public AbilityRuntimeEntry(
             AbilityDefinition definition,
             IAbilityTargetSelector targetSelector,
-            IAbilityExecutor executor)
+            IAbilityExecutor executor,
+            IAbilityLevelRuntime levelRuntime = null)
         {
             Definition =
                 definition ??
@@ -41,13 +46,23 @@ namespace ProjectFirstRun.Abilities
             _targetSelector =
                 targetSelector;
 
+            _levelRuntime = levelRuntime;
+
             AbilityRuntimeConfig config =
-                definition.CreateRuntimeConfig();
+                levelRuntime != null
+                    ? levelRuntime.InitialConfig
+                    : definition.CreateRuntimeConfig();
 
             State =
                 new AbilityRuntimeState(
                     in config);
         }
+
+        internal void ValidateNextLevel() =>
+            _levelRuntime?.ValidateNextLevel(State);
+
+        internal void AdvanceLevel() =>
+            _levelRuntime?.AdvanceLevel(State);
 
         public void Tick(
             float deltaTime)

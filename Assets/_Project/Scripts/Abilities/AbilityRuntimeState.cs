@@ -4,7 +4,19 @@ namespace ProjectFirstRun.Abilities
 {
     public sealed class AbilityRuntimeState
     {
-        private readonly float _cooldown;
+        private float _cooldown;
+
+        public void ApplyConfiguration(in AbilityRuntimeConfig config)
+        {
+            ValidateConfiguration(config);
+            _cooldown = config.Cooldown;
+            if (CooldownRemaining < 0f) CooldownRemaining = 0f;
+        }
+
+        internal void ValidateConfiguration(in AbilityRuntimeConfig config)
+        {
+            _ = new AbilityRuntimeConfig(config.Cooldown);
+        }
 
         public float Cooldown =>
             _cooldown;

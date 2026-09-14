@@ -12,6 +12,7 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Run-owned item level state: level-one acquisition, configured maximum snapshots, one-step advancement and no extra slot consumption.
 - Weapon level effects: snapshotted damage/capacity/fire-rate/reload profiles, preserving existing ammo and remaining timers. The two sample weapons have eight provisional levels, accessible through the runtime controller.
 - Upgrade level effects: complete snapshotted modifier sets replace previous effects without stacking or consuming extra slots. Development Damage Boost uses three provisional levels (+20%, +30%, +40%). Ability levels and chest level-up rewards/UI are not connected yet.
+- Fireball level effects: eight provisional snapshotted levels apply damage, cooldown and projectile speed through the existing automatic runtime. Projectile count, burn/evolution behavior and chest level-up UI remain separate follow-up work.
 - Enemy spawning, attacks, death handling, and wave progression.
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
@@ -52,13 +53,14 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Item level state foundation and remaining integration](Docs/TDD/EN/Item-Level-Foundation.md).
 - [Weapon level effects and runtime preservation](Docs/TDD/EN/Weapon-Level-Effects.md).
 - [Upgrade level effects and modifier replacement](Docs/TDD/EN/Upgrade-Level-Effects.md).
+- [Fireball level effects and runtime snapshot](Docs/TDD/EN/Fireball-Level-Effects.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.
 
 ## Verification
 
-Run both suites through Unity's Test Runner window. Upgrade level effects validation on **2026-09-14** passed **666 EditMode** and **348 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Eight new PlayMode cases cover modifier replacement, progression snapshots, maximum/identity boundaries, invalid content and subscriber exceptions. All eight changed/new Unity files matched the tested copy by SHA-256. These are recorded automated results, not a live CI badge or gameplay acceptance of level-up rewards, which are not connected yet. The preceding weapon level effects passed 666 EditMode / 340 PlayMode; item level state foundation passed 655 EditMode / 332 PlayMode.
+Run both suites through Unity's Test Runner window. Fireball level effects validation on **2026-09-14** passed **666 EditMode** and **351 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Three new PlayMode cases cover cooldown progression, runtime snapshots, alias/duplicate boundaries and single-entry ownership. These are recorded automated results, not a live CI badge or gameplay acceptance of level-up rewards, which are not connected yet. The preceding upgrade level effects passed 666 EditMode / 348 PlayMode; weapon level effects passed 666 EditMode / 340 PlayMode; item level state foundation passed 655 EditMode / 332 PlayMode.
 
 The preceding Common chest stage passed 626 EditMode / 332 PlayMode tests and its three starter chest types were subsequently accepted in gameplay by the owner. Earlier XP, pickup attraction, level-up chest and enemy death drop stages were also manually validated.
 

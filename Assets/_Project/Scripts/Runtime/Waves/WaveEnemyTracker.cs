@@ -19,6 +19,9 @@ namespace ProjectFirstRun.Waves
         public bool HasTrackedEnemies =>
             _trackedEnemies.Count > 0;
 
+        public IReadOnlyCollection<EnemyController> TrackedEnemies =>
+            _trackedEnemies;
+
         public void TrackWave(
             IReadOnlyList<EnemyController> enemies)
         {

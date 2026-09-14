@@ -25,6 +25,7 @@ namespace ProjectFirstRun.Waves
         public event Action<int, EnemyController> EnemyDefeated;
         public event Action<int, EnemyWaveDefinition> WaveCompleted;
         public event Action SequenceCompleted;
+        public event Action SequenceStopped;
 
         public bool IsInitialized =>
             _isInitialized;
@@ -117,6 +118,44 @@ namespace ProjectFirstRun.Waves
             _hasBegun = true;
 
             StartNextWave();
+        }
+
+        public void Stop()
+        {
+            if (!_isInitialized || !_hasBegun)
+            {
+                return;
+            }
+
+            StopTrackedEnemies();
+
+            if (_sequenceState != null &&
+                !_sequenceState.IsCompleted &&
+                !_sequenceState.IsFailed)
+            {
+                _sequenceState.MarkFailed();
+            }
+
+            _currentWaveProgress = null;
+            _currentWaveDefinition = null;
+            _hasBegun = false;
+            SequenceStopped?.Invoke();
+        }
+
+        public void Restart()
+        {
+            if (!_isInitialized)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(WaveController)} must be initialized before restarting.");
+            }
+
+            StopTrackedEnemies();
+            _sequenceState = new WaveSequenceState(_arenaDefinition.WaveCount);
+            _currentWaveProgress = null;
+            _currentWaveDefinition = null;
+            _hasBegun = false;
+            Begin();
         }
 
         private void StartNextWave()
@@ -260,6 +299,39 @@ namespace ProjectFirstRun.Waves
 
             _currentWaveProgress = null;
             _currentWaveDefinition = null;
+        }
+
+        private void StopTrackedEnemies()
+        {
+            if (_enemyTracker == null || !_enemyTracker.HasTrackedEnemies)
+            {
+                _enemyTracker?.Clear();
+                return;
+            }
+
+            List<EnemyController> trackedEnemies =
+                new List<EnemyController>(_enemyTracker.TrackedEnemies);
+
+            _enemyTracker.Clear();
+
+            foreach (EnemyController enemy in trackedEnemies)
+            {
+                if (enemy == null)
+                {
+                    continue;
+                }
+
+                enemy.gameObject.SetActive(false);
+
+                if (Application.isPlaying)
+                {
+                    Destroy(enemy.gameObject);
+                }
+                else
+                {
+                    DestroyImmediate(enemy.gameObject);
+                }
+            }
         }
 
         private void ValidateRuntimeState()

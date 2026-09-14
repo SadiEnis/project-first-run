@@ -99,6 +99,28 @@ namespace ProjectFirstRun.Arenas
             SessionStarted?.Invoke();
         }
 
+        public void Restart()
+        {
+            EnsureInitialized();
+
+            if (!_state.IsFinished)
+            {
+                throw new InvalidOperationException(
+                    "Arena session can only restart after victory or defeat.");
+            }
+
+            if (_playerDeathSource.IsDead)
+            {
+                throw new InvalidOperationException(
+                    "Arena session cannot restart while the player is dead.");
+            }
+
+            _waveController.Restart();
+            _state = new ArenaSessionState();
+            _state.Begin();
+            SessionStarted?.Invoke();
+        }
+
         private void HandleSequenceCompleted()
         {
             if (_state == null ||
@@ -122,6 +144,7 @@ namespace ProjectFirstRun.Arenas
                 return;
             }
 
+            _waveController.Stop();
             _state.MarkDefeat();
 
             Defeat?.Invoke();

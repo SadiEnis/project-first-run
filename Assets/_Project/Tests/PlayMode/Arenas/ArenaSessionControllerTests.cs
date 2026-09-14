@@ -117,5 +117,46 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 victoryCount,
                 Is.EqualTo(1));
         }
+
+        [Test]
+        public void Restart_AfterVictory_StartsFreshWaveAndPublishesSessionStartedAgain()
+        {
+            int startedCount = 0;
+            ArenaSession.SessionStarted += () => startedCount++;
+
+            InitializeArenaSession();
+            ArenaSession.Begin();
+            KillSpawnedEnemy();
+
+            ArenaSession.Restart();
+
+            Assert.That(ArenaSession.Status, Is.EqualTo(ArenaSessionStatus.Running));
+            Assert.That(WaveController.HasBegun, Is.True);
+            Assert.That(WaveController.SequenceState.Status, Is.EqualTo(WaveSequenceStatus.Running));
+            Assert.That(WaveController.SequenceState.CompletedWaves, Is.EqualTo(0));
+            Assert.That(Registry.ActiveCount, Is.EqualTo(1));
+            Assert.That(startedCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Restart_WhileRunning_Throws()
+        {
+            InitializeArenaSession();
+            ArenaSession.Begin();
+
+            Assert.That(ArenaSession.Restart, Throws.InvalidOperationException);
+            Assert.That(ArenaSession.Status, Is.EqualTo(ArenaSessionStatus.Running));
+        }
+
+        [Test]
+        public void Restart_WhenPlayerIsDead_Throws()
+        {
+            InitializeArenaSession();
+            ArenaSession.Begin();
+            PlayerDeathSource.Die();
+
+            Assert.That(ArenaSession.Restart, Throws.InvalidOperationException);
+            Assert.That(ArenaSession.Status, Is.EqualTo(ArenaSessionStatus.Defeat));
+        }
     }
 }

@@ -26,6 +26,14 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(
                 ArenaSession.State.IsFinished,
                 Is.True);
+
+            Assert.That(
+                WaveController.SequenceState.Status,
+                Is.EqualTo(WaveSequenceStatus.Failed));
+
+            Assert.That(
+                WaveController.TrackedEnemyCount,
+                Is.EqualTo(0));
         }
 
         [Test]
@@ -127,7 +135,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
 
             Assert.That(
                 WaveController.SequenceState.Status,
-                Is.EqualTo(WaveSequenceStatus.Completed));
+                Is.EqualTo(WaveSequenceStatus.Failed));
 
             Assert.That(
                 ArenaSession.Status,

@@ -79,6 +79,8 @@ Advanced chest types validation on **2026-09-14** passed **681 EditMode / 355 Pl
 
 Ranger ranged enemy foundation validation on **2026-09-14** passed **700 EditMode / 378 PlayMode** tests in the isolated Unity 6000.3.9f1 project. This includes distance-band movement, navigation-valid retreat, line-of-sight gating, wind-up/cooldown timing, straight one-hit projectiles, wall occlusion, pause/cancellation cleanup and existing enemy/drop/wave regressions. Manual Ranger gameplay acceptance and balance tuning remain pending.
 
+Arena and run flow foundation validation on **2026-09-14** passed **700 EditMode / 381 PlayMode** tests in the isolated Unity 6000.3.9f1 project. This includes final-wave victory, player-death defeat cleanup, terminal-result protection and fresh restart behavior.
+
 ## Development history
 
 The owner verified all three Common starter chest types and the item-level `NEW` / `LEVEL UP` reward flow in gameplay on **2026-09-14** and approved integrating this milestone.

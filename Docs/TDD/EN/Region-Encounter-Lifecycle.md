@@ -21,3 +21,5 @@ EditMode: invalid preparation, preparation without starting, entry requires prep
 PlayMode: real `ArenaSessionController` / `WaveController` preserve spawn count and wounded enemy identity/health on reentry; completion while outside; no respawn after completion; player death while outside.
 
 Pursuit is not coupled to region presence; existing AI continues unchanged. Distant-region suspension, enemy prewarming and resource release are not performance claims of this increment.
+
+15 September 2026 validation: all 3 RegionEncounterIntegrationTests passed in the passage correction's 408/408 PlayMode run. Verified health/identity preservation on reentry, completion while outside and player death. Previously missing results did not establish test failures.

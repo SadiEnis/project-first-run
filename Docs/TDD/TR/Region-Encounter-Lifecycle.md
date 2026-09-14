@@ -21,3 +21,5 @@ EditMode: geçersiz hazırlık, hazırlıkta başlamama, giriş öncesi hazırl�
 PlayMode: gerçek `ArenaSessionController` / `WaveController` ile spawn sayısının ve yaralı düşman kimliği/canının yeniden girişte korunması; dışarıdayken tamamlanma; tamamlanan bölgeye dönüşte respawn olmaması; dışarıdayken oyuncu ölümü.
 
 Takip alanı oyuncunun bölge bilgisine bağlanmaz; mevcut AI değişmeden devam eder. Uzaktaki bölgeleri askıya alma, spawn ön hazırlığı ve kaynak boşaltma bu artımın performans iddiaları değildir.
+
+15 Eylül 2026 doğrulaması: 3 RegionEncounterIntegrationTests testi, geçiş düzeltmesinin 408/408 geçen PlayMode çalıştırmasında başarıyla tamamlandı. Yeniden girişte can/kimlik korunması, dışarıdayken tamamlanma ve ölüm senaryoları doğrulandı. Önceki çalıştırmaların sonuçsuz kalması bu testlerin başarısız olduğu anlamına gelmiyordu.

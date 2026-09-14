@@ -1,23 +1,22 @@
 # Generic transition contract
 
-## Implementation contract — 15 September 2026
+## Correction contract — 15 September 2026
 
-This stage separates the transition decision from decoration and physical barriers. `ArenaTransitionController` continues to serve the current prototype; this contract is the decision core for new region/map travel.
+RegionTransition is a two-ended connection. OneWay accepts SourceId → DestinationId only; Returnable accepts both directions. Independent singleUse defaults to false.
 
-Each direction of a connection is an independent `RegionTransition` definition:
+- CanBegin checks current region identity, the linked encounter requirement, destination readiness and pending work.
+- TryBegin issues a distinct Attempt; requests in either direction are rejected while pending.
+- Complete(attempt) commits only the current attempt and consumes single-use here.
+- Cancel(attempt) allows retry without consumption. Stale/foreign attempts cannot complete or cancel newer work.
+- Execution/load failures must call Cancel. Walk, Relocate and SceneLoad are metadata; actual scene loading belongs to roadmap stage 7.
+- EncounterCompleted checks the explicitly linked encounter. The same requirement applies in both directions.
 
-- `SourceId` and `DestinationId` are stable identities independent of scene object names.
-- `Free` eligibility does not wait for the source encounter.
-- `EncounterCompleted` requires only the relevant region encounter; it does not query every enemy on the map.
-- `Walk`, `Relocate` and `SceneLoad` describe traversal. All use the same decision contract.
-- `Returnable` can be used repeatedly. `OneWay` is consumed after a successful use and cannot be used again in that direction.
-- `TryUse` does not consume a failed attempt. Acceptance is atomic and occurs once.
-- An unavailable destination rejects the request; this class does not spawn enemies, load scenes or move the player.
+## Walking integration
 
-This stage does not subscribe directly to `RegionEncounterSession`; the caller passes `Status == Completed` explicitly. Free exits therefore never become implicitly coupled to encounter lifecycle.
+RegionPassageController connects the contract to a player, encounter, generic trigger volume and optional physical blocker. Local +Z is destination, -Z source. Entry begins an attempt. Once all physical player colliders clear the safety volume, exiting the target side completes; backing out cancels. Success changes CurrentRegionId without map/run victory.
+
+This component executes walking. Other methods need separate executors using the same Attempt protocol. Test_Waves retains its legacy adapter; PlayMode fixtures exercise the new component.
 
 ## Acceptance tests
 
-EditMode tests cover identity validation, free travel, incomplete/complete encounter gating, destination availability, returnable reuse, one-way consumption, failed-attempt state preservation and traversal metadata.
-
-The existing `ArenaTransitionController` tests continue to enforce that physical triggers accept only the real player collider. Trigger, barrier presentation and scene target wiring connect to this contract in later increments.
+Direction, independent single-use, failed traversal retry, duplicate requests, stale completion, wrong source and enum validation; real Unity collider fixtures for return trips, retreat, gated passages and one-way closure.

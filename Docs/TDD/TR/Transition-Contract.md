@@ -1,23 +1,22 @@
 # Genel geçiş sözleşmesi
 
-## Uygulama sözleşmesi — 15 Eylül 2026
+## Düzeltme sözleşmesi — 15 Eylül 2026
 
-Bu adım geçiş kararını dekor ve fiziksel kapıdan ayırır. `ArenaTransitionController` mevcut prototipte çalışmaya devam eder; bu sözleşme yeni bölge/harita geçişlerinin karar çekirdeğidir.
+RegionTransition iki uçlu bir bağlantıdır. OneWay yalnızca SourceId → DestinationId yönünü kabul eder; Returnable iki yönde çalışır. Tek kullanımlılık ayrı singleUse ayarıdır ve varsayılan olarak kapalıdır.
 
-Her yönlü bağlantı bağımsız bir `RegionTransition` tanımıdır:
+- CanBegin mevcut bölge kimliğini, ilgili karşılaşma şartını, hedef hazırlığını ve devam eden işlemi denetler.
+- TryBegin her başarılı isteğe ayrı bir Attempt verir; işlem sürerken iki yönden de yinelenen istek reddedilir.
+- Complete(attempt) yalnızca güncel işlemi tamamlar. Tek kullanımlılık burada tüketilir.
+- Cancel(attempt) tüketmeden yeniden denemeye izin verir. Eski/yabancı Attempt yeni işlemi tamamlayamaz veya iptal edemez.
+- Taşıma/yükleme hatasında yürütücü Cancel çağırmalıdır. Walk, Relocate ve SceneLoad yöntem bilgisidir; gerçek sahne yüklemesi roadmap 7 kapsamındadır.
+- EncounterCompleted açıkça bağlanan karşılaşmayı kontrol eder. Çift yönlü bağlantıda aynı şart iki yönde geçerlidir.
 
-- `SourceId` ve `DestinationId` sahne nesnesi adından bağımsız, sabit kimliklerdir.
-- `Free` uygunluk kaynağın karşılaşma sonucunu beklemez.
-- `EncounterCompleted` yalnızca ilgili bölge karşılaşması tamamlandıysa geçişe izin verir; haritadaki tüm düşmanları sorgulamaz.
-- `Walk`, `Relocate` ve `SceneLoad` traversal yöntemini tanımlar. Bunlar aynı karar sözleşmesini kullanır.
-- `Returnable` tekrar kullanılabilir. `OneWay` başarılı kullanımdan sonra tüketilir ve aynı yönde tekrar çalışmaz.
-- `TryUse` başarısız olduğunda tüketim yapmaz. Geçiş isteği atomik olarak tek kez kabul edilir.
-- Hedefin hazır/uygun olmadığı durum geçişi reddeder; bu sınıf düşman üretmez, sahne yüklemez veya oyuncuyu taşımaz.
+## Yürüyüş entegrasyonu
 
-Bu aşamada `RegionEncounterSession` ile bağlantı olay aboneliği kurulmaz; çağıran katman `Status == Completed` bilgisini açıkça aktarır. Böylece serbest çıkışlar encounter yaşam döngüsüne gizlice bağlanmaz.
+RegionPassageController sözleşmeyi oyuncu, karşılaşma, genel trigger hacmi ve isteğe bağlı fiziksel engelle bağlar. Yerel +Z hedef, -Z kaynak tarafıdır. Girişte işlem başlar; oyuncunun tüm fiziksel collider'ları güvenlik hacminden çıkınca çıkış tarafı kontrol edilir. Hedefe çıkmak Complete, geldiği tarafa dönmek Cancel üretir. Başarı CurrentRegionId bilgisini değiştirir; harita/run zaferi üretmez.
+
+Bileşen yürüyüş içindir. Diğer traversal yöntemleri aynı Attempt protokolünü kullanacak ayrı yürütücülere bağlanacaktır. Mevcut Test_Waves eski adapter ile kalır; yeni bileşen PlayMode fixture'ında kurulur.
 
 ## Kabul testleri
 
-EditMode testleri: kimlik doğrulama, serbest geçiş, tamamlanmamış/tamamlanmış karşılaşma şartı, hedef uygunluğu, returnable tekrar kullanım, one-way tüketim, başarısız denemede state korunması ve traversal bilgisinin korunması.
-
-Fiziksel trigger'ın yalnızca gerçek oyuncu koliderini kabul etmesi mevcut `ArenaTransitionController` testlerinde korunur. Trigger, bariyer animasyonu ve sahne hedefi sonraki artımlarda bu sözleşmeye bağlanır.
+Yön, bağımsız tek kullanımlılık, başarısız geçişte retry, yinelenen istek, eski completion, yanlış kaynak ve enum doğrulama; gerçek Unity collider'larıyla çift yönlü yürüyüş, geri çekilme, şartlı geçiş ve tek yönlü kapanma.

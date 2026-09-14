@@ -40,7 +40,7 @@ Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin 
 
 ## Aşamalı geliştirme sırası
 
-Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. Aşağıdaki uygulama adımları henüz tamamlanmadı.
+Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarım olarak, 2 yaşam döngüsü çekirdeği olarak uygulanmıştır. 3–4 için düzeltilmiş geçiş sözleşmesi ve yürüyüş/bariyer entegrasyonu vardır; doğrulama kapsamı ilgili belgelerde tutulur. 5–10 planlıdır. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
 
 1. **Tasarım ayrımı — bu belge:** GDD yönünü, terimleri, korunacak parçaları ve sırayı kaydet. Runtime değişikliği yok.
 2. **Bölge ve karşılaşma yaşam döngüsü:** Hazırlama, etkinleştirme, tamamlama ve tekrar giriş kurallarını tasarla. Karşılaşma bitişinin harita bitişi olmadığını test et.
@@ -55,14 +55,14 @@ Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. Aşağıd
 
 İlk tasarım ve uyarlamalar mevcut `feature/multi-arena-run` üzerinde ilerler. Her madde ayrı branch veya commit gerektirmez. Yeni bağımsız aşama gerektiğinde Plastic dev / Git main tabanından açılır; merge'i kullanıcı yapar.
 
-## Sonraki tasarım konuşmasının kararları
+## Kararlar ve kalan tasarım konuları
 
-- Bölgeye geri dönünce düşmanlar kaldığı haliyle mi devam edecek? Yeniden spawn olacak mı?
+- Karar: tekrar giriş düşmanları yeniden üretmez; yaşayanların canı ve mevcut karşılaşma durumu korunur.
 - Düşmanlar bölge dışına oyuncuyu takip edebilecek mi; sahiplik ve takip sınırı nasıl ayrılacak?
-- Oyuncu ayrılınca karşılaşma çalışmaya devam mı edecek, askıya mı alınacak?
+- Karar: oyuncu ayrılınca aktif karşılaşma çalışmaya devam eder; askıya alma optimizasyonu ertelendi.
 - Hazırlanan ama ziyaret edilmeyen bölgenin kaynakları ne zaman bırakılacak?
 
-Bu maddeler açık sorulardır; mevcut kodun veya bu belgenin onları çözdüğü varsayılmaz.
+Takip sınırları ve ziyaret edilmeyen bölgelerin kaynak boşaltması açık konulardır. Kararlaştırılmış yaşam döngüsü kuralları Region-Encounter-Lifecycle belgesinde yer alır.
 
 ## Doğrulama ve kayıt düzeni
 

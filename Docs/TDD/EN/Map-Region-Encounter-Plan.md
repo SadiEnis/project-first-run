@@ -40,7 +40,7 @@ This plan supersedes the assumptions that every arena is a separate scene and ev
 
 ## Delivery order
 
-Discuss mechanics and update TDD before implementing each stage. Implementation stages below remain pending.
+Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, and stages 3–4 have the corrected transition contract and walking/barrier integration. Validation scope is recorded in the respective documents. Stages 5–10 remain planned.
 
 1. **Design checkpoint — this document:** Record GDD direction, terminology, migration inventory and sequence. No runtime changes.
 2. **Region and encounter lifecycle:** Define preparation, activation, completion and reentry. Test that encounter completion does not finish the map.
@@ -55,14 +55,14 @@ Discuss mechanics and update TDD before implementing each stage. Implementation 
 
 Initial design and adaptation stay on `feature/multi-arena-run`. Each numbered stage does not require its own branch or commit. Future independent stages start from Plastic dev / Git main; the user performs merges.
 
-## Next design discussion
+## Decisions and remaining design topics
 
-- On reentry, do enemies retain their state or respawn?
+- Decided: reentry preserves existing encounter state and surviving enemies' health without respawning.
 - Can enemies pursue outside their region, and how do ownership and pursuit boundaries differ?
-- Does an encounter keep running or suspend after the player leaves?
+- Decided: an active encounter keeps running when the player leaves; suspension optimization is deferred.
 - When are prepared but unvisited region resources released?
 
-These are open decisions, not behavior already supplied by this document or runtime.
+Pursuit boundaries and unvisited-region resource release remain open. Accepted lifecycle rules are documented in Region-Encounter-Lifecycle.
 
 ## Verification and versioning
 

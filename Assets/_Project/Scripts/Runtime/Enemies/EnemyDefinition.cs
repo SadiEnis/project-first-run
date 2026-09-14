@@ -38,7 +38,20 @@ namespace ProjectFirstRun.Enemies
                 !System.Enum.IsDefined(typeof(EnemyBehavior), _behavior))
                 throw new System.InvalidOperationException("Unknown enemy rank or behavior.");
             if (_behavior == EnemyBehavior.Charger) CreateChargeConfig();
+            if (_behavior == EnemyBehavior.Ranger) CreateRangedConfig();
         }
+
+        [Header("Ranger")]
+        [SerializeField, Min(0.01f)] private float _rangedPreferredMin = 5f;
+        [SerializeField, Min(0.01f)] private float _rangedPreferredMax = 9f;
+        [SerializeField, Min(0.01f)] private float _rangedFireRange = 12f;
+        [SerializeField, Min(0.01f)] private float _rangedWindup = 0.6f;
+        [SerializeField, Min(0.01f)] private float _rangedProjectileSpeed = 7f;
+        [SerializeField, Min(0.01f)] private float _rangedProjectileLifetime = 4f;
+        [SerializeField, Min(0.01f)] private float _rangedProjectileRadius = 0.15f;
+        public EnemyRangedConfig CreateRangedConfig() => new EnemyRangedConfig(
+            _rangedPreferredMin, _rangedPreferredMax, _rangedFireRange, _rangedWindup,
+            _attackCooldown, _rangedProjectileSpeed, _rangedProjectileLifetime, _rangedProjectileRadius);
 
         [Header("Health")]
         [SerializeField, Min(0.01f)]

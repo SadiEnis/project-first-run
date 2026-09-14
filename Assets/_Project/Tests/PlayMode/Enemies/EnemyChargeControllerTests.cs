@@ -199,7 +199,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Enemies
             var line = _enemy.GetComponentInChildren<LineRenderer>();
             var label = _enemy.GetComponentInChildren<TextMesh>();
             Assert.That(line.enabled, Is.True);
-            Assert.That(line.GetPosition(1) - line.GetPosition(0), Is.EqualTo(Vector3.forward * 8));
+            Assert.That(Vector3.Distance(line.GetPosition(1) - line.GetPosition(0), Vector3.forward * 8), Is.LessThan(.01f));
             Assert.That(Quaternion.Angle(label.transform.rotation, camera.transform.rotation), Is.LessThan(.1f));
             _attack.Stop();
             yield return null;

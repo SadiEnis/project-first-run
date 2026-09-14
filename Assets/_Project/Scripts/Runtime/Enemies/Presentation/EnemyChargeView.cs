@@ -53,8 +53,10 @@ namespace ProjectFirstRun.Enemies.Presentation
             }
             EnemyChargeState state = _attack.ChargeState;
             bool warning = state != null && state.Phase == EnemyChargePhase.Windup;
-            Color color = _enemy.Definition.Rank == EnemyRank.Elite
-                ? new Color(0.8f, 0.25f, 1f) : new Color(1f, 0.5f, 0.12f);
+            Color color = _enemy.Definition.Behavior == EnemyBehavior.Ranger
+                ? new Color(0.2f, 0.65f, 1f)
+                : (_enemy.Definition.Rank == EnemyRank.Elite
+                    ? new Color(0.8f, 0.25f, 1f) : new Color(1f, 0.5f, 0.12f));
             if (warning) color = Color.yellow;
             _label.text = $"{_enemy.Definition.DisplayName} [{_enemy.Definition.Rank}]";
             _label.color = color;

@@ -25,15 +25,28 @@ namespace ProjectFirstRun.Tests.EditMode.Enemies
         }
 
         [Test]
+        public void RangerContent_HasExplicitRangedPolicy()
+        {
+            var definition = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_Ranger.asset");
+            Assert.That(definition, Is.Not.Null);
+            Assert.DoesNotThrow(definition.ValidateBehavior);
+            Assert.That(definition.Behavior, Is.EqualTo(EnemyBehavior.Ranger));
+            Assert.That(definition.Rank, Is.EqualTo(EnemyRank.Normal));
+            Assert.That(definition.ExperienceReward, Is.EqualTo(25));
+            Assert.That(definition.ChestDropProfile.ChanceBasisPoints, Is.EqualTo(2500));
+            Assert.DoesNotThrow(() => definition.CreateRangedConfig());
+        }
+
+        [Test]
         public void SecondWave_ContainsChaserNormalChargerAndEliteCharger_WithPresentation()
         {
             var wave = AssetDatabase.LoadAssetAtPath<EnemyWaveDefinition>("Assets/_Project/Data/Waves/Test/EW_Test_02.asset");
             wave.Validate();
-            Assert.That(wave.TotalEnemyCount, Is.EqualTo(3));
+            Assert.That(wave.TotalEnemyCount, Is.EqualTo(4));
             Assert.That(wave.Entries.Select(x => x.EnemyDefinition.Behavior), Is.EqualTo(new[] {
-                EnemyBehavior.Chaser, EnemyBehavior.Charger, EnemyBehavior.Charger }));
+                EnemyBehavior.Chaser, EnemyBehavior.Charger, EnemyBehavior.Charger, EnemyBehavior.Ranger }));
             Assert.That(wave.Entries.Select(x => x.EnemyDefinition.Rank), Is.EqualTo(new[] {
-                EnemyRank.Normal, EnemyRank.Normal, EnemyRank.Elite }));
+                EnemyRank.Normal, EnemyRank.Normal, EnemyRank.Elite, EnemyRank.Normal }));
             foreach (var entry in wave.Entries)
                 Assert.That(entry.EnemyPrefab.GetComponent<EnemyChargeView>(), Is.Not.Null);
         }

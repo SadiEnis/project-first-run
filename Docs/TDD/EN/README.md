@@ -28,3 +28,4 @@ Project First Run is the current development codename. The final commercial titl
 22. [Evolution Foundation](Evolution-Foundation.md)
 23. [Advanced Chest Types](Advanced-Chest-Types.md)
 24. [Enemy Variety Foundation](Enemy-Variety-Foundation.md)
+25. [Ranger / Ranged Enemy Foundation](Ranged-Enemy-Foundation.md)

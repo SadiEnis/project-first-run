@@ -16,8 +16,20 @@ namespace ProjectFirstRun.Enemies
 
         private bool _isInitialized;
         private bool _movementEnabled;
+        private bool _destinationOverride;
 
         public bool CanNavigate => CanUseAgent();
+
+        public bool TrySetDestination(Vector3 destination)
+        {
+            if (!CanUseAgent() || !float.IsFinite(destination.x) ||
+                !float.IsFinite(destination.y) || !float.IsFinite(destination.z))
+                return false;
+            _movementEnabled = true;
+            _destinationOverride = true;
+            _agent.isStopped = false;
+            return _agent.SetDestination(destination);
+        }
 
         // A committed charge is a straight, swept move, never a path to the moving target.
         public float MoveCharge(Vector3 direction, float distance, out bool blocked)
@@ -76,6 +88,9 @@ namespace ProjectFirstRun.Enemies
             if (Time.deltaTime <= 0f) return;
             _destinationUpdateTimer -= Time.deltaTime;
 
+            if (_destinationOverride)
+                return;
+
             if (_destinationUpdateTimer > 0f)
             {
                 return;
@@ -129,6 +144,7 @@ namespace ProjectFirstRun.Enemies
             _destinationUpdateTimer = 0f;
             _isInitialized = true;
             _movementEnabled = true;
+            _destinationOverride = false;
 
             Resume();
         }
@@ -153,6 +169,7 @@ namespace ProjectFirstRun.Enemies
         public void Stop()
         {
             _movementEnabled = false;
+            _destinationOverride = false;
 
             if (!CanUseAgent())
             {

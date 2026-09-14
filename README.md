@@ -81,6 +81,10 @@ Ranger ranged enemy foundation validation on **2026-09-14** passed **700 EditMod
 
 Arena and run flow foundation validation on **2026-09-14** passed **700 EditMode / 381 PlayMode** tests in the isolated Unity 6000.3.9f1 project. This includes final-wave victory, player-death defeat cleanup, terminal-result protection and fresh restart behavior.
 
+Multi-arena run foundation validation on **2026-09-14** passed **706 EditMode / 386 PlayMode** tests in the isolated Unity 6000.3.9f1 project. This includes active-arena routing, explicit transition gating, final-run victory and stale-event protection.
+
+Universal arena transitions validation on **2026-09-14/15** passed **706 EditMode / 395 PlayMode** tests. The generic trigger and same-scene player relocation are wired into Test_Waves with two logical arena sessions, a gray/green exit marker and a run status panel. Real physics entry and the actual scene's full two-session progression are covered. See [transition setup](Docs/TDD/EN/Multi-Arena-Run.md) for scene authoring and current scope.
+
 ## Development history
 
 The owner verified all three Common starter chest types and the item-level `NEW` / `LEVEL UP` reward flow in gameplay on **2026-09-14** and approved integrating this milestone.

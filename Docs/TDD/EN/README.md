@@ -26,3 +26,4 @@ Project First Run is the current development codename. The final commercial titl
 20. [Fireball Level Effects](Fireball-Level-Effects.md)
 21. [Reward Level-Up Choices](Reward-Level-Up-Choices.md)
 22. [Evolution Foundation](Evolution-Foundation.md)
+23. [Advanced Chest Types](Advanced-Chest-Types.md)

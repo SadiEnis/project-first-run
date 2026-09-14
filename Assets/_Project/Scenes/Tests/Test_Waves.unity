@@ -836,6 +836,10 @@ MonoBehaviour:
   _additionalChestDefinitions:
   - {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}
   - {fileID: 11400000, guid: e1dca4d76d9649a6ad60669b9b8ad921, type: 2}
+  - {fileID: 11400000, guid: 2d8f8f96d6f74891886c9a16f264c3d1, type: 2}
+  - {fileID: 11400000, guid: 45b5403b7a8f4f16a12b340ee0578d1a, type: 2}
+  - {fileID: 11400000, guid: c2cb2f9e84784a7c9c84e4f8a1fcb3a7, type: 2}
+  - {fileID: 11400000, guid: 7a3e6af8f7cb447aa3b173d1d1d6e9db, type: 2}
   _spawnPoint: {fileID: 1138363012}
 --- !u!114 &911521816
 MonoBehaviour:

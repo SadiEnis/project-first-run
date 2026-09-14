@@ -26,3 +26,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 20. [Fireball Seviye Etkileri](Fireball-Level-Effects.md)
 21. [Ödül Seviye Artırma Seçenekleri](Reward-Level-Up-Choices.md)
 22. [Evolution Temeli](Evolution-Foundation.md)
+23. [Gelişmiş Sandık Türleri](Advanced-Chest-Types.md)

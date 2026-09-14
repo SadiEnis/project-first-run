@@ -273,6 +273,34 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
         }
 
         [Test]
+        public void SelectionView_MultiClaimUpdatesRemainingAndDisablesCommittedChoice()
+        {
+            RewardChoiceView firstChoice = CreateChoiceView("Choice 1");
+            RewardChoiceView secondChoice = CreateChoiceView("Choice 2");
+            RewardSelectionView selectionView =
+                CreateSelectionView(
+                    new[] { firstChoice, secondChoice },
+                    out _,
+                    out _,
+                    out Text remaining,
+                    out _);
+
+            WeaponDefinition first = CreateWeapon("weapon.first", "First", "First effect");
+            WeaponDefinition second = CreateWeapon("weapon.second", "Second", "Second effect");
+
+            selectionView.Show(
+                new RewardOffer(new ItemDefinition[] { first, second }),
+                null,
+                2);
+
+            selectionView.MarkSelectionCommitted(first, 1);
+
+            Assert.That(firstChoice.Button.interactable, Is.False);
+            Assert.That(secondChoice.Button.interactable, Is.True);
+            Assert.That(remaining.text, Is.EqualTo("Selections Remaining: 1"));
+        }
+
+        [Test]
         public void SelectionView_WithMoreChoicesThanSlots_Throws()
         {
             RewardSelectionView selectionView =

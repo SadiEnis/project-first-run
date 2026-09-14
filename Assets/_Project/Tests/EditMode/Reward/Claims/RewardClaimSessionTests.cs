@@ -58,6 +58,65 @@ namespace ProjectFirstRun.Tests.EditMode.Rewards.Claims
             Assert.That(
                 session.ClaimedDefinition,
                 Is.Null);
+
+            Assert.That(session.MaxSelections, Is.EqualTo(1));
+            Assert.That(session.SelectionsRemaining, Is.EqualTo(1));
+            Assert.That(session.ClaimedDefinitions, Is.Empty);
+        }
+
+        [Test]
+        public void MultiSelectionSession_RemainsOpenUntilAllSelectionsAreCommitted()
+        {
+            WeaponDefinition first = CreateWeapon("weapon.first");
+            WeaponDefinition second = CreateWeapon("weapon.second");
+            WeaponDefinition third = CreateWeapon("weapon.third");
+
+            RewardClaimSession session =
+                new RewardClaimSession(
+                    CreateOffer(first, second, third),
+                    2);
+
+            session.Commit(first);
+
+            Assert.That(session.IsClaimed, Is.False);
+            Assert.That(session.SelectionsRemaining, Is.EqualTo(1));
+            Assert.That(session.ClaimedDefinition, Is.SameAs(first));
+            Assert.That(session.ClaimedDefinitions, Is.EqualTo(new[] { first }));
+
+            session.Commit(second);
+
+            Assert.That(session.IsClaimed, Is.True);
+            Assert.That(session.SelectionsRemaining, Is.EqualTo(0));
+            Assert.That(session.ClaimedDefinitions, Is.EqualTo(new[] { first, second }));
+        }
+
+        [Test]
+        public void MultiSelectionSession_RejectsDuplicateChoiceWithoutChangingRemainingSelections()
+        {
+            WeaponDefinition first = CreateWeapon("weapon.first");
+            WeaponDefinition second = CreateWeapon("weapon.second");
+            RewardClaimSession session =
+                new RewardClaimSession(
+                    CreateOffer(first, second),
+                    2);
+
+            session.Commit(first);
+
+            Assert.That(() => session.Commit(first), Throws.InvalidOperationException);
+            Assert.That(session.SelectionsRemaining, Is.EqualTo(1));
+            Assert.That(session.ClaimedDefinitions, Is.EqualTo(new[] { first }));
+        }
+
+        [TestCase(0)]
+        [TestCase(3)]
+        public void Constructor_WithInvalidMaximumSelections_Throws(int maxSelections)
+        {
+            WeaponDefinition first = CreateWeapon("weapon.first");
+            WeaponDefinition second = CreateWeapon("weapon.second");
+
+            Assert.That(
+                () => new RewardClaimSession(CreateOffer(first, second), maxSelections),
+                Throws.Exception);
         }
 
         [Test]

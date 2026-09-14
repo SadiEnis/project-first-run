@@ -26,11 +26,11 @@ The existing tracker still owns entitlement counts. The source owns only the cur
 - All tracked profiles, scene references and test fixtures are migrated together. Untracked external/custom profiles using the old embedded field need manual table creation and assignment; no silent runtime fallback masks missing configuration.
 - No new colored chest prefabs, reward pools, drop-frequency balancing or rank-based enemy behavior are introduced. Existing chests remain visually and functionally the same in this stage.
 
-## Next chest-type stage
+## Follow-up chest work
 
-Implement the three common category chests first (Weapon, Ability, Upgrade), then mixed Green/Purple and the Legendary/Boss policies as the required reward capabilities become available. Keep rarity, category filtering, number of offered choices, number of permitted claims, evolution policy and presentation separate. The GDD working name “Purple Chest” currently means Rare with a planned blue visual; Legendary is purple. Do not infer semantics from colors or names.
+The Common category chests and the mixed Green/Purple/Legendary/Boss policies are now implemented in [Advanced Chest Types](Advanced-Chest-Types.md). Keep rarity, category filtering, number of offered choices, number of permitted claims, evolution policy and presentation separate. The GDD working name “Purple Chest” currently means Rare with a planned blue visual; Legendary is purple. Do not infer semantics from colors or names.
 
-Item-level rewards, evolutions, two-choice claim sessions and gold fallback/Golden Chest remain unimplemented. Adding rarity metadata must not imply those behaviors already work.
+The remaining chest work is source balancing and later gameplay wiring. Evolution choices, gold fallback and Golden Chest remain intentionally deferred. Adding rarity metadata or multi-claim support must not imply those behaviors already work.
 
 ## Verification
 

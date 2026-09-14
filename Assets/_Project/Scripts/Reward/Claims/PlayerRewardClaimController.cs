@@ -60,17 +60,17 @@ namespace ProjectFirstRun.Rewards.Claims
 
             EnsureRegistry();
 
+            if (session.IsClaimed || session.HasClaimed(definition))
+            {
+                return RewardClaimResult.AlreadyClaimed;
+            }
+
             /*
              * Offer membership is validated before any
              * acquisition side-effect.
              */
             session.ValidateSelection(
                 definition);
-
-            if (session.IsClaimed)
-            {
-                return RewardClaimResult.AlreadyClaimed;
-            }
 
             IRewardClaimHandler handler =
                 _registry.Resolve(

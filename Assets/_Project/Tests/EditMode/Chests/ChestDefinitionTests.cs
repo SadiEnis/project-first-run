@@ -78,6 +78,8 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
                 _definition.RequestedChoiceCount,
                 Is.EqualTo(3));
 
+            Assert.That(_definition.MaxSelections, Is.EqualTo(1));
+
             Assert.That(
                 _definition.WorldPrefab,
                 Is.SameAs(_worldPrefab));
@@ -88,6 +90,27 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
         {
             Assert.That(_definition.Rarity, Is.EqualTo(ChestRarity.Common));
             Assert.That(_definition.RequestedChoiceCount, Is.EqualTo(3));
+            Assert.That(_definition.MaxSelections, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void MultiClaimConfiguration_AllowsSelectionsUpToRequestedChoices()
+        {
+            SetField("_requestedChoiceCount", 5);
+            SetField("_maxSelections", 2);
+
+            Assert.DoesNotThrow(() => _definition.Validate());
+            Assert.That(_definition.RequestedChoiceCount, Is.EqualTo(5));
+            Assert.That(_definition.MaxSelections, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Validate_WithMoreSelectionsThanChoices_Throws()
+        {
+            SetField("_requestedChoiceCount", 3);
+            SetField("_maxSelections", 4);
+
+            Assert.Throws<System.InvalidOperationException>(() => _definition.Validate());
         }
 
         [TestCase(ChestRarity.Common, 0)]

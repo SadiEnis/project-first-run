@@ -11,8 +11,8 @@ namespace ProjectFirstRun.UI.Rewards
     public sealed class RewardSelectionView : MonoBehaviour
     {
         private const string HeaderLabel = "Choose a Reward";
-        private const string RemainingSelectionsLabel =
-            "Selections Remaining: 1";
+        private const string RemainingSelectionsLabelFormat =
+            "Selections Remaining: {0}";
 
         [SerializeField]
         private GameObject _modalRoot;
@@ -78,10 +78,18 @@ namespace ProjectFirstRun.UI.Rewards
 
         public void Show(RewardOffer offer)
         {
-            Show(offer, null);
+            Show(offer, null, 1);
         }
 
         public void Show(RewardOffer offer, Func<ItemDefinition, string> stateResolver)
+        {
+            Show(offer, stateResolver, 1);
+        }
+
+        public void Show(
+            RewardOffer offer,
+            Func<ItemDefinition, string> stateResolver,
+            int selectionsRemaining)
         {
             if (offer == null)
             {
@@ -104,6 +112,14 @@ namespace ProjectFirstRun.UI.Rewards
                     "Reward offer exceeds the configured choice view count.");
             }
 
+            if (selectionsRemaining <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(selectionsRemaining),
+                    selectionsRemaining,
+                    "Selections remaining must be greater than zero.");
+            }
+
             for (int index = 0;
                  index < _choiceViews.Length;
                  index++)
@@ -123,11 +139,47 @@ namespace ProjectFirstRun.UI.Rewards
 
             _headerText.text = HeaderLabel;
             _remainingSelectionsText.text =
-                RemainingSelectionsLabel;
+                string.Format(
+                    RemainingSelectionsLabelFormat,
+                    selectionsRemaining);
             _feedbackText.text = string.Empty;
             _modalRoot.SetActive(true);
 
             SelectFirstChoice();
+        }
+
+        public void MarkSelectionCommitted(
+            ItemDefinition definition,
+            int selectionsRemaining)
+        {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
+            }
+
+            if (selectionsRemaining <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(selectionsRemaining),
+                    selectionsRemaining,
+                    "Selections remaining must be greater than zero.");
+            }
+
+            for (int index = 0; index < _choiceViews.Length; index++)
+            {
+                RewardChoiceView choiceView = _choiceViews[index];
+                if (choiceView != null &&
+                    ReferenceEquals(choiceView.Definition, definition))
+                {
+                    choiceView.SetInteractable(false);
+                    break;
+                }
+            }
+
+            _remainingSelectionsText.text =
+                string.Format(
+                    RemainingSelectionsLabelFormat,
+                    selectionsRemaining);
         }
 
         public void Hide()

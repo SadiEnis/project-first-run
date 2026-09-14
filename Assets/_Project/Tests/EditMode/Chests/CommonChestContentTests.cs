@@ -111,9 +111,13 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
                 var serialized = new SerializedObject(bootstrap);
                 Assert.That(serialized.FindProperty("_chestDefinition").objectReferenceValue, Is.EqualTo(Load("Weapon")));
                 var extra = serialized.FindProperty("_additionalChestDefinitions");
-                Assert.That(extra.arraySize, Is.EqualTo(2));
+                Assert.That(extra.arraySize, Is.EqualTo(6));
                 Assert.That(extra.GetArrayElementAtIndex(0).objectReferenceValue, Is.EqualTo(Load("Ability")));
                 Assert.That(extra.GetArrayElementAtIndex(1).objectReferenceValue, Is.EqualTo(Load("Upgrade")));
+                Assert.That(extra.GetArrayElementAtIndex(2).objectReferenceValue, Is.EqualTo(LoadAdvanced("Green")));
+                Assert.That(extra.GetArrayElementAtIndex(3).objectReferenceValue, Is.EqualTo(LoadAdvanced("Purple")));
+                Assert.That(extra.GetArrayElementAtIndex(4).objectReferenceValue, Is.EqualTo(LoadAdvanced("Legendary")));
+                Assert.That(extra.GetArrayElementAtIndex(5).objectReferenceValue, Is.EqualTo(LoadAdvanced("Boss")));
                 var upgrade = scene.GetRootGameObjects().SelectMany(go => go.GetComponentsInChildren<UpgradeDevelopmentBootstrap>(true)).Single();
                 Assert.That(upgrade.enabled, Is.False);
                 var switching = scene.GetRootGameObjects().SelectMany(go => go.GetComponentsInChildren<WeaponSwitchingDevelopmentBootstrap>(true)).Single();
@@ -131,6 +135,9 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
         }
 
         private static ChestDefinition Load(string name) =>
+            AssetDatabase.LoadAssetAtPath<ChestDefinition>($"Assets/_Project/Data/Chests/Dev/CD_{name}Chest.asset");
+
+        private static ChestDefinition LoadAdvanced(string name) =>
             AssetDatabase.LoadAssetAtPath<ChestDefinition>($"Assets/_Project/Data/Chests/Dev/CD_{name}Chest.asset");
         private static void SetField(object target, string name, object value) =>
             target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);

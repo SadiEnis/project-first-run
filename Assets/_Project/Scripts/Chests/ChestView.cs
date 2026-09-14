@@ -27,7 +27,6 @@ namespace ProjectFirstRun.Chests
             ValidateReferences();
             if (_presentedDefinition == definition) return;
             _presentedDefinition = definition;
-            if (definition.RewardCategory == ChestRewardCategory.Mixed) return;
 
             // Per-instance property blocks leave shared prefab materials unchanged.
             if (definition.Rarity == ChestRarity.Common)
@@ -41,7 +40,11 @@ namespace ProjectFirstRun.Chests
                     renderer.SetPropertyBlock(tint);
                 }
             }
-            _typeLabel = CreateLabel("Type label", new Vector3(0f, 1.65f, 0f), Quaternion.identity, definition.DisplayName);
+            string labelText = definition.DisplayName;
+            if (definition.Rarity != ChestRarity.Common)
+                labelText += $" ({definition.Rarity})";
+
+            _typeLabel = CreateLabel("Type label", new Vector3(0f, 1.65f, 0f), Quaternion.identity, labelText);
             AlignLabelToCamera();
         }
 

@@ -39,7 +39,11 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
             {
                 var wave = AssetDatabase.LoadAssetAtPath<EnemyWaveDefinition>($"Assets/_Project/Data/Waves/Test/{path}.asset");
                 Assert.That(wave.Entries, Is.Not.Empty);
-                Assert.That(wave.Entries.All(entry => entry.EnemyDefinition == enemy), Is.True);
+                foreach (var entry in wave.Entries)
+                    Assert.That(entry.EnemyDefinition.ChestDropProfile,
+                        Is.SameAs(entry.EnemyDefinition.Rank == EnemyRank.Elite ? elite : normal));
+                if (path == "EW_Test_01")
+                    Assert.That(wave.Entries.All(entry => entry.EnemyDefinition == enemy), Is.True);
             }
             Assert.That(AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserBasic.asset").ChestDropProfile,
                 Is.Null, "Legacy attack-only scenes must not require the chest scene services.");

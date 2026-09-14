@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 374404520601038828}
   - component: {fileID: 3804923725767723255}
   - component: {fileID: 3804923725767723256}
+  - component: {fileID: 3804923725767723257}
   m_Layer: 6
   m_Name: Enemy_ChaserBasic
   m_TagString: Untagged
@@ -26,6 +27,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &3804923725767723257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705300962026560741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 230f4240c66846f797f3b324643f1414, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Enemies.Presentation.EnemyChargeView
 --- !u!114 &3804923725767723256
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -241,6 +241,29 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
                 pickup => pickup != template), Has.Length.EqualTo(1));
         }
 
+        [TestCase(EnemyRank.Normal)]
+        [TestCase(EnemyRank.Elite)]
+        public void ChargerDeath_GrantsOneXPPickupAndOneChestAttempt(EnemyRank rank)
+        {
+            SetField(_enemyDefinition, "_behavior", EnemyBehavior.Charger);
+            SetField(_enemyDefinition, "_rank", rank);
+            SetField(_enemyDefinition, "_experienceReward", rank == EnemyRank.Elite ? 50 : 25);
+            _enemy.Initialize(_enemyDefinition, _health.transform, _registry);
+            var attack = _enemy.gameObject.AddComponent<EnemyAttackController>();
+            attack.Initialize(_enemyDefinition, _health.transform, _health);
+            var template = NewObject("XPTemplate").AddComponent<ExperiencePickup>();
+            template.transform.position = Vector3.one * 100f;
+            template.GetComponent<SphereCollider>().isTrigger = true;
+            template.GetComponent<Rigidbody>().isKinematic = true;
+            SetField(_enemy.gameObject.AddComponent<EnemyExperienceDrop>(), "_pickupPrefab", template);
+            Damage(1000f); Damage(1000f);
+            Assert.That(_source.PendingChestCount, Is.EqualTo(1));
+            Assert.That(_random.Calls, Is.EqualTo(1));
+            Assert.That(_registry.ActiveCount, Is.Zero);
+            Assert.That(Array.FindAll(Object.FindObjectsByType<ExperiencePickup>(FindObjectsSortMode.None),
+                pickup => pickup != template), Has.Length.EqualTo(1));
+        }
+
         [TestCase("missing_source")]
         [TestCase("missing_component")]
         public void EnabledProfile_RejectsIncompleteSpawnerCompositionBeforeInstantiation(string reason)
@@ -257,9 +280,13 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             Assert.That(_registry.ActiveCount, Is.EqualTo(1));
         }
 
-        [Test]
-        public void EnemySpawner_InjectsDropSourceIntoNewInstance()
+        [TestCase(EnemyBehavior.Chaser, EnemyRank.Normal)]
+        [TestCase(EnemyBehavior.Charger, EnemyRank.Normal)]
+        [TestCase(EnemyBehavior.Charger, EnemyRank.Elite)]
+        public void EnemySpawner_InjectsDropSourceIntoNewInstance(EnemyBehavior behavior, EnemyRank rank)
         {
+            SetField(_enemyDefinition, "_behavior", behavior);
+            SetField(_enemyDefinition, "_rank", rank);
             var enemySpawner = NewObject("EnemySpawner").AddComponent<EnemySpawner>();
             SetField(enemySpawner, "_chestDropSource", _source);
             _enemy.gameObject.AddComponent<EnemyAttackController>();

@@ -27,3 +27,5 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 21. [Ödül Seviye Artırma Seçenekleri](Reward-Level-Up-Choices.md)
 22. [Evolution Temeli](Evolution-Foundation.md)
 23. [Gelişmiş Sandık Türleri](Advanced-Chest-Types.md)
+24. [Düşman Çeşitliliği Temeli](Enemy-Variety-Foundation.md)
+25. [Ranger / Menzilli Düşman Temeli](Ranged-Enemy-Foundation.md)

@@ -30,6 +30,15 @@ namespace ProjectFirstRun.Player
             _characterController = GetComponent<CharacterController>();
         }
 
+        public void Teleport(Vector3 position, Quaternion rotation)
+        {
+            bool wasEnabled = _characterController.enabled;
+            if (wasEnabled) _characterController.enabled = false;
+            transform.SetPositionAndRotation(position, rotation);
+            _verticalVelocity = 0f;
+            if (wasEnabled) _characterController.enabled = true;
+        }
+
         public void Tick(
             Vector2 moveInput,
             bool isSprinting,

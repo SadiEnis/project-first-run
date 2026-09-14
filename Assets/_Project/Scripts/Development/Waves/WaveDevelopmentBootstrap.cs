@@ -158,6 +158,13 @@ namespace ProjectFirstRun.Development.Waves
             return isValid;
         }
 
+        public void InitializeAdditionalWaveSystem(WaveController controller, ArenaWaveDefinition definition)
+        {
+            if (!ValidateReferences()) throw new InvalidOperationException("Missing wave dependencies.");
+            controller.Initialize(definition, new WaveEnemySpawner(_enemySpawner, _enemyRegistry,
+                _target, _targetHealth, new RoundRobinSpawnPointSelector(_spawnPoints)));
+        }
+
         private void LogMissing(
             string fieldName)
         {

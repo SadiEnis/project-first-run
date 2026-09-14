@@ -444,6 +444,9 @@ MonoBehaviour:
   _waveController: {fileID: 951855437}
   _playerDeathController: {fileID: 6938050018431126418}
   _waveBootstrap: {fileID: 312600234}
+  _secondArenaDefinition: {fileID: 11400000, guid: a13293d59886afb4891c17ae917cedc2, type: 2}
+  _exitPosition: {x: 0, y: 1, z: 7}
+  _nextEntryPosition: {x: 0, y: 0.1, z: -5}
 --- !u!1 &468034072
 GameObject:
   m_ObjectHideFlags: 0

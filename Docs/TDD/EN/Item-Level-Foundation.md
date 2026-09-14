@@ -24,6 +24,8 @@ Read-only entry properties expose category, stable ID, current level, maximum an
 
 ## Verification and exclusions
 
+2026-09-14 verification: **655 EditMode / 332 PlayMode passed** in the isolated Unity 6000.3.9f1 project. The 29 new EditMode cases cover this state foundation; the full PlayMode suite remains unchanged and passes. All nine new/changed Unity source, test and meta files matched the tested copy by SHA-256. This is automated validation of the state increment, not gameplay acceptance of level-up rewards.
+
 Test all three categories, initial and missing states, maximum boundaries, full slots, duplicate acquisition, independent runs, immutable public entries, read-only ownership lists, definition validation and maximum snapshots. Run both full suites for acquisition, weapon-switching, ability, upgrade and chest regressions.
 
 No new level effects, eight-level sample balance, item-level UI, reward eligibility changes, evolution, gold fallback, save migration or level debug buttons are part of this increment. No gameplay change is expected yet. Continue with runtime effect application before exposing upgrades as rewards.

@@ -24,6 +24,8 @@ Salt okunur kayıt özellikleri kategori, ID, mevcut/maksimum seviye ve maksimum
 
 ## Doğrulama ve kapsam dışı
 
+2026-09-14 doğrulaması: izole Unity 6000.3.9f1 projesinde **655 EditMode / 332 PlayMode geçti**. Yeni 29 EditMode senaryosu bu veri temelini kapsar; mevcut tam PlayMode paketi değiştirilmeden geçti. Yeni/değişen dokuz Unity kod, test ve meta dosyası SHA-256 ile test kopyasıyla eşleşti. Bu veri adımının otomatik doğrulamasıdır; sandıktan seviye artırmanın oynanış onayı değildir.
+
 Üç kategori, başlangıç/sahiplik yokluğu, maksimum sınırı, dolu slot, tekrar edinme, run bağımsızlığı, kayıtların dışarıdan değiştirilememesi, salt okunur sahiplik listeleri, tanım doğrulaması ve maksimum kopyası test edilir. Edinme, silah değiştirme, yetenek, geliştirme ve sandık regresyonları için iki tam test paketi çalıştırılır.
 
 Gerçek seviye etkileri, sekiz seviyelik örnek dengelemesi, seviye UI'ı, ödül uygunluğu değişikliği, evrim, altın telafisi, kayıt göçü ve debug seviye düğmesi kapsam dışıdır. Henüz oynanış değişikliği beklenmez. Ödül olarak seviye artışı açılmadan önce gerçek etkilerin uygulanmasıyla devam edilir.

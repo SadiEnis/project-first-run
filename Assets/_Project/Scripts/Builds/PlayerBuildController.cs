@@ -52,9 +52,11 @@ namespace ProjectFirstRun.Builds
                     nameof(itemDefinition));
             }
 
+            itemDefinition.ValidateLevelConfiguration();
             return _build.TryAdd(
                 itemDefinition.Category,
-                itemDefinition.StableId);
+                itemDefinition.StableId,
+                itemDefinition.MaximumLevel);
         }
 
         public bool Contains(

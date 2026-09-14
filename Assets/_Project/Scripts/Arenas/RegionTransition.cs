@@ -2,56 +2,83 @@ using System;
 
 namespace ProjectFirstRun.Arenas
 {
-    /// <summary>
-    /// Pure transition eligibility and consumption state. Traversal is performed by the caller.
-    /// </summary>
+    /// <summary>One connection with explicit direction and a single pending traversal.</summary>
     public sealed class RegionTransition
     {
+        public sealed class Attempt
+        {
+            public string FromId { get; }
+            public string ToId { get; }
+            internal Attempt(string fromId, string toId)
+            {
+                FromId = fromId;
+                ToId = toId;
+            }
+        }
+
+        private Attempt _pending;
         public string SourceId { get; }
         public string DestinationId { get; }
         public RegionTransitionRequirement Requirement { get; }
         public RegionTransitionTraversal Traversal { get; }
         public RegionTransitionDirection Direction { get; }
+        public bool SingleUse { get; }
         public bool IsConsumed { get; private set; }
+        public bool IsInProgress => _pending != null;
 
-        public RegionTransition(
-            string sourceId,
-            string destinationId,
-            RegionTransitionRequirement requirement,
-            RegionTransitionTraversal traversal,
-            RegionTransitionDirection direction)
+        public RegionTransition(string sourceId, string destinationId,
+            RegionTransitionRequirement requirement, RegionTransitionTraversal traversal,
+            RegionTransitionDirection direction, bool singleUse = false)
         {
             if (string.IsNullOrWhiteSpace(sourceId))
-                throw new ArgumentException("A transition requires a source identity.", nameof(sourceId));
-            if (string.IsNullOrWhiteSpace(destinationId))
-                throw new ArgumentException("A transition requires a destination identity.", nameof(destinationId));
-            if (sourceId == destinationId)
-                throw new ArgumentException("A transition source and destination must differ.");
-
+                throw new ArgumentException("A source identity is required.", nameof(sourceId));
+            if (string.IsNullOrWhiteSpace(destinationId) || sourceId == destinationId)
+                throw new ArgumentException("A distinct destination is required.", nameof(destinationId));
+            if (!Enum.IsDefined(typeof(RegionTransitionRequirement), requirement))
+                throw new ArgumentOutOfRangeException(nameof(requirement));
+            if (!Enum.IsDefined(typeof(RegionTransitionTraversal), traversal))
+                throw new ArgumentOutOfRangeException(nameof(traversal));
+            if (!Enum.IsDefined(typeof(RegionTransitionDirection), direction))
+                throw new ArgumentOutOfRangeException(nameof(direction));
             SourceId = sourceId;
             DestinationId = destinationId;
             Requirement = requirement;
             Traversal = traversal;
             Direction = direction;
+            SingleUse = singleUse;
         }
 
-        public bool CanUse(bool encounterCompleted, bool destinationAvailable)
+        public bool CanBegin(string fromId, bool encounterCompleted, bool destinationAvailable)
         {
-            if (IsConsumed || !destinationAvailable)
-                return false;
-
-            return Requirement == RegionTransitionRequirement.Free ||
-                encounterCompleted;
+            bool validDirection = fromId == SourceId ||
+                (Direction == RegionTransitionDirection.Returnable && fromId == DestinationId);
+            return validDirection && !IsConsumed && !IsInProgress && destinationAvailable &&
+                (Requirement == RegionTransitionRequirement.Free || encounterCompleted);
         }
 
-        public bool TryUse(bool encounterCompleted, bool destinationAvailable)
+        public bool TryBegin(string fromId, bool encounterCompleted,
+            bool destinationAvailable, out Attempt attempt)
         {
-            if (!CanUse(encounterCompleted, destinationAvailable))
+            attempt = null;
+            if (!CanBegin(fromId, encounterCompleted, destinationAvailable))
                 return false;
+            attempt = new Attempt(fromId, fromId == SourceId ? DestinationId : SourceId);
+            _pending = attempt;
+            return true;
+        }
 
-            if (Direction == RegionTransitionDirection.OneWay)
-                IsConsumed = true;
+        public bool Complete(Attempt attempt)
+        {
+            if (attempt == null || !ReferenceEquals(_pending, attempt)) return false;
+            _pending = null;
+            IsConsumed = SingleUse;
+            return true;
+        }
 
+        public bool Cancel(Attempt attempt)
+        {
+            if (attempt == null || !ReferenceEquals(_pending, attempt)) return false;
+            _pending = null;
             return true;
         }
     }

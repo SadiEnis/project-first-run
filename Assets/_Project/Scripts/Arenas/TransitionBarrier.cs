@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ProjectFirstRun.Arenas
 {
@@ -9,11 +10,13 @@ namespace ProjectFirstRun.Arenas
     public sealed class TransitionBarrier
     {
         private bool _closeRequested;
+        private readonly HashSet<int> _occupants = new HashSet<int>();
 
         public TransitionBarrierStatus Status { get; private set; } =
             TransitionBarrierStatus.Closed;
 
-        public bool IsPlayerInside { get; private set; }
+        public bool IsPlayerInside => _occupants.Count != 0;
+        public int OccupantCount => _occupants.Count;
         public bool IsCloseRequested => _closeRequested;
 
         public event Action Opened;
@@ -35,22 +38,17 @@ namespace ProjectFirstRun.Arenas
             return true;
         }
 
-        public bool NotifyPlayerEntered()
+        public bool NotifyPlayerEntered(int colliderId)
         {
-            if (Status != TransitionBarrierStatus.Open || IsPlayerInside)
-                return false;
-
-            IsPlayerInside = true;
-            return true;
+            return _occupants.Add(colliderId);
         }
 
-        public bool NotifyPlayerCleared()
+        public bool NotifyPlayerCleared(int colliderId)
         {
-            if (!IsPlayerInside)
+            if (!_occupants.Remove(colliderId))
                 return false;
 
-            IsPlayerInside = false;
-            if (!_closeRequested)
+            if (IsPlayerInside || !_closeRequested)
                 return true;
 
             _closeRequested = false;

@@ -1,4 +1,5 @@
 using System;
+using ProjectFirstRun.Builds;
 using ProjectFirstRun.Items;
 using ProjectFirstRun.Upgrades;
 
@@ -10,15 +11,24 @@ namespace ProjectFirstRun.Rewards.Claims
         private readonly Func<
             UpgradeDefinition,
             UpgradeAcquireResult> _tryAcquire;
+        private readonly Func<UpgradeDefinition, ItemLevelUpResult> _tryLevelUp;
 
         public UpgradeRewardClaimHandler(
             Func<UpgradeDefinition, UpgradeAcquireResult>
                 tryAcquire)
+            : this(tryAcquire, null)
+        {
+        }
+
+        public UpgradeRewardClaimHandler(
+            Func<UpgradeDefinition, UpgradeAcquireResult> tryAcquire,
+            Func<UpgradeDefinition, ItemLevelUpResult> tryLevelUp)
         {
             _tryAcquire =
                 tryAcquire ??
                 throw new ArgumentNullException(
                     nameof(tryAcquire));
+            _tryLevelUp = tryLevelUp;
         }
 
         public bool Supports(
@@ -44,6 +54,13 @@ namespace ProjectFirstRun.Rewards.Claims
                     $"does not support item category " +
                     $"'{definition.Category}'.",
                     nameof(definition));
+            }
+
+            if (_tryLevelUp != null)
+            {
+                ItemLevelUpResult levelResult = _tryLevelUp(upgradeDefinition);
+                if (levelResult == ItemLevelUpResult.LevelIncreased) return RewardClaimResult.Claimed;
+                if (levelResult == ItemLevelUpResult.MaximumLevelReached) return RewardClaimResult.AlreadyOwned;
             }
 
             UpgradeAcquireResult result =

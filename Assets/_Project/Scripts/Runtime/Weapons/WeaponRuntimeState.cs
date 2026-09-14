@@ -23,7 +23,23 @@ namespace ProjectFirstRun.Weapons
     /// </summary>
     public sealed class WeaponRuntimeState
     {
-        private readonly WeaponRuntimeConfig _config;
+        private WeaponRuntimeConfig _config;
+
+        public void ApplyConfiguration(in WeaponRuntimeConfig config)
+        {
+            ValidateConfiguration(config);
+            // Keep all live ammo and remaining timers; new timings apply to future actions.
+            _config = config;
+        }
+
+        internal void ValidateConfiguration(in WeaponRuntimeConfig config)
+        {
+            // Struct default values bypass the validating constructor.
+            _ = new WeaponRuntimeConfig(config.MagazineCapacity, config.StartingReserveAmmo,
+                config.ShotsPerSecond, config.ReloadDuration);
+            if (config.MagazineCapacity < MagazineCapacity)
+                throw new InvalidOperationException("A live weapon configuration cannot reduce magazine capacity.");
+        }
 
         public int MagazineCapacity =>
             _config.MagazineCapacity;

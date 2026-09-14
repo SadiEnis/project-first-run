@@ -1,5 +1,6 @@
 using System;
 using ProjectFirstRun.Abilities;
+using ProjectFirstRun.Builds;
 using ProjectFirstRun.Items;
 
 namespace ProjectFirstRun.Rewards.Claims
@@ -10,15 +11,24 @@ namespace ProjectFirstRun.Rewards.Claims
         private readonly Func<
             AbilityDefinition,
             AbilityAcquireResult> _tryAcquire;
+        private readonly Func<AbilityDefinition, ItemLevelUpResult> _tryLevelUp;
 
         public AbilityRewardClaimHandler(
             Func<AbilityDefinition, AbilityAcquireResult>
                 tryAcquire)
+            : this(tryAcquire, null)
+        {
+        }
+
+        public AbilityRewardClaimHandler(
+            Func<AbilityDefinition, AbilityAcquireResult> tryAcquire,
+            Func<AbilityDefinition, ItemLevelUpResult> tryLevelUp)
         {
             _tryAcquire =
                 tryAcquire ??
                 throw new ArgumentNullException(
                     nameof(tryAcquire));
+            _tryLevelUp = tryLevelUp;
         }
 
         public bool Supports(
@@ -44,6 +54,13 @@ namespace ProjectFirstRun.Rewards.Claims
                     $"does not support item category " +
                     $"'{definition.Category}'.",
                     nameof(definition));
+            }
+
+            if (_tryLevelUp != null)
+            {
+                ItemLevelUpResult levelResult = _tryLevelUp(abilityDefinition);
+                if (levelResult == ItemLevelUpResult.LevelIncreased) return RewardClaimResult.Claimed;
+                if (levelResult == ItemLevelUpResult.MaximumLevelReached) return RewardClaimResult.AlreadyOwned;
             }
 
             AbilityAcquireResult result =

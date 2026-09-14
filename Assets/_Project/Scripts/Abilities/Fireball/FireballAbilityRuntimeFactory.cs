@@ -85,10 +85,13 @@ namespace ProjectFirstRun.Abilities.Fireball
                     _damageSource,
                     _stats);
 
+            FireballRuntimeConfig[] levels = definition.CreateLevelConfigs();
+            executor.ApplyConfiguration(levels[0]);
             return new AbilityRuntimeEntry(
                 definition,
                 targetSelector,
-                executor);
+                executor,
+                new FireballAbilityLevelRuntime(levels, executor));
         }
 
         private void ValidateRuntimeDependencies()

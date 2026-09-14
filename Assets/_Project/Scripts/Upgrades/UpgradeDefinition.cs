@@ -17,6 +17,20 @@ namespace ProjectFirstRun.Upgrades
         private List<UpgradeStatModifierData> _statModifiers =
             new List<UpgradeStatModifierData>();
 
+        [SerializeField] private UpgradeLevelData[] _additionalLevels = Array.Empty<UpgradeLevelData>();
+
+        internal StatModifier[][] CreateLevelModifiers()
+        {
+            ValidateLevelConfiguration();
+            if (_additionalLevels == null || _additionalLevels.Length != MaximumLevel - 1)
+                throw new InvalidOperationException("Upgrade levels must match the configured maximum.");
+            var levels = new StatModifier[MaximumLevel][];
+            levels[0] = CreateRuntimeModifiers();
+            for (int i = 1; i < levels.Length; i++)
+                levels[i] = (_additionalLevels[i - 1] ?? throw new InvalidOperationException("Missing upgrade level.")).CreateModifiers(StableId);
+            return levels;
+        }
+
         public override ItemCategory Category =>
             ItemCategory.Upgrade;
 
@@ -30,6 +44,8 @@ namespace ProjectFirstRun.Upgrades
         public StatModifier[] CreateRuntimeModifiers()
         {
             ValidateStableId();
+
+            if (_statModifiers == null) throw new InvalidOperationException("Missing upgrade modifiers.");
 
             StatModifier[] runtimeModifiers =
                 new StatModifier[

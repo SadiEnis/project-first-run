@@ -81,11 +81,15 @@ namespace ProjectFirstRun.Tests.PlayMode.Development.Chests
                 Assert.That(view.VisualRoot.GetComponentsInChildren<TextMesh>(true).Length, Is.EqualTo(1), "Reenable must not duplicate labels.");
 
                 Assert.That(chest.TryOpen(), Is.EqualTo(ChestOpenResult.SelectionOpened), chest.Definition.DisplayName);
-                Assert.That(chest.ActiveSession.Offer.Choices.Count, Is.EqualTo(1), "One unowned sample remains per category in this starting build.");
-                var reward = chest.ActiveSession.Offer.Choices[0];
+                int expectedChoiceCount = i == 0 ? 2 : 1;
+                Assert.That(chest.ActiveSession.Offer.Choices.Count, Is.EqualTo(expectedChoiceCount),
+                    "The starting weapon also exposes its non-max level-up choice.");
+                var reward = chest.ActiveSession.Offer.Choices.First(choice =>
+                    build.GetLevel(choice.Category, choice.StableId) == 0);
                 Assert.That(reward.Category, Is.EqualTo((ItemCategory)i));
                 _selectionObject.GetComponentsInChildren<RewardChoiceView>(true)
-                    .First(choice => choice.gameObject.activeInHierarchy && choice.Button.interactable).Button.onClick.Invoke();
+                    .First(choice => choice.gameObject.activeInHierarchy && choice.Button.interactable &&
+                        ReferenceEquals(choice.Definition, reward)).Button.onClick.Invoke();
                 Assert.That(build.Contains(reward.Category, reward.StableId), Is.True);
                 Assert.That(chest.Status, Is.EqualTo(ChestStatus.Opened));
                 Assert.That(view.VisualRoot.activeSelf, Is.False);
@@ -95,9 +99,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Development.Chests
 
                 var request = new ChestSpawnRequest(chest.Definition, new Vector3(20f, 0f, i * 3f), Quaternion.identity);
                 var exhausted = spawner.Spawn(in request).ChestController;
-                Assert.That(exhausted.TryOpen(), Is.EqualTo(ChestOpenResult.NoEligibleRewards));
-                Assert.That(exhausted.Status, Is.EqualTo(ChestStatus.Available));
-                Assert.That(selection.IsOpen, Is.False);
+                Assert.That(exhausted.TryOpen(), Is.EqualTo(ChestOpenResult.SelectionOpened));
+                Assert.That(selection.Select(exhausted.ActiveSession.Offer.Choices.First(choice =>
+                    build.GetLevel(choice.Category, choice.StableId) > 0)),
+                    Is.EqualTo(RewardClaimResult.Claimed));
+                Assert.That(exhausted.Status, Is.EqualTo(ChestStatus.Opened));
             }
             Assert.Throws<System.InvalidOperationException>(() => bootstrap.SpawnChest());
             Object.DestroyImmediate(bootstrap.SpawnedChest.gameObject);

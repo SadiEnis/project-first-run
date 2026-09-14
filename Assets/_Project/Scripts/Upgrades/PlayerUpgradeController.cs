@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using ProjectFirstRun.Builds;
+using ProjectFirstRun.Items;
 using ProjectFirstRun.Stats;
 using UnityEngine;
 
@@ -14,6 +16,14 @@ namespace ProjectFirstRun.Upgrades
     {
         private PlayerBuildController _buildController;
         private PlayerStatsController _statsController;
+        private readonly Dictionary<string, RuntimeEntry> _entries = new Dictionary<string, RuntimeEntry>(StringComparer.Ordinal);
+
+        private sealed class RuntimeEntry
+        {
+            public UpgradeDefinition Definition;
+            public StatModifier[][] Levels;
+            public int Level = 1;
+        }
 
         public event Action<UpgradeDefinition>
             UpgradeAcquired;
@@ -51,8 +61,8 @@ namespace ProjectFirstRun.Upgrades
              * A malformed upgrade must not be inserted into
              * the build before its effects are known to be valid.
              */
-            StatModifier[] runtimeModifiers =
-                definition.CreateRuntimeModifiers();
+            StatModifier[][] levels = definition.CreateLevelModifiers();
+            _statsController.Stats.ValidateReplacement(Array.Empty<StatModifier>(), levels[0]);
 
             PlayerBuildAddResult buildResult =
                 _buildController.TryAdd(
@@ -61,8 +71,9 @@ namespace ProjectFirstRun.Upgrades
             switch (buildResult)
             {
                 case PlayerBuildAddResult.Added:
-                    ApplyModifiers(
-                        runtimeModifiers);
+                    _entries.Add(definition.StableId, new RuntimeEntry { Definition = definition, Levels = levels });
+                    _statsController.Stats.ReplaceWithoutNotification(Array.Empty<StatModifier>(), levels[0]);
+                    _statsController.Stats.NotifyChanged();
 
                     UpgradeAcquired?.Invoke(
                         definition);
@@ -82,18 +93,28 @@ namespace ProjectFirstRun.Upgrades
             }
         }
 
-        private void ApplyModifiers(
-            StatModifier[] modifiers)
+        public ItemLevelUpResult TryLevelUp(UpgradeDefinition definition)
         {
-            for (int index = 0;
-                 index < modifiers.Length;
-                 index++)
-            {
-                _statsController
-                    .Stats
-                    .Add(
-                        modifiers[index]);
-            }
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            ValidateDependencies();
+            bool owns = _buildController.Build.TryGetItem(ItemCategory.Upgrade, definition.StableId, out var owned);
+            bool installed = _entries.TryGetValue(definition.StableId, out var entry);
+            if (owns != installed) throw new InvalidOperationException("Upgrade ownership/runtime mismatch.");
+            if (!owns) return ItemLevelUpResult.NotOwned;
+            if (!ReferenceEquals(entry.Definition, definition) || entry.Level != owned.Level || entry.Levels.Length != owned.MaximumLevel)
+                throw new InvalidOperationException("Upgrade definition or level mismatch.");
+            var previous = entry.Levels[entry.Level - 1];
+            // Validate installed effects even when capped.
+            _statsController.Stats.ValidateReplacement(previous, Array.Empty<StatModifier>());
+            if (owned.IsAtMaximumLevel) return ItemLevelUpResult.MaximumLevelReached;
+            var next = entry.Levels[entry.Level];
+            _statsController.Stats.ValidateReplacement(previous, next);
+            var result = _buildController.Build.TryLevelUp(ItemCategory.Upgrade, definition.StableId);
+            if (result != ItemLevelUpResult.LevelIncreased) throw new InvalidOperationException("Upgrade level changed after preflight.");
+            entry.Level++;
+            _statsController.Stats.ReplaceWithoutNotification(previous, next);
+            _statsController.Stats.NotifyChanged();
+            return result;
         }
 
         private void ValidateDependencies()

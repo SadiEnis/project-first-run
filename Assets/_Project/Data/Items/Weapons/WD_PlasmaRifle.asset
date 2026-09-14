@@ -25,3 +25,33 @@ MonoBehaviour:
   _startingReserveAmmo: 48
   _shotsPerSecond: 5
   _reloadDuration: 1.5
+  _maximumLevel: 8
+  _additionalLevels:
+  - _damage: 30
+    _magazineCapacity: 12
+    _shotsPerSecond: 5
+    _reloadDuration: 1.5
+  - _damage: 30
+    _magazineCapacity: 16
+    _shotsPerSecond: 5
+    _reloadDuration: 1.5
+  - _damage: 30
+    _magazineCapacity: 16
+    _shotsPerSecond: 6
+    _reloadDuration: 1.5
+  - _damage: 35
+    _magazineCapacity: 16
+    _shotsPerSecond: 6
+    _reloadDuration: 1.5
+  - _damage: 35
+    _magazineCapacity: 16
+    _shotsPerSecond: 6
+    _reloadDuration: 1.2
+  - _damage: 35
+    _magazineCapacity: 20
+    _shotsPerSecond: 6
+    _reloadDuration: 1.2
+  - _damage: 40
+    _magazineCapacity: 20
+    _shotsPerSecond: 6
+    _reloadDuration: 1.2

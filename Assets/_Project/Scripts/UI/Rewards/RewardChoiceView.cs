@@ -77,6 +77,11 @@ namespace ProjectFirstRun.UI.Rewards
 
         public void Bind(ItemDefinition definition)
         {
+            Bind(definition, "NEW");
+        }
+
+        public void Bind(ItemDefinition definition, string stateLabel)
+        {
             if (definition == null)
             {
                 throw new ArgumentNullException(
@@ -89,7 +94,7 @@ namespace ProjectFirstRun.UI.Rewards
             _nameText.text = definition.DisplayName;
             _categoryText.text = definition.Category.ToString();
             _effectText.text = definition.GameplayEffect;
-            _stateText.text = "NEW";
+            _stateText.text = string.IsNullOrWhiteSpace(stateLabel) ? "NEW" : stateLabel;
 
             gameObject.SetActive(true);
         }

@@ -78,6 +78,11 @@ namespace ProjectFirstRun.UI.Rewards
 
         public void Show(RewardOffer offer)
         {
+            Show(offer, null);
+        }
+
+        public void Show(RewardOffer offer, Func<ItemDefinition, string> stateResolver)
+        {
             if (offer == null)
             {
                 throw new ArgumentNullException(
@@ -105,8 +110,10 @@ namespace ProjectFirstRun.UI.Rewards
             {
                 if (index < offer.ChoiceCount)
                 {
+                    ItemDefinition choice = offer.Choices[index];
                     _choiceViews[index].Bind(
-                        offer.Choices[index]);
+                        choice,
+                        stateResolver == null ? "NEW" : stateResolver(choice));
                 }
                 else
                 {

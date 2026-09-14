@@ -118,6 +118,24 @@ namespace ProjectFirstRun.Abilities
             return AbilityAcquireResult.Acquired;
         }
 
+        public ItemLevelUpResult TryLevelUp(AbilityDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            EnsureReady();
+            bool owns = _buildController.Build.TryGetItem(ItemCategory.Ability, definition.StableId, out var owned);
+            AbilityRuntimeEntry entry = _abilityController.GetEntry(definition);
+            if (owns != (entry != null)) throw new InvalidOperationException("Ability ownership/runtime mismatch.");
+            if (!owns) return ItemLevelUpResult.NotOwned;
+            if (entry == null || entry.Level != owned.Level || entry.MaximumLevel != owned.MaximumLevel)
+                throw new InvalidOperationException("Ability level-up requires matching definition, level and maximum.");
+            if (owned.IsAtMaximumLevel) return ItemLevelUpResult.MaximumLevelReached;
+            entry.ValidateNextLevel();
+            ItemLevelUpResult result = _buildController.Build.TryLevelUp(ItemCategory.Ability, definition.StableId);
+            if (result != ItemLevelUpResult.LevelIncreased) throw new InvalidOperationException("Ability level changed after preflight.");
+            entry.AdvanceLevel();
+            return result;
+        }
+
         private void EnsureReady()
         {
             if (_buildController == null)

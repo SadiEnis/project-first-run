@@ -7,6 +7,9 @@ namespace ProjectFirstRun.Builds
 {
     public sealed class PlayerBuild
     {
+        private readonly Dictionary<(ItemCategory Category, string StableId), PlayerBuildItem> _itemStates =
+            new Dictionary<(ItemCategory Category, string StableId), PlayerBuildItem>();
+
         private readonly List<string> _weapons =
             new List<string>();
 
@@ -53,7 +56,20 @@ namespace ProjectFirstRun.Builds
             ItemCategory slotType,
             string stableId)
         {
+            return TryAdd(slotType, stableId, 1);
+        }
+
+        public PlayerBuildAddResult TryAdd(
+            ItemCategory slotType,
+            string stableId,
+            int maximumLevel)
+        {
             ValidateStableId(stableId);
+            if (maximumLevel < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(maximumLevel),
+                    maximumLevel, "Maximum item level must be positive.");
+            }
 
             List<string> items =
                 GetMutableItems(slotType);
@@ -72,6 +88,7 @@ namespace ProjectFirstRun.Builds
             }
 
             items.Add(stableId);
+            _itemStates.Add((slotType, stableId), new PlayerBuildItem(slotType, stableId, maximumLevel));
 
             return PlayerBuildAddResult.Added;
         }
@@ -85,6 +102,30 @@ namespace ProjectFirstRun.Builds
             return ContainsInternal(
                 GetMutableItems(slotType),
                 stableId);
+        }
+
+        public bool TryGetItem(ItemCategory slotType, string stableId, out PlayerBuildItem item)
+        {
+            ValidateStableId(stableId);
+            _ = GetMutableItems(slotType);
+            return _itemStates.TryGetValue((slotType, stableId), out item);
+        }
+
+        public int GetLevel(ItemCategory slotType, string stableId)
+        {
+            return TryGetItem(slotType, stableId, out PlayerBuildItem item) ? item.Level : 0;
+        }
+
+        public ItemLevelUpResult TryLevelUp(ItemCategory slotType, string stableId)
+        {
+            if (!TryGetItem(slotType, stableId, out PlayerBuildItem item))
+            {
+                return ItemLevelUpResult.NotOwned;
+            }
+
+            return item.TryAdvance()
+                ? ItemLevelUpResult.LevelIncreased
+                : ItemLevelUpResult.MaximumLevelReached;
         }
 
         public int GetCount(

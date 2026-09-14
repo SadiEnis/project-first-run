@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using ProjectFirstRun.Abilities;
 
 namespace ProjectFirstRun.Abilities.Fireball
 {
@@ -22,6 +24,9 @@ namespace ProjectFirstRun.Abilities.Fireball
         [SerializeField, Min(0.01f)]
         private float _projectileLifetime = 5f;
 
+        [Header("Levels 2 and above (provisional effects)")]
+        [SerializeField] private FireballLevelData[] _additionalLevels = Array.Empty<FireballLevelData>();
+
         public float Damage =>
             _damage;
 
@@ -33,6 +38,18 @@ namespace ProjectFirstRun.Abilities.Fireball
 
         public float ProjectileLifetime =>
             _projectileLifetime;
+
+        internal FireballRuntimeConfig[] CreateLevelConfigs()
+        {
+            ValidateLevelConfiguration();
+            if (_additionalLevels == null || _additionalLevels.Length != MaximumLevel - 1)
+                throw new InvalidOperationException("Fireball level data must match its configured maximum.");
+            var levels = new FireballRuntimeConfig[MaximumLevel];
+            levels[0] = new FireballRuntimeConfig(CreateRuntimeConfig(), _damage, _projectileSpeed, _projectileLifetime);
+            for (int i = 1; i < levels.Length; i++)
+                levels[i] = (_additionalLevels[i - 1] ?? throw new InvalidOperationException("Missing Fireball level data.")).CreateConfig(_projectileLifetime);
+            return levels;
+        }
 
         protected override void OnValidate()
         {

@@ -1,3 +1,4 @@
+using System;
 using ProjectFirstRun.Items;
 using UnityEngine;
 
@@ -36,6 +37,27 @@ namespace ProjectFirstRun.Weapons
 
         [SerializeField, Min(0.01f)]
         private float _reloadDuration = 1.5f;
+
+        [Header("Levels 2 and above (absolute values)")]
+        [SerializeField] private WeaponLevelData[] _additionalLevels = Array.Empty<WeaponLevelData>();
+
+        internal WeaponLevelConfig[] CreateLevelConfigs()
+        {
+            ValidateLevelConfiguration();
+            if (_additionalLevels == null || _additionalLevels.Length != MaximumLevel - 1)
+                throw new InvalidOperationException("Weapon level data must match its configured maximum.");
+            var levels = new WeaponLevelConfig[MaximumLevel];
+            levels[0] = new WeaponLevelConfig(_baseDamage, CreateRuntimeConfig());
+            for (int i = 1; i < levels.Length; i++)
+            {
+                if (_additionalLevels[i - 1] == null)
+                    throw new InvalidOperationException("Weapon level data is missing.");
+                levels[i] = _additionalLevels[i - 1].CreateConfig(_startingReserveAmmo);
+                if (levels[i].Runtime.MagazineCapacity < levels[i - 1].Runtime.MagazineCapacity)
+                    throw new InvalidOperationException("Weapon level progression cannot reduce magazine capacity.");
+            }
+            return levels;
+        }
 
         public override ItemCategory Category =>
             ItemCategory.Weapon;

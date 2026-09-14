@@ -17,6 +17,29 @@ MonoBehaviour:
   _gameplayEffect: Launches a projectile that deals 25 damage. 2 second cooldown.
   _cooldown: 2
   _damage: 25
+  _maximumLevel: 8
+  _additionalLevels:
+  - _cooldown: 2
+    _damage: 30
+    _projectileSpeed: 12
+  - _cooldown: 1.75
+    _damage: 30
+    _projectileSpeed: 12
+  - _cooldown: 1.75
+    _damage: 35
+    _projectileSpeed: 12
+  - _cooldown: 1.75
+    _damage: 35
+    _projectileSpeed: 14
+  - _cooldown: 1.5
+    _damage: 35
+    _projectileSpeed: 14
+  - _cooldown: 1.5
+    _damage: 40
+    _projectileSpeed: 14
+  - _cooldown: 1.25
+    _damage: 45
+    _projectileSpeed: 14
   _projectilePrefab: {fileID: -8950674959978754803, guid: 2e5b82cedb8361e488c365735d709892, type: 3}
   _projectileSpeed: 12
   _projectileLifetime: 5

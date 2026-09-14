@@ -11,6 +11,7 @@ namespace ProjectFirstRun.Abilities.Fireball
         private readonly FireballDefinition _definition;
         private readonly GameObject _damageSource;
         private readonly PlayerStatCollection _stats;
+        private FireballRuntimeConfig _config;
 
         public FireballAbilityExecutor(
             FireballDefinition definition,
@@ -32,7 +33,13 @@ namespace ProjectFirstRun.Abilities.Fireball
                 stats ??
                 throw new ArgumentNullException(
                     nameof(stats));
+
+            _config = new FireballRuntimeConfig(
+                definition.CreateRuntimeConfig(), definition.Damage,
+                definition.ProjectileSpeed, definition.ProjectileLifetime);
         }
+
+        internal void ApplyConfiguration(FireballRuntimeConfig config) => _config = config;
 
         public AbilityExecutionResult TryExecute(
             in AbilityExecutionContext context)
@@ -88,8 +95,8 @@ namespace ProjectFirstRun.Abilities.Fireball
                 projectile.Initialize(
                     direction,
                     damage,
-                    _definition.ProjectileSpeed,
-                    _definition.ProjectileLifetime,
+                    _config.ProjectileSpeed,
+                    _config.ProjectileLifetime,
                     _damageSource);
             }
             catch
@@ -108,7 +115,7 @@ namespace ProjectFirstRun.Abilities.Fireball
             float damage =
                 _stats.Evaluate(
                     PlayerStatType.AbilityDamage,
-                    _definition.Damage);
+                    _config.Damage);
 
             if (float.IsNaN(damage) ||
                 float.IsInfinity(damage) ||

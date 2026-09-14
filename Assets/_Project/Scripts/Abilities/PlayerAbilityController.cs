@@ -84,6 +84,14 @@ namespace ProjectFirstRun.Abilities
             return _entries.Contains(entry);
         }
 
+        public AbilityRuntimeEntry GetEntry(AbilityDefinition definition)
+        {
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            foreach (AbilityRuntimeEntry entry in _entries)
+                if (ReferenceEquals(entry.Definition, definition)) return entry;
+            return null;
+        }
+
         public void SetAbilityControlEnabled(
             bool isEnabled)
         {

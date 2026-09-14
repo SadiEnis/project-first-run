@@ -75,11 +75,12 @@ namespace ProjectFirstRun.Rewards
             ValidateStableId(
                 candidate.StableId);
 
-            if (playerBuild.Contains(
+            if (playerBuild.TryGetItem(
                     candidate.Category,
-                    candidate.StableId))
+                    candidate.StableId,
+                    out var owned))
             {
-                return false;
+                return !owned.IsAtMaximumLevel;
             }
 
             if (!playerBuild.HasFreeSlot(

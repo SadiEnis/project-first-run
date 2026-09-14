@@ -22,3 +22,4 @@ Project First Run is the current development codename. The final commercial titl
 16. [Common Category Chests](Common-Chest-Types.md)
 17. [Item Level Foundation](Item-Level-Foundation.md)
 18. [Weapon Level Effects](Weapon-Level-Effects.md)
+19. [Upgrade Level Effects](Upgrade-Level-Effects.md)

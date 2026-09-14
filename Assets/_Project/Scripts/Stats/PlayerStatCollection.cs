@@ -48,6 +48,29 @@ namespace ProjectFirstRun.Stats
             Changed?.Invoke();
         }
 
+        // Internal transaction support: callers validate, commit their state, replace, then notify.
+        internal void ValidateReplacement(StatModifier[] previous, StatModifier[] next)
+        {
+            if (previous == null || next == null) throw new ArgumentNullException();
+            var seen = new HashSet<StatModifier>();
+            foreach (var modifier in previous)
+                if (modifier == null || !seen.Add(modifier) || !_modifiers.Contains(modifier))
+                    throw new InvalidOperationException("Expected modifier is missing or duplicated.");
+            seen.Clear();
+            foreach (var modifier in next)
+                if (modifier == null || !seen.Add(modifier) || _modifiers.Contains(modifier))
+                    throw new InvalidOperationException("Replacement modifier is null or already installed.");
+        }
+
+        internal void ReplaceWithoutNotification(StatModifier[] previous, StatModifier[] next)
+        {
+            ValidateReplacement(previous, next);
+            foreach (var modifier in previous) _modifiers.Remove(modifier);
+            _modifiers.AddRange(next);
+        }
+
+        internal void NotifyChanged() => Changed?.Invoke();
+
         public bool Remove(
             StatModifier modifier)
         {

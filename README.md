@@ -10,7 +10,8 @@ An in-development gameplay prototype focused on explicit state ownership, data-d
 - Weapon acquisition and switching with ammunition state preserved per weapon.
 - Player build ownership and capacity, abilities, stats, and upgrades.
 - Run-owned item level state: level-one acquisition, configured maximum snapshots, one-step advancement and no extra slot consumption.
-- Weapon level effects: snapshotted damage/capacity/fire-rate/reload profiles, preserving existing ammo and remaining timers. The two sample weapons have eight provisional levels, accessible through the runtime controller. Chest level-up rewards/UI and ability/upgrade level effects are not connected yet.
+- Weapon level effects: snapshotted damage/capacity/fire-rate/reload profiles, preserving existing ammo and remaining timers. The two sample weapons have eight provisional levels, accessible through the runtime controller.
+- Upgrade level effects: complete snapshotted modifier sets replace previous effects without stacking or consuming extra slots. Development Damage Boost uses three provisional levels (+20%, +30%, +40%). Ability levels and chest level-up rewards/UI are not connected yet.
 - Enemy spawning, attacks, death handling, and wave progression.
 - Reward eligibility, offers, single-use claims, and a modal selection UI.
 - World chests: interaction opens a reward offer; claiming the reward consumes the chest.
@@ -50,13 +51,14 @@ The chest bootstrap is an Editor-only development fixture. This scene demonstrat
 - [Common category chests and sample acquisitions](Docs/TDD/EN/Common-Chest-Types.md).
 - [Item level state foundation and remaining integration](Docs/TDD/EN/Item-Level-Foundation.md).
 - [Weapon level effects and runtime preservation](Docs/TDD/EN/Weapon-Level-Effects.md).
+- [Upgrade level effects and modifier replacement](Docs/TDD/EN/Upgrade-Level-Effects.md).
 - [Game design and planned direction](Docs/GDD/GDD_EN.md).
 
 Content configuration is separated from mutable runtime state. Pure C# objects own gameplay rules where practical; Unity components provide scene composition, input, presentation, and lifecycle integration.
 
 ## Verification
 
-Run both suites through Unity's Test Runner window. Weapon level effects validation on **2026-09-14** passed **666 EditMode** and **340 PlayMode** tests in an isolated Unity 6000.3.9f1 project. This increment adds 11 EditMode and eight PlayMode cases for configuration validation, active/inactive weapons, damage modifiers, progression snapshots and ammo/timer preservation. All 13 new/changed Unity asset, source, test and meta files matched the test copy by SHA-256. These are recorded automated results, not a live CI badge or gameplay acceptance of level-up rewards, which are not connected yet. The preceding item level state foundation passed 655 EditMode and 332 PlayMode tests.
+Run both suites through Unity's Test Runner window. Upgrade level effects validation on **2026-09-14** passed **666 EditMode** and **348 PlayMode** tests in an isolated Unity 6000.3.9f1 project. Eight new PlayMode cases cover modifier replacement, progression snapshots, maximum/identity boundaries, invalid content and subscriber exceptions. All eight changed/new Unity files matched the tested copy by SHA-256. These are recorded automated results, not a live CI badge or gameplay acceptance of level-up rewards, which are not connected yet. The preceding weapon level effects passed 666 EditMode / 340 PlayMode; item level state foundation passed 655 EditMode / 332 PlayMode.
 
 The preceding Common chest stage passed 626 EditMode / 332 PlayMode tests and its three starter chest types were subsequently accepted in gameplay by the owner. Earlier XP, pickup attraction, level-up chest and enemy death drop stages were also manually validated.
 

@@ -22,3 +22,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 16. [Common Kategori Sandıkları](Common-Chest-Types.md)
 17. [Eşya Seviyesi Temeli](Item-Level-Foundation.md)
 18. [Silah Seviyesi Etkileri](Weapon-Level-Effects.md)
+19. [Geliştirme Seviyesi Etkileri](Upgrade-Level-Effects.md)

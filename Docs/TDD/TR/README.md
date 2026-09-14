@@ -29,3 +29,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 23. [Gelişmiş Sandık Türleri](Advanced-Chest-Types.md)
 24. [Düşman Çeşitliliği Temeli](Enemy-Variety-Foundation.md)
 25. [Ranger / Menzilli Düşman Temeli](Ranged-Enemy-Foundation.md)
+26. [Arena ve Run Akışı Temeli](Arena-Run-Flow.md)

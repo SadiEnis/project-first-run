@@ -39,3 +39,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 33. [Harita İçi İlerleme ve Kaynaklar](Map-Progression-Resources.md)
 34. [Sahneler Arası Harita Geçişi](Scene-Travel.md)
 35. [Run Sonucu ve Yeniden Başlatma](Run-Outcome-Restart.md)
+36. [Oynanabilir Harita Fixture'ı](Playable-Map-Fixture.md)

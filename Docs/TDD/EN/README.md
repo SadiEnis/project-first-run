@@ -39,3 +39,4 @@ Project First Run is the current development codename. The final commercial titl
 33. [Map-local Progression and Resources](Map-Progression-Resources.md)
 34. [Cross-scene Map Travel](Scene-Travel.md)
 35. [Run Outcome and Restart](Run-Outcome-Restart.md)
+36. [Playable Map Fixture](Playable-Map-Fixture.md)

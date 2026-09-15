@@ -38,3 +38,4 @@ Project First Run is the current development codename. The final commercial titl
 32. [Region Preparation](Region-Preparation.md)
 33. [Map-local Progression and Resources](Map-Progression-Resources.md)
 34. [Cross-scene Map Travel](Scene-Travel.md)
+35. [Run Outcome and Restart](Run-Outcome-Restart.md)

@@ -22,6 +22,7 @@ namespace ProjectFirstRun.Arenas
         [SerializeField] private RegionTransitionDirection _direction;
         [SerializeField] private RegionTransitionRequirement _requirement;
         [SerializeField] private bool _singleUse;
+        [SerializeField] private PreparedRegionEncounter _destinationPreparation;
         [SerializeField] private UnityEvent _opened = new UnityEvent();
         [SerializeField] private UnityEvent _closed = new UnityEvent();
 
@@ -34,10 +35,14 @@ namespace ProjectFirstRun.Arenas
         private Bounds _blockerBounds;
         private Matrix4x4 _blockerTransform;
         private bool _configured;
+        private bool _requiresDestinationPreparation;
 
         public TransitionBarrier Barrier { get; } = new TransitionBarrier();
         public string CurrentRegionId { get; private set; }
         public bool DestinationAvailable { get; set; } = true;
+        private bool DestinationReady => DestinationAvailable &&
+            (!_requiresDestinationPreparation ||
+                (_destinationPreparation != null && _destinationPreparation.IsReadyForPassage));
         public bool IsTransitioning => _attempt != null;
         public event Action<string> TransitionCompleted;
 
@@ -66,6 +71,7 @@ namespace ProjectFirstRun.Arenas
             _player = player;
             _health = health;
             _transition = transition;
+            _requiresDestinationPreparation |= _destinationPreparation != null;
             _encounter = encounter;
             _blockerBounds = blocker != null ? blocker.bounds : default;
             _blockerTransform = blocker != null ? blocker.transform.localToWorldMatrix : default;
@@ -82,6 +88,15 @@ namespace ProjectFirstRun.Arenas
             if (_configured) throw new InvalidOperationException("Bind before configuration.");
             _encounter = encounter;
         }
+
+        public void BindPreparation(PreparedRegionEncounter preparation)
+        {
+            if (preparation == null) throw new ArgumentNullException(nameof(preparation));
+            _destinationPreparation = preparation;
+            _requiresDestinationPreparation = true;
+        }
+
+        private void Awake() => _requiresDestinationPreparation = _destinationPreparation != null;
 
         private void Start()
         {
@@ -153,7 +168,7 @@ namespace ProjectFirstRun.Arenas
             bool valid = isActiveAndEnabled && Time.timeScale > 0f &&
                 _player != null && _player.gameObject.activeInHierarchy &&
                 _health != null && !_health.IsDead && ValidGeometry();
-            if (!valid || !DestinationAvailable)
+            if (!valid || !DestinationReady)
             {
                 CancelAttempt();
                 Barrier.RequestClose();
@@ -180,7 +195,7 @@ namespace ProjectFirstRun.Arenas
             bool encounterComplete = _encounter != null &&
                 _encounter.Status == RegionEncounterStatus.Completed;
             bool allowed = _attempt != null ||
-                _transition.CanBegin(CurrentRegionId, encounterComplete, DestinationAvailable);
+                _transition.CanBegin(CurrentRegionId, encounterComplete, DestinationReady);
             if (allowed) Barrier.Open();
             else Barrier.RequestClose();
 
@@ -190,7 +205,7 @@ namespace ProjectFirstRun.Arenas
                     _clearanceVolume.transform.forward);
                 bool onEntrySide = CurrentRegionId == _transition.SourceId ? side < 0 : side > 0;
                 if (onEntrySide)
-                    _transition.TryBegin(CurrentRegionId, encounterComplete, DestinationAvailable, out _attempt);
+                    _transition.TryBegin(CurrentRegionId, encounterComplete, DestinationReady, out _attempt);
             }
             ApplyBlocker();
         }

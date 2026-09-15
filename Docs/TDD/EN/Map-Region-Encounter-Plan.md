@@ -40,7 +40,7 @@ This plan supersedes the assumptions that every arena is a separate scene and ev
 
 ## Delivery order
 
-Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, stages 3–4 have the corrected transition contract and walking/barrier integration, stage 5 supports single-group preparation, and stage 6 adds shared map-local traversal and resource ownership. Validation scope is recorded in the respective documents. Stages 7–10 remain planned.
+Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, stages 3–4 have the corrected transition contract and walking/barrier integration, stage 5 supports single-group preparation, stage 6 adds shared map-local traversal/resource ownership, and stage 7 adds cross-scene travel with preserved player runtime and explicit map bindings. Validation scope is recorded in the respective documents. Stages 8–10 remain planned.
 
 1. **Design checkpoint — this document:** Record GDD direction, terminology, migration inventory and sequence. No runtime changes.
 2. **Region and encounter lifecycle:** Define preparation, activation, completion and reentry. Test that encounter completion does not finish the map.
@@ -48,7 +48,7 @@ Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage
 4. **Passage barrier:** Presentation-independent opening/closing signals; test full player clearance before closing, trapping prevention and repeated triggers.
 5. **Prewarming — single-group integration implemented:** Separate preparation/activation volumes, count/time budgets, deferred entry and readiness gating are implemented. Measurements and validation are in Region-Preparation. Wave-sequence prewarming and pooling are not implemented.
 6. **Resource continuity — implemented:** Shared current-region state and a map-wide traversal lock; player state remains in place. Loot belongs to its source map scene and survives region/enemy cleanup. Return, one-way traversal and skipped combat are covered in Map-Progression-Resources.
-7. **Cross-scene travel:** Inspector-configured target scene and entry identity, run data transfer, old-scene cleanup and loading failure behavior. Verify separately from region travel.
+7. **Cross-scene travel — foundation implemented:** Inspector-configured scene path and entry identity, additive loading, original player transfer, destination dependency binding, source cleanup and failure/retry behavior. See Scene-Travel for contracts and test scope; packaged-build verification remains part of playable-map integration.
 8. **Run outcome and restart:** Death while exploring/travelling, final victory and clean restart. Checkpoints/saving are not implicitly included.
 9. **Playable fixture:** Main area, two returnable optional areas, preparation connector, one-way second main area and exit to a small second scene. Placeholder geometry is sufficient.
 10. **Gameplay and performance validation:** Compare short/exploration routes; measure transition frame spikes, visible spawning and resource loss.

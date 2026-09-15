@@ -37,3 +37,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 31. [Geçit Bariyeri Yaşam Döngüsü](Transition-Barrier.md)
 32. [Bölge Ön Hazırlığı](Region-Preparation.md)
 33. [Harita İçi İlerleme ve Kaynaklar](Map-Progression-Resources.md)
+34. [Sahneler Arası Harita Geçişi](Scene-Travel.md)

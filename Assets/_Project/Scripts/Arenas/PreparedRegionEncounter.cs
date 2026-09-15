@@ -76,6 +76,20 @@ namespace ProjectFirstRun.Arenas
 
         private void Start()
         {
+            InitializeFromDefinition();
+        }
+
+        public void BindScenePlayer(Transform player, HealthComponent health)
+        {
+            if (IsInitialized) throw new InvalidOperationException("Encounter already initialized.");
+            if (_group == null) throw new InvalidOperationException("Scene encounter requires a group definition.");
+            _player = player;
+            _playerHealth = health;
+            InitializeFromDefinition();
+        }
+
+        private void InitializeFromDefinition()
+        {
             if (IsInitialized || _group == null) return;
             _group.Validate();
             if (_spawnPoints == null || _spawnPoints.Length == 0)

@@ -39,6 +39,13 @@ namespace ProjectFirstRun.UI.Rewards
         public bool IsOpen =>
             _activeSession != null;
 
+        public void BindScenePlayer(GameObject player)
+        {
+            if (IsOpen) throw new InvalidOperationException("Cannot rebind an open reward selection.");
+            Initialize(_view, player.GetComponent<PlayerRewardClaimController>(),
+                player.GetComponent<PlayerController>(), player.GetComponent<PlayerDeathController>());
+        }
+
         public RewardClaimSession ActiveSession =>
             _activeSession;
 

@@ -9,9 +9,34 @@ namespace ProjectFirstRun.Arenas
         private readonly HashSet<string> _regions = new HashSet<string>(StringComparer.Ordinal);
         private RegionTransition _pendingRoute;
         private RegionTransition.Attempt _pendingAttempt;
+        private object _departure;
 
         public string CurrentRegionId { get; private set; }
-        public bool IsTransitioning => _pendingAttempt != null;
+        public bool IsTransitioning => _pendingAttempt != null || _departure != null;
+
+        public bool ContainsRegion(string id) => id != null && _regions.Contains(id);
+
+        public bool TryReserveDeparture(out object reservation)
+        {
+            reservation = null;
+            if (IsTransitioning) return false;
+            _departure = reservation = new object();
+            return true;
+        }
+
+        public bool ReleaseDeparture(object reservation)
+        {
+            if (reservation == null || !ReferenceEquals(_departure, reservation)) return false;
+            _departure = null;
+            return true;
+        }
+
+        internal void EnterSceneAt(string regionId)
+        {
+            if (IsTransitioning || !ContainsRegion(regionId))
+                throw new InvalidOperationException("Arrival requires an idle map and a known region.");
+            CurrentRegionId = regionId;
+        }
 
         public MapTraversalSession(string initialRegionId, IEnumerable<string> regionIds)
         {

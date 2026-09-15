@@ -14,6 +14,12 @@ namespace ProjectFirstRun.Arenas
         [SerializeField] private Purpose _purpose;
         private readonly List<Collider> _bodies = new List<Collider>();
 
+        public void BindScenePlayer(Transform player)
+        {
+            Configure(_volume, player, _encounter, _purpose);
+            if (!_encounter.IsInitialized) throw new InvalidOperationException("Bind the encounter before its trigger.");
+        }
+
         public void Configure(Collider volume, Transform player, PreparedRegionEncounter encounter, Purpose purpose)
         {
             if (volume == null || !volume.isTrigger || player == null || encounter == null)

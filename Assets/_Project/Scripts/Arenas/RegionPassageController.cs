@@ -48,6 +48,20 @@ namespace ProjectFirstRun.Arenas
         public bool IsTransitioning => _attempt != null;
         public event Action<string> TransitionCompleted;
 
+        public void BindScenePlayer(Transform player, HealthComponent health, MapTraversalController map)
+        {
+            if (_configured) throw new InvalidOperationException("Passage is already configured.");
+            var route = new RegionTransition(_sourceId, _destinationId, _requirement,
+                RegionTransitionTraversal.Walk, _direction, _singleUse);
+            if (_clearanceVolume == null || !_clearanceVolume.isTrigger || !_clearanceVolume.enabled ||
+                map == null || !map.Session.ContainsRoute(route) ||
+                (_requirement == RegionTransitionRequirement.EncounterCompleted && _encounter == null))
+                throw new InvalidOperationException("Scene passage configuration is incomplete.");
+            _player = player;
+            _health = health;
+            _map = map;
+        }
+
         // Code-built fixtures and future scene composition use the same configuration.
         public void Configure(Collider volume, Collider blocker, Transform player,
             HealthComponent health, RegionTransition transition,

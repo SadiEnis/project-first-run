@@ -18,6 +18,12 @@ namespace ProjectFirstRun.Abilities
         public bool IsReady =>
             State.IsReady;
 
+        public void BindEnemyRegistry(ProjectFirstRun.Enemies.EnemyRegistry registry)
+        {
+            if (_targetSelector is IMapEnemyRegistryBinding binding) binding.BindEnemyRegistry(registry);
+            if (_executor is IMapEnemyRegistryBinding executorBinding) executorBinding.BindEnemyRegistry(registry);
+        }
+
         public int Level => _levelRuntime?.Level ?? 1;
         public int MaximumLevel => _levelRuntime?.MaximumLevel ?? 1;
 

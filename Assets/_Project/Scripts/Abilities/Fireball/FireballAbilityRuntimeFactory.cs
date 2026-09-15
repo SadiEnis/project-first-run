@@ -7,9 +7,12 @@ using UnityEngine;
 namespace ProjectFirstRun.Abilities.Fireball
 {
     public sealed class FireballAbilityRuntimeFactory :
-        IAbilityRuntimeFactory
+        IAbilityRuntimeFactory, IMapEnemyRegistryBinding
     {
-        private readonly EnemyRegistry _enemyRegistry;
+        private EnemyRegistry _enemyRegistry;
+
+        public void BindEnemyRegistry(EnemyRegistry registry) => _enemyRegistry = registry != null
+            ? registry : throw new ArgumentNullException(nameof(registry));
         private readonly GameObject _damageSource;
         private readonly PlayerStatCollection _stats;
 

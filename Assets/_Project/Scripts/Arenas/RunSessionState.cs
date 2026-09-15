@@ -80,5 +80,11 @@ namespace ProjectFirstRun.Arenas
 
             Status = RunSessionStatus.Defeat;
         }
+
+        public void CompleteFinalObjective()
+        {
+            if (!IsRunning) throw new InvalidOperationException("The final objective requires a running run.");
+            Status = RunSessionStatus.Victory;
+        }
     }
 }

@@ -25,12 +25,15 @@ namespace ProjectFirstRun.Arenas
         public event Action<int> ArenaTransitionReady;
         public event Action Victory;
         public event Action Defeat;
+        public event Action SessionRestarted;
 
         public bool IsInitialized => _isInitialized;
         public RunSessionState State => _state;
         public RunSessionStatus Status => _state != null
             ? _state.Status
             : RunSessionStatus.Ready;
+
+        public bool CanRestart => _state != null && _state.IsFinished;
 
         public void Initialize(IReadOnlyList<IArenaSession> arenaSessions,
             IPlayerDeathSource playerDeathSource = null)
@@ -120,6 +123,37 @@ namespace ProjectFirstRun.Arenas
 
             _state.BeginNextArena();
             BeginCurrentArena();
+        }
+
+        /// <summary>Restarts only after the caller has reset all world/player state.</summary>
+        public void Restart(Action resetRunWorld)
+        {
+            EnsureInitialized();
+            if (!_state.IsFinished)
+                throw new InvalidOperationException("A run can only restart after victory or defeat.");
+            if (resetRunWorld == null) throw new ArgumentNullException(nameof(resetRunWorld));
+
+            resetRunWorld();
+            for (int index = 0; index < _arenaSessions.Count; index++)
+            {
+                if (!_arenaSessions[index].IsInitialized || _arenaSessions[index].Status != ArenaSessionStatus.Ready)
+                    throw new InvalidOperationException("Reset callback must leave every arena Ready.");
+            }
+            if (_playerDeathSource != null && _playerDeathSource.IsDead)
+                throw new InvalidOperationException("Reset callback must revive the player.");
+
+            _state = new RunSessionState(_arenaSessions.Count);
+            Begin();
+            SessionRestarted?.Invoke();
+        }
+
+        public void CompleteFinalObjective()
+        {
+            EnsureInitialized();
+            if (_state.IsVictory || _state.IsDefeat) return;
+            if (!_state.IsRunning) throw new InvalidOperationException("The final objective requires a running run.");
+            _state.CompleteFinalObjective();
+            Victory?.Invoke();
         }
 
         private void HandleArenaVictory(int arenaIndex)

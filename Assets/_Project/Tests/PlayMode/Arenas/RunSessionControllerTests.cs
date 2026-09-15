@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using ProjectFirstRun.Arenas;
+using ProjectFirstRun.Combat;
+using ProjectFirstRun.Player;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -111,6 +113,87 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Defeat));
         }
 
+        [Test]
+        public void PlayerDeathDuringTransition_EndsRunOnceAndBlocksLateEvents()
+        {
+            InitializeTwoArenas();
+            var death = new FakeDeathSource();
+            Object.DestroyImmediate(_controllerObject);
+            _controllerObject = new GameObject("RunSessionController_Test");
+            _controller = _controllerObject.AddComponent<RunSessionController>();
+            _controller.Initialize(new List<IArenaSession> { _firstArena, _secondArena }, death);
+            int defeats = 0;
+            _controller.Defeat += () => defeats++;
+            _controller.Begin();
+            _firstArena.PublishVictory();
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Transition));
+            death.Die();
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Defeat));
+            Assert.That(defeats, Is.EqualTo(1));
+            death.Die();
+            _firstArena.PublishVictory();
+            Assert.That(defeats, Is.EqualTo(1));
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Defeat));
+        }
+
+        [Test]
+        public void FinalObjective_CompletesRunningRunOnce_WithoutArenaVictory()
+        {
+            InitializeTwoArenas();
+            int victories = 0;
+            _controller.Victory += () => victories++;
+            _controller.Begin();
+            _controller.CompleteFinalObjective();
+            _controller.CompleteFinalObjective();
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Victory));
+            Assert.That(victories, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RestartRequiresAtomicResetCallbackAndStartsFreshFirstArena()
+        {
+            InitializeTwoArenas();
+            var death = new FakeDeathSource();
+            Object.DestroyImmediate(_controllerObject);
+            _controllerObject = new GameObject("RunSessionController_Test");
+            _controller = _controllerObject.AddComponent<RunSessionController>();
+            _controller.Initialize(new List<IArenaSession> { _firstArena, _secondArena }, death);
+            _controller.Begin();
+            death.Die();
+            Assert.That(_controller.CanRestart, Is.True);
+            Assert.Throws<ArgumentNullException>(() => _controller.Restart(null));
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Defeat));
+            Assert.Throws<InvalidOperationException>(() => _controller.Restart(() => throw new InvalidOperationException("reset failed")));
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Defeat));
+            death.Revive();
+            _firstArena.ResetForRun();
+            _secondArena.ResetForRun();
+            int restarted = 0;
+            _controller.SessionRestarted += () => restarted++;
+            _controller.Restart(() => { _firstArena.ResetForRun(); _secondArena.ResetForRun(); });
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Running));
+            Assert.That(_controller.State.CurrentArenaIndex, Is.Zero);
+            Assert.That(_controller.State.CompletedArenas, Is.Zero);
+            Assert.That(_firstArena.BeginCount, Is.EqualTo(2));
+            Assert.That(_secondArena.BeginCount, Is.Zero);
+            Assert.That(restarted, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RestartRejectsCallbackThatLeavesDeadPlayerOrTerminalArena()
+        {
+            InitializeTwoArenas();
+            var death = new FakeDeathSource();
+            Object.DestroyImmediate(_controllerObject);
+            _controllerObject = new GameObject("RunSessionController_Test");
+            _controller = _controllerObject.AddComponent<RunSessionController>();
+            _controller.Initialize(new List<IArenaSession> { _firstArena, _secondArena }, death);
+            _controller.Begin();
+            death.Die();
+            Assert.Throws<InvalidOperationException>(() => _controller.Restart(() => { _firstArena.ResetForRun(); _secondArena.ResetForRun(); }));
+            Assert.That(_controller.Status, Is.EqualTo(RunSessionStatus.Defeat));
+        }
+
         private void InitializeTwoArenas()
         {
             _firstArena.Initialize();
@@ -153,6 +236,16 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 Status = ArenaSessionStatus.Defeat;
                 Defeat?.Invoke();
             }
+
+            public void ResetForRun() { Status = ArenaSessionStatus.Ready; }
+        }
+
+        private sealed class FakeDeathSource : IPlayerDeathSource
+        {
+            public bool IsDead { get; private set; }
+            public event Action<DamageInfo, DamageResult> PlayerDied;
+            public void Die() { IsDead = true; PlayerDied?.Invoke(default, default); }
+            public void Revive() => IsDead = false;
         }
     }
 }

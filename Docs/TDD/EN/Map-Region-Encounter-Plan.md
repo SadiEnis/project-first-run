@@ -40,13 +40,13 @@ This plan supersedes the assumptions that every arena is a separate scene and ev
 
 ## Delivery order
 
-Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, and stages 3–4 have the corrected transition contract and walking/barrier integration. Validation scope is recorded in the respective documents. Stages 5–10 remain planned.
+Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, stages 3–4 have the corrected transition contract and walking/barrier integration, and stage 5 supports single-group preparation. Validation scope is recorded in the respective documents. Stages 6–10 remain planned.
 
 1. **Design checkpoint — this document:** Record GDD direction, terminology, migration inventory and sequence. No runtime changes.
 2. **Region and encounter lifecycle:** Define preparation, activation, completion and reentry. Test that encounter completion does not finish the map.
 3. **Generic transition contract:** Free/encounter-gated eligibility, destination, one-way/returnable direction and walking/relocation/scene-loading separation. Test incorrect players and duplicate requests.
 4. **Passage barrier:** Presentation-independent opening/closing signals; test full player clearance before closing, trapping prevention and repeated triggers.
-5. **Prewarming:** Separate out-of-view preparation from activation. Define fast-player/not-ready behavior, measure frame budgets and introduce pooling where justified.
+5. **Prewarming — single-group integration implemented:** Separate preparation/activation volumes, count/time budgets, deferred entry and readiness gating are implemented. Measurements and validation are in Region-Preparation. Wave-sequence prewarming and pooling are not implemented.
 6. **Resource continuity:** Preserve player state across regions; define remaining enemy, XP and chest lifetime. Test reentry and skipped combat.
 7. **Cross-scene travel:** Inspector-configured target scene and entry identity, run data transfer, old-scene cleanup and loading failure behavior. Verify separately from region travel.
 8. **Run outcome and restart:** Death while exploring/travelling, final victory and clean restart. Checkpoints/saving are not implicitly included.

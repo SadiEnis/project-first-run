@@ -40,13 +40,13 @@ Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin 
 
 ## Aşamalı geliştirme sırası
 
-Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarım olarak, 2 yaşam döngüsü çekirdeği olarak uygulanmıştır. 3–4 için düzeltilmiş geçiş sözleşmesi ve yürüyüş/bariyer entegrasyonu vardır; doğrulama kapsamı ilgili belgelerde tutulur. 5–10 planlıdır. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
+Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarım olarak, 2 yaşam döngüsü çekirdeği olarak uygulanmıştır. 3–4 için düzeltilmiş geçiş sözleşmesi ve yürüyüş/bariyer entegrasyonu, 5 için tek grup ön hazırlığı vardır; doğrulama kapsamı ilgili belgelerde tutulur. 6–10 planlıdır. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
 
 1. **Tasarım ayrımı — bu belge:** GDD yönünü, terimleri, korunacak parçaları ve sırayı kaydet. Runtime değişikliği yok.
 2. **Bölge ve karşılaşma yaşam döngüsü:** Hazırlama, etkinleştirme, tamamlama ve tekrar giriş kurallarını tasarla. Karşılaşma bitişinin harita bitişi olmadığını test et.
 3. **Genel geçiş sözleşmesi:** Serbest / karşılaşma şartlı uygunluk, hedef, tek yön / dönüş ve yürüyüş / taşıma / sahne yükleme ayrımını kur. Yanlış oyuncu ve yinelenen istekleri test et.
 4. **Geçiş bariyeri:** Görselden bağımsız açılma/kapanma sinyalleri; oyuncu tamamen geçmeden kapatmama, arada sıkışmama ve tekrar tetiklemeyi test et.
-5. **Ön hazırlık:** Görüş dışı hazırlama alanı ve ayrı etkinleştirme alanı. Hızlı geçişte henüz hazır olmayan hedefin davranışını belirle; frame bütçesini ölç, gerektiğinde havuzlama kullan.
+5. **Ön hazırlık — tek grup entegrasyonu uygulandı:** Ayrı hazırlama/aktivasyon hacimleri, adet ve süre bütçesi, hazır olmayan hedef için bekleyen giriş ve geçit kilidi eklendi. Ölçümler ve doğrulama Region-Preparation belgesindedir. Wave dizilerini ön hazırlama ve havuzlama henüz eklenmedi.
 6. **Kaynak sürekliliği:** Bölge sınırında oyuncu durumunu koru; gerideki düşman, XP ve sandıkların yaşam süresini belirle. Dönüş ve savaş atlama senaryolarını test et.
 7. **Sahneler arası geçiş:** Inspector üzerinden hedef sahne ve giriş kimliği yapılandırması, run verisi aktarımı, eski sahne temizliği ve yükleme hatası davranışı. Bölge geçişinden ayrı doğrula.
 8. **Run sonucu ve yeniden başlatma:** Gezinme/geçiş sırasında ölüm, nihai zafer ve temiz restart. Checkpoint ve kayıt kararı bu adıma otomatik dahil değildir.

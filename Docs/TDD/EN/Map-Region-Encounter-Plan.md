@@ -40,14 +40,14 @@ This plan supersedes the assumptions that every arena is a separate scene and ev
 
 ## Delivery order
 
-Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, stages 3–4 have the corrected transition contract and walking/barrier integration, and stage 5 supports single-group preparation. Validation scope is recorded in the respective documents. Stages 6–10 remain planned.
+Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, stages 3–4 have the corrected transition contract and walking/barrier integration, stage 5 supports single-group preparation, and stage 6 adds shared map-local traversal and resource ownership. Validation scope is recorded in the respective documents. Stages 7–10 remain planned.
 
 1. **Design checkpoint — this document:** Record GDD direction, terminology, migration inventory and sequence. No runtime changes.
 2. **Region and encounter lifecycle:** Define preparation, activation, completion and reentry. Test that encounter completion does not finish the map.
 3. **Generic transition contract:** Free/encounter-gated eligibility, destination, one-way/returnable direction and walking/relocation/scene-loading separation. Test incorrect players and duplicate requests.
 4. **Passage barrier:** Presentation-independent opening/closing signals; test full player clearance before closing, trapping prevention and repeated triggers.
 5. **Prewarming — single-group integration implemented:** Separate preparation/activation volumes, count/time budgets, deferred entry and readiness gating are implemented. Measurements and validation are in Region-Preparation. Wave-sequence prewarming and pooling are not implemented.
-6. **Resource continuity:** Preserve player state across regions; define remaining enemy, XP and chest lifetime. Test reentry and skipped combat.
+6. **Resource continuity — implemented:** Shared current-region state and a map-wide traversal lock; player state remains in place. Loot belongs to its source map scene and survives region/enemy cleanup. Return, one-way traversal and skipped combat are covered in Map-Progression-Resources.
 7. **Cross-scene travel:** Inspector-configured target scene and entry identity, run data transfer, old-scene cleanup and loading failure behavior. Verify separately from region travel.
 8. **Run outcome and restart:** Death while exploring/travelling, final victory and clean restart. Checkpoints/saving are not implicitly included.
 9. **Playable fixture:** Main area, two returnable optional areas, preparation connector, one-way second main area and exit to a small second scene. Placeholder geometry is sufficient.
@@ -60,9 +60,9 @@ Initial design and adaptation stay on `feature/multi-arena-run`. Each numbered s
 - Decided: reentry preserves existing encounter state and surviving enemies' health without respawning.
 - Can enemies pursue outside their region, and how do ownership and pursuit boundaries differ?
 - Decided: an active encounter keeps running when the player leaves; suspension optimization is deferred.
-- When are prepared but unvisited region resources released?
+- Decided for the prototype: prepared but unvisited groups remain until their owner is explicitly disabled/destroyed or the map scene unloads; no distance-based eviction.
 
-Pursuit boundaries and unvisited-region resource release remain open. Accepted lifecycle rules are documented in Region-Encounter-Lifecycle.
+Pursuit boundaries remain open. Accepted lifecycle and resource rules are documented in Region-Encounter-Lifecycle and Map-Progression-Resources.
 
 ## Verification and versioning
 

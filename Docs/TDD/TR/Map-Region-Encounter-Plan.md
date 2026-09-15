@@ -40,14 +40,14 @@ Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin 
 
 ## Aşamalı geliştirme sırası
 
-Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarım olarak, 2 yaşam döngüsü çekirdeği olarak uygulanmıştır. 3–4 için düzeltilmiş geçiş sözleşmesi ve yürüyüş/bariyer entegrasyonu, 5 için tek grup ön hazırlığı vardır; doğrulama kapsamı ilgili belgelerde tutulur. 6–10 planlıdır. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
+Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarım olarak, 2 yaşam döngüsü çekirdeği olarak uygulanmıştır. 3–4 için düzeltilmiş geçiş sözleşmesi ve yürüyüş/bariyer entegrasyonu, 5 için tek grup ön hazırlığı, 6 için ortak harita içi geçiş ve kaynak sahipliği vardır; doğrulama kapsamı ilgili belgelerde tutulur. 7–10 planlıdır. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
 
 1. **Tasarım ayrımı — bu belge:** GDD yönünü, terimleri, korunacak parçaları ve sırayı kaydet. Runtime değişikliği yok.
 2. **Bölge ve karşılaşma yaşam döngüsü:** Hazırlama, etkinleştirme, tamamlama ve tekrar giriş kurallarını tasarla. Karşılaşma bitişinin harita bitişi olmadığını test et.
 3. **Genel geçiş sözleşmesi:** Serbest / karşılaşma şartlı uygunluk, hedef, tek yön / dönüş ve yürüyüş / taşıma / sahne yükleme ayrımını kur. Yanlış oyuncu ve yinelenen istekleri test et.
 4. **Geçiş bariyeri:** Görselden bağımsız açılma/kapanma sinyalleri; oyuncu tamamen geçmeden kapatmama, arada sıkışmama ve tekrar tetiklemeyi test et.
 5. **Ön hazırlık — tek grup entegrasyonu uygulandı:** Ayrı hazırlama/aktivasyon hacimleri, adet ve süre bütçesi, hazır olmayan hedef için bekleyen giriş ve geçit kilidi eklendi. Ölçümler ve doğrulama Region-Preparation belgesindedir. Wave dizilerini ön hazırlama ve havuzlama henüz eklenmedi.
-6. **Kaynak sürekliliği:** Bölge sınırında oyuncu durumunu koru; gerideki düşman, XP ve sandıkların yaşam süresini belirle. Dönüş ve savaş atlama senaryolarını test et.
+6. **Kaynak sürekliliği — uygulandı:** Ortak bölge konumu ve harita genelinde geçiş kilidi; oyuncu durumu yerinde korunur. Drop kaynak haritanın sahnesine aittir ve bölge/düşman temizliğinde kalır. Geri dönüş, tek yön ve savaş atlama kapsamı Map-Progression-Resources belgesindedir.
 7. **Sahneler arası geçiş:** Inspector üzerinden hedef sahne ve giriş kimliği yapılandırması, run verisi aktarımı, eski sahne temizliği ve yükleme hatası davranışı. Bölge geçişinden ayrı doğrula.
 8. **Run sonucu ve yeniden başlatma:** Gezinme/geçiş sırasında ölüm, nihai zafer ve temiz restart. Checkpoint ve kayıt kararı bu adıma otomatik dahil değildir.
 9. **Oynanabilir örnek sahne:** Ana alan, iki geri dönülebilen yan alan, hazırlama bağlantısı, tek yönlü ikinci ana alan ve küçük ikinci sahneye çıkış. Placeholder geometri yeterli.
@@ -60,9 +60,9 @@ Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarı
 - Karar: tekrar giriş düşmanları yeniden üretmez; yaşayanların canı ve mevcut karşılaşma durumu korunur.
 - Düşmanlar bölge dışına oyuncuyu takip edebilecek mi; sahiplik ve takip sınırı nasıl ayrılacak?
 - Karar: oyuncu ayrılınca aktif karşılaşma çalışmaya devam eder; askıya alma optimizasyonu ertelendi.
-- Hazırlanan ama ziyaret edilmeyen bölgenin kaynakları ne zaman bırakılacak?
+- Prototip kararı: hazırlanıp ziyaret edilmeyen gruplar, sahipleri açıkça kapatılana/yok edilene veya harita sahnesi kaldırılana kadar tutulur; mesafeye göre boşaltma yoktur.
 
-Takip sınırları ve ziyaret edilmeyen bölgelerin kaynak boşaltması açık konulardır. Kararlaştırılmış yaşam döngüsü kuralları Region-Encounter-Lifecycle belgesinde yer alır.
+Takip sınırları açık konudur. Kararlaştırılmış yaşam döngüsü ve kaynak kuralları Region-Encounter-Lifecycle ve Map-Progression-Resources belgelerinde yer alır.
 
 ## Doğrulama ve kayıt düzeni
 

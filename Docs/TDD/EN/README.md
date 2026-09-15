@@ -36,3 +36,4 @@ Project First Run is the current development codename. The final commercial titl
 30. [Generic Transition Contract](Transition-Contract.md)
 31. [Transition Barrier Lifecycle](Transition-Barrier.md)
 32. [Region Preparation](Region-Preparation.md)
+33. [Map-local Progression and Resources](Map-Progression-Resources.md)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Reflection;
 using NUnit.Framework;
 using ProjectFirstRun.Builds;
@@ -7,6 +8,8 @@ using ProjectFirstRun.Chests.Spawning;
 using ProjectFirstRun.Rewards;
 using ProjectFirstRun.UI.Rewards;
 using UnityEngine;
+using UnityEngine.TestTools;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
@@ -27,6 +30,31 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
         private RewardSelectionController _selectionController;
         private RewardItemPool _rewardItemPool;
         private ChestDefinition _definition;
+        private Scene _mapScene;
+
+        [UnityTearDown]
+        public IEnumerator UnloadMap()
+        {
+            if (_mapScene.IsValid() && _mapScene.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(_mapScene);
+        }
+
+        [UnityTest]
+        public IEnumerator SpawnBelongsToMapScene_SurvivesSpawnerDestruction_UntilMapUnload()
+        {
+            _mapScene = SceneManager.CreateScene("Chest ownership test");
+            SceneManager.MoveGameObjectToScene(_spawnerObject, _mapScene);
+            Assert.That(SceneManager.GetActiveScene(), Is.Not.EqualTo(_mapScene));
+            var chest = Spawn(Vector3.zero, Quaternion.identity).ChestController;
+            Assert.That(chest.gameObject.scene, Is.EqualTo(_mapScene));
+            Assert.That(chest.transform.parent, Is.Null);
+            Object.Destroy(_spawnerObject);
+            yield return null;
+            Assert.That(chest != null && chest.IsInitialized, Is.True);
+            Assert.That(chest.Status, Is.EqualTo(ChestStatus.Available));
+            yield return SceneManager.UnloadSceneAsync(_mapScene);
+            Assert.That(chest == null, Is.True);
+        }
 
         [SetUp]
         public void SetUp()

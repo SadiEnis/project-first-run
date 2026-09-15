@@ -170,6 +170,45 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         }
 
         [UnityTest]
+        public IEnumerator FreeMapPassage_LeavesLivingEncounterRunning_WithoutAwardingVictory()
+        {
+            Initialize(2);
+            _player.position = new Vector3(0, 0, -4);
+            _encounter.SetPlayerInside(true);
+            yield return WaitReady();
+            var survivor = _encounter.Enemies[0];
+            survivor.Health.ApplyDamage(new DamageInfo(1, null, Vector3.zero, Vector3.forward));
+            float remaining = survivor.Health.CurrentHealth;
+            int wins = 0;
+            _encounter.Victory += () => wins++;
+            var map = new MapTraversalSession("b", new[] { "b", "next" });
+            var volume = New("Free map exit").AddComponent<BoxCollider>();
+            volume.isTrigger = true;
+            volume.size = Vector3.one * 4;
+            var passage = volume.gameObject.AddComponent<RegionPassageController>();
+            passage.TransitionCompleted += _ => _encounter.SetPlayerInside(false);
+            Physics.SyncTransforms();
+            passage.Configure(volume, null, _player, _health,
+                new RegionTransition("b", "next", RegionTransitionRequirement.Free,
+                    RegionTransitionTraversal.Walk, RegionTransitionDirection.OneWay), mapSession: map);
+            _player.position = new Vector3(0, 0, -1);
+            Physics.SyncTransforms();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            _player.position = new Vector3(0, 0, 4);
+            Physics.SyncTransforms();
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+            Assert.That(map.CurrentRegionId, Is.EqualTo("next"));
+            Assert.That(_encounter.Status, Is.EqualTo(ArenaSessionStatus.Running));
+            Assert.That(_encounter.Region.IsPlayerInside, Is.False);
+            Assert.That(_registry.ActiveCount, Is.EqualTo(2));
+            Assert.That(_encounter.Enemies[0], Is.SameAs(survivor));
+            Assert.That(survivor.Health.CurrentHealth, Is.EqualTo(remaining));
+            Assert.That(wins, Is.Zero);
+        }
+
+        [UnityTest]
         public IEnumerator CompletingGroupOutsideDoesNotRespawnOnReturn()
         {
             Initialize(2);

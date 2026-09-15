@@ -22,6 +22,7 @@ namespace ProjectFirstRun.Arenas
         [SerializeField] private RegionTransitionDirection _direction;
         [SerializeField] private RegionTransitionRequirement _requirement;
         [SerializeField] private bool _singleUse;
+        [SerializeField] private MapTraversalController _map;
         [SerializeField] private PreparedRegionEncounter _destinationPreparation;
         [SerializeField] private UnityEvent _opened = new UnityEvent();
         [SerializeField] private UnityEvent _closed = new UnityEvent();
@@ -30,6 +31,7 @@ namespace ProjectFirstRun.Arenas
         private readonly HashSet<int> _contacts = new HashSet<int>();
         private readonly List<int> _previousContacts = new List<int>();
         private RegionTransition _transition;
+        private MapTraversalSession _mapSession;
         private RegionTransition.Attempt _attempt;
         private RegionEncounterSession _encounter;
         private Bounds _blockerBounds;
@@ -38,7 +40,7 @@ namespace ProjectFirstRun.Arenas
         private bool _requiresDestinationPreparation;
 
         public TransitionBarrier Barrier { get; } = new TransitionBarrier();
-        public string CurrentRegionId { get; private set; }
+        public string CurrentRegionId => _mapSession?.CurrentRegionId;
         public bool DestinationAvailable { get; set; } = true;
         private bool DestinationReady => DestinationAvailable &&
             (!_requiresDestinationPreparation ||
@@ -49,7 +51,7 @@ namespace ProjectFirstRun.Arenas
         // Code-built fixtures and future scene composition use the same configuration.
         public void Configure(Collider volume, Collider blocker, Transform player,
             HealthComponent health, RegionTransition transition,
-            RegionEncounterSession encounter = null)
+            RegionEncounterSession encounter = null, MapTraversalSession mapSession = null)
         {
             if (_configured) throw new InvalidOperationException("Passage is already configured.");
             if (volume == null || player == null || health == null || transition == null)
@@ -66,6 +68,11 @@ namespace ProjectFirstRun.Arenas
                 throw new ArgumentException("An encounter-gated passage requires its encounter.");
             if (blocker != null && !Contains(volume.bounds, blocker.bounds))
                 throw new ArgumentException("The clearance volume must enclose the entire blocker.");
+            var sharedSession = mapSession ?? (_map != null ? _map.Session :
+                new MapTraversalSession(transition.SourceId,
+                    new[] { transition.SourceId, transition.DestinationId }));
+            if (!sharedSession.ContainsRoute(transition))
+                throw new ArgumentException("Both passage regions must belong to the map.", nameof(mapSession));
             _clearanceVolume = volume;
             _blocker = blocker;
             _player = player;
@@ -75,7 +82,7 @@ namespace ProjectFirstRun.Arenas
             _encounter = encounter;
             _blockerBounds = blocker != null ? blocker.bounds : default;
             _blockerTransform = blocker != null ? blocker.transform.localToWorldMatrix : default;
-            CurrentRegionId = transition.SourceId;
+            _mapSession = sharedSession;
             _configured = true;
             Barrier.Opened += HandleOpened;
             Barrier.Closed += HandleClosed;
@@ -183,9 +190,8 @@ namespace ProjectFirstRun.Arenas
                 {
                     var completed = _attempt;
                     _attempt = null;
-                    if (_transition.Complete(completed))
+                    if (_mapSession.Complete(_transition, completed))
                     {
-                        CurrentRegionId = completed.ToId;
                         TransitionCompleted?.Invoke(CurrentRegionId);
                     }
                 }
@@ -195,7 +201,7 @@ namespace ProjectFirstRun.Arenas
             bool encounterComplete = _encounter != null &&
                 _encounter.Status == RegionEncounterStatus.Completed;
             bool allowed = _attempt != null ||
-                _transition.CanBegin(CurrentRegionId, encounterComplete, DestinationReady);
+                _mapSession.CanBegin(_transition, encounterComplete, DestinationReady);
             if (allowed) Barrier.Open();
             else Barrier.RequestClose();
 
@@ -205,7 +211,7 @@ namespace ProjectFirstRun.Arenas
                     _clearanceVolume.transform.forward);
                 bool onEntrySide = CurrentRegionId == _transition.SourceId ? side < 0 : side > 0;
                 if (onEntrySide)
-                    _transition.TryBegin(CurrentRegionId, encounterComplete, DestinationReady, out _attempt);
+                    _mapSession.TryBegin(_transition, encounterComplete, DestinationReady, out _attempt);
             }
             ApplyBlocker();
         }
@@ -249,7 +255,7 @@ namespace ProjectFirstRun.Arenas
         private void HandleClosed() { ApplyBlocker(); _closed.Invoke(); }
         private void CancelAttempt()
         {
-            if (_attempt != null) _transition.Cancel(_attempt);
+            if (_attempt != null) _mapSession.Cancel(_transition, _attempt);
             _attempt = null;
         }
         private void OnDisable()

@@ -7,6 +7,7 @@ using ProjectFirstRun.Enemies.Lifecycle;
 using ProjectFirstRun.Progression;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace ProjectFirstRun.Tests.PlayMode.Progression
@@ -19,6 +20,31 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
         private EnemyRegistry _registry;
         private EnemyController _enemy;
         private ExperiencePickup _template;
+        private Scene _mapScene;
+
+        [UnityTearDown]
+        public IEnumerator UnloadMap()
+        {
+            if (_mapScene.IsValid() && _mapScene.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(_mapScene);
+        }
+
+        [UnityTest]
+        public IEnumerator DropBelongsToEnemyScene_SurvivesEnemyCleanup_UntilMapUnload()
+        {
+            _mapScene = SceneManager.CreateScene("XP ownership test");
+            SceneManager.MoveGameObjectToScene(_enemyObject, _mapScene);
+            Assert.That(SceneManager.GetActiveScene(), Is.Not.EqualTo(_mapScene));
+            Damage(1000f);
+            var pickup = Drops()[0];
+            Assert.That(pickup.gameObject.scene, Is.EqualTo(_mapScene));
+            Assert.That(pickup.transform.parent, Is.Null);
+            yield return null;
+            Assert.That(_enemyObject == null, Is.True);
+            Assert.That(pickup != null && !pickup.IsCollected, Is.True);
+            yield return SceneManager.UnloadSceneAsync(_mapScene);
+            Assert.That(pickup == null, Is.True);
+        }
 
         [SetUp]
         public void SetUp()

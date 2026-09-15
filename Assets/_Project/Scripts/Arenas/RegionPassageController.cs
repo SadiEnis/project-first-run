@@ -262,8 +262,15 @@ namespace ProjectFirstRun.Arenas
         private void ApplyBlocker()
         {
             if (_blocker != null)
+            {
+                bool oneWayReturnLocked = _transition != null &&
+                    _transition.Direction == RegionTransitionDirection.OneWay &&
+                    _mapSession != null &&
+                    _mapSession.CurrentRegionId == _transition.DestinationId;
                 _blocker.enabled = isActiveAndEnabled && ValidGeometry() &&
-                    Barrier.Status == TransitionBarrierStatus.Closed && !Barrier.IsPlayerInside;
+                    Barrier.Status == TransitionBarrierStatus.Closed &&
+                    (!Barrier.IsPlayerInside || oneWayReturnLocked);
+            }
         }
         private void HandleOpened() { ApplyBlocker(); _opened.Invoke(); }
         private void HandleClosed() { ApplyBlocker(); _closed.Invoke(); }

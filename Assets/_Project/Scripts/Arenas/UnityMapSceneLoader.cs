@@ -14,9 +14,26 @@ namespace ProjectFirstRun.Arenas
 
     public class UnityMapSceneLoader : IMapSceneLoader
     {
-        public virtual bool CanLoad(string path) => Application.CanStreamedLevelBeLoaded(path);
-        protected virtual AsyncOperation BeginLoad(string path) =>
-            SceneManager.LoadSceneAsync(path, LoadSceneMode.Additive);
+        public virtual bool CanLoad(string path)
+        {
+            if (Application.CanStreamedLevelBeLoaded(path)) return true;
+#if UNITY_EDITOR
+            // The playable fixture is intentionally usable directly from the
+            // Editor before its scenes are added to a player build profile.
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(path) != null;
+#else
+            return false;
+#endif
+        }
+        protected virtual AsyncOperation BeginLoad(string path)
+        {
+#if UNITY_EDITOR
+            if (!Application.CanStreamedLevelBeLoaded(path))
+                return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
+                    path, new LoadSceneParameters(LoadSceneMode.Additive));
+#endif
+            return SceneManager.LoadSceneAsync(path, LoadSceneMode.Additive);
+        }
 
         public async Task<Scene> LoadAsync(string path)
         {

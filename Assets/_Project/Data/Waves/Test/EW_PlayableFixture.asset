@@ -14,4 +14,4 @@ MonoBehaviour:
   _entries:
   - _enemyPrefab: {fileID: 7314378341817879031, guid: aaa40dfc80ad5094eb66d50f88222d35, type: 3}
     _enemyDefinition: {fileID: 11400000, guid: 8aacf70df8e07ce43968028157b37d6b, type: 2}
-    _count: 1
+    _count: 4

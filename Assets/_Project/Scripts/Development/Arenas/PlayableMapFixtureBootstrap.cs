@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ProjectFirstRun.Arenas;
+using ProjectFirstRun.Progression;
 using UnityEngine;
 
 namespace ProjectFirstRun.Development.Arenas
@@ -15,16 +16,19 @@ namespace ProjectFirstRun.Development.Arenas
         public const string SideNorth = "side-north";
         public const string SideSouth = "side-south";
         public const string SecondMain = "second-main";
-        public const string TargetScene = "Assets/_Project/Scenes/Tests/Test_SceneTravelTarget.unity";
+        public const string TargetScene = "Assets/_Project/Scenes/Playable/PlayableMapDestination.unity";
 
         [SerializeField] private MapSceneRoot _mapRoot;
         [SerializeField] private PreparedRegionEncounter _encounter;
+        [SerializeField] private PreparedRegionEncounter[] _encounters;
+        [SerializeField] private PlayerExperienceController _playerExperience;
         [SerializeField] private List<RegionPassageController> _passages = new List<RegionPassageController>();
         private string _lastTransition = "Waiting for a passage";
 
         public MapSceneRoot MapRoot => _mapRoot;
         public MapTraversalController Map => _mapRoot != null ? _mapRoot.Map : null;
         public PreparedRegionEncounter Encounter => _encounter;
+        public IReadOnlyList<PreparedRegionEncounter> Encounters => _encounters;
 
         private void Awake()
         {
@@ -44,7 +48,7 @@ namespace ProjectFirstRun.Development.Arenas
         private void OnGUI()
         {
             if (Map == null) return;
-            GUI.Box(new Rect(12f, 12f, 520f, 156f), "Playable Map Fixture Debug");
+            GUI.Box(new Rect(12f, 12f, 620f, 265f), "Playable Map Fixture Debug");
             GUI.Label(new Rect(26f, 42f, 330f, 22f), "Current region: " + Map.Session.CurrentRegionId);
             GUI.Label(new Rect(26f, 65f, 330f, 22f), _lastTransition);
             GUI.Label(new Rect(26f, 88f, 330f, 22f),
@@ -54,6 +58,20 @@ namespace ProjectFirstRun.Development.Arenas
             GUI.Label(new Rect(26f, 134f, 490f, 22f),
                 "Last error: " + (_encounter == null || _encounter.LastError == null
                     ? "none" : _encounter.LastError.Message));
+            int row = 0;
+            if (_encounters != null)
+                foreach (var encounter in _encounters)
+                {
+                    if (encounter == null) continue;
+                    GUI.Label(new Rect(26, 157 + 22 * row++, 590, 22),
+                        $"{encounter.Region?.RegionId}: {encounter.Status}/{encounter.PreparationStatus} " +
+                        $"prep max {encounter.MaxPreparationStepMilliseconds:F2} ms / activate {encounter.LastActivationMilliseconds:F2} ms" +
+                        (encounter.LastError == null ? "" : " ERROR: " + encounter.LastError.Message));
+                }
+            if (_playerExperience != null && _playerExperience.IsInitialized)
+                GUI.Label(new Rect(26, 229, 590, 22),
+                    $"Level {_playerExperience.Level} | XP {_playerExperience.CurrentExperience}/{_playerExperience.RequiredExperience} " +
+                    $"| Frame {Time.unscaledDeltaTime * 1000:F1} ms");
         }
     }
 }

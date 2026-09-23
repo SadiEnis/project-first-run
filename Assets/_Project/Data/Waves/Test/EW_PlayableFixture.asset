@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: EW_PlayableFixture
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Waves.EnemyWaveDefinition
+  m_Script: {fileID: 11500000, guid: 181d4da4463a40c3af6e212f967fc966, type: 3}
+  _stableId: playable_fixture_wave
+  _displayName: Playable Fixture Encounter
+  _entries:
+  - _enemyPrefab: {fileID: 7314378341817879031, guid: aaa40dfc80ad5094eb66d50f88222d35, type: 3}
+    _enemyDefinition: {fileID: 11400000, guid: 8aacf70df8e07ce43968028157b37d6b, type: 2}
+    _count: 4

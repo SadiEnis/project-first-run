@@ -4,7 +4,8 @@
     "references": [
         "GUID:99c0f5aaa71e3b2419b526c88662f8ba",
         "UnityEngine.UI",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.AI.Navigation"
     ],
     "includePlatforms": [
         "Editor"

@@ -3,6 +3,7 @@ using ProjectFirstRun.Builds;
 using ProjectFirstRun.Rewards;
 using ProjectFirstRun.UI.Rewards;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ProjectFirstRun.Chests.Spawning
 {
@@ -73,6 +74,9 @@ namespace ProjectFirstRun.Chests.Spawning
                         request.Definition.WorldPrefab,
                         request.Position,
                         request.Rotation);
+
+                // The map-local spawner owns loot lifetime, not the active scene.
+                SceneManager.MoveGameObjectToScene(spawnedInstance, gameObject.scene);
 
                 spawnedInstance.name =
                     $"{request.Definition.WorldPrefab.name}_Instance";

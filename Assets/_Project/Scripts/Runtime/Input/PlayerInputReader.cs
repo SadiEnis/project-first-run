@@ -8,6 +8,8 @@ namespace ProjectFirstRun.Input
     {
         private ProjectFirstRunInputActions _inputActions;
 
+        public bool IsGameplayInputEnabled => _inputActions != null && _inputActions.Gameplay.enabled;
+
         public Vector2 MoveInput =>
             _inputActions.Gameplay.Move.ReadValue<Vector2>();
 

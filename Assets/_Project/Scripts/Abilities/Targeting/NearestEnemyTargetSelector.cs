@@ -5,9 +5,12 @@ using UnityEngine;
 namespace ProjectFirstRun.Abilities.Targeting
 {
     public sealed class NearestEnemyTargetSelector :
-        IAbilityTargetSelector
+        IAbilityTargetSelector, IMapEnemyRegistryBinding
     {
-        private readonly EnemyRegistry _enemyRegistry;
+        private EnemyRegistry _enemyRegistry;
+
+        public void BindEnemyRegistry(EnemyRegistry registry) => _enemyRegistry = registry != null
+            ? registry : throw new ArgumentNullException(nameof(registry));
 
         public NearestEnemyTargetSelector(
             EnemyRegistry enemyRegistry)

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace ProjectFirstRun.Arenas
 {
     [DisallowMultipleComponent]
-    public sealed class ArenaSessionController : MonoBehaviour
+    public sealed class ArenaSessionController : MonoBehaviour, IArenaSession
     {
         private WaveController _waveController;
         private IPlayerDeathSource _playerDeathSource;

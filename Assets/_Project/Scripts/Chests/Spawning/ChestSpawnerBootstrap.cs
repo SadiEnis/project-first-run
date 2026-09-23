@@ -14,6 +14,15 @@ namespace ProjectFirstRun.Chests.Spawning
         [SerializeField] private PlayerBuildController _playerBuild;
         [SerializeField] private RewardSelectionController _selection;
 
+        public void BindScenePlayer(GameObject player)
+        {
+            _playerBuild = player.GetComponent<PlayerBuildController>();
+            if (_spawner == null || _selection == null || _playerBuild == null || !_playerBuild.IsInitialized)
+                throw new InvalidOperationException("Map chest spawner requires initialized player build and local selection.");
+            _spawner.Initialize(_playerBuild, _selection,
+                new RewardOfferGenerator(new RewardCandidateFilter(), new UnityRandomSource()));
+        }
+
         private IEnumerator Start()
         {
             if (_spawner == null || _playerBuild == null || _selection == null)

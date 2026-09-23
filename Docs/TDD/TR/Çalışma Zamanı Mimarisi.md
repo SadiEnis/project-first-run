@@ -1,5 +1,7 @@
 # Çalışma Zamanı Mimarisi
 
+> 15 Eylül 2026 tasarım güncellemesi: [Harita/bölge/karşılaşma planı](Map-Region-Encounter-Plan.md), aşağıdaki her arena için ayrı sahne ve ilerlemek için wave temizleme varsayımlarının yerini alır. Bölge geçişi sahne yüklemeyi veya oyuncuyu yeniden oluşturmayı/sıfırlamayı gerektirmez. Haritalar arası veri sürekliliği, hedef giriş kimlikleri ve çıkış üzerinden ilerleme ilgili aşamalarda tasarlanacaktır. Aşağıdaki mimari bu sistemlerin uygulanmış olduğunu göstermez.
+
 # Çalışma Zamanı Mimarisi ve Sahne Akışı
 
 ## 1. Amaç

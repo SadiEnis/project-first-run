@@ -13,13 +13,13 @@
 | --- | --- |
 | Proje Adı | Project First Run |
 | Doküman Türü | Oyun Tasarım Dokümanı |
-| Doküman Sürümü | v0.1 |
+| Doküman Sürümü | v0.2 |
 | Durum | Ön Yapım |
 | Tür | Birinci Şahıs Roguelite / Arena Shooter |
 | İlk Hedef Platform | PC |
 | Oyun Motoru | Unity 6.3.9 |
 | Sürüm Kontrolü | Unity Version Control / Plastic SCM |
-| Son Güncelleme | 31.07.2026 |
+| Son Güncelleme | 20.09.2026 |
 > Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha sonra değişebilir.
 ---
 
@@ -123,49 +123,31 @@ Hedeflenen duygusal gelişim:
 
 ## 8. Temel Oynanış Döngüsü
 
+Kabul edilen döngü (20 Eylül 2026): Oyuncu üs/meta gelişim alanında uyanır, mevcut kalıcı gelişimlerini yönetir ve tura buradan girer. Ölümde aynı üs/geliştirme alanına döner; turdan korunan altınla kalıcı gelişimler yapıp yeni bir tura başlayabilir. Altın ve meta geliştirmelerin uygulaması ertelenmiştir; bu bölüm hedef deneyimi tanımlar.
+
 ```
-Tura Başla
-    ↓
-Arenaya Gir
-    ↓
-Düşman Dalgalarıyla Savaş
-    ↓
-Deneyim ve Altın Topla
-    ↓
-Seviye Atla
-    ↓
-Sandık Kazan ve Aç
-    ↓
-Yeni Bir Eşya Al veya Mevcut Eşyayı Geliştir
-    ↓
-Mevcut Build'i Güçlendir
-    ↓
-Elit Düşmanlarla Savaş
-    ↓
-Arena Boss'unu Yen
-    ↓
-Sonraki Arenaya İlerle
-    ↓
-Artan Zorlukla Döngüyü Tekrarla
-    ↓
-Son Boss'u Yen
-    ↓
-Son Ödülü Al
-    ↓
-Üsse Dön
-    ↓
-Kalıcı Geliştirmeler Satın Al
-    ↓
-Yeni Bir Tura Başla
+Üs/meta alanında uyan → kalıcı gelişimleri yönet → tura gir
+    → haritada ilerle → uygun çıkıştan sonraki haritaya geç
+
+İsteğe bağlı: yan dungeon/alan keşfet → savaş → XP/sandık → build geliştir
+
+Ölüm → üs/geliştirme alanına dön → korunan altınla geliş → yeni tur
+Nihai hedef → tur ödülü → üsse dönüş
 ```
+
+Yan dungeon'lara girmek isteğe bağlıdır. Serbest geçiş tanımlanan ana alanlarda da oyuncu düşmanları geride bırakıp çıkışa koşabilir; arkasından kapanan kapı bu kaçışı tamamlayabilir. Kapının tek yönlü olması tek başına düşmanları temizleme şartı doğurmaz. Yalnızca açıkça tasarlanmış özel karşılaşma kilitleri tamamlanmayı gerektirir.
+
+Rastgele sandık teklifleri, oyuncunun seçimleri ve mekanik olarak farklı eşyalar turlar arasında farklı build deneyimleri oluşturmalıdır. Amaç yalnızca değişen hasar sayıları değil, farklı oynanış davranışlarıdır; her turun matematiksel olarak benzersiz olması garanti edilmez. Tek el yapımı harita ile de bu çeşitlilik hedeflenir.
 
 ---
 
 ## 9. Tur Yapısı
 
-Bir tur, birbirine bağlı birden fazla savaş arenasından oluşur.
+Bir tur, birbirine bağlı keşfedilebilir haritalardan oluşur. İlk prototipte her harita, ana ve isteğe bağlı yan bölgeler içeren bir Unity sahnesidir.
 
-Her arena düşman dalgaları içerir ve elit karşılaşmalara, çevresel mekaniklere veya arenaya özel değiştiricilere sahip olabilir. Gerekli karşılaşmalar tamamlandığında oyuncu ilerleyebilir.
+Bölgelerde düşman grupları veya wave tabanlı karşılaşmalar bulunur. Oyuncu isteğe bağlı savaşları atlayıp daha az güçlenerek çıkışa ulaşabilir. Tüm düşmanları temizlemek genel ilerleme şartı değildir; yalnızca açıkça karşılaşma şartlı tasarlanan geçişler tamamlanmayı bekler.
+
+Aynı sahnedeki bağlantılar geri dönülebilir veya tek yönlü olabilir; oyuncuyu teleport etmek zorunda değildir. Girişten önce hazırlık, düşmanların kuruluşunu görüş dışında tutmalı ve performans ölçülmelidir. Harita çıkışı başka sahne yükleyebilir. Tek yönlü geçiş checkpoint anlamına gelmez. Prosedürel üretim veya zorunlu varyantlar yerine harita başına tek el yapımı düzenle başlanır.
 
 Boss'lar planlanan aralıklarda ortaya çıkar. Nihai amaç son boss'a ulaşmak ve onu yenmektir.
 
@@ -652,7 +634,7 @@ Son boss'un başarıyla yenilmesi durumunda tur ödüllerinin korunması ve ek A
 
 ## 19. Kalıcı İlerleme
 
-Tur sona erdikten sonra oyuncu üs veya ana ilerleme alanına döner.
+Oyuncu ilk olarak üs/meta gelişim alanında uyanır ve turlara buradan girer. Ölümden sonra aynı alanın geliştirme akışına döner; turdan korunan altını kullanıp yeni tura başlayabilir. Üssün ayrıntılı sahne/UI sunumu daha sonra tasarlanacaktır.
 
 Kalıcı altın uzun vadeli geliştirmeler için harcanabilir.
 
@@ -774,7 +756,7 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 - Arena değiştiricileri ilk sürümde bulunacak mı?
 - Bir sandık yeterli sayıda benzersiz ve geçerli seçenek oluşturamazsa ne olacak?
 - Zorluk arenalar arasında ve tur boyunca nasıl artacak?
-- Kesin ölüm, zafer ve üsse dönüş akışı nasıl olacak?
+- Ölümde üsse dönüş kararı kesin; ölüm/zafer sunumu, üs arayüzü ve başarılı tur dönüşünün ayrıntıları nasıl olacak?
 - Efektler, kamera hareketi ve savaş okunabilirliği için hangi erişilebilirlik ayarları gerekli olacak?
 
 ---
@@ -789,9 +771,9 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 
 ### GDD-002 — Arena Tabanlı Tur Yapısı
 
-**Karar:** Turlar tek bir sabit harita yerine değişen savaş arenalarında ilerleyecektir.
+**Karar (15 Eylül 2026 güncellemesi):** Turlar, isteğe bağlı bölgeler ve seçili karşılaşma kilitleri içeren keşfedilebilir haritalarda ilerler. Rotayı ilerleten genel koşul wave temizlemek değil uygun çıkışa ulaşmaktır. Bkz. [aşamalı teknik plan](../TDD/TR/Map-Region-Encounter-Plan.md).
 
-**Gerekçe:** Arena değişiklikleri tempo, çeşitlilik, karşılaşma kimliği ve uzun vadeli ilgi sağlar.
+**Gerekçe:** Özel kilitli karşılaşmaları ve harita kimliklerini korurken keşif ile daha hızlı fakat daha az güçlenilen rotalar arasında seçim sunmak.
 
 ### GDD-003 — Ortak Güçlendirme Slotları
 
@@ -836,3 +818,4 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 | Sürüm | Tarih | Değişiklikler |
 | --- | --- | --- |
 | v0.1 | 31.07.2026 | İlk temel GDD oluşturuldu. Vizyon, tasarım ilkeleri, temel döngü, ekipman yapısı, mevcut silah ve yetenek tasarımları, güçlendirme adayları, evrim kuralları, sandık sistemi, ekonomi, kalıcı ilerleme, kapsam, açık sorular ve ilk tasarım kararları belgelendi. |
+| v0.2 | 20.09.2026 | Keşfedilebilir harita yönüyle birlikte üs → run → ölümde üs döngüsü, isteğe bağlı dungeon/ana alan savaşları ve sandık kaynaklı mekanik çeşitlilik netleştirildi. Altın/meta uygulaması ertelenmiş durumda. |

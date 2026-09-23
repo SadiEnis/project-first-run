@@ -1,5 +1,7 @@
 # Runtime-Architecture
 
+> Design update, 15 September 2026: The [map/region/encounter plan](Map-Region-Encounter-Plan.md) supersedes the arena-per-scene and wave-clear-to-advance assumptions below. Region travel need not load a scene or recreate/reset the player. Cross-map persistence, destination entry identities and exit-driven progression will be designed in their planned stages. The remaining architecture below is not evidence that those systems are implemented.
+
 # Runtime Architecture and Scene Flow
 
 ## 1. Purpose

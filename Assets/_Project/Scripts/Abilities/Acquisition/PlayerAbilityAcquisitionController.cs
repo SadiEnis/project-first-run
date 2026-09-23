@@ -19,6 +19,9 @@ namespace ProjectFirstRun.Abilities
         public bool IsInitialized =>
             _factoryRegistry != null;
 
+        public void BindEnemyRegistry(ProjectFirstRun.Enemies.EnemyRegistry registry) =>
+            _factoryRegistry?.BindEnemyRegistry(registry);
+
         public event Action<AbilityDefinition>
             AbilityAcquired;
 

@@ -12,6 +12,12 @@ namespace ProjectFirstRun.Abilities
         public int FactoryCount =>
             _factories.Count;
 
+        public void BindEnemyRegistry(ProjectFirstRun.Enemies.EnemyRegistry registry)
+        {
+            foreach (var factory in _factories)
+                if (factory is IMapEnemyRegistryBinding binding) binding.BindEnemyRegistry(registry);
+        }
+
         public void Register(
             IAbilityRuntimeFactory factory)
         {

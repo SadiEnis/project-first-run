@@ -1,6 +1,7 @@
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Enemies;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ProjectFirstRun.Progression
 {
@@ -45,6 +46,8 @@ namespace ProjectFirstRun.Progression
 
             ExperiencePickup pickup = Instantiate(
                 _pickupPrefab, transform.position + _spawnOffset, Quaternion.identity);
+            // Loot outlives the enemy/region owner, but not its map scene.
+            SceneManager.MoveGameObjectToScene(pickup.gameObject, gameObject.scene);
             pickup.Initialize(amount);
         }
     }

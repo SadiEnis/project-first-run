@@ -27,6 +27,13 @@ namespace ProjectFirstRun.Chests.Spawning
         public int PendingChestCount => _tracker?.PendingCount ?? 0;
         public int SpawnedChestCount => _tracker?.SpawnedCount ?? 0;
 
+        public void BindScenePlayer(GameObject player)
+        {
+            Initialize(player.GetComponent<PlayerExperienceController>(), player.GetComponent<HealthComponent>(),
+                _spawner, _dropTable, _placement != null ? _placement : GetComponent<ChestSpawnPlacement>(),
+                new UnityRandomSource());
+        }
+
         public void Initialize(PlayerExperienceController experience, HealthComponent health,
             ChestSpawner spawner, ChestDropTable dropTable, ChestSpawnPlacement placement, IRandomSource random)
         {

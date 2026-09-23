@@ -12,6 +12,20 @@ namespace ProjectFirstRun.Enemies.Spawning
         public EnemySpawnResult Spawn(
             in EnemySpawnRequest request)
         {
+            return SpawnInternal(in request, null);
+        }
+
+        // Inactive hierarchy prevents OnEnable/registry/attack side effects before
+        // the preparation owner can put the instance into its dormant state.
+        public EnemySpawnResult SpawnInactive(in EnemySpawnRequest request, Transform inactiveParent)
+        {
+            if (inactiveParent == null || inactiveParent.gameObject.activeInHierarchy)
+                throw new ArgumentException("An inactive preparation parent is required.", nameof(inactiveParent));
+            return SpawnInternal(in request, inactiveParent);
+        }
+
+        private EnemySpawnResult SpawnInternal(in EnemySpawnRequest request, Transform parent)
+        {
             // A previously valid request may contain Unity objects
             // that were destroyed after its construction.
             request.Validate();
@@ -32,7 +46,8 @@ namespace ProjectFirstRun.Enemies.Spawning
                 spawnedEnemy = Instantiate(
                     request.Prefab,
                     request.Position,
-                    request.Rotation);
+                    request.Rotation,
+                    parent);
 
                 spawnedEnemy.name =
                     $"{request.Prefab.name}_Instance";

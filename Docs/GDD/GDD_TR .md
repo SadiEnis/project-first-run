@@ -13,13 +13,13 @@
 | --- | --- |
 | Proje Adı | Project First Run |
 | Doküman Türü | Oyun Tasarım Dokümanı |
-| Doküman Sürümü | v0.1 |
+| Doküman Sürümü | v0.2 |
 | Durum | Ön Yapım |
 | Tür | Birinci Şahıs Roguelite / Arena Shooter |
 | İlk Hedef Platform | PC |
 | Oyun Motoru | Unity 6.3.9 |
 | Sürüm Kontrolü | Unity Version Control / Plastic SCM |
-| Son Güncelleme | 31.07.2026 |
+| Son Güncelleme | 20.09.2026 |
 > Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha sonra değişebilir.
 ---
 
@@ -123,43 +123,21 @@ Hedeflenen duygusal gelişim:
 
 ## 8. Temel Oynanış Döngüsü
 
-Güncel ilerleme (15 Eylül 2026): Tura başla → haritaya gir → keşfet ve isteğe bağlı savaş/güçlen → uygun çıkışa ulaş → sonraki haritaya geç → nihai hedefi tamamla. Savaş, XP ve sandık ödülleri yerel güçlenme döngüsüdür; her çıkışın zorunlu adımları değildir. Aşağıdaki eski ayrıntılı sıra zorunlu ilerleme zinciri değil, içerik/tempo referansıdır; altın ve meta geliştirmeler ertelenmiştir.
+Kabul edilen döngü (20 Eylül 2026): Oyuncu üs/meta gelişim alanında uyanır, mevcut kalıcı gelişimlerini yönetir ve tura buradan girer. Ölümde aynı üs/geliştirme alanına döner; turdan korunan altınla kalıcı gelişimler yapıp yeni bir tura başlayabilir. Altın ve meta geliştirmelerin uygulaması ertelenmiştir; bu bölüm hedef deneyimi tanımlar.
 
 ```
-Tura Başla
-    ↓
-Arenaya Gir
-    ↓
-Düşman Dalgalarıyla Savaş
-    ↓
-Deneyim ve Altın Topla
-    ↓
-Seviye Atla
-    ↓
-Sandık Kazan ve Aç
-    ↓
-Yeni Bir Eşya Al veya Mevcut Eşyayı Geliştir
-    ↓
-Mevcut Build'i Güçlendir
-    ↓
-Elit Düşmanlarla Savaş
-    ↓
-Arena Boss'unu Yen
-    ↓
-Sonraki Arenaya İlerle
-    ↓
-Artan Zorlukla Döngüyü Tekrarla
-    ↓
-Son Boss'u Yen
-    ↓
-Son Ödülü Al
-    ↓
-Üsse Dön
-    ↓
-Kalıcı Geliştirmeler Satın Al
-    ↓
-Yeni Bir Tura Başla
+Üs/meta alanında uyan → kalıcı gelişimleri yönet → tura gir
+    → haritada ilerle → uygun çıkıştan sonraki haritaya geç
+
+İsteğe bağlı: yan dungeon/alan keşfet → savaş → XP/sandık → build geliştir
+
+Ölüm → üs/geliştirme alanına dön → korunan altınla geliş → yeni tur
+Nihai hedef → tur ödülü → üsse dönüş
 ```
+
+Yan dungeon'lara girmek isteğe bağlıdır. Serbest geçiş tanımlanan ana alanlarda da oyuncu düşmanları geride bırakıp çıkışa koşabilir; arkasından kapanan kapı bu kaçışı tamamlayabilir. Kapının tek yönlü olması tek başına düşmanları temizleme şartı doğurmaz. Yalnızca açıkça tasarlanmış özel karşılaşma kilitleri tamamlanmayı gerektirir.
+
+Rastgele sandık teklifleri, oyuncunun seçimleri ve mekanik olarak farklı eşyalar turlar arasında farklı build deneyimleri oluşturmalıdır. Amaç yalnızca değişen hasar sayıları değil, farklı oynanış davranışlarıdır; her turun matematiksel olarak benzersiz olması garanti edilmez. Tek el yapımı harita ile de bu çeşitlilik hedeflenir.
 
 ---
 
@@ -656,7 +634,7 @@ Son boss'un başarıyla yenilmesi durumunda tur ödüllerinin korunması ve ek A
 
 ## 19. Kalıcı İlerleme
 
-Tur sona erdikten sonra oyuncu üs veya ana ilerleme alanına döner.
+Oyuncu ilk olarak üs/meta gelişim alanında uyanır ve turlara buradan girer. Ölümden sonra aynı alanın geliştirme akışına döner; turdan korunan altını kullanıp yeni tura başlayabilir. Üssün ayrıntılı sahne/UI sunumu daha sonra tasarlanacaktır.
 
 Kalıcı altın uzun vadeli geliştirmeler için harcanabilir.
 
@@ -778,7 +756,7 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 - Arena değiştiricileri ilk sürümde bulunacak mı?
 - Bir sandık yeterli sayıda benzersiz ve geçerli seçenek oluşturamazsa ne olacak?
 - Zorluk arenalar arasında ve tur boyunca nasıl artacak?
-- Kesin ölüm, zafer ve üsse dönüş akışı nasıl olacak?
+- Ölümde üsse dönüş kararı kesin; ölüm/zafer sunumu, üs arayüzü ve başarılı tur dönüşünün ayrıntıları nasıl olacak?
 - Efektler, kamera hareketi ve savaş okunabilirliği için hangi erişilebilirlik ayarları gerekli olacak?
 
 ---
@@ -840,3 +818,4 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 | Sürüm | Tarih | Değişiklikler |
 | --- | --- | --- |
 | v0.1 | 31.07.2026 | İlk temel GDD oluşturuldu. Vizyon, tasarım ilkeleri, temel döngü, ekipman yapısı, mevcut silah ve yetenek tasarımları, güçlendirme adayları, evrim kuralları, sandık sistemi, ekonomi, kalıcı ilerleme, kapsam, açık sorular ve ilk tasarım kararları belgelendi. |
+| v0.2 | 20.09.2026 | Keşfedilebilir harita yönüyle birlikte üs → run → ölümde üs döngüsü, isteğe bağlı dungeon/ana alan savaşları ve sandık kaynaklı mekanik çeşitlilik netleştirildi. Altın/meta uygulaması ertelenmiş durumda. |

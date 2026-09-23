@@ -13,13 +13,13 @@
 | --- | --- |
 | Project Name | Project First Run |
 | Document Type | Game Design Document |
-| Document Version | v0.1 |
+| Document Version | v0.2 |
 | Status | Pre-Production |
 | Genre | First-Person Roguelite / Arena Shooter |
 | Initial Platform | PC |
 | Game Engine | Unity 6.3.9 |
 | Version Control | Unity Version Control / Plastic SCM |
-| Last Updated | 2026-07-31 |
+| Last Updated | 2026-09-20 |
 > Project First Run is the current development codename. The final commercial title may change.
 ---
 
@@ -123,43 +123,21 @@ The desired emotional progression is:
 
 ## 8. Core Gameplay Loop
 
-Updated progression (15 September 2026): Start run → enter map → explore and optionally fight/build → reach an eligible exit → enter the next map → complete the final objective. Combat, XP and chest rewards form a local growth loop, not mandatory steps at every exit. The earlier detailed sequence below remains a content/pacing reference, not a required progression chain; gold and meta progression remain deferred.
+Accepted loop (20 September 2026): The player wakes in the hub/meta progression area, manages permanent improvements and enters a run from there. Death returns the player to the same hub/upgrade area, where retained run gold can fund permanent improvements before another run. Gold and meta progression implementation remain deferred; this section describes the intended experience.
 
 ```
-Start Run
-    ↓
-Enter Arena
-    ↓
-Fight Enemy Waves
-    ↓
-Collect Experience and Gold
-    ↓
-Level Up
-    ↓
-Receive and Open a Chest
-    ↓
-Acquire or Improve an Item
-    ↓
-Strengthen the Current Build
-    ↓
-Fight Elite Enemies
-    ↓
-Defeat Arena Boss
-    ↓
-Advance to the Next Arena
-    ↓
-Repeat with Increased Difficulty
-    ↓
-Defeat Final Boss
-    ↓
-Receive Final Reward
-    ↓
-Return to Base
-    ↓
-Purchase Permanent Improvements
-    ↓
-Start a New Run
+Wake in hub/meta area → manage permanent improvements → enter run
+    → traverse map → reach eligible exit → enter next map
+
+Optional: explore side dungeon/area → fight → XP/chests → develop build
+
+Death → return to hub/upgrade area → spend retained gold → new run
+Final objective → run reward → return to hub
 ```
+
+Side dungeons are optional. Main areas configured for free traversal also allow players to leave enemies behind and rush to an exit; a door closing behind them can complete that escape. One-way closure does not itself require clearing enemies. Only explicitly designed special encounter gates require completion.
+
+Random chest offers, player choices and mechanically distinct items should produce different build experiences between runs. The goal is varied gameplay behavior rather than only changing damage numbers; mathematical uniqueness of every run is not guaranteed. This diversity is also a goal with one handcrafted map.
 
 ---
 
@@ -656,7 +634,7 @@ Successfully defeating the final boss is expected to preserve the run's reward a
 
 ## 19. Meta Progression
 
-After a run, the player returns to a base or main progression area.
+The player first wakes in the hub/meta progression area and starts runs from there. Death returns the player to that area's upgrade flow, where retained run gold can be spent before another run. Detailed hub scene/UI presentation will be designed later.
 
 Permanent gold may be spent on long-term improvements.
 
@@ -778,7 +756,7 @@ Features may be reconsidered only if they clearly support the core design pillar
 - Will arena modifiers be present in the initial release?
 - What happens when a chest cannot generate enough unique valid choices?
 - How will difficulty scale between arenas and throughout a run?
-- What is the final death, victory, and return-to-base flow?
+- Death returns to the hub; what are the death/victory presentation, hub UI and successful-run return details?
 - What accessibility options will be required for effects, camera motion, and combat readability?
 
 ---
@@ -840,3 +818,4 @@ Features may be reconsidered only if they clearly support the core design pillar
 | Version | Date | Changes |
 | --- | --- | --- |
 | v0.1 | 2026-07-31 | Created the initial foundation GDD. Documented the vision, design pillars, core loop, equipment concepts, current weapon and ability designs, upgrade candidates, evolution rules, chest system, economy, meta progression, scope, open questions, and initial decisions. |
+| v0.2 | 2026-09-20 | Clarified explorable-map progression, hub → run → death-to-hub loop, optional dungeon/main-area combat and chest-driven mechanical variety. Gold/meta implementation remains deferred. |

@@ -2,9 +2,9 @@
 
 ## Durum ve kapsam
 
-15 Eylül 2026: Kabul edilen tasarım yönü ve aşamalı geliştirme planı. Bu belge yeni sistemin uygulandığı anlamına gelmez. Mevcut çoklu arena prototipi wave tamamlanmasıyla açılan, aynı sahne içinde oyuncuyu taşıyan geçişi kullanmaya devam eder.
+20 Eylül 2026: 1–8 için aşağıda belirtilen temeller ve 9 için sahnede düzenlenebilir geçiş örneği mevcut. Kullanıcı dönüşlü yan geçişleri, tek yönlü geçişi, hedef sahneye ulaşmayı ve hazırlık/aktivasyonda Ready–Ready → Running–Ready akışını gözlemledi. Bu kabul, tam oynanış döngüsü veya güncel otomatik test/build doğrulaması değildir. 10. aşama henüz tamamlanmadı; eski wave tabanlı örnek ayrı test akışı olarak korunuyor.
 
-Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin tüm wave'leri temizlemeyi gerektirmesi varsayımlarının yerini alır. Altın, meta geliştirmeler, yeni evolution içeriği ve prosedürel üretim kapsam dışıdır.
+Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin tüm wave'leri temizlemeyi gerektirmesi varsayımlarının yerini alır. Altın ve meta gelişim hedef oyun döngüsünün parçasıdır; bu harita aşamasında uygulamaları ertelenmiştir. Yeni evolution içeriği ve prosedürel üretim de kapsam dışıdır.
 
 ## Kavramlar ve kabul edilen mekanikler
 
@@ -17,6 +17,8 @@ Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin 
 | Run | Haritalar boyunca oyuncunun ilerlemesini ve nihai sonucunu kapsar. |
 
 - Oyuncu isteğe bağlı savaşları atlayıp çıkışa ilerleyebilir. Bunun bedeli kaçırılan XP ve gelişim fırsatlarıdır; denge daha sonra ölçülecek.
+- Bu serbestlik yalnızca yan dungeon'larla sınırlı değildir: serbest çıkışlı ana alanda da düşmanları geride bırakıp kapanan geçidin ardına geçilebilir. Tek yönlülük, karşılaşma tamamlama şartından bağımsızdır.
+- Hedef dış döngü: üs/meta alanında uyanma → run'a giriş → ölümde aynı üs/geliştirme alanına dönüş → korunan tur altınıyla kalıcı gelişim → yeni run. Altın koruma oranı ve üs sunumu bu kararla yeniden belirlenmez; mevcut ekonomi önerileri ayrı tasarlanacaktır.
 - Karşılaşma temizleme şartı yalnızca açıkça tanımlanmış özel geçişlerde kullanılır. Haritadaki tüm düşmanlar genel bir çıkış kilidi değildir.
 - Yan alanlara dönüş ve tek yönlü bağlantılar desteklenecek. Tek yönlü geçiş otomatik checkpoint veya kayıt anlamına gelmez.
 - Aynı sahnede merdiven/koridor boyunca yürümek de geçiştir; teleport zorunlu değildir. Sahne yüklemesi ayrı bir geçiş yöntemidir.
@@ -40,7 +42,7 @@ Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin 
 
 ## Aşamalı geliştirme sırası
 
-Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarım olarak, 2 yaşam döngüsü çekirdeği olarak uygulanmıştır. 3–4 için düzeltilmiş geçiş sözleşmesi ve yürüyüş/bariyer entegrasyonu, 5 için tek grup ön hazırlığı, 6 için ortak harita içi geçiş/kaynak sahipliği, 7 için oyuncu runtime'ını koruyan sahne geçişi ve açık harita bağımlılık bağlama vardır; 8 terminal sonuçları ve callback tabanlı restart ekler; 9–10 planlıdır. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
+Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1–8'in kapsamı aşağıdadır; 8'in sıralı arena controller'ındaki terminal/restart temeli, yeni harita örneğinde üs dönüşü olarak bağlanmış değildir. 9'un teknik geçiş örneği mevcut; 10 entegrasyon eksiklerini ve doğrulamayı kapsar. Tekrar giriş ve sürekli aktif karşılaşma kararları aşağıda güncellenmiştir.
 
 1. **Tasarım ayrımı — bu belge:** GDD yönünü, terimleri, korunacak parçaları ve sırayı kaydet. Runtime değişikliği yok.
 2. **Bölge ve karşılaşma yaşam döngüsü:** Hazırlama, etkinleştirme, tamamlama ve tekrar giriş kurallarını tasarla. Karşılaşma bitişinin harita bitişi olmadığını test et.
@@ -50,12 +52,22 @@ Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1 tasarı
 6. **Kaynak sürekliliği — uygulandı:** Ortak bölge konumu ve harita genelinde geçiş kilidi; oyuncu durumu yerinde korunur. Drop kaynak haritanın sahnesine aittir ve bölge/düşman temizliğinde kalır. Geri dönüş, tek yön ve savaş atlama kapsamı Map-Progression-Resources belgesindedir.
 7. **Sahneler arası geçiş — temel uygulandı:** Inspector üzerinden sahne yolu/giriş kimliği, additive yükleme, mevcut oyuncunun aktarımı, hedef bağımlılıklarını bağlama, kaynak temizliği ve hata/tekrar davranışı. Sözleşme ve test kapsamı Scene-Travel belgesindedir; paketlenmiş build doğrulaması oynanabilir harita entegrasyonunda yapılacaktır.
 8. **Run sonucu ve yeniden başlatma — temel uygulandı:** Gezinme/geçiş sırasında ölüm, nihai zafer ve atomik reset callback'i ile temiz restart. Checkpoint ve kayıt kararı bu adıma otomatik dahil değildir; sözleşme Run-Outcome-Restart belgesindedir.
-9. **Oynanabilir örnek sahne:** Ana alan, iki geri dönülebilen yan alan, hazırlama bağlantısı, tek yönlü ikinci ana alan ve küçük ikinci sahneye çıkış. Placeholder geometri yeterli.
-10. **Oynanış ve performans doğrulaması:** Kısa rota ile keşif rotasını karşılaştır; geçişte frame sıçraması, görünür spawn ve kaynak kayıplarını ölç.
+9. **Oynanabilir örnek sahne — sahnede kayıtlı entegrasyon mevcut:** Ana alan, iki geri dönülebilen yan alan, hazırlama/aktivasyon hacimleri, tek yönlü ikinci ana alan ve küçük ikinci sahneye çıkış. Mevcut düşman/XP/level-up sandık servisleri, baked navigasyon, çevre sınırları ve görüş kesen duvarlar bağlandı. Bu hâlâ doğrulama örneğidir; nihai demo veya tamamlanmış run döngüsü değildir.
+10. **Oynanış ve performans doğrulaması — devam ediyor:** Tam paketler geçti (752 EditMode / 449 PlayMode); kayıtlı sahnede geçiş/tekrar giriş/ödül entegrasyonu ve 32 düşmanlık hazırlık testi dahil. Ölçümler ve sınırları Playable-Map-Fixture belgesindedir. Görüntülü kısa/keşif rotası değerlendirmesi ve soğuk başlangıç profili kalır; havuzlama kararı yalnızca sıcak batch ölçümlerine dayanmaz. Paketlenmiş build kanıtı aynı belgede ayrıca kaydedilir. Harita temelli ölüm/nihai sonuç bağlantısı, eski arena listesinden bağımsız ele alınmalı; callback restart temeli tamamlanmış üs döngüsü sayılmamalı.
 
 İlk tasarım ve uyarlamalar mevcut `feature/multi-arena-run` üzerinde ilerler. Her madde ayrı branch veya commit gerektirmez. Yeni bağımsız aşama gerektiğinde Plastic dev / Git main tabanından açılır; merge'i kullanıcı yapar.
 
 ## Kararlar ve kalan tasarım konuları
+
+### Harita çalışması sonrası sıra — 20 Eylül 2026
+
+1. Arena/harita akışının entegrasyon ve 10. aşama kabul eksiklerini kapat.
+2. İçerik genişlet: mekanik olarak farklı silah, yetenek ve geliştirmeleri küçük paketlerle ekle. Rastgele sandık teklifleri ve oyuncu seçimleri farklı build'ler doğurmalı; yalnızca sayısal varyasyon yeterli değildir. Her içerik paketinden önce mekanik ve TDD konuşulur.
+3. Oynanabilir demo haritasını tasarla: bu içeriklerle ana rota, isteğe bağlı dungeon/yan yollar, karşılaşmalar ve güçlenme fırsatlarını yerleştir; süre–risk–ödül dengesini değerlendir. Mevcut teknik örnek final demo haritası değildir.
+
+Boss, içerik genişletmenin önüne zorunlu bir aşama olarak konulmaz; kapsamı demo ihtiyaçlarıyla ayrıca kararlaştırılır. Altın/meta uygulaması ve evolution oynanışı ertelenmiş kalır. Demo kapsamının üs/ekonomi içermesi ayrıca belirlenmelidir; teknik doğrulama bu sistemlerin hazır olduğunu iddia etmez.
+
+### Yaşam döngüsü kararları
 
 - Karar: tekrar giriş düşmanları yeniden üretmez; yaşayanların canı ve mevcut karşılaşma durumu korunur.
 - Düşmanlar bölge dışına oyuncuyu takip edebilecek mi; sahiplik ve takip sınırı nasıl ayrılacak?
@@ -66,4 +78,4 @@ Takip sınırları açık konudur. Kararlaştırılmış yaşam döngüsü ve ka
 
 ## Doğrulama ve kayıt düzeni
 
-Önce anlamlı tasarım paketi için docs check-in/commit; sonra ilgili runtime ve testler için anlamlı uygulama paketleri. Her küçük dosya değişimi ayrı kayıt gerektirmez. Bu adım yalnızca dokümandır; önceki Unity test sonuçları yeni sistemin doğrulandığı anlamına gelmez.
+Önce anlamlı tasarım paketi için docs check-in/commit; sonra ilgili runtime ve testler için anlamlı uygulama paketleri. Her küçük dosya değişimi ayrı kayıt gerektirmez. İlk kayıt yalnızca tasarımdı; sonraki uygulamalar ve tarihli doğrulama kanıtları ilgili aşama belgelerinde tutulur. Eski test sonucu daha sonraki değişikliğin doğrulandığı anlamına gelmez.

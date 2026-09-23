@@ -2,9 +2,9 @@
 
 ## Status and scope
 
-15 September 2026: Accepted design direction and staged delivery plan, not an implemented system. The existing multi-arena prototype still unlocks a same-scene relocation after wave completion.
+20 September 2026: Foundations for stages 1–8 and an authored traversal fixture for stage 9 exist as scoped below. The user observed returnable side passages, one-way traversal, arrival in the target scene and Ready–Ready → Running–Ready preparation/activation. This acceptance does not establish a complete gameplay loop or current automated test/build validation. Stage 10 remains incomplete; the older wave-based fixture remains a separate test flow.
 
-This plan supersedes the assumptions that every arena is a separate scene and every progression requires clearing all waves. Gold, meta progression, new evolution content and procedural generation are out of scope.
+This plan supersedes the assumptions that every arena is a separate scene and every progression requires clearing all waves. Gold and meta progression belong to the intended game loop, but their implementation is deferred during this map stage. New evolution content and procedural generation are also out of scope.
 
 ## Concepts and accepted mechanics
 
@@ -17,6 +17,8 @@ This plan supersedes the assumptions that every arena is a separate scene and ev
 | Run | Player progression across maps and the final outcome. |
 
 - Players may skip optional combat and reach an exit, trading away XP and development opportunities. Balance will be evaluated later.
+- This freedom is not limited to side dungeons: main areas with free exits also allow leaving enemies behind and crossing a passage that closes afterward. One-way traversal is independent of encounter completion requirements.
+- Intended outer loop: wake in hub/meta area → enter run → death returns to the same hub/upgrade area → spend retained run gold on permanent improvements → new run. This decision does not redefine gold retention rates or hub presentation; existing economy proposals need separate design.
 - Encounter completion gates only explicitly configured special passages. Remaining enemies do not globally lock map exits.
 - Returnable side areas and one-way connections will be supported. One-way travel does not imply a checkpoint or save.
 - Walking through a corridor/stairway can be a same-scene transition; teleporting is optional. Scene loading is a separate traversal method.
@@ -40,7 +42,7 @@ This plan supersedes the assumptions that every arena is a separate scene and ev
 
 ## Delivery order
 
-Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage 2 has its lifecycle core, stages 3–4 have the corrected transition contract and walking/barrier integration, stage 5 supports single-group preparation, stage 6 adds shared map-local traversal/resource ownership, and stage 7 adds cross-scene travel with preserved player runtime and explicit map bindings. Stage 8 adds terminal outcomes and callback-driven restart; stages 9–10 remain planned.
+Discuss mechanics and update TDD before each stage. Stages 1–8 are scoped below; stage 8's terminal/restart foundation in the sequential arena controller is not a hub-return integration in the new map fixture. Stage 9 has a technical traversal fixture; stage 10 covers integration gaps and validation. Reentry and continuously active encounter decisions are recorded below.
 
 1. **Design checkpoint — this document:** Record GDD direction, terminology, migration inventory and sequence. No runtime changes.
 2. **Region and encounter lifecycle:** Define preparation, activation, completion and reentry. Test that encounter completion does not finish the map.
@@ -50,12 +52,22 @@ Discuss mechanics and update TDD before each stage. Stage 1 is documented, stage
 6. **Resource continuity — implemented:** Shared current-region state and a map-wide traversal lock; player state remains in place. Loot belongs to its source map scene and survives region/enemy cleanup. Return, one-way traversal and skipped combat are covered in Map-Progression-Resources.
 7. **Cross-scene travel — foundation implemented:** Inspector-configured scene path and entry identity, additive loading, original player transfer, destination dependency binding, source cleanup and failure/retry behavior. See Scene-Travel for contracts and test scope; packaged-build verification remains part of playable-map integration.
 8. **Run outcome and restart — foundation implemented:** Death while exploring/travelling, final victory and clean restart through an atomic reset callback. Checkpoints/saving are not implicitly included; see Run-Outcome-Restart.
-9. **Playable fixture:** Main area, two returnable optional areas, preparation connector, one-way second main area and exit to a small second scene. Placeholder geometry is sufficient.
-10. **Gameplay and performance validation:** Compare short/exploration routes; measure transition frame spikes, visible spawning and resource loss.
+9. **Playable fixture — authored integration exists:** Main area, two returnable side areas, preparation/activation volumes, one-way second main area and exit to a small second scene. Existing enemy/XP/level-up chest services, baked navigation, boundaries and sight-screen walls are wired. This is still a validation fixture, not the final demo or a complete run loop.
+10. **Gameplay and performance validation — in progress:** Full suites pass (752 EditMode / 449 PlayMode), including saved-scene traversal/reentry/reward integration and a 32-enemy preparation probe. See Playable-Map-Fixture for measurements and their limitations. Rendered short/exploration route evaluation and cold-start profiling remain; pooling is not decided from warm batch timings alone. Packaged-build evidence is recorded separately there. Map-based death/final outcomes must be addressed independently of the old arena list; callback restart is not a completed hub loop.
 
 Initial design and adaptation stay on `feature/multi-arena-run`. Each numbered stage does not require its own branch or commit. Future independent stages start from Plastic dev / Git main; the user performs merges.
 
 ## Decisions and remaining design topics
+
+### Order after map work — 20 September 2026
+
+1. Close arena/map integration gaps and stage 10 acceptance criteria.
+2. Expand content: add mechanically distinct weapons, abilities and upgrades in small packages. Random chest offers and player choices should create varied builds; numeric variation alone is insufficient. Discuss mechanics and TDD before each content package.
+3. Design the playable demo map: arrange the main route, optional dungeons/side paths, encounters and growth opportunities using this content; evaluate time–risk–reward balance. The current technical fixture is not the final demo map.
+
+A boss is not a mandatory stage before content expansion; its scope will be decided separately against demo needs. Gold/meta implementation and evolution gameplay remain deferred. Whether the demo includes the hub/economy needs a separate scope decision; technical validation does not imply those systems are ready.
+
+### Lifecycle decisions
 
 - Decided: reentry preserves existing encounter state and surviving enemies' health without respawning.
 - Can enemies pursue outside their region, and how do ownership and pursuit boundaries differ?
@@ -66,4 +78,4 @@ Pursuit boundaries remain open. Accepted lifecycle and resource rules are docume
 
 ## Verification and versioning
 
-Create a docs check-in/commit for a coherent design package, then meaningful runtime/test increments. Do not commit every small file operation separately. This checkpoint changes documentation only; earlier Unity test results do not validate the proposed system.
+Create a docs check-in/commit for a coherent design package, then meaningful runtime/test increments. Do not commit every small file operation separately. The original checkpoint was documentation-only; subsequent implementation and its dated verification evidence are recorded in the corresponding stage documents. Do not treat an older test result as validation of a later change.

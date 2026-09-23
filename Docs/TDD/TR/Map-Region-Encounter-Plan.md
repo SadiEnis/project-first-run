@@ -2,7 +2,9 @@
 
 ## Durum ve kapsam
 
-20 Eylül 2026: 1–8 için aşağıda belirtilen temeller ve 9 için sahnede düzenlenebilir geçiş örneği mevcut. Kullanıcı dönüşlü yan geçişleri, tek yönlü geçişi, hedef sahneye ulaşmayı ve hazırlık/aktivasyonda Ready–Ready → Running–Ready akışını gözlemledi. Bu kabul, tam oynanış döngüsü veya güncel otomatik test/build doğrulaması değildir. 10. aşama henüz tamamlanmadı; eski wave tabanlı örnek ayrı test akışı olarak korunuyor.
+24 Eylül 2026 kapanış kararı: Kullanıcı bölge girişlerini, düşman oluşumu/ölümünü, XP/seviye/sandık zincirini, yan alanları, kapanan geçidi ve hedef sahneye geçişi oynayarak doğruladı. `multi-arena-run`, harita/bölge/geçiş temeli kapsamında merge edilebilir. 20 Eylül otomatik kanıtı 752/752 EditMode ve 449/449 PlayMode sonucudur; bu kapanış güncellemesinde testler yeniden çalıştırılmadı. Eski wave örneği ayrı test akışı olarak korunur.
+
+10. aşamanın bütün ilk kabul hedefleri tamamlanmış değildir. Kullanıcı kararıyla Windows build açılış hatası ve standalone kabulü şimdilik ertelendi; dağıtılabilir demo öncesinde çözülmelidir. Gerçek haritalarda ölüm/nihai sonuç/temiz yeni-run bağlantısı demo entegrasyonuna bırakıldı; daha erken ihtiyaç doğarsa ele alınabilir. Bunlar içerik genişletmenin veya bu daraltılmış branch kapsamının merge önkoşulu değildir. Görüntülü performans/soğuk başlangıç ve rota dengesi değerlendirmeleri de açık kalır; hata çözülmüş ya da tam üs döngüsü uygulanmış sayılmaz.
 
 Bu plan, eski belgelerdeki her arenanın ayrı sahne olması ve her ilerlemenin tüm wave'leri temizlemeyi gerektirmesi varsayımlarının yerini alır. Altın ve meta gelişim hedef oyun döngüsünün parçasıdır; bu harita aşamasında uygulamaları ertelenmiştir. Yeni evolution içeriği ve prosedürel üretim de kapsam dışıdır.
 
@@ -61,9 +63,15 @@ Her adımın mekanikleri uygulamadan önce konuşulup TDD'ye işlenir. 1–8'in 
 
 ### Harita çalışması sonrası sıra — 20 Eylül 2026
 
-1. Arena/harita akışının entegrasyon ve 10. aşama kabul eksiklerini kapat.
-2. İçerik genişlet: mekanik olarak farklı silah, yetenek ve geliştirmeleri küçük paketlerle ekle. Rastgele sandık teklifleri ve oyuncu seçimleri farklı build'ler doğurmalı; yalnızca sayısal varyasyon yeterli değildir. Her içerik paketinden önce mekanik ve TDD konuşulur.
-3. Oynanabilir demo haritasını tasarla: bu içeriklerle ana rota, isteğe bağlı dungeon/yan yollar, karşılaşmalar ve güçlenme fırsatlarını yerleştir; süre–risk–ödül dengesini değerlendir. Mevcut teknik örnek final demo haritası değildir.
+24 Eylül kullanıcı kararı bu sırayı günceller:
+
+1. Mevcut branch'i harita/geçiş temeli kapsamında kapat; Plastic dev / Git main'e merge'i kullanıcı yapar.
+2. İçerik test sahnesi: önerilen ayrı `Test_ContentArena`, oynanabilir fixture'ın mevcut prefab/servis bağlantılarını kullanır. Editor'de kayıtlı geometri ve referanslar; düşmanlar, XP, item seviyeleri ve gerçek sandık/ödül akışı bulunur. Mevcut harita fixture'ı ve Test_Waves kendi test kapsamları için korunur. İstenen eşyayı edinme/seviyesini deneme gibi geliştirme kontrolleri, gerçek edinim/seviye API'lerini kullanmalı; sandık akışının yerine geçmemelidir. Sahne henüz oluşturulmadı.
+3. Silahlar ve yetenekler tek tek tamamlanır; her biri için mekanik/TDD → uygulama ve otomatik test → kullanıcı oynanış testi → sonraki içerik sırası izlenir. Kullanıcı denemesi gelmeden sıradaki silah/yeteneğe geçilmez. GDD'deki dört silah ve sekiz yetenek hedeflenir; mevcut Plasma Rifle ve Fireball'un geçici profilleri tam GDD davranışı kabul edilmez. Yeni evolution içeriği eklenmez.
+4. Güçlendirmeler ortak bir içerik paketi halinde ele alınabilir. GDD'de hedef on olmasına rağmen dokuz stat ve yedi özellik adayı vardır; kesin liste, sayılar ve etkileşimler uygulamadan önce netleştirilir. Kullanıcının kapsamı eklenebilir adayları değerlendirmektir; desteklenmeyen etki yalnızca asset eklenerek tamamlanmış sayılmaz. Lucky'nin evolution/ekonomi kısmı ertelenmiş kapsamı kendiliğinden açmaz.
+5. Oynanabilir demo haritasında içerikleri birleştir; süre–risk–ödül dengesini, gerçek run yeniden başlatma bağlantısını ve dağıtım öncesi build/performance kabulünü tamamla. Mevcut teknik örnek final demo haritası değildir.
+
+İlk yeni iş için önerilen branch: Plastic `/main/dev/content-test-arena`, Git `feature/content-test-arena`; yalnızca mevcut merge'den sonra güncel tabandan açılır. Sonraki silah/yetenek işleri de kendi kararlaştırılmış kapsamlarıyla güncel dev/main tabanından açılır. Bu belge branch oluşturmaz ve tamamlanmamış mekaniklere onay yerine geçmez.
 
 Boss, içerik genişletmenin önüne zorunlu bir aşama olarak konulmaz; kapsamı demo ihtiyaçlarıyla ayrıca kararlaştırılır. Altın/meta uygulaması ve evolution oynanışı ertelenmiş kalır. Demo kapsamının üs/ekonomi içermesi ayrıca belirlenmelidir; teknik doğrulama bu sistemlerin hazır olduğunu iddia etmez.
 

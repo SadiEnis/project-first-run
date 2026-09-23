@@ -2,7 +2,9 @@
 
 ## Status and scope
 
-20 September 2026: Foundations for stages 1–8 and an authored traversal fixture for stage 9 exist as scoped below. The user observed returnable side passages, one-way traversal, arrival in the target scene and Ready–Ready → Running–Ready preparation/activation. This acceptance does not establish a complete gameplay loop or current automated test/build validation. Stage 10 remains incomplete; the older wave-based fixture remains a separate test flow.
+24 September 2026 closure decision: The user manually confirmed region entry, enemy spawning/death, XP/level/chest progression, side areas, the closing passage and travel to the destination scene. `multi-arena-run` may be merged as the map/region/traversal foundation. The dated automated evidence remains 752/752 EditMode and 449/449 PlayMode on 20 September; tests were not rerun for this closure update. The older wave fixture remains a separate test flow.
+
+Not all original stage 10 acceptance targets are complete. By user decision, the Windows startup fault and standalone acceptance are deferred until needed, before a distributable demo. Real-map death/final outcome/fresh-run integration moves to demo integration, or earlier if needed. These are not prerequisites for content expansion or merging this narrowed branch scope. Rendered performance/cold-start and route balance evaluation also remain open; the fault is not resolved and the complete hub loop is not implemented.
 
 This plan supersedes the assumptions that every arena is a separate scene and every progression requires clearing all waves. Gold and meta progression belong to the intended game loop, but their implementation is deferred during this map stage. New evolution content and procedural generation are also out of scope.
 
@@ -61,9 +63,15 @@ Initial design and adaptation stay on `feature/multi-arena-run`. Each numbered s
 
 ### Order after map work — 20 September 2026
 
-1. Close arena/map integration gaps and stage 10 acceptance criteria.
-2. Expand content: add mechanically distinct weapons, abilities and upgrades in small packages. Random chest offers and player choices should create varied builds; numeric variation alone is insufficient. Discuss mechanics and TDD before each content package.
-3. Design the playable demo map: arrange the main route, optional dungeons/side paths, encounters and growth opportunities using this content; evaluate time–risk–reward balance. The current technical fixture is not the final demo map.
+The 24 September user decision updates the sequence:
+
+1. Close the current branch as the map/traversal foundation; the user merges into Plastic dev / Git main.
+2. Content test scene: the proposed separate `Test_ContentArena` reuses existing playable-fixture prefab/service wiring. Geometry and references are saved in the Editor; include enemies, XP, item levels and the actual chest/reward flow. Preserve the map fixture and Test_Waves for their existing test roles. Development controls for acquiring a chosen item or testing its levels must use real acquisition/level APIs and must not replace chest-flow testing. The scene has not been created yet.
+3. Complete weapons and abilities individually: mechanics/TDD → implementation and automated tests → user playtest → next item. Do not move to the next weapon/ability before user feedback. Target the GDD's four weapons and eight abilities; existing Plasma Rifle and Fireball provisional profiles are not complete GDD behavior. Do not add new evolution content.
+4. Upgrades may be handled as one content package. The GDD targets ten but lists nine stat and seven trait candidates; settle the actual list, values and interactions before implementation. The user's scope is to consider implementable candidates; adding an asset without a functioning effect does not count as complete. Lucky does not implicitly reopen deferred evolution/economy scope.
+5. Assemble content in the playable demo map; evaluate time–risk–reward, connect real run restart and complete build/performance acceptance before distribution. The current technical fixture is not the final demo map.
+
+Proposed first branch: Plastic `/main/dev/content-test-arena`, Git `feature/content-test-arena`, created from the updated base only after the current merge. Subsequent weapon/ability work also starts from updated dev/main with its agreed scope. This document neither creates branches nor approves unresolved mechanics.
 
 A boss is not a mandatory stage before content expansion; its scope will be decided separately against demo needs. Gold/meta implementation and evolution gameplay remain deferred. Whether the demo includes the hub/economy needs a separate scope decision; technical validation does not imply those systems are ready.
 

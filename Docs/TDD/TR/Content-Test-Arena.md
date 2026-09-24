@@ -2,7 +2,7 @@
 
 ## Durum ve amaç
 
-Tasarım checkpoint'i — 24 Eylül 2026. Branch: Plastic `/main/dev/content-test-arena`, Git `feature/content-test-arena`; birleştirilmiş harita temelinden açıldı. Bu kayıt yalnızca sözleşmedir: sahne ve test paneli henüz uygulanmadı.
+Uygulama checkpoint'i — 24 Eylül 2026. Branch: Plastic `/main/dev/content-test-arena`, Git `feature/content-test-arena`; birleştirilmiş harita temelinden açıldı. Kayıtlı sahne ve test paneli uygulandı; kullanıcı paneli ve özellikleri deneyerek alanın içerik testleri için uygun olduğunu onayladı.
 
 Amaç, her yeni silah/yeteneği gerçek oyuncu, düşman ve ilerleme sistemleriyle tekrar edilebilir şekilde denemektir. Bu sahne final demo haritası veya yeni bir run yöneticisi değildir. Her silah/yetenek uygulamasından sonra kullanıcı oynanış değerlendirmesi için durulur.
 
@@ -42,7 +42,22 @@ Amaç, her yeni silah/yeteneği gerçek oyuncu, düşman ve ilerleme sistemleriy
 6. Panel ile ödül UI'ının çakışmaması, ölüm sırasında kontrolün yanlışlıkla açılmaması ve tekrarlı aç/kapat güvenliği.
 7. Kullanıcı sahnede hareket/savaş, drop toplama, sandık seçimi ve doğrudan içerik deneme kontrollerini değerlendirir. Bu kabul gelmeden Shotgun geliştirmesine geçilmez.
 
-Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standalone kabul iddiası taşımaz. Normal geliştirme için EditMode/PlayMode testleri agent tarafından çalıştırılıp sonuçları raporlanır; bu tasarım checkpoint'i için yeni test çalıştırılmaz.
+Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standalone kabul iddiası taşımaz. EditMode/PlayMode sonuçları aşağıda kaydedilir.
+
+## Uygulama ve kullanım
+
+- `Test_ContentArena` doğrudan Editor'de açılıp Play ile kullanılır. Zemin, korunaklar, 10/20/30/40 m işaretleri ve NavMesh sahnede kayıtlıdır. `ContentArenaSceneBuilder` yalnızca açık bir Editor menü komutuyla bu fixture'ı yeniden üretir; Play sırasında çalışmaz. Yeniden üretmek sahnedeki elle yapılan düzenlemeleri değiştirir.
+- Dört düşmanlık karışık grup başlar: iki Chaser, bir Charger, bir Ranger. Başlangıç bölmesi güvenli/dokunulmaz değildir. F1 paneli oyunu duraklatır; kapanınca önceki kontrol/zaman durumu geri gelir. Ölümde Play'i durdurup yeniden başlatmak gerekir.
+- PlasmaRifle başlangıç silahıdır. Mevcut `WeaponSwitchingDevelopmentBootstrap` yalnız bu test oyuncusunda iki silah slotu sağlar; gerçek varsayılan kapasite ve prefab değiştirilmez. Üç ability ve beş upgrade slotu korunur. Development Secondary, Fireball ve Development Damage Boost panelden normal edinim hattıyla alınabilir. Q silah değiştirir.
+- `Acquire`, `Level +1`, `Grant 100 XP`, tek aile/karışık düşman grubu ve yedi sandık türü komutları mevcuttur. Grup değişimi mevcut loot, can, mermi ve build'i korur; kill ödülü vermez. Sandık yerleştirecek boşluk bulunamazsa sonuç mesajı gösterilir.
+- Panelden XP verildiğinde seviye anında güncellenir; level-up sandığı normal duraklatma kuralı nedeniyle panel kapatılınca oluşur. Doğrudan sandık üretimi ise panel açıkken yerleştirme yapar. Paneli kapatıp yaklaşarak E ile gerçek ödül ekranı açılır.
+- Yeni silah/yetenek ve evolution içeriği eklenmedi. Sonraki içerik Shotgun; ancak önce bu sahne kullanıcı tarafından denenir.
+
+## Doğrulama sonucu — 24 Eylül 2026
+
+- Unity 6000.3.9f1, izole proje kopyası, kayıtlı sahne: **EditMode 753/753**, **PlayMode 457/457** geçti.
+- Bu artışta bir sahne bağlantı testi ve sekiz oynanış/panel testi eklendi. İlk denemede görülen tek silah slotu bağlantısı düzeltildi; panel XP sandığının duraklatma sonrasında oluşması normal akışa göre doğrulandı.
+- Sahne/nav asset'leri ve script metadata'sı doğrulanan kopyadan projeye aktarıldı. Kullanıcı oynanış kabulü tamamlandı; commit/check-in ve merge kullanıcı tarafından yapılacak. Windows build denenmedi.
 
 ## Kayıt düzeni
 

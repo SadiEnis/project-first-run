@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-Design checkpoint — 24 September 2026. Branches: Plastic `/main/dev/content-test-arena`, Git `feature/content-test-arena`, based on the merged map foundation. This record is a contract only: neither the scene nor the test panel has been implemented yet.
+Implementation checkpoint — 24 September 2026. Branches: Plastic `/main/dev/content-test-arena`, Git `feature/content-test-arena`, based on the merged map foundation. The saved scene and test panel are implemented; the user tested the panel and features and accepted the arena for content testing.
 
 Provide repeatable testing of each weapon/ability with the actual player, enemies and progression systems. This is not the final demo map or a new run manager. Pause after each weapon/ability implementation for the user's gameplay evaluation.
 
@@ -42,7 +42,22 @@ Provide repeatable testing of each weapon/ability with the actual player, enemie
 6. Panel/reward UI exclusion, no accidental control restoration after death, and repeated open/close safety.
 7. User evaluation of movement/combat, drops, chest selection and direct content controls. Do not begin Shotgun implementation before this acceptance.
 
-This Editor-focused delivery does not resume Windows build investigation or claim standalone acceptance. The agent runs EditMode/PlayMode suites and reports results during implementation; this design checkpoint requires no new test run.
+This Editor-focused delivery does not resume Windows build investigation or claim standalone acceptance. EditMode/PlayMode results are recorded below.
+
+## Implementation and use
+
+- Open `Test_ContentArena` in the Editor and enter Play. The floor, cover, 10/20/30/40 m markers and NavMesh are saved. `ContentArenaSceneBuilder` rebuilds only this fixture through an explicit Editor menu command, never on Play. Rebuilding replaces manual scene edits.
+- Four mixed enemies start: two Chasers, one Charger and one Ranger. The starting bay is not invulnerable. F1 pauses the game and opens the panel; closing restores previous control/time state. Stop and restart Play after death.
+- PlasmaRifle is the starting weapon. The existing `WeaponSwitchingDevelopmentBootstrap` provides two weapon slots only for this test player, without changing production defaults or the prefab. Three ability and five upgrade slots remain. Acquire Development Secondary, Fireball and Development Damage Boost through the normal acquisition path; Q switches weapons.
+- Commands include Acquire, Level +1, Grant 100 XP, single-family/mixed enemy replacement and seven chest types. Replacement preserves existing loot, health, ammo and build without kill rewards. Failed chest placement reports that nearby space is unavailable.
+- Panel XP immediately updates the level; the regular level-up chest source waits until the panel closes and gameplay resumes. Direct chest spawning places a chest while the panel is open. Close it, approach and press E to use the actual reward screen.
+- No new weapon/ability or evolution content is added. Shotgun follows user acceptance of this scene.
+
+## Verification — 24 September 2026
+
+- Unity 6000.3.9f1, isolated project copy, saved scene: **EditMode 753/753**, **PlayMode 457/457** passed.
+- Added one authored-scene wiring test and eight gameplay/panel tests. The initial single-weapon-slot wiring was corrected; panel XP chest creation was verified after pause release, matching the normal pipeline.
+- Scene/navigation assets and script metadata were copied back from the verified project. User gameplay acceptance is complete; the user will perform commit/check-in and merge. No Windows build was attempted.
 
 ## Checkpoints
 

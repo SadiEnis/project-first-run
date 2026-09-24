@@ -41,3 +41,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 35. [Run Sonucu ve Yeniden Başlatma](Run-Outcome-Restart.md)
 36. [Oynanabilir Harita Fixture'ı](Playable-Map-Fixture.md)
 37. [İçerik Test Arenası](Content-Test-Arena.md)
+38. [Shotgun İçeriği](Shotgun-Content.md)

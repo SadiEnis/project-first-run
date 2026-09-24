@@ -93,11 +93,9 @@ namespace ProjectFirstRun.Development.Weapons
         }
 
         private void HandleShotFired(
-            HitscanShotResult shotResult)
+            HitscanVolleyResult shotResult)
         {
-            _lastEvent = shotResult.HitSomething
-                ? $"Shot hit: {shotResult.HitCollider.name}"
-                : "Shot missed";
+            _lastEvent = $"Shot: {shotResult.Pellets.Count} pellets, {shotResult.Targets.Count} targets";
         }
 
         private void HandleDryFired()

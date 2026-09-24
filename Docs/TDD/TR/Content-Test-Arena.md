@@ -51,7 +51,7 @@ Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standa
 - PlasmaRifle başlangıç silahıdır. Mevcut `WeaponSwitchingDevelopmentBootstrap` yalnız bu test oyuncusunda iki silah slotu sağlar; gerçek varsayılan kapasite ve prefab değiştirilmez. Üç ability ve beş upgrade slotu korunur. Development Secondary, Fireball ve Development Damage Boost panelden normal edinim hattıyla alınabilir. Q silah değiştirir.
 - `Acquire`, `Level +1`, `Grant 100 XP`, tek aile/karışık düşman grubu ve yedi sandık türü komutları mevcuttur. Grup değişimi mevcut loot, can, mermi ve build'i korur; kill ödülü vermez. Sandık yerleştirecek boşluk bulunamazsa sonuç mesajı gösterilir.
 - Panelden XP verildiğinde seviye anında güncellenir; level-up sandığı normal duraklatma kuralı nedeniyle panel kapatılınca oluşur. Doğrudan sandık üretimi ise panel açıkken yerleştirme yapar. Paneli kapatıp yaklaşarak E ile gerçek ödül ekranı açılır.
-- Yeni silah/yetenek ve evolution içeriği eklenmedi. Sonraki içerik Shotgun; ancak önce bu sahne kullanıcı tarafından denenir.
+- İlk arena teslimi yeni silah/yetenek veya evolution içeriği içermedi. Kullanıcı kabulünden sonraki [Shotgun aşaması](Shotgun-Content.md), katalogdaki beşinci eşya ve saçma izi/HUD bağlantılarını ekler; evolution kapsamı açılmaz.
 
 ## Doğrulama sonucu — 24 Eylül 2026
 

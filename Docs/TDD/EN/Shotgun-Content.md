@@ -2,7 +2,7 @@
 
 ## Status and workflow
 
-Design checkpoint — 24 September 2026. Git branch verified as `feature/content/shotgun`. The agreed Plastic branch is `/main/dev/content/shotgun`; its server state was not rechecked in this step. No Shotgun runtime implementation or asset has been added yet.
+Implementation checkpoint — 24 September 2026; user gameplay acceptance — 25 September 2026. Git branch verified as `feature/content/shotgun`. The agreed Plastic branch is `/main/dev/content/shotgun`; its server state was not rechecked in this step. Runtime implementation, the Shotgun asset and arena connections are complete, and the user accepted the gameplay increment.
 
 Content workflow: Git `main → content → feature/content/shotgun`, Plastic `dev → content → shotgun`. Record the docs checkpoint, then a coherent implementation checkpoint. After automated verification and user gameplay acceptance, merge into **content** and start the next item from updated content. Deliver playable content packages from content to dev/main. This is the agreed content-period exception to starting every stage from dev/main.
 
@@ -65,4 +65,28 @@ Preserve the existing level contract: validate and snapshot all levels before ac
 5. Saved ContentArena panel acquisition/all levels; real chest new-Shotgun/level claims, full-slot/maximum limits and existing weapon regression tests.
 6. User tests close/mid/far targets, crowds, knockback, magazine/reload feel and all eight levels. Do not implement Minigun or other content before acceptance. Do not resume Windows build work.
 
-No new automated tests were run for this docs-only checkpoint. Previous content arena validation was 753 EditMode / 457 PlayMode; those results do not validate Shotgun.
+## Implementation notes
+
+- `WeaponShotConfig` validates pellet count (1–64), half-angle (inclusive 0, exclusive 90) and push distance. `WeaponLevelData` and runtime entries snapshot every level's shot data; range/mask are also copied on acquisition. A parameterless constructor allows Unity to apply field defaults for legacy inline level records; an invalid zero pellet count is not accepted.
+- `HitscanVolleyResolver` uses its own random source, completes physics queries and applies aggregate damage per target. `ShotFired` now publishes a complete `HitscanVolleyResult`; `DamageApplied` is emitted per successfully damaged target. The old `HitscanShotResolver` remains a single-ray API; the player uses the new resolver.
+- `EnemyMotor` implements optional `IKnockbackReceiver`. Navigation boundaries and physics sweeps limit displacement without calling motor Stop/Resume or resetting attacks.
+- `WD_Shotgun.asset` is added once to weapon and mixed pools. The arena contains five items. F1 → Shotgun Acquire → close panel → Q to equip → left mouse to fire / R to reload. PlasmaRifle occupies one of two weapon slots; acquiring Development Secondary first leaves no room for Shotgun in that run. Restart Play for a fresh test.
+- `VolleyTracePresenter` holds at most 64 reusable LineRenderers; this Shotgun uses eight/ten traces, hidden after 0.12 game seconds. The HUD shows current per-pellet damage, pellet count and push distance. These are temporary test visuals.
+- The Editor command `Update Content Arena Shotgun Connections` updates only saved catalog/trace wiring without rebuilding geometry or lighting. Full `Build Content Test Arena` also includes the new content but is not intended to preserve manual scene edits.
+
+No tests were run for the original design-only checkpoint. Previous arena results remain 753 EditMode / 457 PlayMode; Shotgun implementation verification is recorded separately.
+
+## Verification — 24 September 2026
+
+- Unity 6000.3.9f1, isolated project copy: **EditMode 774/774**, **PlayMode 475/475** passed. Added 21 EditMode and 18 PlayMode tests; updated existing pool-size assertions for the added content.
+- Verified real mouse presses/holding, reload, empty magazine, panel/death restrictions; per-target pellet totals; chest acquisition/levels/maximum eligibility; stats and preserved runtime state.
+- Verified walls/player/NavMesh edges, stopped/prepared/dead enemies and an already committed Charger attack. Motor Stop establishes the stopped state after clearing its path; pushing preserves the previous stopped state.
+- Test input isolation begins before asynchronous scene loading and ends after scene unloading. The second-press test explicitly checks release state and completed cooldown.
+- Changed/new assets and code match the test copy; `git diff --check` is clean. Existing scene lighting data was preserved. No Windows build, commit/check-in or merge was performed.
+- User gameplay evaluation was still pending at this automated verification checkpoint; numerical balance remains subject to feedback.
+
+## Gameplay acceptance — 25 September 2026
+
+- The user tested Shotgun and reported that it works well. This records overall gameplay acceptance, not separate confirmation of every manual test case above.
+- No additional mandatory Shotgun mechanics remain in this increment. Custom models, animation, audio, camera recoil and final balancing remain future presentation/balance work; evolution remains out of scope.
+- Next: record the implementation check-in/commit, merge Shotgun into **content**, then begin Minigun design from updated content. These version-control operations have not been performed by this documentation update.

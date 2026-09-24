@@ -51,7 +51,7 @@ This Editor-focused delivery does not resume Windows build investigation or clai
 - PlasmaRifle is the starting weapon. The existing `WeaponSwitchingDevelopmentBootstrap` provides two weapon slots only for this test player, without changing production defaults or the prefab. Three ability and five upgrade slots remain. Acquire Development Secondary, Fireball and Development Damage Boost through the normal acquisition path; Q switches weapons.
 - Commands include Acquire, Level +1, Grant 100 XP, single-family/mixed enemy replacement and seven chest types. Replacement preserves existing loot, health, ammo and build without kill rewards. Failed chest placement reports that nearby space is unavailable.
 - Panel XP immediately updates the level; the regular level-up chest source waits until the panel closes and gameplay resumes. Direct chest spawning places a chest while the panel is open. Close it, approach and press E to use the actual reward screen.
-- No new weapon/ability or evolution content is added. Shotgun follows user acceptance of this scene.
+- The original arena delivery added no new weapon/ability or evolution content. Following user acceptance, the [Shotgun increment](Shotgun-Content.md) adds the fifth catalog item and pellet trace/HUD wiring, without opening evolution scope.
 
 ## Verification — 24 September 2026
 

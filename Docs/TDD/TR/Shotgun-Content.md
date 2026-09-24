@@ -2,7 +2,7 @@
 
 ## Durum ve çalışma düzeni
 
-Tasarım checkpoint'i — 24 Eylül 2026. Git branch'i `feature/content/shotgun` olarak doğrulandı. Kararlaştırılan Plastic branch'i `/main/dev/content/shotgun`; bu adımda Plastic sunucu durumu yeniden kontrol edilmedi. Runtime uygulaması ve Shotgun asset'i henüz eklenmedi.
+Uygulama checkpoint'i — 24 Eylül 2026; kullanıcı oynanış kabulü — 25 Eylül 2026. Git branch'i `feature/content/shotgun` olarak doğrulandı. Kararlaştırılan Plastic branch'i `/main/dev/content/shotgun`; bu adımda Plastic sunucu durumu yeniden kontrol edilmedi. Runtime uygulaması, Shotgun asset'i ve arena bağlantıları tamamlandı; kullanıcı bu oynanış aşamasını kabul etti.
 
 İçerik dönemi için branch akışı: Git `main → content → feature/content/shotgun`, Plastic `dev → content → shotgun`. Docs checkpoint'i ve ardından anlamlı uygulama checkpoint'i alınır. Otomatik doğrulama ve kullanıcı oynanış kabulünden sonra bu çalışma **content** branch'ine merge edilir; sonraki içerik güncel content'ten açılır. Oynanabilir içerik paketleri content'ten dev/main'e aktarılır. Bu, önceki her aşamayı dev/main'den açma kuralının içerik dönemi için kararlaştırılmış istisnasıdır.
 
@@ -65,4 +65,28 @@ Mevcut seviye sözleşmesi aynen geçerlidir: bütün seviyeler edinim öncesi d
 5. Kayıtlı ContentArena'da panelden edinim ve tüm seviyeler; gerçek sandıktan yeni Shotgun/seviye seçimi, dolu slot/maksimum sınırı, mevcut silahlar için regresyon.
 6. Kullanıcı yakın/orta/uzak hedefleri, kalabalığı, itişi, şarjör/reload hissini ve sekiz seviyeyi dener. Bu kabulden önce Minigun veya başka içerik uygulanmaz. Windows build çalışması açılmaz.
 
-Bu docs checkpoint'inde runtime değişmediği için yeni otomatik test çalıştırılmadı. İçerik arenasının önceki doğrulaması 753 EditMode / 457 PlayMode'dur; bunlar Shotgun doğrulaması değildir.
+## Uygulama notları
+
+- `WeaponShotConfig` saçma sayısı (1–64), yarı açı (0 dahil, 90 hariç) ve itiş mesafesini doğrular. `WeaponLevelData` ve runtime entry bütün seviyelerin atış verisini kopyalar; menzil/maske de edinimde kopyalanır. Eski inline seviye kayıtlarında Unity'nin alan başlangıç değerlerini uygulayabilmesi için parametresiz constructor bulunur; geçersiz sıfır saçma sayısı kabul edilmez.
+- `HitscanVolleyResolver` kendi rastgele kaynağıyla fizik sorgularını tamamlayıp hedef başına toplam hasarı uygular. `ShotFired` artık bütün atışı taşıyan `HitscanVolleyResult` yayınlar; `DamageApplied` hasar uygulanan hedef başına yayınlanır. Eski `HitscanShotResolver` tek ışınlı API olarak korunur; oyuncu yeni çözümleyiciyi kullanır.
+- `EnemyMotor`, opsiyonel `IKnockbackReceiver` sözleşmesini uygular. İtiş navigasyon sınırı ve fizik süpürmesiyle kısaltılır; motor Stop/Resume veya saldırı reset çağrısı yapmaz.
+- `WD_Shotgun.asset`, silah ve karma havuzlarına birer kayıtla eklenmiştir. Arena beş eşya içerir. F1 → Shotgun Acquire → paneli kapat → Q ile kuşan → sol fare ile ateş / R ile reload. İki silah slotundan biri PlasmaRifle'a ayrıldığından aynı turda önce Development Secondary alınırsa Shotgun için yer kalmaz; temiz deneme için Play'i yeniden başlat.
+- `VolleyTracePresenter` en fazla 64 tekrar kullanılan LineRenderer tutar; mevcut Shotgun sekiz/on iz kullanır ve izler 0.12 oyun saniyesinde kapanır. HUD saçma başına güncel hasarı, saçma sayısını ve itiş mesafesini gösterir. Bunlar geçici test görselleridir.
+- `Update Content Arena Shotgun Connections` Editor komutu yalnız kayıtlı sahnenin katalog/iz bağlantılarını günceller; mevcut geometri ve ışığı yeniden üretmez. Tam `Build Content Test Arena` komutu da yeni içeriği içerir, fakat elle yapılmış sahne düzenlemelerini koruma amacı taşımaz.
+
+İlk tasarım checkpoint'inde test çalıştırılmamıştı. Önceki arena sonucu 753 EditMode / 457 PlayMode olarak kalır; Shotgun uygulama doğrulaması ayrıca kaydedilir.
+
+## Doğrulama sonucu — 24 Eylül 2026
+
+- Unity 6000.3.9f1, izole proje kopyası: **EditMode 774/774**, **PlayMode 475/475** geçti. 21 EditMode ve 18 PlayMode testi eklendi; eski havuz sayısı beklentileri yeni içerik için güncellendi.
+- Gerçek fare basışı/basılı tutma, reload, boş şarjör, panel ve ölüm engelleri; hedef başına saçma toplamı; sandıktan edinim/seviye/maksimum sınırı; statlar ve runtime korunması doğrulandı.
+- Duvar/oyuncu/NavMesh kenarı, durmuş ve hazırlanmış düşmanlar, ölüm ve başlamış Charger saldırısıyla itiş doğrulandı. Motorun Stop işlemi yol temizliğinden sonra durma durumunu tesis eder; itiş önceki durma durumunu korur.
+- Test input izolasyonu asenkron sahne yüklenmeden önce başlatılıp sahne boşaltıldıktan sonra kapatılır. İkinci basış testi bırakma durumunu ve bitmiş cooldown'u ayrıca doğrular.
+- Değişen/yeni asset ve kodlar test kopyasıyla eşleştirildi; `git diff --check` temiz. Kullanıcının mevcut sahne ışık verisi korundu. Windows build denenmedi, commit/check-in/merge yapılmadı.
+- Bu otomatik doğrulama checkpoint'inde kullanıcı oynanış değerlendirmesi henüz bekleniyordu; sayısal denge değerleri geri bildirimle değişebilir.
+
+## Oynanış kabulü — 25 Eylül 2026
+
+- Kullanıcı Shotgun'ı test ettiğini ve güzel çalıştığını bildirdi. Bu kayıt genel oynanış kabulüdür; yukarıdaki her manuel test senaryosunun ayrı ayrı doğrulandığı anlamına gelmez.
+- Bu aşamada eklenecek zorunlu Shotgun mekaniği kalmadı. Özel model, animasyon, ses, kamera recoil'i ve nihai dengeleme sonraki görsel/denge çalışmalarına aittir; evolution kapsam dışındadır.
+- Sırada uygulama check-in/commit'i, Shotgun'ın **content** branch'ine merge edilmesi ve güncel content üzerinden Minigun tasarımına başlanması var. Bu doküman güncellemesinde söz konusu sürüm kontrol işlemleri yapılmadı.

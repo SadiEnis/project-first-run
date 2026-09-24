@@ -8,6 +8,9 @@ namespace ProjectFirstRun.Weapons
         public int Level { get; private set; } = 1;
         public int MaximumLevel => _levels.Length;
         public float BaseDamage => _levels[Level - 1].Damage;
+        public WeaponShotConfig Shot => _levels[Level - 1].Shot;
+        public float Range { get; }
+        public int DamageMask { get; }
 
         internal void ValidateNextLevel()
         {
@@ -41,6 +44,10 @@ namespace ProjectFirstRun.Weapons
             }
 
             _levels = definition.CreateLevelConfigs();
+            if (!float.IsFinite(definition.Range) || definition.Range <= 0)
+                throw new ArgumentOutOfRangeException(nameof(definition), "Weapon range must be finite and positive.");
+            Range = definition.Range;
+            DamageMask = definition.DamageMask;
             WeaponRuntimeConfig runtimeConfig = _levels[0].Runtime;
 
             Definition =

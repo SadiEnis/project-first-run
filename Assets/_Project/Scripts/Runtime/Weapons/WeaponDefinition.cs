@@ -24,6 +24,11 @@ namespace ProjectFirstRun.Weapons
         [SerializeField]
         private LayerMask _damageMask = -1;
 
+        [Header("Shot pattern")]
+        [SerializeField, Range(1, 64)] private int _pelletCount = 1;
+        [SerializeField, Range(0, 89)] private float _spreadHalfAngle;
+        [SerializeField, Min(0)] private float _pushDistance;
+
         [Header("Ammunition")]
         [SerializeField, Min(1)]
         private int _magazineCapacity = 12;
@@ -47,7 +52,8 @@ namespace ProjectFirstRun.Weapons
             if (_additionalLevels == null || _additionalLevels.Length != MaximumLevel - 1)
                 throw new InvalidOperationException("Weapon level data must match its configured maximum.");
             var levels = new WeaponLevelConfig[MaximumLevel];
-            levels[0] = new WeaponLevelConfig(_baseDamage, CreateRuntimeConfig());
+            levels[0] = new WeaponLevelConfig(_baseDamage, CreateRuntimeConfig(),
+                new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance));
             for (int i = 1; i < levels.Length; i++)
             {
                 if (_additionalLevels[i - 1] == null)

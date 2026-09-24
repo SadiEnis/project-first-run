@@ -26,12 +26,12 @@ namespace ProjectFirstRun.Weapons
         private WeaponDefinition _activeDefinition;
         private WeaponRuntimeState _runtimeState;
         private PlayerWeaponRuntimeEntry _activeEntry;
-        private HitscanShotResolver _shotResolver;
+        private HitscanVolleyResolver _shotResolver;
         
 
         private bool _weaponControlEnabled = true;
 
-        public event Action<HitscanShotResult> ShotFired;
+        public event Action<HitscanVolleyResult> ShotFired;
         public event Action DryFired;
         public event Action<int, int> AmmoChanged;
         public event Action ReloadStarted;
@@ -90,7 +90,7 @@ namespace ProjectFirstRun.Weapons
             }
 
             _shotResolver =
-                new HitscanShotResolver(
+                new HitscanVolleyResolver(
                     _aimCamera,
                     _muzzle,
                     _damageSource);
@@ -107,7 +107,7 @@ namespace ProjectFirstRun.Weapons
         private void Update()
         {
             if (!IsInitialized ||
-                !_weaponControlEnabled)
+                !_weaponControlEnabled || Time.timeScale <= 0f)
             {
                 return;
             }
@@ -250,6 +250,8 @@ namespace ProjectFirstRun.Weapons
              */
             float damage =
                 EvaluateCurrentDamage();
+            if (!float.IsFinite(damage * _activeEntry.Shot.PelletCount))
+                throw new InvalidOperationException("Total volley damage must be finite.");
 
             WeaponFireResult fireResult =
                 _runtimeState.TryFire();
@@ -275,19 +277,19 @@ namespace ProjectFirstRun.Weapons
 
             PublishAmmoChanged();
 
-            HitscanShotResult shotResult =
+            HitscanVolleyResult volley =
                 _shotResolver.Resolve(
                     damage,
-                    _activeDefinition.Range,
-                    _activeDefinition.DamageMask);
+                    _activeEntry.Range,
+                    _activeEntry.DamageMask,
+                    _activeEntry.Shot);
 
             ShotFired?.Invoke(
-                shotResult);
+                volley);
 
-            if (shotResult.DamageWasApplied)
+            foreach (var shotResult in volley.Targets)
             {
-                DamageApplied?.Invoke(
-                    shotResult);
+                if (shotResult.DamageWasApplied) DamageApplied?.Invoke(shotResult);
             }
         }
 

@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
+  m_Name: WD_Shotgun
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
+  _stableId: weapon.shotgun
+  _displayName: Shotgun
+  _gameplayEffect: Semi-automatic spread weapon. Multiple pellets and a single push per target. Level up to increase damage, magazine capacity, knockback and pellet count.
+  _maximumLevel: 8
+  _triggerMode: 0
+  _baseDamage: 8
+  _range: 30
+  _damageMask:
+    serializedVersion: 2
+    m_Bits: 247
+  _pelletCount: 8
+  _spreadHalfAngle: 6
+  _pushDistance: 0.6
+  _magazineCapacity: 6
+  _startingReserveAmmo: 48
+  _shotsPerSecond: 1.2
+  _reloadDuration: 2
+  _additionalLevels:
+  - _damage: 10
+    _magazineCapacity: 6
+    _shotsPerSecond: 1.2
+    _reloadDuration: 2
+    _pelletCount: 8
+    _spreadHalfAngle: 6
+    _pushDistance: 0.6
+  - _damage: 10
+    _magazineCapacity: 8
+    _shotsPerSecond: 1.2
+    _reloadDuration: 2
+    _pelletCount: 8
+    _spreadHalfAngle: 6
+    _pushDistance: 0.6
+  - _damage: 10
+    _magazineCapacity: 8
+    _shotsPerSecond: 1.2
+    _reloadDuration: 2
+    _pelletCount: 8
+    _spreadHalfAngle: 6
+    _pushDistance: 1
+  - _damage: 12
+    _magazineCapacity: 8
+    _shotsPerSecond: 1.2
+    _reloadDuration: 2
+    _pelletCount: 8
+    _spreadHalfAngle: 6
+    _pushDistance: 1
+  - _damage: 12
+    _magazineCapacity: 8
+    _shotsPerSecond: 1.2
+    _reloadDuration: 1.6
+    _pelletCount: 8
+    _spreadHalfAngle: 6
+    _pushDistance: 1
+  - _damage: 12
+    _magazineCapacity: 10
+    _shotsPerSecond: 1.2
+    _reloadDuration: 1.6
+    _pelletCount: 8
+    _spreadHalfAngle: 6
+    _pushDistance: 1
+  - _damage: 12
+    _magazineCapacity: 10
+    _shotsPerSecond: 1.2
+    _reloadDuration: 1.6
+    _pelletCount: 10
+    _spreadHalfAngle: 6
+    _pushDistance: 1

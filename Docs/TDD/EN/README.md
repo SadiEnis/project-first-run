@@ -41,3 +41,4 @@ Project First Run is the current development codename. The final commercial titl
 35. [Run Outcome and Restart](Run-Outcome-Restart.md)
 36. [Playable Map Fixture](Playable-Map-Fixture.md)
 37. [Content Test Arena](Content-Test-Arena.md)
+38. [Shotgun Content](Shotgun-Content.md)

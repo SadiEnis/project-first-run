@@ -81,9 +81,9 @@ namespace ProjectFirstRun.Tests.PlayMode.Development.Chests
                 Assert.That(view.VisualRoot.GetComponentsInChildren<TextMesh>(true).Length, Is.EqualTo(1), "Reenable must not duplicate labels.");
 
                 Assert.That(chest.TryOpen(), Is.EqualTo(ChestOpenResult.SelectionOpened), chest.Definition.DisplayName);
-                int expectedChoiceCount = i == 0 ? 2 : 1;
+                int expectedChoiceCount = i == 0 ? 3 : 1;
                 Assert.That(chest.ActiveSession.Offer.Choices.Count, Is.EqualTo(expectedChoiceCount),
-                    "The starting weapon also exposes its non-max level-up choice.");
+                    "The starting weapon level-up and both new weapons are eligible.");
                 var reward = chest.ActiveSession.Offer.Choices.First(choice =>
                     build.GetLevel(choice.Category, choice.StableId) == 0);
                 Assert.That(reward.Category, Is.EqualTo((ItemCategory)i));

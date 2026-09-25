@@ -52,6 +52,7 @@ This Editor-focused delivery does not resume Windows build investigation or clai
 - Commands include Acquire, Level +1, Grant 100 XP, single-family/mixed enemy replacement and seven chest types. Replacement preserves existing loot, health, ammo and build without kill rewards. Failed chest placement reports that nearby space is unavailable.
 - Panel XP immediately updates the level; the regular level-up chest source waits until the panel closes and gameplay resumes. Direct chest spawning places a chest while the panel is open. Close it, approach and press E to use the actual reward screen.
 - The original arena delivery added no new weapon/ability or evolution content. Following user acceptance, the [Shotgun increment](Shotgun-Content.md) adds the fifth catalog item and pellet trace/HUD wiring, without opening evolution scope.
+- The [Minigun increment](Minigun-Content.md) adds the sixth catalog item and preparation/rate/critical HUD feedback. Its separate verification is 805 EditMode / 483 PlayMode passed; user gameplay acceptance is complete, with balance still provisional. Content branches now start from the agreed integration branch `content`, with the package PR deferred until content → main.
 
 ## Verification — 24 September 2026
 

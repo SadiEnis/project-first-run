@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: RP_WeaponChest
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Rewards.RewardItemPool
   _items:
+  - {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
   - {fileID: 11400000, guid: 3c155094935549918fe6802191af691c, type: 2}
   - {fileID: 11400000, guid: b5b6982cfb67513489ea021e5025fd84, type: 2}
   - {fileID: 11400000, guid: cfad58136f13467e9f55565a24c29906, type: 2}

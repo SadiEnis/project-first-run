@@ -2,7 +2,7 @@
 
 ## Durum ve çalışma düzeni
 
-Tasarım checkpoint'i — 25 Eylül 2026. Git branch'i doğrulandı: `feature/content/minigun`; kullanıcı iki platformda branch açıp geçtiğini bildirdi. Kararlaştırılan Plastic branch'i `/main/dev/content/minigun`; sunucu durumu ayrıca kontrol edilmedi. Bu doküman uygulama önerisidir; yapılmış veya test edilmiş mekanik kaydı değildir.
+Tasarım ve uygulama checkpoint'leri — 25 Eylül 2026. Git branch'i doğrulandı: `feature/content/minigun`; kullanıcı iki platformda branch açıp geçtiğini bildirdi. Kararlaştırılan Plastic branch'i `/main/dev/content/minigun`; sunucu durumu ayrıca kontrol edilmedi. Aşağıdaki mekanikler uygulandı ve otomatik doğrulamadan geçti; kullanıcı oynanış kabulü tamamlandı. Sayısal denge geçicidir.
 
 GDD 11.2 takip edilir. Uygulamadan önce bu iki dilli tasarım checkpoint'i alınır. Kabul edilen silah content'e merge edilir; content → main PR'ı içerik paketinin kapanışına bırakılır. Bu silah tamamlanınca başka silah/yeteneğe geçmeden kullanıcı oynanış testi için durulur.
 
@@ -49,4 +49,28 @@ Sekizinci seviyede evolution asset'i, tarifi, teklifi veya dönüşüm eklenmez.
 - PlayMode: kayıtlı sahne ve gerçek basılı input; hazırlık/bırakma/reload/değişim/pause/ölüm engelleri; hasar/kritik/tepme yönü ve sınırları; fare/gamepad ile karşılama; mühimmat/bildirimler, gerçek sandık edinimi/dolu slot/maksimum seviye; Shotgun ve PlasmaRifle regresyonları.
 - Kullanıcı kabulü: sürekli ve kısa basışlar, nişanla tepme karşılama, reload/mühimmat baskısı, sekiz seviyenin farkları ve sandık/panel edinimi. Otomatik testlerden sonra bu değerlendirme için durulur.
 
-Bu tasarım checkpoint'inde uygulama veya test çalıştırma yapılmadı. Önceki Shotgun sonuçları (774 EditMode / 475 PlayMode) Minigun'u doğrulamaz.
+İlk tasarım checkpoint'inde uygulama veya test çalıştırma yapılmamıştı. Minigun doğrulaması aşağıda ayrıca kaydedilmiştir.
+
+## Uygulama ve doğrulama
+
+- `WeaponFireProfile` her seviyenin doğrulanmış hazırlık, kritik ve tepme verisini runtime'a kopyalar. Mevcut silahlarda hazırlık, kritik ihtimali ve tepme sıfır kalır; atış zamanlamaları mevcut yolu kullanır.
+- `PreparedAutomaticFire` mevcut mühimmat/cooldown durumunu zaman sırasıyla ilerletir. Tick başına en fazla üç atış yapar; ardından son atışın cooldown'unu koruyup takılmış karenin fazla süresini atar. Sonraki kareye telafi borcu taşımaz. Sürekli atış hızı 12 ve 15 atış/s için 30/60/120 simüle FPS'te kontrol edildi.
+- Kritik sonucu `HitscanVolleyResult.IsCritical` üzerinden görünürdür. Tepme mermi çözümlendikten sonra mevcut pitch sınırları ve input sahipliği korunarak `PlayerLook` üzerinden uygulanır. Pause hazırlığı saklamak yerine sıfırlar.
+- `WD_Minigun.asset` silah/karma havuzlarına ve kayıtlı arenanın altı eşyalı kataloğuna birer kez bağlandı. Geometri ve ışık yeniden üretilmedi. Editor üreticisi Minigun'u içerir; artımlı bağlantı için `Update Content Arena Minigun Connections` komutu bulunur.
+- Unity 6000.3.9f1, izole proje kopyası: **805/805 EditMode ve 483/483 PlayMode geçti**. 31 EditMode ve sekiz PlayMode testi eklendi. Raporlar: `.codex-temp/xp-attraction/minigun-edit.xml` ve `minigun-play.xml`.
+- Gerçek basılı fare input'u, hazırlık/sıfırlama engelleri, reload/boş şarjör/panel/pause/ölüm, stat uygulanmış kritik hasar, pitch sınırları ve fare/gamepad nişan hesaplarıyla tepme karşılama, sandıktan edinim/seviye/maksimum uygunluğu, slot sınırları ve pasif silah durumunun korunması kapsandı. Mevcut regresyon testleri de geçti.
+- Genişleyen silah havuzunda dört silah var, ancak common sandık üç seçenek sunuyor. Shotgun edinim testi artık her teklifte her silahın bulunacağını varsaymak yerine ödül rastgeleliğini kontrol ediyor.
+- Agent tarafından Windows build, evolution içeriği, uygulama commit/check-in'i veya merge yapılmadı. Otomatik doğrulama checkpoint'inde beklenen kullanıcı oynanış kabulü aşağıda kaydedildi.
+
+## Oynanış kabulü ve sonraki iş
+
+- Kullanıcı Minigun'un istenen şekilde göründüğünü ve seviyelerin çalıştığını bildirdi. Bu mekanik kabuldür; nihai denge onayı veya her manuel senaryonun ayrı ayrı doğrulandığı anlamına gelmez.
+- Hasar, hız, tepme ve diğer sayısal değerler genel mücadele/içerik dengesi değerlendirilebilir olduğunda yeniden ayarlanabilir.
+- Kararlaştırılan sıra: bu aşamanın commit/check-in'i ve Minigun → content merge'i; bu adımda PR yok. Ardından doğrudan content üzerinde TDD güncellenip diğer silahlara da hissedilir tepme eklenecek; özellikle Shotgun için daha ağır, tok bir tepme ele alınacak. Minigun kapanış checkpoint'inde bu silahlar değiştirilmez.
+- Saçılım ve tepme ayrıdır: Minigun şu anda sabit rastgele koni ve yukarı nişan tepmesi kullanır; merminin yüzeyden sekmesi uygulanmadı. Shotgun tepmesi saçma başına değil tetik başına bir kez olmalıdır. Sonraki uygulamadan önce his/değerler konuşulur; paket PR'ı content → main kapanışına bırakılır.
+
+## Kullanıcı oynanış testi
+
+`Assets/_Project/Scenes/Tests/Test_ContentArena.unity` sahnesinde temiz bir Play oturumu başlat. F1 → Minigun Acquire → paneli kapat → Q ile kuşan. Öncesinde başka ikinci silah alma; loadout hâlâ iki slotlu.
+
+Sol fareyi basılı tut: 0.35 saniye hazırlıktan sonra ateş başlamalı; kısa dokunuşta ateş olmamalı. Yukarı tepmeyi karşılamayı, R ile reload'u, Q ile geçişi ve F1'den seviye artırmayı dene. Beşinci seviyenin atış hızını, yedincinin reload'unu ve sekizincinin tepmesini karşılaştır. HUD hazırlık, hız, kritik ihtimali ve son atışın kritik sonucunu gösterir. Sayılar oynanış geri bildirimi gelene kadar başlangıç değerleridir.

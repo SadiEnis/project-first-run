@@ -21,7 +21,7 @@ namespace ProjectFirstRun.Weapons
             _random = random ?? new System.Random().NextDouble;
         }
 
-        public HitscanVolleyResult Resolve(float pelletDamage, float range, int mask, WeaponShotConfig config)
+        public HitscanVolleyResult Resolve(float pelletDamage, float range, int mask, WeaponShotConfig config, bool isCritical = false)
         {
             if (!float.IsFinite(pelletDamage) || pelletDamage <= 0 || !float.IsFinite(pelletDamage * config.PelletCount))
                 throw new ArgumentOutOfRangeException(nameof(pelletDamage));
@@ -69,7 +69,7 @@ namespace ProjectFirstRun.Weapons
                 if (damage.WasApplied && !damage.WasLethal && damage.CurrentHealth > 0 && config.PushDistance > 0)
                     group.Push?.TryPush(group.Point - origin, config.PushDistance);
             }
-            return new HitscanVolleyResult(traces, targets.ToArray());
+            return new HitscanVolleyResult(traces, targets.ToArray(), isCritical);
         }
 
         private bool FirstHit(Vector3 origin, Vector3 direction, float distance, int mask, out RaycastHit first)

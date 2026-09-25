@@ -91,15 +91,16 @@ namespace ProjectFirstRun.Development.Arenas
         {
             if (_arena == null || !_arena.IsReady || _arena.Selection.IsOpen) return;
             var xp = _arena.Player.GetComponent<PlayerExperienceController>();
-            GUILayout.BeginArea(new Rect(12, 12, 600, 125), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(12, 12, 680, 150), GUI.skin.box);
             GUILayout.Label("CONTENT ARENA | F1: test controls | Q: weapon | E: chest");
             GUILayout.Label($"Health {_health.CurrentHealth:F0}/{_health.MaximumHealth:F0} | {_weapon.ActiveDefinition?.DisplayName} | Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
             GUILayout.Label($"Level {xp.Level} | XP {xp.CurrentExperience}/{xp.RequiredExperience} | Enemies {_arena.Registry.ActiveCount}");
             GUILayout.Label($"Damage/pellet {_weapon.CurrentDamage:F1} | Pellets {_weapon.ActiveEntry.Shot.PelletCount} | Push {_weapon.ActiveEntry.Shot.PushDistance:F1} m | R: reload");
+            GUILayout.Label($"Prepare {_weapon.PreparationElapsed:F2}/{_weapon.ActiveEntry.Fire.PreparationDuration:F2}s | Rate {_weapon.ActiveEntry.ShotsPerSecond:F0}/s | Crit {_weapon.ActiveEntry.Fire.CriticalChance:P0} | Last crit: {_weapon.LastShotWasCritical}");
             GUILayout.Label(_health.IsDead ? "Dead: stop and restart Play for a fresh test." : _arena.LastResult);
             GUILayout.EndArea();
             if (!IsOpen) return;
-            GUILayout.BeginArea(new Rect(12, 145, Mathf.Min(610, Screen.width - 24), Mathf.Max(100, Screen.height - 160)), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(12, 170, Mathf.Min(610, Screen.width - 24), Mathf.Max(100, Screen.height - 185)), GUI.skin.box);
             if (GUILayout.Button("Close panel / F1")) Close();
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUILayout.Label("Replace enemies (no kill rewards; existing loot and build stay)");

@@ -2,7 +2,7 @@
 
 ## Status and workflow
 
-Design checkpoint — 25 September 2026. Git branch verified: `feature/content/minigun`; the user reports creating and switching both branches. Agreed Plastic branch: `/main/dev/content/minigun`; server state not independently checked. This document is an implementation proposal, not a record of implemented or tested mechanics.
+Design and implementation checkpoints — 25 September 2026. Git branch verified: `feature/content/minigun`; the user reports creating and switching both branches. Agreed Plastic branch: `/main/dev/content/minigun`; server state not independently checked. The mechanics below are implemented and automatically verified; user gameplay acceptance is complete. Numerical balance remains provisional.
 
 Follow GDD 11.2. Commit this bilingual design checkpoint before implementation. Merge the accepted weapon into content; reserve the content → main pull request for the content package. Stop for user gameplay acceptance after this weapon, before another weapon/ability.
 
@@ -49,4 +49,28 @@ Level eight adds no evolution asset, recipe, offer or transformation. GDD evolut
 - PlayMode: saved scene and actual held input; preparation/release/reload/switch/pause/death restrictions; damage/crit/recoil direction and limits; mouse/gamepad compensation; ammo/events, real chest claims/full slots/max levels; Shotgun and PlasmaRifle regressions.
 - User acceptance: sustained fire and short taps, aim compensation, reload/ammunition pressure, eight-level differences and chest/panel acquisition. Stop for this evaluation after automated tests.
 
-No implementation or test execution in this design-only checkpoint. Previous Shotgun results (774 EditMode / 475 PlayMode) do not validate Minigun.
+The original design-only checkpoint did not include implementation or test execution. Minigun verification is recorded separately below.
+
+## Implementation and verification
+
+- `WeaponFireProfile` snapshots validated preparation, critical and recoil data for each level. Existing weapons retain zero preparation, critical chance and recoil; their firing cadence remains on the existing path.
+- `PreparedAutomaticFire` advances the existing ammo/cooldown state chronologically. It allows at most three shots per tick, then discards excess stalled-frame time while retaining the final shot's cooldown; no catch-up debt is carried into the next frame. Sustained cadence was checked at 30/60/120 simulated FPS for both 12 and 15 shots/s.
+- Critical results are exposed by `HitscanVolleyResult.IsCritical`. Recoil is applied through `PlayerLook` after resolving the bullet, using the existing pitch limits and input ownership. Pause clears preparation rather than banking it.
+- `WD_Minigun.asset` is connected once to weapon/mixed pools and the saved arena's six-item catalog. Geometry and lighting were not rebuilt. The Editor builder includes Minigun and provides `Update Content Arena Minigun Connections` for incremental wiring.
+- Unity 6000.3.9f1, isolated project copy: **805/805 EditMode and 483/483 PlayMode passed**. Added 31 EditMode and eight PlayMode tests. Reports: `.codex-temp/xp-attraction/minigun-edit.xml` and `minigun-play.xml`.
+- Coverage includes real held mouse input, preparation/reset restrictions, reload/empty/panel/pause/death, critical damage with stats, pitch limits and compensation through mouse/gamepad look calculations, chest acquisition/levels/max eligibility, slot limits and preserved inactive state. Existing regression tests also passed.
+- The expanded weapon pool contains four weapons but a common chest offers three. The Shotgun acquisition test now controls reward randomness so it does not incorrectly assume every weapon must appear in every offer.
+- No Windows build, evolution content, implementation commit/check-in or merge was performed by the agent. User gameplay acceptance was pending at the automated verification checkpoint and is now recorded below.
+
+## Gameplay acceptance and follow-up
+
+- The user reports that Minigun behaves as intended and its levels work. This is mechanical acceptance, not final balance approval or separate confirmation of every manual test case.
+- Damage, rate, recoil and other tuning values may be revisited when the broader combat/content balance can be evaluated.
+- Agreed next step: commit/check-in this increment and merge Minigun into content, without a PR at this stage. Afterwards, update TDD and extend felt recoil to the other weapons directly on content, particularly a heavier, punchier Shotgun kick. Do not change these weapons in the Minigun closing checkpoint.
+- Spread and recoil are separate: Minigun currently uses a fixed random cone and upward aim kick; projectile ricochet is not implemented. Shotgun recoil must be once per trigger, not once per pellet. Discuss exact feel/tuning before implementing the follow-up; reserve the package PR for content → main.
+
+## User playtest
+
+Open `Assets/_Project/Scenes/Tests/Test_ContentArena.unity` and start a fresh Play session. F1 → Minigun Acquire → close the panel → Q to equip. Do not acquire another secondary weapon first; the loadout still has two slots.
+
+Hold left mouse: preparation reaches 0.35 seconds before firing; short taps should not fire. Try counteracting upward recoil, R reload, Q switching and F1 level increases. Compare level five's rate, level seven's reload and level eight's recoil. The HUD shows preparation, rate, critical chance and the last shot's critical result. Numbers remain provisional until playtest feedback.

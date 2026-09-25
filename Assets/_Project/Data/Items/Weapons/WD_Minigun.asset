@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
+  m_Name: WD_Minigun
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
+  _stableId: weapon.minigun
+  _displayName: Minigun
+  _gameplayEffect: Hold fire to prepare the barrel, then sustain rapid fire. Critical hits deal double damage. Compensate upward recoil with aim.
+  _maximumLevel: 8
+  _triggerMode: 1
+  _baseDamage: 8
+  _range: 40
+  _damageMask:
+    serializedVersion: 2
+    m_Bits: 247
+  _pelletCount: 1
+  _spreadHalfAngle: 1
+  _pushDistance: 0
+  _preparationDuration: 0.35
+  _criticalChance: 0.05
+  _criticalMultiplier: 2
+  _recoilDegrees: 0.35
+  _magazineCapacity: 80
+  _startingReserveAmmo: 240
+  _shotsPerSecond: 12
+  _reloadDuration: 3
+  _additionalLevels:
+  - _damage: 10
+    _magazineCapacity: 80
+    _shotsPerSecond: 12
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.05
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.35
+  - _damage: 10
+    _magazineCapacity: 80
+    _shotsPerSecond: 12
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.1
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.35
+  - _damage: 10
+    _magazineCapacity: 100
+    _shotsPerSecond: 12
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.1
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.35
+  - _damage: 10
+    _magazineCapacity: 100
+    _shotsPerSecond: 15
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.1
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.35
+  - _damage: 12
+    _magazineCapacity: 100
+    _shotsPerSecond: 15
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.1
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.35
+  - _damage: 12
+    _magazineCapacity: 100
+    _shotsPerSecond: 15
+    _reloadDuration: 2.4
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.1
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.35
+  - _damage: 12
+    _magazineCapacity: 100
+    _shotsPerSecond: 15
+    _reloadDuration: 2.4
+    _pelletCount: 1
+    _spreadHalfAngle: 1
+    _pushDistance: 0
+    _preparationDuration: 0.35
+    _criticalChance: 0.1
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.2

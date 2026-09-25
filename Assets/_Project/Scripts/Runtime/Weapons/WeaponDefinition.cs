@@ -29,6 +29,12 @@ namespace ProjectFirstRun.Weapons
         [SerializeField, Range(0, 89)] private float _spreadHalfAngle;
         [SerializeField, Min(0)] private float _pushDistance;
 
+        [Header("Preparation, critical hits and recoil")]
+        [SerializeField, Min(0)] private float _preparationDuration;
+        [SerializeField, Range(0, 1)] private float _criticalChance;
+        [SerializeField, Min(1)] private float _criticalMultiplier = 2;
+        [SerializeField, Min(0)] private float _recoilDegrees;
+
         [Header("Ammunition")]
         [SerializeField, Min(1)]
         private int _magazineCapacity = 12;
@@ -53,7 +59,8 @@ namespace ProjectFirstRun.Weapons
                 throw new InvalidOperationException("Weapon level data must match its configured maximum.");
             var levels = new WeaponLevelConfig[MaximumLevel];
             levels[0] = new WeaponLevelConfig(_baseDamage, CreateRuntimeConfig(),
-                new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance));
+                new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
+                new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees));
             for (int i = 1; i < levels.Length; i++)
             {
                 if (_additionalLevels[i - 1] == null)
@@ -62,6 +69,9 @@ namespace ProjectFirstRun.Weapons
                 if (levels[i].Runtime.MagazineCapacity < levels[i - 1].Runtime.MagazineCapacity)
                     throw new InvalidOperationException("Weapon level progression cannot reduce magazine capacity.");
             }
+            foreach (var level in levels)
+                if (level.Fire.PreparationDuration > 0 && _triggerMode != WeaponTriggerMode.Automatic)
+                    throw new InvalidOperationException("Preparation requires an automatic weapon.");
             return levels;
         }
 

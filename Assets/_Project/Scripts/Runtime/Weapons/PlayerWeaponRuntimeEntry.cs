@@ -9,6 +9,9 @@ namespace ProjectFirstRun.Weapons
         public int MaximumLevel => _levels.Length;
         public float BaseDamage => _levels[Level - 1].Damage;
         public WeaponShotConfig Shot => _levels[Level - 1].Shot;
+        public WeaponFireProfile Fire => _levels[Level - 1].Fire;
+        public float ShotsPerSecond => _levels[Level - 1].Runtime.ShotsPerSecond;
+        public WeaponTriggerMode TriggerMode { get; }
         public float Range { get; }
         public int DamageMask { get; }
 
@@ -48,6 +51,7 @@ namespace ProjectFirstRun.Weapons
                 throw new ArgumentOutOfRangeException(nameof(definition), "Weapon range must be finite and positive.");
             Range = definition.Range;
             DamageMask = definition.DamageMask;
+            TriggerMode = definition.TriggerMode;
             WeaponRuntimeConfig runtimeConfig = _levels[0].Runtime;
 
             Definition =

@@ -36,11 +36,18 @@ namespace ProjectFirstRun.Editor
 
         [MenuItem("Project First Run/Update Content Arena Shotgun Connections")]
         public static void UpdateShotgunConnections()
+            => UpdateWeaponConnections("Shotgun");
+
+        [MenuItem("Project First Run/Update Content Arena Minigun Connections")]
+        public static void UpdateMinigunConnections()
+            => UpdateWeaponConnections("Minigun");
+
+        private static void UpdateWeaponConnections(string weaponName)
         {
             if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             var arena = scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<ContentArenaController>(true)).Single();
-            var shotgun = Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Shotgun.asset");
+            var shotgun = Load<ItemDefinition>($"Assets/_Project/Data/Items/Weapons/WD_{weaponName}.asset");
             var items = arena.Items.ToList();
             if (!items.Contains(shotgun)) items.Add(shotgun);
             SetArray(arena, "_items", items.ToArray());
@@ -49,7 +56,7 @@ namespace ProjectFirstRun.Editor
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
-            Debug.Log("SHOTGUN_ARENA_UPDATED");
+            Debug.Log($"{weaponName.ToUpperInvariant()}_ARENA_UPDATED");
         }
 
         private static void ConfigureTraces(GameObject player)
@@ -188,7 +195,8 @@ namespace ProjectFirstRun.Editor
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_DevelopmentSecondaryWeapon.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Abilities/Fireball/AD_Fireball.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Upgrade/Dev/UD_DevelopmentDamageBoost.asset"),
-                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Shotgun.asset"));
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Shotgun.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Minigun.asset"));
             SetArray(arena, "_chests",
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_WeaponChest.asset"),
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_AbilityChest.asset"),

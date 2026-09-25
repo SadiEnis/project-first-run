@@ -176,7 +176,12 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         public IEnumerator RealWeaponChestAcquiresAndLevelsShotgunThenExcludesMaxLevel()
         {
             Assert.That(_arena.SpawnChest(0), Is.True);
-            Find<ChestController>().Single().TryOpen();
+            var chest = Find<ChestController>().Single();
+            // Four weapons now compete for three offers; control randomness, not production eligibility.
+            typeof(ChestController).GetField("_offerGenerator", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .SetValue(chest, new ProjectFirstRun.Rewards.RewardOfferGenerator(
+                    new ProjectFirstRun.Rewards.RewardCandidateFilter(), new FirstCandidate()));
+            chest.TryOpen();
             Assert.That(_arena.Selection.ActiveSession.Offer.Choices, Does.Contain(Shotgun));
             Assert.That(_arena.Selection.Select(Shotgun), Is.EqualTo(RewardClaimResult.Claimed));
             Assert.That(_arena.ItemLevel(ShotgunIndex), Is.EqualTo(1));
@@ -192,6 +197,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_arena.Selection.ActiveSession.Offer.Choices, Has.No.Member(Shotgun));
             Assert.That(_arena.Selection.ActiveSession.Offer.Choices.All(x => x.StableId != "weapon.development-secondary"), Is.True);
             _arena.Selection.Select(_arena.Selection.ActiveSession.Offer.Choices[0]);
+        }
+
+        private sealed class FirstCandidate : ProjectFirstRun.Rewards.IRandomSource
+        {
+            public int Next(int minInclusive, int maxExclusive) => minInclusive;
         }
 
         [UnityTest]

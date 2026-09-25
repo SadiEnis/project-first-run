@@ -13,12 +13,17 @@ namespace ProjectFirstRun.Weapons
         [SerializeField, Range(1, 64)] private int _pelletCount = 1;
         [SerializeField, Range(0, 89)] private float _spreadHalfAngle;
         [SerializeField, Min(0)] private float _pushDistance;
+        [SerializeField, Min(0)] private float _preparationDuration;
+        [SerializeField, Range(0, 1)] private float _criticalChance;
+        [SerializeField, Min(1)] private float _criticalMultiplier = 2;
+        [SerializeField, Min(0)] private float _recoilDegrees;
 
         // Unity constructs inline serialized records without running the parameterized constructor.
         public WeaponLevelData() { }
 
         public WeaponLevelData(float damage, int magazineCapacity, float shotsPerSecond, float reloadDuration,
-            int pelletCount = 1, float spreadHalfAngle = 0, float pushDistance = 0)
+            int pelletCount = 1, float spreadHalfAngle = 0, float pushDistance = 0,
+            float preparationDuration = 0, float criticalChance = 0, float criticalMultiplier = 2, float recoilDegrees = 0)
         {
             _damage = damage;
             _magazineCapacity = magazineCapacity;
@@ -27,11 +32,16 @@ namespace ProjectFirstRun.Weapons
             _pelletCount = pelletCount;
             _spreadHalfAngle = spreadHalfAngle;
             _pushDistance = pushDistance;
+            _preparationDuration = preparationDuration;
+            _criticalChance = criticalChance;
+            _criticalMultiplier = criticalMultiplier;
+            _recoilDegrees = recoilDegrees;
         }
 
         internal WeaponLevelConfig CreateConfig(int startingReserveAmmo) => new WeaponLevelConfig(
             _damage, new WeaponRuntimeConfig(_magazineCapacity, startingReserveAmmo, _shotsPerSecond, _reloadDuration),
-            new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance));
+            new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
+            new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees));
     }
 
     internal readonly struct WeaponLevelConfig
@@ -39,14 +49,18 @@ namespace ProjectFirstRun.Weapons
         public float Damage { get; }
         public WeaponRuntimeConfig Runtime { get; }
         public WeaponShotConfig Shot { get; }
+        public WeaponFireProfile Fire { get; }
 
-        public WeaponLevelConfig(float damage, WeaponRuntimeConfig runtime, WeaponShotConfig shot)
+        public WeaponLevelConfig(float damage, WeaponRuntimeConfig runtime, WeaponShotConfig shot, WeaponFireProfile fire)
         {
             if (float.IsNaN(damage) || float.IsInfinity(damage) || damage <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(damage), "Weapon damage must be finite and positive.");
             Damage = damage;
             Runtime = runtime;
             Shot = shot;
+            if (!float.IsFinite(damage * shot.PelletCount * fire.CriticalMultiplier))
+                throw new ArgumentOutOfRangeException(nameof(damage), "Maximum critical volley damage must be finite.");
+            Fire = fire;
         }
     }
 }

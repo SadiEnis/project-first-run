@@ -1655,6 +1655,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d8030a403a11f6c4684ddb91f6b829ec, type: 2}
   - {fileID: 11400000, guid: 8453e39dc742d424b892c30922c791dc, type: 2}
   - {fileID: 11400000, guid: 3c155094935549918fe6802191af691c, type: 2}
+  - {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
   _chests:
   - {fileID: 11400000, guid: 1710c972359c443b9d34891f2042100f, type: 2}
   - {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}

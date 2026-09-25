@@ -24,6 +24,16 @@ namespace ProjectFirstRun.Player
         private float _maximumPitch = 85f;
 
         private float _currentPitch;
+        public float CurrentPitch => _currentPitch;
+
+        public void ApplyRecoil(float degrees)
+        {
+            if (!float.IsFinite(degrees) || degrees < 0)
+                throw new System.ArgumentOutOfRangeException(nameof(degrees));
+            if (_cameraPivot == null || !isActiveAndEnabled) return;
+            _currentPitch = Mathf.Clamp(_currentPitch - degrees, _minimumPitch, _maximumPitch);
+            _cameraPivot.localRotation = Quaternion.Euler(_currentPitch, 0f, 0f);
+        }
 
         private void Awake()
         {

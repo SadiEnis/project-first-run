@@ -52,6 +52,7 @@ Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standa
 - `Acquire`, `Level +1`, `Grant 100 XP`, tek aile/karışık düşman grubu ve yedi sandık türü komutları mevcuttur. Grup değişimi mevcut loot, can, mermi ve build'i korur; kill ödülü vermez. Sandık yerleştirecek boşluk bulunamazsa sonuç mesajı gösterilir.
 - Panelden XP verildiğinde seviye anında güncellenir; level-up sandığı normal duraklatma kuralı nedeniyle panel kapatılınca oluşur. Doğrudan sandık üretimi ise panel açıkken yerleştirme yapar. Paneli kapatıp yaklaşarak E ile gerçek ödül ekranı açılır.
 - İlk arena teslimi yeni silah/yetenek veya evolution içeriği içermedi. Kullanıcı kabulünden sonraki [Shotgun aşaması](Shotgun-Content.md), katalogdaki beşinci eşya ve saçma izi/HUD bağlantılarını ekler; evolution kapsamı açılmaz.
+- [Minigun aşaması](Minigun-Content.md) altıncı katalog eşyasını ve hazırlık/hız/kritik HUD bilgisini ekler. Ayrı doğrulaması 805 EditMode / 483 PlayMode başarılıdır; kullanıcı oynanış kabulü tamamlandı, denge hâlâ geçicidir. İçerik branch'leri artık kararlaştırılan `content` entegrasyon branch'inden açılır; paket PR'ı content → main kapanışına bırakılır.
 
 ## Doğrulama sonucu — 24 Eylül 2026
 

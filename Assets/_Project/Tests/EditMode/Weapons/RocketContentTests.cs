@@ -58,7 +58,7 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
         public void InvalidSpeedRejected(float speed)
             => Assert.Throws<ArgumentOutOfRangeException>(() => new RocketConfig(speed));
 
-        [TestCase("_deliveryMode", 2)]
+        [TestCase("_deliveryMode", 99)]
         [TestCase("_triggerMode", 1)]
         [TestCase("_pelletCount", 2)]
         public void IncompatibleModesRejected(string property, int value)
@@ -98,13 +98,13 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
             Assert.That(pool.GetValidatedItems().Count(x => x.StableId == "weapon.rocket-launcher"), Is.EqualTo(1));
         }
         [Test]
-        public void ExistingWeaponsStayHitscan()
+        public void OtherWeaponsRetainTheirDeliveryModes()
         {
             foreach (var name in new[] { "PlasmaRifle", "DevelopmentSecondaryWeapon", "Shotgun", "Minigun" })
             {
                 var entry = new PlayerWeaponRuntimeEntry(AssetDatabase.LoadAssetAtPath<WeaponDefinition>(
                     "Assets/_Project/Data/Items/Weapons/WD_" + name + ".asset"));
-                Assert.That(entry.DeliveryMode, Is.EqualTo(WeaponDeliveryMode.Hitscan));
+                Assert.That(entry.DeliveryMode, Is.EqualTo(name == "PlasmaRifle" ? WeaponDeliveryMode.Plasma : WeaponDeliveryMode.Hitscan));
                 Assert.That(entry.Rocket.HasValue, Is.False);
             }
         }

@@ -21,6 +21,7 @@ namespace ProjectFirstRun.Weapons
         [SerializeField, Min(.01f)] private float _recoilRecoveryDuration = .3f;
         [SerializeField, Min(.01f)] private float _recoilMaximumOffset = 12;
         [SerializeField] private RocketLevelData _rocket = new RocketLevelData();
+        [SerializeField] private PlasmaLevelData _plasma = new PlasmaLevelData();
 
         // Unity constructs inline serialized records without running the parameterized constructor.
         public WeaponLevelData() { }
@@ -51,7 +52,8 @@ namespace ProjectFirstRun.Weapons
             new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
             new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees,
                 _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset),
-            delivery == WeaponDeliveryMode.Rocket ? (_rocket ?? throw new InvalidOperationException("Missing rocket level data.")).CreateConfig() : (RocketConfig?)null);
+            delivery == WeaponDeliveryMode.Rocket ? (_rocket ?? throw new InvalidOperationException("Missing rocket level data.")).CreateConfig() : (RocketConfig?)null,
+            delivery == WeaponDeliveryMode.Plasma ? (_plasma ?? throw new InvalidOperationException("Missing plasma level data.")).CreateConfig() : (PlasmaConfig?)null);
     }
 
     internal readonly struct WeaponLevelConfig
@@ -61,8 +63,9 @@ namespace ProjectFirstRun.Weapons
         public WeaponShotConfig Shot { get; }
         public WeaponFireProfile Fire { get; }
         public RocketConfig? Rocket { get; }
+        public PlasmaConfig? Plasma { get; }
 
-        public WeaponLevelConfig(float damage, WeaponRuntimeConfig runtime, WeaponShotConfig shot, WeaponFireProfile fire, RocketConfig? rocket = null)
+        public WeaponLevelConfig(float damage, WeaponRuntimeConfig runtime, WeaponShotConfig shot, WeaponFireProfile fire, RocketConfig? rocket = null, PlasmaConfig? plasma = null)
         {
             if (float.IsNaN(damage) || float.IsInfinity(damage) || damage <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(damage), "Weapon damage must be finite and positive.");
@@ -73,6 +76,7 @@ namespace ProjectFirstRun.Weapons
                 throw new ArgumentOutOfRangeException(nameof(damage), "Maximum critical volley damage must be finite.");
             Fire = fire;
             Rocket = rocket;
+            Plasma = plasma;
         }
     }
 }

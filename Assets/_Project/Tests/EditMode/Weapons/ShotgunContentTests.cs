@@ -81,7 +81,7 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
 
         [TestCase("WD_PlasmaRifle")]
         [TestCase("WD_DevelopmentSecondaryWeapon")]
-        public void ExistingAssetsRemainSingleRayAtEveryLevel(string name)
+        public void ExistingAssetsRemainSingleProjectileOrRayAtEveryLevel(string name)
         {
             var entry = new PlayerWeaponRuntimeEntry(AssetDatabase.LoadAssetAtPath<WeaponDefinition>(
                 "Assets/_Project/Data/Items/Weapons/" + name + ".asset"));

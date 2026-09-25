@@ -16,6 +16,8 @@ Veri temeli cs162 / fd6fd4b sonrasında `/main/dev/item-level-foundation` / `cod
 
 ## Örnek içerik ve sınırlar
 
+Tarihsel checkpoint: aşağıdaki geçici Plasma Rifle tablosunun yerini GDD'deki fiziksel mermi/delme/yanma sırasını uygulayan [Plasma Rifle İçeriği](Plasma-Rifle-Content.md) aldı. Yukarıdaki genel mühimmat/süre koruma sözleşmesi geçerliliğini korur.
+
 Plasma Rifle ve Development Secondary için sekiz geçici birikimli test seviyesi: 2'de hasar, 3'te kapasite, 4'te atış hızı, 5'te hasar, 6'da doldurma süresi, 7'de kapasite, 8'de hasar. Değerler geliştirme dengesidir; GDD silah tasarımlarının veya evrim uygunluğunun tamamlandığı anlamına gelmez. Tetik türü, menzil ve hasar maskesi değişmez. Fireball ve geliştirmeler kendi etkileri eklenene kadar tek seviyede kalır.
 
 Bu adım yeni tuş, seviye ödülü veya UI eklemez. Otomatik testler runtime controller'ını çağırır; sandıkların mevcut edinme davranışı korunur. Tam test paketlerine ek olarak aktif/pasif silah geliştirme, stat etkileri, mermi/süre korunması, hatalı içerik, maksimum sınırı ve sahiplik tutarsızlığı doğrulanır. Sonra yetenek/geliştirme etkileri ve açık ödül seçenekleriyle devam edilir; eşya seviyesi aşaması henüz merge edilmez.

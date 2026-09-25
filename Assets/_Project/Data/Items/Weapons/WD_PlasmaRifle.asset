@@ -14,44 +14,272 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
   _stableId: weapon.plasma-rifle
   _displayName: PlasmaRifle
-  _gameplayEffect: Automatic rifle. Deals 25 damage at 5 shots per second.
+  _gameplayEffect: Automatic energy projectiles. Levels add damage, rate, piercing,
+    capacity and target burn.
+  _maximumLevel: 8
+  _deliveryMode: 2
+  _rocketPrefab: {fileID: 0}
+  _rocket:
+    _speed: 25
+    _collisionRadius: 0.15
+    _lifetime: 4
+    _blastRadius: 3
+    _fragmentCount: 0
+    _fragmentDamage: 20
+    _fragmentSpeed: 20
+    _fragmentRadius: 0.05
+    _fragmentRange: 8
+    _fragmentLifetime: 0.4
+  _plasmaPrefab: {fileID: 4763770145048279657, guid: fe6e34a0977ddf147a474ebfce42e24f, type: 3}
+  _plasma:
+    _speed: 60
+    _radius: 0.08
+    _lifetime: 2
+    _pierceCount: 0
+    _burn: 0
+    _burnDamage: 5
   _triggerMode: 1
   _baseDamage: 25
   _range: 100
   _damageMask:
     serializedVersion: 2
     m_Bits: 247
+  _pelletCount: 1
+  _spreadHalfAngle: 0
+  _pushDistance: 0
+  _preparationDuration: 0
+  _criticalChance: 0
+  _criticalMultiplier: 2
+  _recoilDegrees: 0.3
+  _recoilRecoveryDelay: 0.1
+  _recoilRecoveryDuration: 0.22
+  _recoilMaximumOffset: 6
   _magazineCapacity: 12
   _startingReserveAmmo: 48
   _shotsPerSecond: 5
   _reloadDuration: 1.5
-  _maximumLevel: 8
   _additionalLevels:
   - _damage: 30
     _magazineCapacity: 12
     _shotsPerSecond: 5
     _reloadDuration: 1.5
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 0
+      _burn: 0
+      _burnDamage: 5
   - _damage: 30
-    _magazineCapacity: 16
-    _shotsPerSecond: 5
+    _magazineCapacity: 12
+    _shotsPerSecond: 6
     _reloadDuration: 1.5
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 0
+      _burn: 0
+      _burnDamage: 5
   - _damage: 30
-    _magazineCapacity: 16
+    _magazineCapacity: 12
     _shotsPerSecond: 6
     _reloadDuration: 1.5
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 1
+      _burn: 0
+      _burnDamage: 5
   - _damage: 35
-    _magazineCapacity: 16
+    _magazineCapacity: 12
     _shotsPerSecond: 6
     _reloadDuration: 1.5
-  - _damage: 35
-    _magazineCapacity: 16
-    _shotsPerSecond: 6
-    _reloadDuration: 1.2
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 1
+      _burn: 0
+      _burnDamage: 5
   - _damage: 35
     _magazineCapacity: 20
     _shotsPerSecond: 6
-    _reloadDuration: 1.2
-  - _damage: 40
+    _reloadDuration: 1.5
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 1
+      _burn: 0
+      _burnDamage: 5
+  - _damage: 35
     _magazineCapacity: 20
     _shotsPerSecond: 6
-    _reloadDuration: 1.2
+    _reloadDuration: 1.5
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 2
+      _burn: 0
+      _burnDamage: 5
+  - _damage: 35
+    _magazineCapacity: 20
+    _shotsPerSecond: 6
+    _reloadDuration: 1.5
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 0.3
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.22
+    _recoilMaximumOffset: 6
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+    _plasma:
+      _speed: 60
+      _radius: 0.08
+      _lifetime: 2
+      _pierceCount: 2
+      _burn: 1
+      _burnDamage: 5

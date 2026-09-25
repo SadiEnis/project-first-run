@@ -46,3 +46,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 40. [Toparlanan Silah Tepmesi](Weapon-Recoil-Recovery.md)
 41. [Boş Şarjörde Otomatik Doldurma](Automatic-Reload.md)
 42. [Rocket Launcher İçeriği](Rocket-Launcher-Content.md)
+43. [Plasma Rifle İçeriği](Plasma-Rifle-Content.md)

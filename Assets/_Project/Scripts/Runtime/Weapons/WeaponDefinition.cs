@@ -13,6 +13,9 @@ namespace ProjectFirstRun.Weapons
         [SerializeField] private WeaponDeliveryMode _deliveryMode;
         [SerializeField] private RocketProjectile _rocketPrefab;
         [SerializeField] private RocketLevelData _rocket = new RocketLevelData();
+        [SerializeField] private PlasmaProjectile _plasmaPrefab;
+        [SerializeField] private PlasmaLevelData _plasma = new PlasmaLevelData();
+        public PlasmaProjectile PlasmaPrefab => _plasmaPrefab;
         public WeaponDeliveryMode DeliveryMode => _deliveryMode;
         public RocketProjectile RocketPrefab => _rocketPrefab;
         [Header("Trigger")]
@@ -73,7 +76,8 @@ namespace ProjectFirstRun.Weapons
                 new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
                 new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees,
                     _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset),
-                _deliveryMode == WeaponDeliveryMode.Rocket ? (_rocket ?? throw new InvalidOperationException("Missing rocket data.")).CreateConfig() : (RocketConfig?)null);
+                _deliveryMode == WeaponDeliveryMode.Rocket ? (_rocket ?? throw new InvalidOperationException("Missing rocket data.")).CreateConfig() : (RocketConfig?)null,
+                _deliveryMode == WeaponDeliveryMode.Plasma ? (_plasma ?? throw new InvalidOperationException("Missing plasma data.")).CreateConfig() : (PlasmaConfig?)null);
             for (int i = 1; i < levels.Length; i++)
             {
                 if (_additionalLevels[i - 1] == null)
@@ -84,6 +88,15 @@ namespace ProjectFirstRun.Weapons
             }
             foreach (var level in levels)
             {
+                if (_deliveryMode == WeaponDeliveryMode.Plasma)
+                {
+                    if (_triggerMode != WeaponTriggerMode.Automatic || level.Shot.PelletCount != 1 ||
+                        level.Shot.HalfAngle != 0 || level.Shot.PushDistance != 0 ||
+                        level.Fire.CriticalChance != 0 || level.Fire.PreparationDuration != 0)
+                        throw new InvalidOperationException("Plasma requires a single non-critical automatic projectile.");
+                    if (_plasmaPrefab == null) throw new InvalidOperationException("Plasma prefab is required.");
+                    _plasmaPrefab.ValidatePrefab();
+                }
                 if (level.Fire.PreparationDuration > 0 && _triggerMode != WeaponTriggerMode.Automatic)
                     throw new InvalidOperationException("Preparation requires an automatic weapon.");
                 if (_deliveryMode == WeaponDeliveryMode.Rocket)

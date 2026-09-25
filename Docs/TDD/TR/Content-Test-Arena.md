@@ -62,6 +62,8 @@ Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standa
 
 ## Kayıt düzeni
 
+[Plasma Rifle aşaması](Plasma-Rifle-Content.md) mevcut katalog eşyasını fiziksel delici mermi ve L8 hedef yanmasına taşır. F1 delme/yanma durumunu gösterir. Katalog yedi eşyada kalır, sahnedeki başlangıç silahı korunur; gerekirse F1 ile Plasma edinilir. Kullanıcı oynanış kabulü bekleniyor.
+
 Rocket Launcher yedinci katalog eşyasını, patlama/yarıçap/parça HUD bilgisini ve mevcut silah/karma sandık akışını ekler. Seviye ve doğrulama için [Rocket Launcher](Rocket-Launcher-Content.md) belgesine bakılır. Kullanıcı oynanış kabulü tamamlandı; denge geçicidir. Geometri ve ışık değişmedi.
 
 Tasarım değişiklikleri docs checkpoint'i, uygulama/testler anlamlı bir uygulama checkpoint'i olarak kaydedilir. İçerik arenasının PR'ı merge edildi. Güncel silah/yetenek branch'leri kararlaştırılan `content` entegrasyon branch'inden açılır; kullanıcı silahları normal merge ile content'e alır, paket PR'ı content → main kapanışında yapılır.

@@ -69,9 +69,13 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
 
         private void Equip()
         {
-            Assert.That(_arena.Acquire(Index), Is.True, _arena.LastResult);
+            // Preserve the authored starting weapon while arranging two owned weapons for switch tests.
+            int acquire = _arena.ItemLevel(Index) == 0 ? Index :
+                _arena.Items.ToList().FindIndex(x => x.StableId == "weapon.plasma-rifle");
+            Assert.That(_arena.Acquire(acquire), Is.True, _arena.LastResult);
             Assert.That(_arena.LastResult, Is.EqualTo("Acquired"));
-            Assert.That(_arena.Player.GetComponent<PlayerWeaponSwitcher>().TrySwitchNext(), Is.True);
+            if (_weapon.ActiveDefinition != Minigun)
+                Assert.That(_arena.Player.GetComponent<PlayerWeaponSwitcher>().TrySwitchNext(), Is.True);
             Assert.That(_weapon.ActiveDefinition, Is.SameAs(Minigun));
         }
 
@@ -93,9 +97,13 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_weapon.MagazineAmmo, Is.EqualTo(80 - shots));
             Assert.That(look.CurrentPitch, Is.EqualTo(pitch - shots * .35f).Within(.01));
             Assert.That(_arena.Player.GetComponentsInChildren<LineRenderer>(true).Length, Is.EqualTo(1));
+            // Align the queued release with a fresh input frame after WaitForSeconds.
+            yield return null;
+            yield return null;
             Release(_mouse.leftButton, queueEventOnly: true);
             yield return null;
             yield return null;
+            Assert.That(_arena.Player.GetComponent<ProjectFirstRun.Input.PlayerInputReader>().IsFireHeld, Is.False);
             int stopped = shots;
             yield return new WaitForSeconds(.45f);
             Assert.That(shots, Is.EqualTo(stopped));
@@ -244,8 +252,10 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 int starts = 0, shots = 0;
                 System.Action onReload = () => starts++;
                 System.Action<HitscanVolleyResult> onShot = _ => shots++;
+                System.Action<PlasmaProjectile> onPlasma = _ => shots++;
                 _weapon.ReloadStarted += onReload;
                 _weapon.ShotFired += onShot;
+                _weapon.PlasmaLaunched += onPlasma;
                 try
                 {
                     // Align each new physical press with a fresh input/update frame after WaitForSeconds.
@@ -274,6 +284,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 {
                     _weapon.ReloadStarted -= onReload;
                     _weapon.ShotFired -= onShot;
+                    _weapon.PlasmaLaunched -= onPlasma;
                     Object.DestroyImmediate(definition);
                 }
             }
@@ -424,12 +435,15 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         [UnityTest]
         public IEnumerator RealChestAcquisitionLevelAndMaximumUseExistingEligibility()
         {
+            // If Minigun is the authored starter, acquire Plasma first; otherwise acquire Minigun.
+            var firstReward = _arena.ItemLevel(Index) == 0 ? Minigun :
+                (WeaponDefinition)_arena.Items.Single(x => x.StableId == "weapon.plasma-rifle");
             Assert.That(_arena.SpawnChest(0), Is.True);
             var chest = Find<ChestController>().Single();
             typeof(ChestController).GetField("_offerGenerator", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(chest, new RewardOfferGenerator(new RewardCandidateFilter(), new FirstCandidate()));
             chest.TryOpen();
-            Assert.That(_arena.Selection.Select(Minigun), Is.EqualTo(RewardClaimResult.Claimed));
+            Assert.That(_arena.Selection.Select(firstReward), Is.EqualTo(RewardClaimResult.Claimed));
             Assert.That(_arena.ItemLevel(Index), Is.EqualTo(1));
             yield return null;
             Assert.That(_arena.SpawnChest(0), Is.True);

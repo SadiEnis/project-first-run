@@ -122,7 +122,7 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
             {
                 Assert.That(entry.Fire.PreparationDuration, Is.Zero);
                 Assert.That(entry.Fire.CriticalChance, Is.Zero);
-                Assert.That(entry.Fire.RecoilDegrees, Is.EqualTo(name == "WD_Shotgun" ? 6f : 0f));
+                Assert.That(entry.Fire.RecoilDegrees, Is.EqualTo(name == "WD_Shotgun" ? 6f : name == "WD_PlasmaRifle" ? .3f : 0f));
                 Assert.That(entry.Fire.Recoil.Duration, Is.GreaterThan(0));
                 Assert.That(entry.Fire.Recoil.MaximumOffset, Is.GreaterThan(0));
                 Assert.That(entry.Fire.CriticalMultiplier, Is.GreaterThanOrEqualTo(1));

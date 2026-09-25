@@ -39,6 +39,7 @@ namespace ProjectFirstRun.Weapons
 
         public event Action<HitscanVolleyResult> ShotFired;
         public event Action<RocketProjectile> ProjectileLaunched;
+        public event Action<PlasmaProjectile> PlasmaLaunched;
         public event Action DryFired;
         public event Action<int, int> AmmoChanged;
         public event Action ReloadStarted;
@@ -303,6 +304,14 @@ namespace ProjectFirstRun.Weapons
             var entry = _activeEntry;
             var profile = entry.Fire;
             float fragmentDamage = 0;
+            float burnDamage = 0;
+            if (entry.DeliveryMode == WeaponDeliveryMode.Plasma)
+            {
+                if (entry.PlasmaPrefab == null) throw new InvalidOperationException("Missing plasma prefab.");
+                entry.PlasmaPrefab.ValidatePrefab();
+                burnDamage = _statsController.Evaluate(PlayerStatType.WeaponDamage, entry.Plasma.Value.BurnDamage);
+                RocketConfig.Positive(burnDamage, nameof(burnDamage));
+            }
             if (entry.DeliveryMode == WeaponDeliveryMode.Rocket)
             {
                 if (entry.RocketPrefab == null) throw new InvalidOperationException("Missing rocket prefab.");
@@ -344,9 +353,14 @@ namespace ProjectFirstRun.Weapons
 
             HitscanVolleyResult volley = null;
             RocketProjectile projectile = null;
+            PlasmaProjectile plasma = null;
             if (entry.DeliveryMode == WeaponDeliveryMode.Rocket)
                 projectile = RocketProjectile.Launch(entry.RocketPrefab, _aimCamera, _muzzle, _damageSource,
                     entry.Rocket.Value, damage, fragmentDamage, entry.Range, entry.DamageMask,
+                    hit => { if (this != null) DamageApplied?.Invoke(hit); });
+            else if (entry.DeliveryMode == WeaponDeliveryMode.Plasma)
+                plasma = PlasmaProjectile.Launch(entry.PlasmaPrefab, _aimCamera, _muzzle, _damageSource,
+                    entry.Plasma.Value, damage, burnDamage, entry.Range, entry.DamageMask,
                     hit => { if (this != null) DamageApplied?.Invoke(hit); });
             else
                 volley = _shotResolver.Resolve(
@@ -360,6 +374,7 @@ namespace ProjectFirstRun.Weapons
             PublishAmmoChanged();
 
             if (projectile != null) ProjectileLaunched?.Invoke(projectile);
+            else if (plasma != null) PlasmaLaunched?.Invoke(plasma);
             else ShotFired?.Invoke(volley);
 
             if (volley != null) foreach (var shotResult in volley.Targets)

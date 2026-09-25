@@ -17,6 +17,8 @@ namespace ProjectFirstRun.Weapons
         public WeaponDeliveryMode DeliveryMode { get; }
         public RocketProjectile RocketPrefab { get; }
         public RocketConfig? Rocket => _levels[Level - 1].Rocket;
+        public PlasmaConfig? Plasma => _levels[Level - 1].Plasma;
+        public PlasmaProjectile PlasmaPrefab { get; }
 
         internal void ValidateNextLevel()
         {
@@ -57,6 +59,7 @@ namespace ProjectFirstRun.Weapons
             TriggerMode = definition.TriggerMode;
             DeliveryMode = definition.DeliveryMode;
             RocketPrefab = definition.RocketPrefab;
+            PlasmaPrefab = definition.PlasmaPrefab;
             WeaponRuntimeConfig runtimeConfig = _levels[0].Runtime;
 
             Definition =

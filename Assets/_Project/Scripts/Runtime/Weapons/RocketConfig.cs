@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectFirstRun.Weapons
 {
-    public enum WeaponDeliveryMode { Hitscan = 0, Rocket = 1 }
+    public enum WeaponDeliveryMode { Hitscan = 0, Rocket = 1, Plasma = 2 }
 
     [Serializable]
     public sealed class RocketLevelData

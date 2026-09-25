@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectFirstRun.Weapons;
 
 namespace ProjectFirstRun.Player
 {
@@ -23,7 +24,33 @@ namespace ProjectFirstRun.Player
         [SerializeField]
         private float _maximumPitch = 85f;
 
-        private float _currentPitch;
+        private float _aimPitch;
+        private readonly WeaponRecoilState _recoil = new WeaponRecoilState();
+        public float AimPitch => _aimPitch;
+        public float RecoilOffset => _recoil.Offset;
+        public float CurrentPitch => Mathf.Clamp(_aimPitch - _recoil.Offset, _minimumPitch, _maximumPitch);
+
+        public void ApplyRecoil(float degrees)
+            => ApplyRecoil(new WeaponRecoilConfig(degrees, maximumOffset: Mathf.Max(12, degrees)));
+
+        public void ApplyRecoil(WeaponRecoilConfig config)
+        {
+            if (_cameraPivot == null || !isActiveAndEnabled) return;
+            _recoil.Kick(config);
+            ApplyPitch();
+        }
+
+        private void ApplyPitch()
+        {
+            _recoil.Constrain(Mathf.Max(0, _aimPitch - _minimumPitch));
+            _cameraPivot.localRotation = Quaternion.Euler(CurrentPitch, 0f, 0f);
+        }
+
+        private void OnDisable()
+        {
+            _recoil.Reset();
+            if (_cameraPivot != null) ApplyPitch();
+        }
 
         private void Awake()
         {
@@ -37,8 +64,8 @@ namespace ProjectFirstRun.Player
                 return;
             }
 
-            _currentPitch = NormalizeAngle(
-                _cameraPivot.localEulerAngles.x);
+            _aimPitch = Mathf.Clamp(NormalizeAngle(
+                _cameraPivot.localEulerAngles.x), _minimumPitch, _maximumPitch);
         }
 
         public void Tick(
@@ -63,13 +90,13 @@ namespace ProjectFirstRun.Player
                 yawDelta,
                 Space.Self);
 
-            _currentPitch = Mathf.Clamp(
-                _currentPitch - pitchDelta,
+            _aimPitch = Mathf.Clamp(
+                _aimPitch - pitchDelta,
                 _minimumPitch,
                 _maximumPitch);
 
-            _cameraPivot.localRotation =
-                Quaternion.Euler(_currentPitch, 0f, 0f);
+            _recoil.Tick(deltaTime);
+            ApplyPitch();
         }
 
         private void OnValidate()

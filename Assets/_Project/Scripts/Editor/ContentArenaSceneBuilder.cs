@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Linq;
 using ProjectFirstRun.Abilities;
 using ProjectFirstRun.Abilities.Fireball;
 using ProjectFirstRun.Builds;
@@ -17,6 +18,7 @@ using ProjectFirstRun.Progression;
 using ProjectFirstRun.Rewards.Claims;
 using ProjectFirstRun.Stats;
 using ProjectFirstRun.UI.Rewards;
+using ProjectFirstRun.Weapons;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -32,6 +34,51 @@ namespace ProjectFirstRun.Editor
         public const string ScenePath = "Assets/_Project/Scenes/Tests/Test_ContentArena.unity";
         private const string NavigationPath = "Assets/_Project/Scenes/Tests/ContentArenaNavigation.asset";
 
+        [MenuItem("Project First Run/Update Content Arena Shotgun Connections")]
+        public static void UpdateShotgunConnections()
+            => UpdateWeaponConnections("Shotgun");
+
+        [MenuItem("Project First Run/Update Content Arena Minigun Connections")]
+        public static void UpdateMinigunConnections()
+            => UpdateWeaponConnections("Minigun");
+
+        private static void UpdateWeaponConnections(string weaponName)
+        {
+            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            var arena = scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<ContentArenaController>(true)).Single();
+            var shotgun = Load<ItemDefinition>($"Assets/_Project/Data/Items/Weapons/WD_{weaponName}.asset");
+            var items = arena.Items.ToList();
+            if (!items.Contains(shotgun)) items.Add(shotgun);
+            SetArray(arena, "_items", items.ToArray());
+            ConfigureTraces(arena.Player);
+            arena.ValidateConfiguration();
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"{weaponName.ToUpperInvariant()}_ARENA_UPDATED");
+        }
+
+        [MenuItem("Project First Run/Update Content Arena Rocket Launcher Connections")]
+        public static void UpdateRocketConnections() => UpdateWeaponConnections("RocketLauncher");
+
+        private static void ConfigureTraces(GameObject player)
+        {
+            var traces = player.GetComponent<VolleyTracePresenter>() ?? player.AddComponent<VolleyTracePresenter>();
+            Set(traces, "_weapon", player.GetComponent<PlayerWeaponController>());
+            const string tracePath = "Assets/_Project/Scenes/Tests/ContentArenaTrace.mat";
+            var traceMaterial = AssetDatabase.LoadAssetAtPath<Material>(tracePath);
+            if (traceMaterial == null)
+            {
+                var shader = Shader.Find("Universal Render Pipeline/Unlit");
+                if (shader == null) throw new InvalidOperationException("Missing URP unlit shader for test traces.");
+                traceMaterial = new Material(shader);
+                traceMaterial.SetColor("_BaseColor", new Color(1, .8f, .2f));
+                AssetDatabase.CreateAsset(traceMaterial, tracePath);
+            }
+            Set(traces, "_material", traceMaterial);
+        }
+
         [MenuItem("Project First Run/Build Content Test Arena")]
         public static void Build()
         {
@@ -44,6 +91,7 @@ namespace ProjectFirstRun.Editor
             player.name = "Player (content tests)";
             player.transform.position = new Vector3(0, .1f, -6);
             player.AddComponent<WeaponSwitchingDevelopmentBootstrap>();
+            ConfigureTraces(player);
             foreach (var component in player.GetComponentsInChildren<MonoBehaviour>(true))
                 if (component != null && component.GetType().Name.Contains("Debug"))
                 {
@@ -149,7 +197,10 @@ namespace ProjectFirstRun.Editor
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_PlasmaRifle.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_DevelopmentSecondaryWeapon.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Abilities/Fireball/AD_Fireball.asset"),
-                Load<ItemDefinition>("Assets/_Project/Data/Upgrade/Dev/UD_DevelopmentDamageBoost.asset"));
+                Load<ItemDefinition>("Assets/_Project/Data/Upgrade/Dev/UD_DevelopmentDamageBoost.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Shotgun.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Minigun.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_RocketLauncher.asset"));
             SetArray(arena, "_chests",
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_WeaponChest.asset"),
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_AbilityChest.asset"),

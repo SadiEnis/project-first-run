@@ -1,6 +1,7 @@
 using System;
 using ProjectFirstRun.Input;
 using ProjectFirstRun.Stats;
+using ProjectFirstRun.Player;
 using UnityEngine;
 
 namespace ProjectFirstRun.Weapons
@@ -26,12 +27,19 @@ namespace ProjectFirstRun.Weapons
         private WeaponDefinition _activeDefinition;
         private WeaponRuntimeState _runtimeState;
         private PlayerWeaponRuntimeEntry _activeEntry;
-        private HitscanShotResolver _shotResolver;
+        private HitscanVolleyResolver _shotResolver;
+        private PlayerLook _look;
+        private readonly PreparedAutomaticFire _preparedFire = new PreparedAutomaticFire();
+        private readonly System.Random _criticalRandom = new System.Random();
+        public float PreparationElapsed => _preparedFire.PreparationElapsed;
+        public bool LastShotWasCritical { get; private set; }
         
 
         private bool _weaponControlEnabled = true;
 
-        public event Action<HitscanShotResult> ShotFired;
+        public event Action<HitscanVolleyResult> ShotFired;
+        public event Action<RocketProjectile> ProjectileLaunched;
+        public event Action<PlasmaProjectile> PlasmaLaunched;
         public event Action DryFired;
         public event Action<int, int> AmmoChanged;
         public event Action ReloadStarted;
@@ -72,6 +80,7 @@ namespace ProjectFirstRun.Weapons
 
         private void Awake()
         {
+            _look = GetComponent<PlayerLook>();
             _inputReader =
                 GetComponent<PlayerInputReader>();
 
@@ -90,7 +99,7 @@ namespace ProjectFirstRun.Weapons
             }
 
             _shotResolver =
-                new HitscanShotResolver(
+                new HitscanVolleyResolver(
                     _aimCamera,
                     _muzzle,
                     _damageSource);
@@ -107,8 +116,29 @@ namespace ProjectFirstRun.Weapons
         private void Update()
         {
             if (!IsInitialized ||
-                !_weaponControlEnabled)
+                !_weaponControlEnabled || Time.timeScale <= 0f)
             {
+                _preparedFire.Reset();
+                return;
+            }
+
+            TryAutoReload();
+            if (_activeEntry.Fire.PreparationDuration > 0)
+            {
+                HandleReloadInput();
+                if (!_inputReader.IsFireHeld || _runtimeState.IsReloading || _runtimeState.MagazineAmmo == 0)
+                {
+                    _preparedFire.Reset();
+                    UpdateRuntimeState(Time.deltaTime);
+                    if (_inputReader.WasFirePressedThisFrame && _runtimeState.MagazineAmmo == 0 && !_runtimeState.IsReloading)
+                        DryFired?.Invoke();
+                    return;
+                }
+                var entry = _activeEntry;
+                _preparedFire.Tick(_runtimeState, Time.deltaTime, entry.Fire.PreparationDuration,
+                    () => _weaponControlEnabled && isActiveAndEnabled && Time.timeScale > 0 &&
+                          ReferenceEquals(entry, _activeEntry) && TryFire(false));
+                TryAutoReload();
                 return;
             }
 
@@ -117,6 +147,7 @@ namespace ProjectFirstRun.Weapons
 
             HandleReloadInput();
             HandleFireInput();
+            TryAutoReload();
         }
 
         public void Initialize(
@@ -145,6 +176,8 @@ namespace ProjectFirstRun.Weapons
                     nameof(entry));
             }
 
+            _preparedFire.Reset();
+            LastShotWasCritical = false;
             _activeEntry =
                 entry;
 
@@ -165,6 +198,8 @@ namespace ProjectFirstRun.Weapons
             }
 
             _runtimeState.Reset();
+            _preparedFire.Reset();
+            LastShotWasCritical = false;
 
             PublishAmmoChanged();
         }
@@ -174,7 +209,10 @@ namespace ProjectFirstRun.Weapons
         {
             _weaponControlEnabled =
                 isEnabled;
+            if (!isEnabled) _preparedFire.Reset();
         }
+
+        private void OnDisable() => _preparedFire.Reset();
 
         private void UpdateRuntimeState(
             float deltaTime)
@@ -201,12 +239,25 @@ namespace ProjectFirstRun.Weapons
                 return;
             }
 
+            StartReload();
+        }
+
+        private void TryAutoReload()
+        {
+            if (IsInitialized && isActiveAndEnabled && _weaponControlEnabled && Time.timeScale > 0 &&
+                _runtimeState.MagazineAmmo == 0 && _runtimeState.ReserveAmmo > 0 && !_runtimeState.IsReloading)
+                StartReload();
+        }
+
+        private void StartReload()
+        {
             WeaponReloadResult result =
                 _runtimeState.TryStartReload();
 
             if (result ==
                 WeaponReloadResult.Started)
             {
+                _preparedFire.Reset();
                 ReloadStarted?.Invoke();
             }
         }
@@ -218,7 +269,7 @@ namespace ProjectFirstRun.Weapons
                     .WasFirePressedThisFrame;
 
             bool fireRequested =
-                _activeDefinition.TriggerMode
+                _activeEntry.TriggerMode
                 switch
                 {
                     WeaponTriggerMode.SemiAutomatic =>
@@ -240,7 +291,7 @@ namespace ProjectFirstRun.Weapons
                 wasPressedThisFrame);
         }
 
-        private void TryFire(
+        private bool TryFire(
             bool wasPressedThisFrame)
         {
             /*
@@ -250,6 +301,30 @@ namespace ProjectFirstRun.Weapons
              */
             float damage =
                 EvaluateCurrentDamage();
+            var entry = _activeEntry;
+            var profile = entry.Fire;
+            float fragmentDamage = 0;
+            float burnDamage = 0;
+            if (entry.DeliveryMode == WeaponDeliveryMode.Plasma)
+            {
+                if (entry.PlasmaPrefab == null) throw new InvalidOperationException("Missing plasma prefab.");
+                entry.PlasmaPrefab.ValidatePrefab();
+                burnDamage = _statsController.Evaluate(PlayerStatType.WeaponDamage, entry.Plasma.Value.BurnDamage);
+                RocketConfig.Positive(burnDamage, nameof(burnDamage));
+            }
+            if (entry.DeliveryMode == WeaponDeliveryMode.Rocket)
+            {
+                if (entry.RocketPrefab == null) throw new InvalidOperationException("Missing rocket prefab.");
+                entry.RocketPrefab.ValidatePrefab(entry.Rocket.Value.FragmentCount > 0);
+                fragmentDamage = _statsController.Evaluate(PlayerStatType.WeaponDamage, entry.Rocket.Value.FragmentDamage);
+                RocketConfig.Positive(fragmentDamage, nameof(fragmentDamage));
+            }
+            if (!float.IsFinite(damage * entry.Shot.PelletCount * profile.CriticalMultiplier))
+                throw new InvalidOperationException("Total volley damage must be finite.");
+
+            // Validate all required consumers before spending ammunition.
+            if (profile.RecoilDegrees > 0 && (_look == null || !_look.isActiveAndEnabled))
+                throw new InvalidOperationException("Weapon recoil requires an enabled PlayerLook.");
 
             WeaponFireResult fireResult =
                 _runtimeState.TryFire();
@@ -264,31 +339,49 @@ namespace ProjectFirstRun.Weapons
                     DryFired?.Invoke();
                 }
 
-                return;
+                return false;
             }
 
             if (fireResult !=
                 WeaponFireResult.Fired)
             {
-                return;
+                return false;
             }
 
+            bool critical = profile.RollCritical(_criticalRandom.NextDouble);
+            if (critical) damage *= profile.CriticalMultiplier;
+
+            HitscanVolleyResult volley = null;
+            RocketProjectile projectile = null;
+            PlasmaProjectile plasma = null;
+            if (entry.DeliveryMode == WeaponDeliveryMode.Rocket)
+                projectile = RocketProjectile.Launch(entry.RocketPrefab, _aimCamera, _muzzle, _damageSource,
+                    entry.Rocket.Value, damage, fragmentDamage, entry.Range, entry.DamageMask,
+                    hit => { if (this != null) DamageApplied?.Invoke(hit); });
+            else if (entry.DeliveryMode == WeaponDeliveryMode.Plasma)
+                plasma = PlasmaProjectile.Launch(entry.PlasmaPrefab, _aimCamera, _muzzle, _damageSource,
+                    entry.Plasma.Value, damage, burnDamage, entry.Range, entry.DamageMask,
+                    hit => { if (this != null) DamageApplied?.Invoke(hit); });
+            else
+                volley = _shotResolver.Resolve(
+                    damage,
+                    entry.Range,
+                    entry.DamageMask,
+                    entry.Shot, critical);
+
+            LastShotWasCritical = critical;
+            if (profile.RecoilDegrees > 0) _look.ApplyRecoil(profile.Recoil);
             PublishAmmoChanged();
 
-            HitscanShotResult shotResult =
-                _shotResolver.Resolve(
-                    damage,
-                    _activeDefinition.Range,
-                    _activeDefinition.DamageMask);
+            if (projectile != null) ProjectileLaunched?.Invoke(projectile);
+            else if (plasma != null) PlasmaLaunched?.Invoke(plasma);
+            else ShotFired?.Invoke(volley);
 
-            ShotFired?.Invoke(
-                shotResult);
-
-            if (shotResult.DamageWasApplied)
+            if (volley != null) foreach (var shotResult in volley.Targets)
             {
-                DamageApplied?.Invoke(
-                    shotResult);
+                if (shotResult.DamageWasApplied) DamageApplied?.Invoke(shotResult);
             }
+            return true;
         }
 
         private float EvaluateCurrentDamage()

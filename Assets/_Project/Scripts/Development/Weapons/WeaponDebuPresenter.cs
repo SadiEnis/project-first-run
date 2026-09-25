@@ -40,6 +40,8 @@ namespace ProjectFirstRun.Development.Weapons
             }
 
             _weaponController.ShotFired += HandleShotFired;
+            _weaponController.ProjectileLaunched += HandleProjectileLaunched;
+            _weaponController.PlasmaLaunched += HandlePlasmaLaunched;
             _weaponController.DryFired += HandleDryFired;
             _weaponController.AmmoChanged += HandleAmmoChanged;
             _weaponController.ReloadStarted += HandleReloadStarted;
@@ -55,6 +57,8 @@ namespace ProjectFirstRun.Development.Weapons
             }
 
             _weaponController.ShotFired -= HandleShotFired;
+            _weaponController.ProjectileLaunched -= HandleProjectileLaunched;
+            _weaponController.PlasmaLaunched -= HandlePlasmaLaunched;
             _weaponController.DryFired -= HandleDryFired;
             _weaponController.AmmoChanged -= HandleAmmoChanged;
             _weaponController.ReloadStarted -= HandleReloadStarted;
@@ -93,16 +97,23 @@ namespace ProjectFirstRun.Development.Weapons
         }
 
         private void HandleShotFired(
-            HitscanShotResult shotResult)
+            HitscanVolleyResult shotResult)
         {
-            _lastEvent = shotResult.HitSomething
-                ? $"Shot hit: {shotResult.HitCollider.name}"
-                : "Shot missed";
+            _lastEvent = $"Shot: {shotResult.Pellets.Count} pellets, {shotResult.Targets.Count} targets";
         }
 
         private void HandleDryFired()
         {
             _lastEvent = "Dry fire";
+        }
+
+        private void HandleProjectileLaunched(RocketProjectile projectile)
+        {
+            _lastEvent = "Rocket launched; damage resolves on impact";
+        }
+        private void HandlePlasmaLaunched(PlasmaProjectile projectile)
+        {
+            _lastEvent = "Plasma launched; damage resolves on impact";
         }
 
         private void HandleAmmoChanged(

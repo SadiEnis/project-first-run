@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 26390255}
   - component: {fileID: 26390254}
+  - component: {fileID: 26390256}
   m_Layer: 0
   m_Name: Directional light
   m_TagString: Untagged
@@ -216,6 +217,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &26390256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26390253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &136001909
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,9 +933,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3735477217416442066, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      propertyPath: _startingWeapon
+      value:
+      objectReference: {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
     - target: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       propertyPath: m_Name
       value: Player (content tests)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7872245193048340383, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      propertyPath: _interactionLayers.m_Bits
+      value: 251
       objectReference: {fileID: 0}
     - target: {fileID: 8807263902820193614, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -954,6 +992,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 872807823}
+    - targetCorrespondingSourceObject: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1878455838}
   m_SourcePrefab: {fileID: 100100000, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
 --- !u!114 &872807814 stripped
 MonoBehaviour:
@@ -1621,6 +1662,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cfad58136f13467e9f55565a24c29906, type: 2}
   - {fileID: 11400000, guid: d8030a403a11f6c4684ddb91f6b829ec, type: 2}
   - {fileID: 11400000, guid: 8453e39dc742d424b892c30922c791dc, type: 2}
+  - {fileID: 11400000, guid: 3c155094935549918fe6802191af691c, type: 2}
+  - {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
+  - {fileID: 11400000, guid: fc1623f5b7411f441a4db0bdf4a67cff, type: 2}
   _chests:
   - {fileID: 11400000, guid: 1710c972359c443b9d34891f2042100f, type: 2}
   - {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}
@@ -1693,7 +1737,7 @@ MonoBehaviour:
     m_Bits: 128
   _obstructionLayers:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 251
 --- !u!114 &1671489930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1985,6 +2029,31 @@ Transform:
   - {fileID: 2000808140}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1878455837 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6698572861201809860, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+  m_PrefabInstance: {fileID: 872807813}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872807817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11b862a6058b4ae99e2bfa75ccb9db7c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.PlayerWeaponController
+--- !u!114 &1878455838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872807817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6567fcbfa9fe4534ba86db6d1ed9753e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Development.Weapons.VolleyTracePresenter
+  _weapon: {fileID: 1878455837}
+  _material: {fileID: 2100000, guid: 5d913a3bb26ebed4eae80707855d7aeb, type: 2}
 --- !u!1 &2000808139
 GameObject:
   m_ObjectHideFlags: 0

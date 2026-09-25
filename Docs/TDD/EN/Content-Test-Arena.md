@@ -51,7 +51,8 @@ This Editor-focused delivery does not resume Windows build investigation or clai
 - PlasmaRifle is the starting weapon. The existing `WeaponSwitchingDevelopmentBootstrap` provides two weapon slots only for this test player, without changing production defaults or the prefab. Three ability and five upgrade slots remain. Acquire Development Secondary, Fireball and Development Damage Boost through the normal acquisition path; Q switches weapons.
 - Commands include Acquire, Level +1, Grant 100 XP, single-family/mixed enemy replacement and seven chest types. Replacement preserves existing loot, health, ammo and build without kill rewards. Failed chest placement reports that nearby space is unavailable.
 - Panel XP immediately updates the level; the regular level-up chest source waits until the panel closes and gameplay resumes. Direct chest spawning places a chest while the panel is open. Close it, approach and press E to use the actual reward screen.
-- No new weapon/ability or evolution content is added. Shotgun follows user acceptance of this scene.
+- The original arena delivery added no new weapon/ability or evolution content. Following user acceptance, the [Shotgun increment](Shotgun-Content.md) adds the fifth catalog item and pellet trace/HUD wiring, without opening evolution scope.
+- The [Minigun increment](Minigun-Content.md) adds the sixth catalog item and preparation/rate/critical HUD feedback. Its separate verification is 805 EditMode / 483 PlayMode passed; user gameplay acceptance is complete, with balance still provisional. Content branches now start from the agreed integration branch `content`, with the package PR deferred until content → main.
 
 ## Verification — 24 September 2026
 
@@ -61,4 +62,8 @@ This Editor-focused delivery does not resume Windows build investigation or clai
 
 ## Checkpoints
 
-First record this EN/TR contract and indexes as a docs check-in/commit, then take a coherent scene/panel/test implementation checkpoint. The user performs merges; propose the first GitHub PR review/merge flow when this branch is complete. Creating a PR is a separate action and has not happened. Start subsequent weapon/ability branches from updated dev/main.
+The [Plasma Rifle increment](Plasma-Rifle-Content.md) upgrades the existing catalog entry to physical piercing projectiles and L8 target burn. F1 shows pierce/burn state. The catalog remains at seven items and the authored starting weapon is preserved; acquire Plasma through F1 if needed. User gameplay acceptance is pending.
+
+Rocket Launcher adds the seventh catalog item, blast/radius/fragment HUD data, and the existing weapon/mixed chest flow. See [Rocket Launcher](Rocket-Launcher-Content.md) for levels and verification. User gameplay acceptance is complete; balance remains provisional. Geometry and lighting are unchanged.
+
+Record design changes as a docs checkpoint, then a coherent implementation/test checkpoint. The content arena PR was merged. Current weapon/ability branches start from the agreed `content` integration branch; the user performs normal weapon merges into content, with a package PR at content → main closure.

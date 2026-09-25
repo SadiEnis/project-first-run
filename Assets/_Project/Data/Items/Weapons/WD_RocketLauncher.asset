@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
+  m_Name: WD_RocketLauncher
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
+  _stableId: weapon.rocket-launcher
+  _displayName: Rocket Launcher
+  _gameplayEffect: Launches an explosive rocket. Level up for damage, speed, capacity,
+    reload, blast radius and level-eight fragments.
+  _maximumLevel: 8
+  _deliveryMode: 1
+  _rocketPrefab: {fileID: 1792426724587967319, guid: 877ab687114188c4789b9acf9aae17ed, type: 3}
+  _rocket:
+    _speed: 25
+    _collisionRadius: 0.15
+    _lifetime: 4
+    _blastRadius: 3
+    _fragmentCount: 0
+    _fragmentDamage: 20
+    _fragmentSpeed: 20
+    _fragmentRadius: 0.05
+    _fragmentRange: 8
+    _fragmentLifetime: 0.4
+  _triggerMode: 0
+  _baseDamage: 80
+  _range: 60
+  _damageMask:
+    serializedVersion: 2
+    m_Bits: 247
+  _pelletCount: 1
+  _spreadHalfAngle: 0
+  _pushDistance: 0
+  _preparationDuration: 0
+  _criticalChance: 0
+  _criticalMultiplier: 2
+  _recoilDegrees: 5
+  _recoilRecoveryDelay: 0.1
+  _recoilRecoveryDuration: 0.35
+  _recoilMaximumOffset: 10
+  _magazineCapacity: 3
+  _startingReserveAmmo: 12
+  _shotsPerSecond: 0.8
+  _reloadDuration: 3
+  _additionalLevels:
+  - _damage: 100
+    _magazineCapacity: 3
+    _shotsPerSecond: 0.8
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 25
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+  - _damage: 100
+    _magazineCapacity: 3
+    _shotsPerSecond: 0.8
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 35
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+  - _damage: 100
+    _magazineCapacity: 4
+    _shotsPerSecond: 0.8
+    _reloadDuration: 3
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 35
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+  - _damage: 100
+    _magazineCapacity: 4
+    _shotsPerSecond: 0.8
+    _reloadDuration: 2.4
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 35
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+  - _damage: 120
+    _magazineCapacity: 4
+    _shotsPerSecond: 0.8
+    _reloadDuration: 2.4
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 35
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 3
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+  - _damage: 120
+    _magazineCapacity: 4
+    _shotsPerSecond: 0.8
+    _reloadDuration: 2.4
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 35
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 4
+      _fragmentCount: 0
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4
+  - _damage: 120
+    _magazineCapacity: 4
+    _shotsPerSecond: 0.8
+    _reloadDuration: 2.4
+    _pelletCount: 1
+    _spreadHalfAngle: 0
+    _pushDistance: 0
+    _preparationDuration: 0
+    _criticalChance: 0
+    _criticalMultiplier: 2
+    _recoilDegrees: 5
+    _recoilRecoveryDelay: 0.1
+    _recoilRecoveryDuration: 0.35
+    _recoilMaximumOffset: 10
+    _rocket:
+      _speed: 35
+      _collisionRadius: 0.15
+      _lifetime: 4
+      _blastRadius: 4
+      _fragmentCount: 8
+      _fragmentDamage: 20
+      _fragmentSpeed: 20
+      _fragmentRadius: 0.05
+      _fragmentRange: 8
+      _fragmentLifetime: 0.4

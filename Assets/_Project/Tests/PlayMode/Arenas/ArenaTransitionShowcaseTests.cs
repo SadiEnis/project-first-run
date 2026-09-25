@@ -56,7 +56,12 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         {
             Time.timeScale = 1f;
             if (_previous.IsValid() && _previous.isLoaded) SceneManager.SetActiveScene(_previous);
-            if (_showcase.IsValid() && _showcase.isLoaded) yield return SceneManager.UnloadSceneAsync(_showcase);
+            if (_showcase.IsValid() && _showcase.isLoaded)
+            {
+                // Stop queued drop producers before the asynchronous test-only unload.
+                foreach (var root in _showcase.GetRootGameObjects()) root.SetActive(false);
+                yield return SceneManager.UnloadSceneAsync(_showcase);
+            }
             if (_scratch.IsValid() && _scratch.isLoaded) yield return SceneManager.UnloadSceneAsync(_scratch);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;

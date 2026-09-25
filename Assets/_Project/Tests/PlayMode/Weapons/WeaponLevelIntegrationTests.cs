@@ -68,7 +68,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Weapons
             Assert.That(state.MagazineCapacity, Is.EqualTo(20));
             Assert.That(state.ReloadTimeRemaining, Is.EqualTo(reload));
             Assert.That(state.FireCooldownRemaining, Is.EqualTo(fire));
-            Assert.That(_controller.CurrentDamage, Is.EqualTo(40f));
+            Assert.That(_controller.CurrentDamage, Is.EqualTo(35f));
             Assert.That(_build.Weapons.Count, Is.EqualTo(1));
             Assert.That(acquired, Is.Zero);
             Assert.That(_acquisition.TryLevelUp(_definition), Is.EqualTo(ItemLevelUpResult.MaximumLevelReached));
@@ -78,7 +78,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Weapons
             state.TryFire();
             Assert.That(state.FireCooldownRemaining, Is.EqualTo(1f / 6f).Within(0.0001f));
             state.TryStartReload();
-            Assert.That(state.ReloadTimeRemaining, Is.EqualTo(1.2f));
+            Assert.That(state.ReloadTimeRemaining, Is.EqualTo(1.5f));
         }
 
         [Test]
@@ -146,9 +146,9 @@ namespace ProjectFirstRun.Tests.PlayMode.Weapons
                 "Assets/_Project/Data/Upgrade/Dev/UD_DevelopmentDamageBoost.asset");
             _player.GetComponent<PlayerUpgradeController>().TryAcquire(upgrade);
             Assert.That(_controller.CurrentDamage, Is.EqualTo(36f).Within(0.001f));
-            _acquisition.TryLevelUp(_definition); // capacity only
+            _acquisition.TryLevelUp(_definition); // fire rate only
             Assert.That(_controller.CurrentDamage, Is.EqualTo(36f).Within(0.001f));
-            _acquisition.TryLevelUp(_definition); // rate only
+            _acquisition.TryLevelUp(_definition); // piercing only
             _acquisition.TryLevelUp(_definition); // 35 base damage
             Assert.That(_controller.CurrentDamage, Is.EqualTo(42f).Within(0.001f));
         }

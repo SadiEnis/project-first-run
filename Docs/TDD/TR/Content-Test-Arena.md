@@ -51,7 +51,8 @@ Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standa
 - PlasmaRifle başlangıç silahıdır. Mevcut `WeaponSwitchingDevelopmentBootstrap` yalnız bu test oyuncusunda iki silah slotu sağlar; gerçek varsayılan kapasite ve prefab değiştirilmez. Üç ability ve beş upgrade slotu korunur. Development Secondary, Fireball ve Development Damage Boost panelden normal edinim hattıyla alınabilir. Q silah değiştirir.
 - `Acquire`, `Level +1`, `Grant 100 XP`, tek aile/karışık düşman grubu ve yedi sandık türü komutları mevcuttur. Grup değişimi mevcut loot, can, mermi ve build'i korur; kill ödülü vermez. Sandık yerleştirecek boşluk bulunamazsa sonuç mesajı gösterilir.
 - Panelden XP verildiğinde seviye anında güncellenir; level-up sandığı normal duraklatma kuralı nedeniyle panel kapatılınca oluşur. Doğrudan sandık üretimi ise panel açıkken yerleştirme yapar. Paneli kapatıp yaklaşarak E ile gerçek ödül ekranı açılır.
-- Yeni silah/yetenek ve evolution içeriği eklenmedi. Sonraki içerik Shotgun; ancak önce bu sahne kullanıcı tarafından denenir.
+- İlk arena teslimi yeni silah/yetenek veya evolution içeriği içermedi. Kullanıcı kabulünden sonraki [Shotgun aşaması](Shotgun-Content.md), katalogdaki beşinci eşya ve saçma izi/HUD bağlantılarını ekler; evolution kapsamı açılmaz.
+- [Minigun aşaması](Minigun-Content.md) altıncı katalog eşyasını ve hazırlık/hız/kritik HUD bilgisini ekler. Ayrı doğrulaması 805 EditMode / 483 PlayMode başarılıdır; kullanıcı oynanış kabulü tamamlandı, denge hâlâ geçicidir. İçerik branch'leri artık kararlaştırılan `content` entegrasyon branch'inden açılır; paket PR'ı content → main kapanışına bırakılır.
 
 ## Doğrulama sonucu — 24 Eylül 2026
 
@@ -61,4 +62,8 @@ Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standa
 
 ## Kayıt düzeni
 
-Önce bu EN/TR sözleşme ve indeksler için docs check-in/commit; ardından sahne/panel/testleri kapsayan anlamlı uygulama checkpoint'i. Kullanıcı merge işlemlerini yapar; GitHub'da bu branch tamamlandığında ilk PR üzerinden inceleme/merge akışı önerilir. PR açılması ayrı bir işlemdir ve henüz yapılmadı. Sonraki silah/yetenek branch'i güncel dev/main'den açılır.
+[Plasma Rifle aşaması](Plasma-Rifle-Content.md) mevcut katalog eşyasını fiziksel delici mermi ve L8 hedef yanmasına taşır. F1 delme/yanma durumunu gösterir. Katalog yedi eşyada kalır, sahnedeki başlangıç silahı korunur; gerekirse F1 ile Plasma edinilir. Kullanıcı oynanış kabulü bekleniyor.
+
+Rocket Launcher yedinci katalog eşyasını, patlama/yarıçap/parça HUD bilgisini ve mevcut silah/karma sandık akışını ekler. Seviye ve doğrulama için [Rocket Launcher](Rocket-Launcher-Content.md) belgesine bakılır. Kullanıcı oynanış kabulü tamamlandı; denge geçicidir. Geometri ve ışık değişmedi.
+
+Tasarım değişiklikleri docs checkpoint'i, uygulama/testler anlamlı bir uygulama checkpoint'i olarak kaydedilir. İçerik arenasının PR'ı merge edildi. Güncel silah/yetenek branch'leri kararlaştırılan `content` entegrasyon branch'inden açılır; kullanıcı silahları normal merge ile content'e alır, paket PR'ı content → main kapanışında yapılır.

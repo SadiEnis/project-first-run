@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using ProjectFirstRun.Combat;
 
 namespace ProjectFirstRun.Enemies
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshAgent))]
-    public sealed class EnemyMotor : MonoBehaviour
+    public sealed class EnemyMotor : MonoBehaviour, IKnockbackReceiver
     {
         private NavMeshAgent _agent;
         private Transform _target;
@@ -19,6 +20,39 @@ namespace ProjectFirstRun.Enemies
         private bool _destinationOverride;
 
         public bool CanNavigate => CanUseAgent();
+
+        public bool TryPush(Vector3 direction, float distance)
+        {
+            var enemy = GetComponent<EnemyController>();
+            if (!isActiveAndEnabled || !_isInitialized || !CanUseAgent() || enemy == null ||
+                !enemy.isActiveAndEnabled || !enemy.IsInitialized || enemy.IsDead || enemy.Health.IsDead ||
+                !float.IsFinite(distance) || distance <= 0 || !float.IsFinite(direction.x) ||
+                !float.IsFinite(direction.y) || !float.IsFinite(direction.z)) return false;
+            direction.y = 0;
+            if (direction.sqrMagnitude < .000001f) return false;
+            direction.Normalize();
+            bool wasStopped = _agent.isStopped;
+            Vector3 origin = transform.position;
+            float allowed = distance;
+            if (_agent.Raycast(origin + direction * distance, out NavMeshHit navHit))
+                allowed = Mathf.Min(allowed, Mathf.Max(0, Vector3.Distance(origin, navHit.position) - .02f));
+            float radius = _agent.radius;
+            Vector3 bottom = origin + Vector3.up * (radius + .05f);
+            Vector3 top = origin + Vector3.up * Mathf.Max(radius + .05f, _agent.height - radius);
+            foreach (var hit in Physics.CapsuleCastAll(bottom, top, radius, direction, allowed,
+                         Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.transform.IsChildOf(transform)) continue;
+                allowed = Mathf.Min(allowed, Mathf.Max(0, hit.distance - .02f));
+            }
+            // Do not Stop/Resume or clear paths: attack/navigation ownership and cooldowns remain intact.
+            if (allowed <= .001f) return false;
+            _agent.Move(direction * allowed);
+            // Preserve the navigation owner's stopped state across native agent operations.
+            _agent.isStopped = wasStopped;
+            Physics.SyncTransforms();
+            return Vector3.Distance(origin, transform.position) > .001f;
+        }
 
         public bool TrySetDestination(Vector3 destination)
         {
@@ -176,8 +210,8 @@ namespace ProjectFirstRun.Enemies
                 return;
             }
 
-            _agent.isStopped = true;
             _agent.ResetPath();
+            _agent.isStopped = true;
         }
 
         private void TryUpdateDestination()

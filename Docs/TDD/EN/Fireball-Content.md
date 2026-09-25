@@ -1,4 +1,14 @@
-# Fireball content — design draft
+# Fireball content — design and implementation progress
+
+## Checkpoint 2 — targeting and volley (2026-09-25)
+
+Implemented random target cycles within 20 m, world line-of-sight filtering, registry rebinding, one cooldown for simultaneous volleys, launch snapshots and swept collision. Source-to-origin clearance starts at the source collider center to avoid treating the ground at the player's feet as a launch obstruction. Projectiles ignore source colliders, triggers and sibling Fireballs; world cover wins ambiguous initial overlaps. Source death/destruction disarms flight. Cast construction cleans up partially created projectiles on failure.
+
+The existing asset now authors 2 balls at L1–3, 3 at L4–6 and 4 at L7–8. Its identity and prefab are unchanged; the saved content arena uses it without scene reconstruction. Existing provisional damage/cooldown/speed values are intentionally retained until checkpoint 3. The table below is the target table, not the current complete asset configuration. Burn, shared timed damage, final level tuning and final gameplay acceptance remain pending.
+
+The design-only statements below describe the earlier checkpoint; this section records subsequent implementation.
+
+Validation: full isolated Unity 6000.3.9f1 suites passed, EditMode **874/874**, PlayMode **524/524**. Reports: `.codex-temp/xp-attraction/fireball-volley-final-EditMode.xml` and `fireball-volley-final-PlayMode.xml`. Added coverage includes random cycles, target range/cover/inactivity, rebinding, volley counts with one cooldown, authored counts, high-speed/initial collisions, range expiry, zero-delta pause, source destruction/death, wall interception and source/trigger exclusion. Existing damage-stat and level-snapshot regressions passed. Partial-construction rollback and owning-map cleanup still need dedicated Fireball failure-injection/integration cases in the completion checkpoint; passing this increment does not claim burn or final gameplay acceptance. No Windows build was requested or performed.
 
 First ability in [Abilities Content Plan](Abilities-Content-Plan.md). Keep the existing `ability.fireball` asset/identity and reward membership. Current code fires one straight projectile at the nearest registered enemy, uses trigger collision, and has provisional damage/cooldown/speed levels. It has no burn or multi-projectile sequence. This increment replaces that provisional content with GDD 12.2 behavior; it is not a new ability or evolution.
 

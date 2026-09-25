@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Abilities.Fireball.FireballDefinition
   _stableId: ability.fireball
   _displayName: Fireball
-  _gameplayEffect: Launches a projectile that deals 25 damage. 2 second cooldown.
+  _gameplayEffect: Launches 2 fireballs at visible enemies within 20 metres. Each deals 25 damage. 2 second cooldown.
   _cooldown: 2
   _damage: 25
   _maximumLevel: 8
@@ -22,24 +22,41 @@ MonoBehaviour:
   - _cooldown: 2
     _damage: 30
     _projectileSpeed: 12
+    _projectileCount: 2
   - _cooldown: 1.75
     _damage: 30
     _projectileSpeed: 12
+    _projectileCount: 2
   - _cooldown: 1.75
     _damage: 35
     _projectileSpeed: 12
+    _projectileCount: 3
   - _cooldown: 1.75
     _damage: 35
     _projectileSpeed: 14
+    _projectileCount: 3
   - _cooldown: 1.5
     _damage: 35
     _projectileSpeed: 14
+    _projectileCount: 3
   - _cooldown: 1.5
     _damage: 40
     _projectileSpeed: 14
+    _projectileCount: 4
   - _cooldown: 1.25
     _damage: 45
     _projectileSpeed: 14
+    _projectileCount: 4
   _projectilePrefab: {fileID: -8950674959978754803, guid: 2e5b82cedb8361e488c365735d709892, type: 3}
   _projectileSpeed: 12
   _projectileLifetime: 5
+  _projectileCount: 2
+  _targetRange: 20
+  _worldMask:
+    serializedVersion: 2
+    m_Bits: 129
+  _collisionMask:
+    serializedVersion: 2
+    m_Bits: 247
+  _collisionRadius: 0.12
+  _travelRange: 60

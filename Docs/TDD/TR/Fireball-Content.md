@@ -1,4 +1,14 @@
-# Fireball içeriği — tasarım taslağı
+# Fireball içeriği — tasarım ve uygulama durumu
+
+## Checkpoint 2 — hedefleme ve salvo (2026-09-25)
+
+20 m içinde rastgele hedef turları, dünya görüş hattı kontrolü, registry yeniden bağlama, eşzamanlı salvo başına tek cooldown, atış anındaki değerlerin korunması ve süpürmeli çarpışma uygulandı. Kaynaktan çıkış noktasına açıklık kontrolü oyuncunun ayaklarının zemini yanlış engel saymaması için kaynak collider merkezinden başlar. Mermiler kaynak collider'larını, trigger'ları ve diğer Fireball'ları yok sayar; belirsiz başlangıç örtüşmelerinde dünya engeli önceliklidir. Kaynağın ölmesi/yok olması uçuşu etkisizleştirir. Atış oluşturulurken hata oluşursa o salvola kısmen oluşturulan mermiler temizlenir.
+
+Mevcut asset L1–3'te 2, L4–6'da 3, L7–8'de 4 top içerir. Kimliği ve prefab'ı değişmedi; kayıtlı içerik arenası sahne yeniden üretilmeden aynı asset'i kullanır. Geçici hasar/cooldown/hız değerleri checkpoint 3'e kadar bilinçli olarak korunur. Aşağıdaki tablo hedef tablodur; mevcut asset'in tamamlanmış ayarları değildir. Yanma, ortak süreli hasar, nihai seviye değerleri ve son oynanış kabulü bekliyor.
+
+Aşağıdaki yalnızca tasarıma ilişkin ifadeler önceki checkpoint'i anlatır; bu bölüm sonraki uygulama ilerlemesini kaydeder.
+
+Doğrulama: izole Unity 6000.3.9f1 tam paketleri geçti; EditMode **874/874**, PlayMode **524/524**. Raporlar: `.codex-temp/xp-attraction/fireball-volley-final-EditMode.xml` ve `fireball-volley-final-PlayMode.xml`. Yeni kapsam: rastgele turlar, menzil/siper/pasif hedef, registry bağlama, tek cooldown ile salvo sayıları, asset sayıları, yüksek hız/başlangıç çarpışması, menzil bitişi, sıfır delta ile duraklama, kaynak yok olması/ölümü, duvarın araya girmesi ve kaynak/trigger dışlama. Mevcut hasar-stat ve seviye snapshot regresyonları da geçti. Kısmi oluşturma temizliği ve harita boşaltma için Fireball'a özel hata enjeksiyonu/entegrasyon senaryoları tamamlama checkpoint'inde hâlâ gereklidir; bu ara parçanın geçmesi yanma veya nihai oynanış kabulü anlamına gelmez. Windows build istenmedi ve alınmadı.
 
 [Yetenek İçerik Planı](Abilities-Content-Plan.md) içindeki ilk yetenek. Mevcut `ability.fireball` asset/kimliği ve ödül üyeliği korunur. Mevcut kod en yakın kayıtlı düşmana tek düz mermi atar, trigger çarpışması kullanır ve geçici hasar/cooldown/hız seviyelerine sahiptir. Yanma veya çoklu mermi yoktur. Bu aşama geçici içeriği GDD 12.2 davranışına taşır; yeni eşya veya evolution değildir.
 

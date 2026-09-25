@@ -55,4 +55,16 @@ EditMode: eight levels, finite positive bounds, mode/prefab/profile consistency,
 
 PlayMode: real input, one launch/ammo/recoil per trigger, wall/muzzle/initial-overlap/high-speed collisions, single detonation, radius/cover/self filtering, multiple-collider deduplication, no direct-hit double damage, bounded fragmentation and batch deduplication, expiration, pause/death/map cleanup, switching/leveling in-flight snapshots, automatic/manual reload, reward acquisition/max/full-slot rules and existing weapon regressions.
 
-User playtest: close/mid/far launch, grouped enemies and cover, level-three speed, level-four capacity, level-seven radius, level-eight fragments, recoil and automatic reload. Numerical balance remains provisional. No implementation or tests executed for this design checkpoint.
+User playtest checklist: close/mid/far launch, grouped enemies and cover, level-three speed, level-four capacity, level-seven radius, level-eight fragments, recoil and automatic reload. The user reported successful gameplay and accepted this increment; individual checklist cases were not separately reported. Numerical balance remains provisional.
+
+Deferred evolution idea: fragments could explode on impact and leave temporary burning areas. This is an idea for later design, not an implemented or approved evolution mechanic.
+
+## Implementation checkpoint — 2026-09-25
+
+- `WeaponDeliveryMode` defaults to Hitscan; Rocket profiles are validated and snapshotted with the existing runtime entry. Fireball and other weapon assets are unchanged.
+- `RocketProjectile` sweeps its sphere and clamps travel to remaining range/lifetime. The swept center is the blast origin; cover exposure is collected before applying damage. Fragments share one hit record per explosion.
+- `PlayerWeaponController.ProjectileLaunched` reports a successful rocket launch. `ShotFired` retains the hitscan volley contract; `DamageApplied` reports delayed accepted blast/fragment hits. Trace/debug consumers handle the separate launch event, with no fake hitscan line.
+- Saved assets: `WD_RocketLauncher`, `RocketProjectile`, `RocketFragment`, `RocketBlast`, and three shared materials. The Editor-only builder creates missing content and incrementally updates pools/catalog; Play mode does not generate the scene.
+- The saved arena has seven catalog items. Start a fresh run, press F1, acquire Rocket Launcher, close the panel and switch with Q. Level it through F1; L8 adds eight radial fragments. Weapon/mixed chests also use the existing acquisition/level-up claim flow.
+- No pooling/performance claim or Windows build validation is included. Visuals are temporary; final sound/model work and ammo drops remain deferred.
+- Automated verification: **843/843 EditMode, 500/500 PlayMode passed** in the isolated Unity 6000.3.9f1 project. Reports: `.codex-temp/xp-attraction/rocket-final-EditMode.xml` and `rocket-verified-PlayMode.xml`. The 19 new EditMode and 11 new PlayMode cases cover authored profiles, legacy modes, snapshots, real-input launch/auto-reload, swept/initial/muzzle collisions, cover, deduplication, fragmentation, expiration, pause/death and map cleanup. The existing arena showcase teardown now stops queued drop producers before asynchronous unload; its first full-suite run exposed that test-lifecycle race. Changed/new source assets match the tested copy.

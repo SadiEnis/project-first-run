@@ -9,6 +9,12 @@ namespace ProjectFirstRun.Weapons
         menuName = "Project First Run/Items/Weapon Definition")]
     public sealed class WeaponDefinition : ItemDefinition
     {
+        [Header("Delivery")]
+        [SerializeField] private WeaponDeliveryMode _deliveryMode;
+        [SerializeField] private RocketProjectile _rocketPrefab;
+        [SerializeField] private RocketLevelData _rocket = new RocketLevelData();
+        public WeaponDeliveryMode DeliveryMode => _deliveryMode;
+        public RocketProjectile RocketPrefab => _rocketPrefab;
         [Header("Trigger")]
         [SerializeField]
         private WeaponTriggerMode _triggerMode =
@@ -58,24 +64,38 @@ namespace ProjectFirstRun.Weapons
         internal WeaponLevelConfig[] CreateLevelConfigs()
         {
             ValidateLevelConfiguration();
+            if (!Enum.IsDefined(typeof(WeaponDeliveryMode), _deliveryMode))
+                throw new InvalidOperationException("Unknown weapon delivery mode.");
             if (_additionalLevels == null || _additionalLevels.Length != MaximumLevel - 1)
                 throw new InvalidOperationException("Weapon level data must match its configured maximum.");
             var levels = new WeaponLevelConfig[MaximumLevel];
             levels[0] = new WeaponLevelConfig(_baseDamage, CreateRuntimeConfig(),
                 new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
                 new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees,
-                    _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset));
+                    _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset),
+                _deliveryMode == WeaponDeliveryMode.Rocket ? (_rocket ?? throw new InvalidOperationException("Missing rocket data.")).CreateConfig() : (RocketConfig?)null);
             for (int i = 1; i < levels.Length; i++)
             {
                 if (_additionalLevels[i - 1] == null)
                     throw new InvalidOperationException("Weapon level data is missing.");
-                levels[i] = _additionalLevels[i - 1].CreateConfig(_startingReserveAmmo);
+                levels[i] = _additionalLevels[i - 1].CreateConfig(_startingReserveAmmo, _deliveryMode);
                 if (levels[i].Runtime.MagazineCapacity < levels[i - 1].Runtime.MagazineCapacity)
                     throw new InvalidOperationException("Weapon level progression cannot reduce magazine capacity.");
             }
             foreach (var level in levels)
+            {
                 if (level.Fire.PreparationDuration > 0 && _triggerMode != WeaponTriggerMode.Automatic)
                     throw new InvalidOperationException("Preparation requires an automatic weapon.");
+                if (_deliveryMode == WeaponDeliveryMode.Rocket)
+                {
+                    if (_triggerMode != WeaponTriggerMode.SemiAutomatic || level.Shot.PelletCount != 1 ||
+                        level.Shot.HalfAngle != 0 || level.Shot.PushDistance != 0 ||
+                        level.Fire.CriticalChance != 0 || level.Fire.PreparationDuration != 0)
+                        throw new InvalidOperationException("Rocket delivery requires a single, non-critical semi-automatic shot.");
+                    if (_rocketPrefab == null) throw new InvalidOperationException("Rocket prefab is required.");
+                    _rocketPrefab.ValidatePrefab(level.Rocket.Value.FragmentCount > 0);
+                }
+            }
             return levels;
         }
 

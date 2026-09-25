@@ -55,4 +55,16 @@ EditMode: sekiz seviye, sonlu/pozitif sınırlar, atış türü/prefab/profil tu
 
 PlayMode: gerçek input, tetik başına tek fırlatma/mühimmat/tepme, duvar/muzzle/başlangıç örtüşmesi/yüksek hız çarpışmaları, tek patlama, yarıçap/engel/kendini dışlama, çoklu collider tekilleştirme, doğrudan vuruşun çifte hasar vermemesi, sınırlı parçalanma/grup isabet tekilleştirme, ömür, pause/ölüm/harita temizliği, havadaki mermide silah değişimi/seviye snapshot'ı, otomatik/elle reload, ödül edinimi/maksimum/dolu slot ve mevcut silah regresyonları.
 
-Kullanıcı testi: yakın/orta/uzak atış, gruplanmış düşmanlar ve siper, üçüncü seviyede hız, dördüncüde kapasite, yedincide yarıçap, sekizincide parçacıklar, tepme ve otomatik reload. Sayısal denge geçicidir. Bu tasarım checkpoint'inde uygulama veya test çalıştırma yapılmadı.
+Kullanıcı test listesi: yakın/orta/uzak atış, gruplanmış düşmanlar ve siper, üçüncü seviyede hız, dördüncüde kapasite, yedincide yarıçap, sekizincide parçacıklar, tepme ve otomatik reload. Kullanıcı oynanışı başarılı buldu ve bu aşamayı kabul etti; listedeki maddeler ayrı ayrı raporlanmadı. Sayısal denge geçicidir.
+
+Ertelenen evolution fikri: parçacıklar çarptıkları yerde patlayıp süreli yakma alanları bırakabilir. Sonraki tasarım için fikir olarak kaydedildi; uygulanmış veya kesinleştirilmiş bir evolution mekaniği değildir.
+
+## Uygulama checkpoint'i — 2026-09-25
+
+- `WeaponDeliveryMode` varsayılanı Hitscan'dir; Rocket profilleri mevcut runtime entry içinde doğrulanır ve kopyalanır. Fireball ve diğer silah asset'leri değişmez.
+- `RocketProjectile` küresel süpürme yapar ve adımı kalan menzil/ömürle sınırlar. Süpürülen merkez patlama noktasıdır; siper görünürlüğü hasardan önce hesaplanır. Parçalar patlama başına ortak isabet kaydı kullanır.
+- `PlayerWeaponController.ProjectileLaunched` başarılı roket fırlatmasını bildirir. `ShotFired` hitscan volley sözleşmesini korur; `DamageApplied` gecikmiş patlama/parçacık hasarını bildirir. İz/debug tüketicileri ayrı fırlatma olayını dinler; sahte hitscan çizgisi gösterilmez.
+- Kaydedilmiş asset'ler: `WD_RocketLauncher`, `RocketProjectile`, `RocketFragment`, `RocketBlast` ve üç paylaşılan material. Yalnızca Editor üreticisi eksik içeriği oluşturup havuz/kataloğu artımlı bağlar; Play sırasında sahne üretilmez.
+- Kayıtlı arenada yedi katalog eşyası bulunur. Temiz run'da F1 ile Rocket Launcher edin, paneli kapatıp Q ile geç. F1 üzerinden seviye artır; L8 sekiz radyal parça ekler. Silah/karma sandıkları mevcut edinim/seviye artışı claim akışını kullanır.
+- Havuzlama/performans iddiası veya Windows build doğrulaması kapsamda değildir. Görseller geçicidir; nihai ses/model ve mühimmat drop'ları sonraya bırakılmıştır.
+- Otomatik doğrulama: izole Unity 6000.3.9f1 projesinde **843/843 EditMode, 500/500 PlayMode başarılı**. Raporlar: `.codex-temp/xp-attraction/rocket-final-EditMode.xml` ve `rocket-verified-PlayMode.xml`. Yeni 19 EditMode ve 11 PlayMode testi; seviye profilleri, eski atış türleri, snapshot, gerçek input/fırlatma/otomatik reload, süpürme/başlangıç/muzzle çarpışmaları, siper, tekilleştirme, parçalanma, ömür, pause/ölüm ve harita temizliğini kapsar. İlk tam çalıştırmada eski arena testinin kapanış yarışı görüldü; test temizliği artık asenkron unload öncesinde bekleyen drop üreticilerini durdurur. Değişen/yeni kaynak asset'leri test edilen kopyayla eşleşir.

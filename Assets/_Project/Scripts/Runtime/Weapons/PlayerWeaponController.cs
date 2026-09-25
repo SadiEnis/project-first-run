@@ -38,6 +38,7 @@ namespace ProjectFirstRun.Weapons
         private bool _weaponControlEnabled = true;
 
         public event Action<HitscanVolleyResult> ShotFired;
+        public event Action<RocketProjectile> ProjectileLaunched;
         public event Action DryFired;
         public event Action<int, int> AmmoChanged;
         public event Action ReloadStarted;
@@ -301,6 +302,14 @@ namespace ProjectFirstRun.Weapons
                 EvaluateCurrentDamage();
             var entry = _activeEntry;
             var profile = entry.Fire;
+            float fragmentDamage = 0;
+            if (entry.DeliveryMode == WeaponDeliveryMode.Rocket)
+            {
+                if (entry.RocketPrefab == null) throw new InvalidOperationException("Missing rocket prefab.");
+                entry.RocketPrefab.ValidatePrefab(entry.Rocket.Value.FragmentCount > 0);
+                fragmentDamage = _statsController.Evaluate(PlayerStatType.WeaponDamage, entry.Rocket.Value.FragmentDamage);
+                RocketConfig.Positive(fragmentDamage, nameof(fragmentDamage));
+            }
             if (!float.IsFinite(damage * entry.Shot.PelletCount * profile.CriticalMultiplier))
                 throw new InvalidOperationException("Total volley damage must be finite.");
 
@@ -333,8 +342,14 @@ namespace ProjectFirstRun.Weapons
             bool critical = profile.RollCritical(_criticalRandom.NextDouble);
             if (critical) damage *= profile.CriticalMultiplier;
 
-            HitscanVolleyResult volley =
-                _shotResolver.Resolve(
+            HitscanVolleyResult volley = null;
+            RocketProjectile projectile = null;
+            if (entry.DeliveryMode == WeaponDeliveryMode.Rocket)
+                projectile = RocketProjectile.Launch(entry.RocketPrefab, _aimCamera, _muzzle, _damageSource,
+                    entry.Rocket.Value, damage, fragmentDamage, entry.Range, entry.DamageMask,
+                    hit => { if (this != null) DamageApplied?.Invoke(hit); });
+            else
+                volley = _shotResolver.Resolve(
                     damage,
                     entry.Range,
                     entry.DamageMask,
@@ -344,10 +359,10 @@ namespace ProjectFirstRun.Weapons
             if (profile.RecoilDegrees > 0) _look.ApplyRecoil(profile.Recoil);
             PublishAmmoChanged();
 
-            ShotFired?.Invoke(
-                volley);
+            if (projectile != null) ProjectileLaunched?.Invoke(projectile);
+            else ShotFired?.Invoke(volley);
 
-            foreach (var shotResult in volley.Targets)
+            if (volley != null) foreach (var shotResult in volley.Targets)
             {
                 if (shotResult.DamageWasApplied) DamageApplied?.Invoke(shotResult);
             }

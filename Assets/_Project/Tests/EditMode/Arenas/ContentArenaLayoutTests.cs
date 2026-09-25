@@ -29,7 +29,7 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<LevelUpChestSource>(true)).Count(), Is.EqualTo(1));
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<NavMeshSurface>(true)).Single().navMeshData, Is.Not.Null);
                 Assert.That(arena.EnemyDefinitions.Count, Is.EqualTo(3));
-                Assert.That(arena.Items.Count, Is.EqualTo(6));
+                Assert.That(arena.Items.Count, Is.EqualTo(7));
                 Assert.That(arena.Chests.Count, Is.EqualTo(7));
             }
             finally { EditorSceneManager.CloseScene(scene, true); }

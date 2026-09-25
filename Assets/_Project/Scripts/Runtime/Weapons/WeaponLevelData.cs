@@ -20,6 +20,7 @@ namespace ProjectFirstRun.Weapons
         [SerializeField, Min(0)] private float _recoilRecoveryDelay = .08f;
         [SerializeField, Min(.01f)] private float _recoilRecoveryDuration = .3f;
         [SerializeField, Min(.01f)] private float _recoilMaximumOffset = 12;
+        [SerializeField] private RocketLevelData _rocket = new RocketLevelData();
 
         // Unity constructs inline serialized records without running the parameterized constructor.
         public WeaponLevelData() { }
@@ -45,11 +46,12 @@ namespace ProjectFirstRun.Weapons
             _recoilMaximumOffset = recoilMaximumOffset;
         }
 
-        internal WeaponLevelConfig CreateConfig(int startingReserveAmmo) => new WeaponLevelConfig(
+        internal WeaponLevelConfig CreateConfig(int startingReserveAmmo, WeaponDeliveryMode delivery = WeaponDeliveryMode.Hitscan) => new WeaponLevelConfig(
             _damage, new WeaponRuntimeConfig(_magazineCapacity, startingReserveAmmo, _shotsPerSecond, _reloadDuration),
             new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
             new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees,
-                _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset));
+                _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset),
+            delivery == WeaponDeliveryMode.Rocket ? (_rocket ?? throw new InvalidOperationException("Missing rocket level data.")).CreateConfig() : (RocketConfig?)null);
     }
 
     internal readonly struct WeaponLevelConfig
@@ -58,8 +60,9 @@ namespace ProjectFirstRun.Weapons
         public WeaponRuntimeConfig Runtime { get; }
         public WeaponShotConfig Shot { get; }
         public WeaponFireProfile Fire { get; }
+        public RocketConfig? Rocket { get; }
 
-        public WeaponLevelConfig(float damage, WeaponRuntimeConfig runtime, WeaponShotConfig shot, WeaponFireProfile fire)
+        public WeaponLevelConfig(float damage, WeaponRuntimeConfig runtime, WeaponShotConfig shot, WeaponFireProfile fire, RocketConfig? rocket = null)
         {
             if (float.IsNaN(damage) || float.IsInfinity(damage) || damage <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(damage), "Weapon damage must be finite and positive.");
@@ -69,6 +72,7 @@ namespace ProjectFirstRun.Weapons
             if (!float.IsFinite(damage * shot.PelletCount * fire.CriticalMultiplier))
                 throw new ArgumentOutOfRangeException(nameof(damage), "Maximum critical volley damage must be finite.");
             Fire = fire;
+            Rocket = rocket;
         }
     }
 }

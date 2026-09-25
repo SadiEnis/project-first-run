@@ -62,4 +62,6 @@ This Editor-focused delivery does not resume Windows build investigation or clai
 
 ## Checkpoints
 
-First record this EN/TR contract and indexes as a docs check-in/commit, then take a coherent scene/panel/test implementation checkpoint. The user performs merges; propose the first GitHub PR review/merge flow when this branch is complete. Creating a PR is a separate action and has not happened. Start subsequent weapon/ability branches from updated dev/main.
+Rocket Launcher adds the seventh catalog item, blast/radius/fragment HUD data, and the existing weapon/mixed chest flow. See [Rocket Launcher](Rocket-Launcher-Content.md) for levels and verification. User gameplay acceptance is complete; balance remains provisional. Geometry and lighting are unchanged.
+
+Record design changes as a docs checkpoint, then a coherent implementation/test checkpoint. The content arena PR was merged. Current weapon/ability branches start from the agreed `content` integration branch; the user performs normal weapon merges into content, with a package PR at content → main closure.

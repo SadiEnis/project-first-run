@@ -1,5 +1,7 @@
 # Minigun içeriği
 
+Sonraki content güncellemesi: [Toparlanan Silah Tepmesi](Weapon-Recoil-Recovery.md), bu dokümandaki ilk geri dönmeyen pitch davranışının yerine geçer. Darbe/seviye değerleri korunur; geçici ofset, gecikmeli dönüş ve 8° birikme sınırı eklenir. Aşağıdaki otomatik test/kabul sonuçları ilk Minigun teslimine aittir; yeni doğrulama ilgili dokümanda tutulur.
+
 ## Durum ve çalışma düzeni
 
 Tasarım ve uygulama checkpoint'leri — 25 Eylül 2026. Git branch'i doğrulandı: `feature/content/minigun`; kullanıcı iki platformda branch açıp geçtiğini bildirdi. Kararlaştırılan Plastic branch'i `/main/dev/content/minigun`; sunucu durumu ayrıca kontrol edilmedi. Aşağıdaki mekanikler uygulandı ve otomatik doğrulamadan geçti; kullanıcı oynanış kabulü tamamlandı. Sayısal denge geçicidir.

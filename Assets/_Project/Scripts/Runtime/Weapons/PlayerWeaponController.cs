@@ -326,7 +326,7 @@ namespace ProjectFirstRun.Weapons
                     entry.Shot, critical);
 
             LastShotWasCritical = critical;
-            if (profile.RecoilDegrees > 0) _look.ApplyRecoil(profile.RecoilDegrees);
+            if (profile.RecoilDegrees > 0) _look.ApplyRecoil(profile.Recoil);
             PublishAmmoChanged();
 
             ShotFired?.Invoke(

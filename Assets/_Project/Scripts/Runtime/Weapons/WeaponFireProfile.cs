@@ -7,10 +7,12 @@ namespace ProjectFirstRun.Weapons
         public float PreparationDuration { get; }
         public float CriticalChance { get; }
         public float CriticalMultiplier { get; }
-        public float RecoilDegrees { get; }
+        public WeaponRecoilConfig Recoil { get; }
+        public float RecoilDegrees => Recoil.Kick;
 
         public WeaponFireProfile(float preparationDuration = 0, float criticalChance = 0,
-            float criticalMultiplier = 2, float recoilDegrees = 0)
+            float criticalMultiplier = 2, float recoilDegrees = 0,
+            float recoilRecoveryDelay = .08f, float recoilRecoveryDuration = .3f, float recoilMaximumOffset = 12)
         {
             if (!float.IsFinite(preparationDuration) || preparationDuration < 0)
                 throw new ArgumentOutOfRangeException(nameof(preparationDuration));
@@ -23,7 +25,7 @@ namespace ProjectFirstRun.Weapons
             PreparationDuration = preparationDuration;
             CriticalChance = criticalChance;
             CriticalMultiplier = criticalMultiplier;
-            RecoilDegrees = recoilDegrees;
+            Recoil = new WeaponRecoilConfig(recoilDegrees, recoilRecoveryDelay, recoilRecoveryDuration, recoilMaximumOffset);
         }
 
         public bool RollCritical(Func<double> random)

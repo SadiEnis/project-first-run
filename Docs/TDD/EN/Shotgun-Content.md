@@ -1,5 +1,16 @@
 # Shotgun content
 
+Current recoil behavior: [Recovering Weapon Recoil](Weapon-Recoil-Recovery.md). The user found the permanent 2.5° kick too weak; the new increment uses a temporary 6° kick at every level, delayed recovery and an accumulation cap. The 2.5° fix below is a historical checkpoint, not the current tuning.
+
+## Recoil fix on content
+
+- After the Minigun merge, the user requested mechanical aiming recoil for Shotgun. This increment opens the previously deferred camera recoil scope for Shotgun only; models, animation, audio and other weapons remain unchanged.
+- Initial tuning is **2.5 degrees upward pitch per shot**, at all eight levels; this is not final balance. Reuse `WeaponFireProfile` and `PlayerLook`, without a separate camera system.
+- Apply recoil once per successful trigger after resolving all pellets. Level eight's ten pellets do not multiply camera recoil. Missing still kicks; shots blocked by cooldown, reload, empty magazine, pause or death do not.
+- Mouse/gamepad input can compensate and existing pitch limits apply. No automatic return, random horizontal kick or projectile ricochet. Damage, target push, spread, ammunition and level order stay unchanged.
+- Verify all eight asset levels, single kick per trigger, no additional kick while holding or blocked, and independence from level-eight pellet count. User evaluation of the punchy feel follows automated verification.
+- Implemented: `_recoilDegrees: 2.5` at all eight levels; no runtime code or scene changes. Isolated Unity verification: **805/805 EditMode, 484/484 PlayMode passed**. Added one PlayMode test and extended existing asset/input tests with recoil assertions. Reports: `.codex-temp/xp-attraction/shotgun-recoil-edit.xml` and `shotgun-recoil-play.xml`. All four changed asset/test files hash-match the tested copy; `git diff --check` is clean. User acceptance of the recoil feel remains pending; no commit/check-in was performed.
+
 ## Status and workflow
 
 Implementation checkpoint — 24 September 2026; user gameplay acceptance — 25 September 2026. Git branch verified as `feature/content/shotgun`. The agreed Plastic branch is `/main/dev/content/shotgun`; its server state was not rechecked in this step. Runtime implementation, the Shotgun asset and arena connections are complete, and the user accepted the gameplay increment.

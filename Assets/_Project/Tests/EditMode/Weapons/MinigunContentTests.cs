@@ -35,6 +35,9 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
             Assert.That(entry.Fire.CriticalChance, Is.EqualTo(crit));
             Assert.That(entry.Fire.CriticalMultiplier, Is.EqualTo(2));
             Assert.That(entry.Fire.RecoilDegrees, Is.EqualTo(recoil));
+            Assert.That(entry.Fire.Recoil.Delay, Is.EqualTo(.12f));
+            Assert.That(entry.Fire.Recoil.Duration, Is.EqualTo(.25f));
+            Assert.That(entry.Fire.Recoil.MaximumOffset, Is.EqualTo(8));
             Assert.That(entry.Fire.PreparationDuration, Is.EqualTo(.35f));
             Assert.That(entry.Shot.PelletCount, Is.EqualTo(1));
             Assert.That(entry.Shot.HalfAngle, Is.EqualTo(1));
@@ -111,7 +114,7 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
         [TestCase("WD_PlasmaRifle")]
         [TestCase("WD_DevelopmentSecondaryWeapon")]
         [TestCase("WD_Shotgun")]
-        public void LegacyAssetsRemainWithoutPreparationCriticalsOrRecoil(string name)
+        public void ExistingAssetsRetainTheirExplicitFireProfiles(string name)
         {
             var entry = new PlayerWeaponRuntimeEntry(AssetDatabase.LoadAssetAtPath<WeaponDefinition>(
                 "Assets/_Project/Data/Items/Weapons/" + name + ".asset"));
@@ -119,7 +122,9 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
             {
                 Assert.That(entry.Fire.PreparationDuration, Is.Zero);
                 Assert.That(entry.Fire.CriticalChance, Is.Zero);
-                Assert.That(entry.Fire.RecoilDegrees, Is.Zero);
+                Assert.That(entry.Fire.RecoilDegrees, Is.EqualTo(name == "WD_Shotgun" ? 6f : 0f));
+                Assert.That(entry.Fire.Recoil.Duration, Is.GreaterThan(0));
+                Assert.That(entry.Fire.Recoil.MaximumOffset, Is.GreaterThan(0));
                 Assert.That(entry.Fire.CriticalMultiplier, Is.GreaterThanOrEqualTo(1));
                 if (i < entry.MaximumLevel) Advance(entry);
             }

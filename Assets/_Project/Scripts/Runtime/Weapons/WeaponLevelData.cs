@@ -17,13 +17,17 @@ namespace ProjectFirstRun.Weapons
         [SerializeField, Range(0, 1)] private float _criticalChance;
         [SerializeField, Min(1)] private float _criticalMultiplier = 2;
         [SerializeField, Min(0)] private float _recoilDegrees;
+        [SerializeField, Min(0)] private float _recoilRecoveryDelay = .08f;
+        [SerializeField, Min(.01f)] private float _recoilRecoveryDuration = .3f;
+        [SerializeField, Min(.01f)] private float _recoilMaximumOffset = 12;
 
         // Unity constructs inline serialized records without running the parameterized constructor.
         public WeaponLevelData() { }
 
         public WeaponLevelData(float damage, int magazineCapacity, float shotsPerSecond, float reloadDuration,
             int pelletCount = 1, float spreadHalfAngle = 0, float pushDistance = 0,
-            float preparationDuration = 0, float criticalChance = 0, float criticalMultiplier = 2, float recoilDegrees = 0)
+            float preparationDuration = 0, float criticalChance = 0, float criticalMultiplier = 2, float recoilDegrees = 0,
+            float recoilRecoveryDelay = .08f, float recoilRecoveryDuration = .3f, float recoilMaximumOffset = 12)
         {
             _damage = damage;
             _magazineCapacity = magazineCapacity;
@@ -36,12 +40,16 @@ namespace ProjectFirstRun.Weapons
             _criticalChance = criticalChance;
             _criticalMultiplier = criticalMultiplier;
             _recoilDegrees = recoilDegrees;
+            _recoilRecoveryDelay = recoilRecoveryDelay;
+            _recoilRecoveryDuration = recoilRecoveryDuration;
+            _recoilMaximumOffset = recoilMaximumOffset;
         }
 
         internal WeaponLevelConfig CreateConfig(int startingReserveAmmo) => new WeaponLevelConfig(
             _damage, new WeaponRuntimeConfig(_magazineCapacity, startingReserveAmmo, _shotsPerSecond, _reloadDuration),
             new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
-            new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees));
+            new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees,
+                _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset));
     }
 
     internal readonly struct WeaponLevelConfig

@@ -1,5 +1,7 @@
 # Minigun content
 
+Subsequent content update: [Recovering Weapon Recoil](Weapon-Recoil-Recovery.md) supersedes the original non-returning pitch behavior below. Kick/level values remain unchanged; temporary offset, delayed recovery and an 8° accumulation cap are added. The automated verification and acceptance below belong to the initial Minigun delivery; new verification is recorded in the linked document.
+
 ## Status and workflow
 
 Design and implementation checkpoints — 25 September 2026. Git branch verified: `feature/content/minigun`; the user reports creating and switching both branches. Agreed Plastic branch: `/main/dev/content/minigun`; server state not independently checked. The mechanics below are implemented and automatically verified; user gameplay acceptance is complete. Numerical balance remains provisional.

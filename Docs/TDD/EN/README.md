@@ -43,3 +43,4 @@ Project First Run is the current development codename. The final commercial titl
 37. [Content Test Arena](Content-Test-Arena.md)
 38. [Shotgun Content](Shotgun-Content.md)
 39. [Minigun Content](Minigun-Content.md)
+40. [Recovering Weapon Recoil](Weapon-Recoil-Recovery.md)

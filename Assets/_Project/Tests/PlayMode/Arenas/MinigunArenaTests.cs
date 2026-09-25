@@ -97,9 +97,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             yield return null;
             yield return null;
             int stopped = shots;
-            yield return new WaitForSeconds(.25f);
+            yield return new WaitForSeconds(.45f);
             Assert.That(shots, Is.EqualTo(stopped));
             Assert.That(_weapon.PreparationElapsed, Is.Zero);
+            Assert.That(look.RecoilOffset, Is.Zero);
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch).Within(.001f));
         }
 
         [UnityTest]
@@ -227,17 +229,49 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         {
             var look = _arena.Player.GetComponent<PlayerLook>();
             float before = look.CurrentPitch;
-            look.ApplyRecoil(1);
-            Assert.That(look.CurrentPitch, Is.EqualTo(before - 1));
-            look.Tick(new Vector2(0, -10), false, .1f);
+            look.ApplyRecoil(new WeaponRecoilConfig(6, 1, .3f, 12));
+            Assert.That(look.CurrentPitch, Is.EqualTo(before - 6));
+            look.Tick(new Vector2(0, -60), false, .1f);
             Assert.That(look.CurrentPitch, Is.EqualTo(before).Within(.001));
-            look.ApplyRecoil(16);
-            look.Tick(new Vector2(0, -1), true, .1f);
-            Assert.That(look.CurrentPitch, Is.EqualTo(before).Within(.001));
+            Assert.That(look.AimPitch, Is.EqualTo(before + 6).Within(.001));
+            look.Tick(Vector2.zero, false, 2);
+            Assert.That(look.CurrentPitch, Is.EqualTo(before + 6).Within(.001));
+            look.ApplyRecoil(new WeaponRecoilConfig(6, 1, .3f, 12));
+            look.Tick(new Vector2(0, -.375f), true, .1f);
+            Assert.That(look.CurrentPitch, Is.EqualTo(before + 6).Within(.001));
+            look.Tick(Vector2.zero, false, 2);
+            Assert.That(look.CurrentPitch, Is.EqualTo(before + 12).Within(.001));
             look.ApplyRecoil(1000);
             Assert.That(look.CurrentPitch, Is.EqualTo(-85));
+            Assert.That(look.RecoilOffset, Is.EqualTo(look.AimPitch + 85).Within(.001));
+            look.Tick(Vector2.zero, false, 1);
+            Assert.That(look.CurrentPitch, Is.EqualTo(before + 12).Within(.001));
             Assert.Throws<System.ArgumentOutOfRangeException>(() => look.ApplyRecoil(float.NaN));
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator RecoveryFreezesOnPauseSurvivesSwitchAndDisableClearsOnlyOffset()
+        {
+            Equip();
+            var look = _arena.Player.GetComponent<PlayerLook>();
+            look.ApplyRecoil(new WeaponRecoilConfig(6, .08f, .3f, 12));
+            float baseAim = look.AimPitch;
+            var panel = Find<ContentArenaPanel>().Single();
+            Assert.That(panel.TryOpen(), Is.True);
+            yield return new WaitForSecondsRealtime(.45f);
+            Assert.That(look.RecoilOffset, Is.EqualTo(6));
+            panel.Close();
+            Assert.That(_arena.Player.GetComponent<PlayerWeaponSwitcher>().TrySwitchNext(), Is.True);
+            Assert.That(look.RecoilOffset, Is.EqualTo(6));
+            yield return new WaitForSeconds(.5f);
+            Assert.That(look.RecoilOffset, Is.Zero);
+            Assert.That(look.CurrentPitch, Is.EqualTo(baseAim));
+            look.ApplyRecoil(6);
+            look.enabled = false;
+            Assert.That(look.RecoilOffset, Is.Zero);
+            Assert.That(look.AimPitch, Is.EqualTo(baseAim));
+            look.enabled = true;
         }
 
         [UnityTest]

@@ -78,17 +78,25 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         public IEnumerator RealMouseTriggerConsumesOneShellAndHoldingDoesNotRepeat()
         {
             EquipShotgun();
+            var look = _arena.Player.GetComponent<ProjectFirstRun.Player.PlayerLook>();
+            float pitch = look.CurrentPitch;
             int events = 0;
             HitscanVolleyResult shot = null;
-            _weapon.ShotFired += x => { events++; shot = x; };
+            _weapon.ShotFired += x => {
+                events++; shot = x;
+                Assert.That(look.CurrentPitch, Is.EqualTo(pitch - 6f).Within(.001f));
+                Assert.That(look.AimPitch, Is.EqualTo(pitch));
+            };
             Press(_mouse.leftButton, queueEventOnly: true);
             yield return null;
             yield return null;
             Assert.That(events, Is.EqualTo(1));
             Assert.That(_weapon.MagazineAmmo, Is.EqualTo(5));
             Assert.That(shot.Pellets.Count, Is.EqualTo(8));
+            Assert.That(look.RecoilOffset, Is.InRange(0f, 6f));
             yield return new WaitForSeconds(.95f);
             Assert.That(events, Is.EqualTo(1));
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch).Within(.001f));
             Release(_mouse.leftButton, queueEventOnly: true);
             yield return null;
             yield return null;
@@ -98,6 +106,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             yield return null;
             yield return null;
             Assert.That(events, Is.EqualTo(2));
+            Assert.That(look.AimPitch, Is.EqualTo(pitch));
             Assert.That(_weapon.MagazineAmmo, Is.EqualTo(4));
             Assert.That(_arena.Player.GetComponentsInChildren<LineRenderer>(true).Length, Is.EqualTo(8));
             Release(_mouse.leftButton, queueEventOnly: true);
@@ -109,6 +118,8 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         public IEnumerator ReloadEmptyMagazinePanelAndDeathBlockFiring()
         {
             EquipShotgun();
+            var look = _arena.Player.GetComponent<ProjectFirstRun.Player.PlayerLook>();
+            float pitch = look.CurrentPitch;
             int events = 0;
             _weapon.ShotFired += _ => events++;
             var state = _weapon.ActiveEntry.RuntimeState;
@@ -118,6 +129,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             yield return null;
             Assert.That(events, Is.Zero);
             Assert.That(_weapon.MagazineAmmo, Is.Zero);
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch));
             Release(_mouse.leftButton, queueEventOnly: true);
             Press(_keyboard.rKey, queueEventOnly: true);
             yield return null;
@@ -127,6 +139,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(events, Is.Zero);
             Release(_mouse.leftButton, queueEventOnly: true);
             Release(_keyboard.rKey, queueEventOnly: true);
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch));
             state.Tick(2);
             var panel = Find<ContentArenaPanel>().Single();
             Assert.That(panel.TryOpen(), Is.True);
@@ -135,11 +148,43 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(events, Is.Zero);
             Release(_mouse.leftButton, queueEventOnly: true);
             panel.Close();
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch));
             yield return null;
             _arena.Player.GetComponent<HealthComponent>().ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.forward));
             Press(_mouse.leftButton, queueEventOnly: true);
             yield return null;
             Assert.That(events, Is.Zero);
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch));
+        }
+
+        [UnityTest]
+        public IEnumerator LevelEightKicksOnceForTenPelletsAndCooldownRejectsAdditionalKick()
+        {
+            EquipShotgun();
+            for (int level = 1; level < 8; level++) Assert.That(_arena.LevelUp(ShotgunIndex), Is.True);
+            var look = _arena.Player.GetComponent<ProjectFirstRun.Player.PlayerLook>();
+            float pitch = look.CurrentPitch;
+            int shots = 0;
+            _weapon.ShotFired += volley => {
+                shots++; Assert.That(volley.Pellets.Count, Is.EqualTo(10));
+                Assert.That(look.CurrentPitch, Is.EqualTo(pitch - 6f).Within(.001f));
+            };
+            Press(_mouse.leftButton, queueEventOnly: true);
+            yield return null;
+            yield return null;
+            Assert.That(shots, Is.EqualTo(1));
+            Assert.That(look.RecoilOffset, Is.InRange(0f, 6f));
+            Release(_mouse.leftButton, queueEventOnly: true);
+            yield return null;
+            yield return null;
+            Assert.That(_weapon.ActiveEntry.RuntimeState.FireCooldownRemaining, Is.GreaterThan(0));
+            Press(_mouse.leftButton, queueEventOnly: true);
+            yield return null;
+            yield return null;
+            Assert.That(shots, Is.EqualTo(1));
+            Assert.That(look.RecoilOffset, Is.InRange(0f, 6f));
+            yield return new WaitForSeconds(.5f);
+            Assert.That(look.CurrentPitch, Is.EqualTo(pitch).Within(.001f));
         }
 
         [UnityTest]

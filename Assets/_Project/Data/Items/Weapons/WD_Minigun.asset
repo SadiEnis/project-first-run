@@ -29,6 +29,9 @@ MonoBehaviour:
   _criticalChance: 0.05
   _criticalMultiplier: 2
   _recoilDegrees: 0.35
+  _recoilRecoveryDelay: 0.12
+  _recoilRecoveryDuration: 0.25
+  _recoilMaximumOffset: 8
   _magazineCapacity: 80
   _startingReserveAmmo: 240
   _shotsPerSecond: 12
@@ -45,6 +48,9 @@ MonoBehaviour:
     _criticalChance: 0.05
     _criticalMultiplier: 2
     _recoilDegrees: 0.35
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8
   - _damage: 10
     _magazineCapacity: 80
     _shotsPerSecond: 12
@@ -56,6 +62,9 @@ MonoBehaviour:
     _criticalChance: 0.1
     _criticalMultiplier: 2
     _recoilDegrees: 0.35
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8
   - _damage: 10
     _magazineCapacity: 100
     _shotsPerSecond: 12
@@ -67,6 +76,9 @@ MonoBehaviour:
     _criticalChance: 0.1
     _criticalMultiplier: 2
     _recoilDegrees: 0.35
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8
   - _damage: 10
     _magazineCapacity: 100
     _shotsPerSecond: 15
@@ -78,6 +90,9 @@ MonoBehaviour:
     _criticalChance: 0.1
     _criticalMultiplier: 2
     _recoilDegrees: 0.35
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8
   - _damage: 12
     _magazineCapacity: 100
     _shotsPerSecond: 15
@@ -89,6 +104,9 @@ MonoBehaviour:
     _criticalChance: 0.1
     _criticalMultiplier: 2
     _recoilDegrees: 0.35
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8
   - _damage: 12
     _magazineCapacity: 100
     _shotsPerSecond: 15
@@ -100,6 +118,9 @@ MonoBehaviour:
     _criticalChance: 0.1
     _criticalMultiplier: 2
     _recoilDegrees: 0.35
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8
   - _damage: 12
     _magazineCapacity: 100
     _shotsPerSecond: 15
@@ -111,3 +132,6 @@ MonoBehaviour:
     _criticalChance: 0.1
     _criticalMultiplier: 2
     _recoilDegrees: 0.2
+    _recoilRecoveryDelay: 0.12
+    _recoilRecoveryDuration: 0.25
+    _recoilMaximumOffset: 8

@@ -25,6 +25,10 @@ MonoBehaviour:
   _pelletCount: 8
   _spreadHalfAngle: 6
   _pushDistance: 0.6
+  _recoilDegrees: 6
+  _recoilRecoveryDelay: 0.08
+  _recoilRecoveryDuration: 0.3
+  _recoilMaximumOffset: 12
   _magazineCapacity: 6
   _startingReserveAmmo: 48
   _shotsPerSecond: 1.2
@@ -37,6 +41,10 @@ MonoBehaviour:
     _pelletCount: 8
     _spreadHalfAngle: 6
     _pushDistance: 0.6
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12
   - _damage: 10
     _magazineCapacity: 8
     _shotsPerSecond: 1.2
@@ -44,6 +52,10 @@ MonoBehaviour:
     _pelletCount: 8
     _spreadHalfAngle: 6
     _pushDistance: 0.6
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12
   - _damage: 10
     _magazineCapacity: 8
     _shotsPerSecond: 1.2
@@ -51,6 +63,10 @@ MonoBehaviour:
     _pelletCount: 8
     _spreadHalfAngle: 6
     _pushDistance: 1
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12
   - _damage: 12
     _magazineCapacity: 8
     _shotsPerSecond: 1.2
@@ -58,6 +74,10 @@ MonoBehaviour:
     _pelletCount: 8
     _spreadHalfAngle: 6
     _pushDistance: 1
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12
   - _damage: 12
     _magazineCapacity: 8
     _shotsPerSecond: 1.2
@@ -65,6 +85,10 @@ MonoBehaviour:
     _pelletCount: 8
     _spreadHalfAngle: 6
     _pushDistance: 1
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12
   - _damage: 12
     _magazineCapacity: 10
     _shotsPerSecond: 1.2
@@ -72,6 +96,10 @@ MonoBehaviour:
     _pelletCount: 8
     _spreadHalfAngle: 6
     _pushDistance: 1
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12
   - _damage: 12
     _magazineCapacity: 10
     _shotsPerSecond: 1.2
@@ -79,3 +107,7 @@ MonoBehaviour:
     _pelletCount: 10
     _spreadHalfAngle: 6
     _pushDistance: 1
+    _recoilDegrees: 6
+    _recoilRecoveryDelay: 0.08
+    _recoilRecoveryDuration: 0.3
+    _recoilMaximumOffset: 12

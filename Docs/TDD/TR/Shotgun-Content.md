@@ -1,5 +1,16 @@
 # Shotgun içeriği
 
+Güncel tepme davranışı: [Toparlanan Silah Tepmesi](Weapon-Recoil-Recovery.md). Kullanıcı 2.5° kalıcı darbeyi yetersiz buldu; yeni aşamada tüm seviyelerde 6° geçici darbe, gecikmeli dönüş ve birikme sınırı kullanılır. Aşağıdaki 2.5° düzeltmesi önceki checkpoint'in tarihsel kaydıdır; güncel değer değildir.
+
+## Content üzerindeki tepme düzeltmesi
+
+- Minigun merge'inden sonra kullanıcı isteğiyle Shotgun'a mekanik nişan tepmesi eklenir. Bu ek, ilk teslimde ertelenen kamera recoil'i kapsamını yalnız Shotgun için açar; model, animasyon, ses ve diğer silahlar bu düzeltmede değişmez.
+- İlk deneme değeri tüm sekiz seviyede atış başına **2.5 derece yukarı pitch**. Nihai denge değildir. Mevcut `WeaponFireProfile` ve `PlayerLook` kullanılır; ayrı kamera sistemi kurulmaz.
+- Tepme, tüm saçmalar çözümlendikten sonra başarılı tetik başına bir kez uygulanır. Sekizinci seviyedeki 10 saçma daha fazla kamera tepmesi üretmez. Hedefi ıskalamak tepmeyi engellemez; cooldown, reload, boş şarjör, pause ve ölüm nedeniyle engellenen atışlar tepme üretmez.
+- Oyuncu fare/gamepad ile karşılar; mevcut pitch sınırları korunur. Otomatik geri dönüş, yatay rastgele tepme ve yüzeyden mermi sekmesi eklenmez. Hasar, düşmana itiş, saçılım, mühimmat ve seviye sırası değişmez.
+- Doğrulama: sekiz seviyenin asset verisi, tetik başına tek tepme, basılı tutma/engellenmiş atışlarda ek tepme olmaması ve seviye sekizde saçma sayısından bağımsızlık. Otomatik doğrulama sonrası tok tepme hissi kullanıcı tarafından değerlendirilir.
+- Uygulandı: sekiz seviyede `_recoilDegrees: 2.5`; runtime kodu ve sahne değişmedi. İzole Unity kopyasında **805/805 EditMode, 484/484 PlayMode geçti**. Bir yeni PlayMode testi eklendi, mevcut asset/input testleri tepme beklentileriyle genişletildi. Raporlar: `.codex-temp/xp-attraction/shotgun-recoil-edit.xml` ve `shotgun-recoil-play.xml`. Değişen dört asset/test dosyası test kopyasıyla hash üzerinden eşleşti; `git diff --check` temiz. Tepme hissinin kullanıcı kabulü bekleniyor; commit/check-in yapılmadı.
+
 ## Durum ve çalışma düzeni
 
 Uygulama checkpoint'i — 24 Eylül 2026; kullanıcı oynanış kabulü — 25 Eylül 2026. Git branch'i `feature/content/shotgun` olarak doğrulandı. Kararlaştırılan Plastic branch'i `/main/dev/content/shotgun`; bu adımda Plastic sunucu durumu yeniden kontrol edilmedi. Runtime uygulaması, Shotgun asset'i ve arena bağlantıları tamamlandı; kullanıcı bu oynanış aşamasını kabul etti.

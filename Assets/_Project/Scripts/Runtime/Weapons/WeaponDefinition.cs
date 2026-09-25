@@ -34,6 +34,9 @@ namespace ProjectFirstRun.Weapons
         [SerializeField, Range(0, 1)] private float _criticalChance;
         [SerializeField, Min(1)] private float _criticalMultiplier = 2;
         [SerializeField, Min(0)] private float _recoilDegrees;
+        [SerializeField, Min(0)] private float _recoilRecoveryDelay = .08f;
+        [SerializeField, Min(.01f)] private float _recoilRecoveryDuration = .3f;
+        [SerializeField, Min(.01f)] private float _recoilMaximumOffset = 12;
 
         [Header("Ammunition")]
         [SerializeField, Min(1)]
@@ -60,7 +63,8 @@ namespace ProjectFirstRun.Weapons
             var levels = new WeaponLevelConfig[MaximumLevel];
             levels[0] = new WeaponLevelConfig(_baseDamage, CreateRuntimeConfig(),
                 new WeaponShotConfig(_pelletCount, _spreadHalfAngle, _pushDistance),
-                new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees));
+                new WeaponFireProfile(_preparationDuration, _criticalChance, _criticalMultiplier, _recoilDegrees,
+                    _recoilRecoveryDelay, _recoilRecoveryDuration, _recoilMaximumOffset));
             for (int i = 1; i < levels.Length; i++)
             {
                 if (_additionalLevels[i - 1] == null)

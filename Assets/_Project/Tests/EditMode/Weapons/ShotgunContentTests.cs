@@ -36,6 +36,12 @@ namespace ProjectFirstRun.Tests.EditMode.Weapons
             Assert.That(entry.Shot.PelletCount, Is.EqualTo(pellets));
             Assert.That(entry.Shot.HalfAngle, Is.EqualTo(6));
             Assert.That(entry.Shot.PushDistance, Is.EqualTo(push));
+            Assert.That(entry.Fire.RecoilDegrees, Is.EqualTo(6f));
+            Assert.That(entry.Fire.Recoil.Delay, Is.EqualTo(.08f));
+            Assert.That(entry.Fire.Recoil.Duration, Is.EqualTo(.3f));
+            Assert.That(entry.Fire.Recoil.MaximumOffset, Is.EqualTo(12));
+            Assert.That(entry.Fire.PreparationDuration, Is.Zero);
+            Assert.That(entry.Fire.CriticalChance, Is.Zero);
             Assert.That(entry.Range, Is.EqualTo(30));
             Assert.That(entry.RuntimeState.MagazineCapacity, Is.EqualTo(magazine));
             entry.RuntimeState.TryFire();

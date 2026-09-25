@@ -15,12 +15,15 @@ namespace ProjectFirstRun.Development.Weapons
             if (_weapon == null) return;
             _weapon.ShotFired += Show;
             _weapon.ProjectileLaunched += HideForProjectile;
+            _weapon.PlasmaLaunched += HideForPlasma;
         }
         private void HideForProjectile(RocketProjectile _) => Hide();
+        private void HideForPlasma(PlasmaProjectile _) => Hide();
         private void OnDisable()
         {
             if (_weapon != null) _weapon.ShotFired -= Show;
             if (_weapon != null) _weapon.ProjectileLaunched -= HideForProjectile;
+            if (_weapon != null) _weapon.PlasmaLaunched -= HideForPlasma;
             Hide();
         }
         private void Show(HitscanVolleyResult volley)

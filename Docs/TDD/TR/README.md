@@ -44,3 +44,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 38. [Shotgun İçeriği](Shotgun-Content.md)
 39. [Minigun İçeriği](Minigun-Content.md)
 40. [Toparlanan Silah Tepmesi](Weapon-Recoil-Recovery.md)
+41. [Boş Şarjörde Otomatik Doldurma](Automatic-Reload.md)

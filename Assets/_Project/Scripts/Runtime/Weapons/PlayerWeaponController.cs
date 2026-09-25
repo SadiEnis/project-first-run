@@ -120,6 +120,7 @@ namespace ProjectFirstRun.Weapons
                 return;
             }
 
+            TryAutoReload();
             if (_activeEntry.Fire.PreparationDuration > 0)
             {
                 HandleReloadInput();
@@ -135,6 +136,7 @@ namespace ProjectFirstRun.Weapons
                 _preparedFire.Tick(_runtimeState, Time.deltaTime, entry.Fire.PreparationDuration,
                     () => _weaponControlEnabled && isActiveAndEnabled && Time.timeScale > 0 &&
                           ReferenceEquals(entry, _activeEntry) && TryFire(false));
+                TryAutoReload();
                 return;
             }
 
@@ -143,6 +145,7 @@ namespace ProjectFirstRun.Weapons
 
             HandleReloadInput();
             HandleFireInput();
+            TryAutoReload();
         }
 
         public void Initialize(
@@ -234,6 +237,18 @@ namespace ProjectFirstRun.Weapons
                 return;
             }
 
+            StartReload();
+        }
+
+        private void TryAutoReload()
+        {
+            if (IsInitialized && isActiveAndEnabled && _weaponControlEnabled && Time.timeScale > 0 &&
+                _runtimeState.MagazineAmmo == 0 && _runtimeState.ReserveAmmo > 0 && !_runtimeState.IsReloading)
+                StartReload();
+        }
+
+        private void StartReload()
+        {
             WeaponReloadResult result =
                 _runtimeState.TryStartReload();
 

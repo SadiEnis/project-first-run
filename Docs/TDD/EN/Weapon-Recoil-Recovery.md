@@ -34,7 +34,7 @@ Update EN/TR docs, implement and run automated tests, then stop for user evaluat
 - Shotgun uses 6°/.08s/.30s/12° at all levels. Minigun retains .35° (.20° at level eight), with .12s/.25s/8°. No scene rebuild, new weapon, change to damage/ammo or other weapon's kick.
 - Isolated Unity 6000.3.9f1 verification: **824/824 EditMode, 485/485 PlayMode passed**. Reports: `.codex-temp/xp-attraction/recoil-recovery-edit.xml` and `recoil-recovery-play.xml`. The recovery increment added 19 EditMode cases and one PlayMode case, extending existing asset/scene tests; the earlier uncommitted Shotgun kick increment also added one PlayMode case.
 - Tests cover return timing, re-fire during recovery, caps, invalid profiles, snapshots, legacy defaults, real firing, mouse/gamepad look compensation, pause/switch/disable behavior and no extra kick for blocked shots or multiple pellets. Full existing suites passed as well.
-- Changed/new asset and code files match the tested copy by hash; `git diff --check` is clean. No Windows build or version-control writes. User feel acceptance is pending.
+- Changed/new asset and code files match the tested copy by hash; `git diff --check` is clean. No Windows build or version-control writes. The user subsequently accepted the recovering recoil as substantially more stable and correct-feeling; numerical tuning remains provisional.
 
 ## Playtest
 

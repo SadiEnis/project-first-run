@@ -34,7 +34,7 @@ EN/TR dokümanları güncellenir, uygulama ve otomatik doğrulama yapılır; kul
 - Shotgun tüm seviyelerde 6°/.08sn/.30sn/12° kullanır. Minigun .35° (sekizinci seviyede .20°) darbesini korur; .12sn/.25sn/8° kullanır. Sahne yeniden kurulmadı; yeni silah, hasar/mühimmat değişimi veya diğer silahların darbesine müdahale yoktur.
 - İzole Unity 6000.3.9f1 doğrulaması: **824/824 EditMode, 485/485 PlayMode geçti**. Raporlar: `.codex-temp/xp-attraction/recoil-recovery-edit.xml` ve `recoil-recovery-play.xml`. Toparlanma aşamasında 19 EditMode senaryosu ve bir PlayMode senaryosu eklendi; mevcut asset/sahne testleri genişletildi. Önceki henüz commit edilmemiş Shotgun darbe düzeltmesinde de bir PlayMode senaryosu eklenmişti.
 - Dönüş zamanlaması, dönüş sırasında yeniden ateş, sınırlar, geçersiz profiller, snapshot'lar, eski varsayılanlar, gerçek atış, fare/gamepad nişanıyla karşılama, pause/değişim/devre dışı bırakma ve engellenmiş atış/çoklu saçmada ek darbe olmaması doğrulandı. Mevcut test paketlerinin tamamı da geçti.
-- Değişen/yeni asset ve kod dosyaları hash ile test kopyasıyla eşleşti; `git diff --check` temiz. Windows build veya sürüm kontrol yazma işlemi yapılmadı. Kullanıcı his kabulü bekleniyor.
+- Değişen/yeni asset ve kod dosyaları hash ile test kopyasıyla eşleşti; `git diff --check` temiz. Windows build veya sürüm kontrol yazma işlemi yapılmadı. Kullanıcı sonrasında toparlanan tepmeyi çok daha oturaklı ve doğru hissettirdiği yönünde kabul etti; sayısal ayarlar geçicidir.
 
 ## Oynanış testi
 

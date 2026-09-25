@@ -177,7 +177,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         }
 
         [UnityTest]
-        public IEnumerator EmptyMagazineCannotPrepareAndRequiresReload()
+        public IEnumerator EmptyMagazineAutomaticallyReloadsAndCannotPrepareDuringReload()
         {
             Equip();
             var state = _weapon.ActiveEntry.RuntimeState;
@@ -189,6 +189,153 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(events, Is.Zero);
             Assert.That(_weapon.PreparationElapsed, Is.Zero);
             Assert.That(state.ReserveAmmo, Is.EqualTo(240));
+            Assert.That(state.IsReloading, Is.True);
+        }
+
+        private WeaponDefinition ReloadTestDefinition(string id, int magazine, int reserve, float duration)
+        {
+            var definition = Object.Instantiate((WeaponDefinition)_arena.Items.Single(x => x.StableId == id));
+            var data = new SerializedObject(definition);
+            data.FindProperty("_magazineCapacity").intValue = magazine;
+            data.FindProperty("_startingReserveAmmo").intValue = reserve;
+            data.FindProperty("_reloadDuration").floatValue = duration;
+            data.ApplyModifiedPropertiesWithoutUndo();
+            _weapon.Initialize(definition);
+            return definition;
+        }
+
+        [UnityTest]
+        public IEnumerator EmptyMagazineReloadsWithoutInputAndRepeatedRDoesNotRestartIt()
+        {
+            var definition = ReloadTestDefinition("weapon.minigun", 4, 2, .4f);
+            try
+            {
+                var state = _weapon.ActiveEntry.RuntimeState;
+                while (state.MagazineAmmo > 0) { state.Tick(1); state.TryFire(); }
+                int starts = 0, completed = 0;
+                _weapon.ReloadStarted += () => starts++;
+                _weapon.ReloadCompleted += () => completed++;
+                yield return null;
+                yield return null;
+                Assert.That(state.IsReloading, Is.True);
+                Assert.That(state.MagazineAmmo, Is.Zero);
+                Assert.That(state.ReserveAmmo, Is.EqualTo(2));
+                float remaining = state.ReloadTimeRemaining;
+                Press(_keyboard.rKey, queueEventOnly: true);
+                yield return null;
+                yield return null;
+                Assert.That(starts, Is.EqualTo(1));
+                Assert.That(state.ReloadTimeRemaining, Is.LessThanOrEqualTo(remaining));
+                yield return new WaitForSeconds(.5f);
+                Assert.That(completed, Is.EqualTo(1));
+                Assert.That(state.MagazineAmmo, Is.EqualTo(2));
+                Assert.That(state.ReserveAmmo, Is.Zero);
+                Assert.That(state.IsReloading, Is.False);
+            }
+            finally { Object.DestroyImmediate(definition); }
+        }
+
+        [UnityTest]
+        public IEnumerator RealLastRoundStartsReloadForSemiAutomaticAutomaticAndPreparedWeapons()
+        {
+            foreach (string id in new[] { "weapon.plasma-rifle", "weapon.shotgun", "weapon.minigun" })
+            {
+                var definition = ReloadTestDefinition(id, 1, 1, .4f);
+                int starts = 0, shots = 0;
+                System.Action onReload = () => starts++;
+                System.Action<HitscanVolleyResult> onShot = _ => shots++;
+                _weapon.ReloadStarted += onReload;
+                _weapon.ShotFired += onShot;
+                try
+                {
+                    // Align each new physical press with a fresh input/update frame after WaitForSeconds.
+                    yield return null;
+                    yield return null;
+                    Assert.That(_arena.Player.GetComponent<ProjectFirstRun.Input.PlayerInputReader>().IsFireHeld, Is.False, id);
+                    Press(_mouse.leftButton, queueEventOnly: true);
+                    float deadline = Time.realtimeSinceStartup + 3;
+                    while (starts == 0 && Time.realtimeSinceStartup < deadline) yield return null;
+                    Assert.That(starts, Is.EqualTo(1), $"{id}: shots={shots}, ammo={_weapon.MagazineAmmo}, controlled={_weapon.IsWeaponControlEnabled}");
+                    Assert.That(shots, Is.EqualTo(1), id);
+                    Assert.That(_weapon.MagazineAmmo, Is.Zero, id);
+                    Assert.That(_weapon.IsReloading, Is.True, id);
+                    Assert.That(_weapon.PreparationElapsed, Is.Zero, id);
+                    if (id != "weapon.shotgun") Release(_mouse.leftButton, queueEventOnly: true);
+                    yield return new WaitForSeconds(.5f);
+                    Assert.That(_weapon.MagazineAmmo, Is.EqualTo(1), id);
+                    Assert.That(_weapon.ReserveAmmo, Is.Zero, id);
+                    Assert.That(starts, Is.EqualTo(1), id);
+                    Assert.That(shots, Is.EqualTo(1), id);
+                    Release(_mouse.leftButton, queueEventOnly: true);
+                    yield return null;
+                    yield return null;
+                }
+                finally
+                {
+                    _weapon.ReloadStarted -= onReload;
+                    _weapon.ShotFired -= onShot;
+                    Object.DestroyImmediate(definition);
+                }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator HeldMinigunReloadsThenPreparesAgainWithoutExtraAmmoOrEvents()
+        {
+            var definition = ReloadTestDefinition("weapon.minigun", 1, 1, .15f);
+            try
+            {
+                int shots = 0, starts = 0, completed = 0;
+                float reloadFinished = 0;
+                _weapon.ReloadStarted += () => starts++;
+                _weapon.ReloadCompleted += () => { completed++; reloadFinished = Time.time; };
+                _weapon.ShotFired += _ => {
+                    shots++;
+                    if (shots == 2) Assert.That(Time.time - reloadFinished, Is.GreaterThanOrEqualTo(.32f));
+                };
+                Press(_mouse.leftButton, queueEventOnly: true);
+                float deadline = Time.realtimeSinceStartup + 4;
+                while (shots < 2 && Time.realtimeSinceStartup < deadline) yield return null;
+                yield return new WaitForSeconds(.3f);
+                Assert.That(shots, Is.EqualTo(2));
+                Assert.That(starts, Is.EqualTo(1));
+                Assert.That(completed, Is.EqualTo(1));
+                Assert.That(_weapon.MagazineAmmo, Is.Zero);
+                Assert.That(_weapon.ReserveAmmo, Is.Zero);
+                Assert.That(_weapon.IsReloading, Is.False);
+            }
+            finally { Object.DestroyImmediate(definition); }
+        }
+
+        [UnityTest]
+        public IEnumerator EmptyReloadIsDeferredDuringPauseControlLossAndDeath()
+        {
+            var definition = ReloadTestDefinition("weapon.shotgun", 1, 2, .5f);
+            try
+            {
+                var state = _weapon.ActiveEntry.RuntimeState;
+                state.TryFire();
+                Time.timeScale = 0;
+                yield return new WaitForSecondsRealtime(.1f);
+                Assert.That(state.IsReloading, Is.False);
+                _weapon.SetWeaponControlEnabled(false);
+                Time.timeScale = 1;
+                yield return new WaitForSeconds(.1f);
+                Assert.That(state.IsReloading, Is.False);
+                _weapon.SetWeaponControlEnabled(true);
+                yield return null;
+                yield return null;
+                Assert.That(state.IsReloading, Is.True);
+                float remaining = state.ReloadTimeRemaining;
+                _weapon.SetWeaponControlEnabled(false);
+                yield return new WaitForSeconds(.1f);
+                Assert.That(state.ReloadTimeRemaining, Is.EqualTo(remaining));
+                _arena.Player.GetComponent<HealthComponent>().ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.forward));
+                yield return new WaitForSeconds(.6f);
+                Assert.That(state.MagazineAmmo, Is.Zero);
+                Assert.That(state.ReloadTimeRemaining, Is.EqualTo(remaining));
+            }
+            finally { Object.DestroyImmediate(definition); }
         }
 
         [UnityTest]

@@ -62,7 +62,7 @@ This Editor-focused delivery does not resume Windows build investigation or clai
 
 ## Checkpoints
 
-The [Plasma Rifle increment](Plasma-Rifle-Content.md) upgrades the existing catalog entry to physical piercing projectiles and L8 target burn. F1 shows pierce/burn state. The catalog remains at seven items and the authored starting weapon is preserved; acquire Plasma through F1 if needed. User gameplay acceptance is pending.
+The [Plasma Rifle increment](Plasma-Rifle-Content.md) upgrades the existing catalog entry to physical piercing projectiles and L8 target burn. F1 shows pierce/burn state. The catalog remains at seven items and the authored starting weapon is preserved; acquire Plasma through F1 if needed. User gameplay acceptance is complete; balance remains provisional.
 
 Rocket Launcher adds the seventh catalog item, blast/radius/fragment HUD data, and the existing weapon/mixed chest flow. See [Rocket Launcher](Rocket-Launcher-Content.md) for levels and verification. User gameplay acceptance is complete; balance remains provisional. Geometry and lighting are unchanged.
 

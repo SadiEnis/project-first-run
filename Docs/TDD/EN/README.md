@@ -47,3 +47,5 @@ Project First Run is the current development codename. The final commercial titl
 41. [Automatic Empty-Magazine Reload](Automatic-Reload.md)
 42. [Rocket Launcher Content](Rocket-Launcher-Content.md)
 43. [Plasma Rifle Content](Plasma-Rifle-Content.md)
+44. [Abilities Content Plan](Abilities-Content-Plan.md)
+45. [Fireball Content](Fireball-Content.md)

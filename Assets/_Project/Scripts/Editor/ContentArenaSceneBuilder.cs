@@ -59,6 +59,9 @@ namespace ProjectFirstRun.Editor
             Debug.Log($"{weaponName.ToUpperInvariant()}_ARENA_UPDATED");
         }
 
+        [MenuItem("Project First Run/Update Content Arena Rocket Launcher Connections")]
+        public static void UpdateRocketConnections() => UpdateWeaponConnections("RocketLauncher");
+
         private static void ConfigureTraces(GameObject player)
         {
             var traces = player.GetComponent<VolleyTracePresenter>() ?? player.AddComponent<VolleyTracePresenter>();
@@ -196,7 +199,8 @@ namespace ProjectFirstRun.Editor
                 Load<ItemDefinition>("Assets/_Project/Data/Abilities/Fireball/AD_Fireball.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Upgrade/Dev/UD_DevelopmentDamageBoost.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Shotgun.asset"),
-                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Minigun.asset"));
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Minigun.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_RocketLauncher.asset"));
             SetArray(arena, "_chests",
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_WeaponChest.asset"),
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_AbilityChest.asset"),

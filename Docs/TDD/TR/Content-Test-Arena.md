@@ -62,4 +62,6 @@ Editor odaklı bu teslim Windows build incelemesini yeniden başlatmaz ve standa
 
 ## Kayıt düzeni
 
-Önce bu EN/TR sözleşme ve indeksler için docs check-in/commit; ardından sahne/panel/testleri kapsayan anlamlı uygulama checkpoint'i. Kullanıcı merge işlemlerini yapar; GitHub'da bu branch tamamlandığında ilk PR üzerinden inceleme/merge akışı önerilir. PR açılması ayrı bir işlemdir ve henüz yapılmadı. Sonraki silah/yetenek branch'i güncel dev/main'den açılır.
+Rocket Launcher yedinci katalog eşyasını, patlama/yarıçap/parça HUD bilgisini ve mevcut silah/karma sandık akışını ekler. Seviye ve doğrulama için [Rocket Launcher](Rocket-Launcher-Content.md) belgesine bakılır. Kullanıcı oynanış kabulü tamamlandı; denge geçicidir. Geometri ve ışık değişmedi.
+
+Tasarım değişiklikleri docs checkpoint'i, uygulama/testler anlamlı bir uygulama checkpoint'i olarak kaydedilir. İçerik arenasının PR'ı merge edildi. Güncel silah/yetenek branch'leri kararlaştırılan `content` entegrasyon branch'inden açılır; kullanıcı silahları normal merge ile content'e alır, paket PR'ı content → main kapanışında yapılır.

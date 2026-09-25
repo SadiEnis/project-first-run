@@ -933,9 +933,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3735477217416442066, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      propertyPath: _startingWeapon
+      value:
+      objectReference: {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
     - target: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       propertyPath: m_Name
       value: Player (content tests)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7872245193048340383, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      propertyPath: _interactionLayers.m_Bits
+      value: 251
       objectReference: {fileID: 0}
     - target: {fileID: 8807263902820193614, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1656,6 +1664,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8453e39dc742d424b892c30922c791dc, type: 2}
   - {fileID: 11400000, guid: 3c155094935549918fe6802191af691c, type: 2}
   - {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
+  - {fileID: 11400000, guid: fc1623f5b7411f441a4db0bdf4a67cff, type: 2}
   _chests:
   - {fileID: 11400000, guid: 1710c972359c443b9d34891f2042100f, type: 2}
   - {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}

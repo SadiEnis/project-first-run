@@ -36,7 +36,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
             Assert.That(definition.RewardCategory, Is.EqualTo(ChestRewardCategory.Mixed));
             Assert.That(definition.RequestedChoiceCount, Is.EqualTo(requestedChoiceCount));
             Assert.That(definition.MaxSelections, Is.EqualTo(maxSelections));
-            Assert.That(definition.RewardItemPool.GetValidatedItems().Count, Is.EqualTo(6));
+            Assert.That(definition.RewardItemPool.GetValidatedItems().Count, Is.EqualTo(7));
             Assert.That(definition.DisplayName, Is.EqualTo(name + " Chest"));
         }
 

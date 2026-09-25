@@ -40,6 +40,7 @@ namespace ProjectFirstRun.Development.Weapons
             }
 
             _weaponController.ShotFired += HandleShotFired;
+            _weaponController.ProjectileLaunched += HandleProjectileLaunched;
             _weaponController.DryFired += HandleDryFired;
             _weaponController.AmmoChanged += HandleAmmoChanged;
             _weaponController.ReloadStarted += HandleReloadStarted;
@@ -55,6 +56,7 @@ namespace ProjectFirstRun.Development.Weapons
             }
 
             _weaponController.ShotFired -= HandleShotFired;
+            _weaponController.ProjectileLaunched -= HandleProjectileLaunched;
             _weaponController.DryFired -= HandleDryFired;
             _weaponController.AmmoChanged -= HandleAmmoChanged;
             _weaponController.ReloadStarted -= HandleReloadStarted;
@@ -101,6 +103,11 @@ namespace ProjectFirstRun.Development.Weapons
         private void HandleDryFired()
         {
             _lastEvent = "Dry fire";
+        }
+
+        private void HandleProjectileLaunched(RocketProjectile projectile)
+        {
+            _lastEvent = "Rocket launched; damage resolves on impact";
         }
 
         private void HandleAmmoChanged(

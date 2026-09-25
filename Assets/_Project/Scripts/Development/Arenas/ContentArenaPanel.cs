@@ -95,7 +95,9 @@ namespace ProjectFirstRun.Development.Arenas
             GUILayout.Label("CONTENT ARENA | F1: test controls | Q: weapon | E: chest");
             GUILayout.Label($"Health {_health.CurrentHealth:F0}/{_health.MaximumHealth:F0} | {_weapon.ActiveDefinition?.DisplayName} | Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
             GUILayout.Label($"Level {xp.Level} | XP {xp.CurrentExperience}/{xp.RequiredExperience} | Enemies {_arena.Registry.ActiveCount}");
-            GUILayout.Label($"Damage/pellet {_weapon.CurrentDamage:F1} | Pellets {_weapon.ActiveEntry.Shot.PelletCount} | Push {_weapon.ActiveEntry.Shot.PushDistance:F1} m | R: reload");
+            if (_weapon.ActiveEntry.DeliveryMode == WeaponDeliveryMode.Rocket)
+                GUILayout.Label($"Blast {_weapon.CurrentDamage:F1} | Radius {_weapon.ActiveEntry.Rocket.Value.BlastRadius:F1} m | Fragments {_weapon.ActiveEntry.Rocket.Value.FragmentCount} | R: reload");
+            else GUILayout.Label($"Damage/pellet {_weapon.CurrentDamage:F1} | Pellets {_weapon.ActiveEntry.Shot.PelletCount} | Push {_weapon.ActiveEntry.Shot.PushDistance:F1} m | R: reload");
             GUILayout.Label($"Prepare {_weapon.PreparationElapsed:F2}/{_weapon.ActiveEntry.Fire.PreparationDuration:F2}s | Rate {_weapon.ActiveEntry.ShotsPerSecond:F0}/s | Crit {_weapon.ActiveEntry.Fire.CriticalChance:P0} | Last crit: {_weapon.LastShotWasCritical}");
             GUILayout.Label(_health.IsDead ? "Dead: stop and restart Play for a fresh test." : _arena.LastResult);
             GUILayout.EndArea();

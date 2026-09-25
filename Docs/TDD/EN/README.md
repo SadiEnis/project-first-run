@@ -45,3 +45,4 @@ Project First Run is the current development codename. The final commercial titl
 39. [Minigun Content](Minigun-Content.md)
 40. [Recovering Weapon Recoil](Weapon-Recoil-Recovery.md)
 41. [Automatic Empty-Magazine Reload](Automatic-Reload.md)
+42. [Rocket Launcher Content](Rocket-Launcher-Content.md)

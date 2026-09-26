@@ -106,8 +106,19 @@ namespace ProjectFirstRun.Tests.EditMode.Abilities.Fireball
             var levels = serialized.FindProperty("_additionalLevels");
             Assert.That(levels.arraySize, Is.EqualTo(7));
             int[] counts = { 2, 2, 3, 3, 3, 4, 4 };
+            float[] damage = { 30, 30, 30, 35, 35, 35, 35 };
+            float[] speeds = { 12, 12, 12, 12, 16, 16, 16 };
             for (int i = 0; i < counts.Length; i++)
+            {
                 Assert.That(levels.GetArrayElementAtIndex(i).FindPropertyRelative("_projectileCount").intValue, Is.EqualTo(counts[i]));
+                Assert.That(levels.GetArrayElementAtIndex(i).FindPropertyRelative("_damage").floatValue, Is.EqualTo(damage[i]));
+                Assert.That(levels.GetArrayElementAtIndex(i).FindPropertyRelative("_projectileSpeed").floatValue, Is.EqualTo(speeds[i]));
+                Assert.That(levels.GetArrayElementAtIndex(i).FindPropertyRelative("_cooldown").floatValue, Is.EqualTo(i == 0 ? 2 : 1.5f));
+                Assert.That(levels.GetArrayElementAtIndex(i).FindPropertyRelative("_burnDuration").floatValue, Is.EqualTo(i == 6 ? 3 : 1.5f));
+            }
+            Assert.That(definition.BurnDamage, Is.EqualTo(5));
+            Assert.That(definition.BurnDuration, Is.EqualTo(1.5f));
+            Assert.That(definition.BurnVisual, Is.Not.Null);
         }
         static void Set(object target, string field, object value) => typeof(FireballDefinition)
             .GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);

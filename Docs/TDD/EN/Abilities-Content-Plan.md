@@ -10,7 +10,7 @@ Each ability: discuss mechanics → EN/TR TDD and docs checkpoint → coherent i
 
 | Order | Ability | Main scope | Status |
 | --- | --- | --- | --- |
-| 1 | Fireball | Complete existing content: random ranged targets, 2/3/4 projectiles, burn, GDD levels | Targeting/volley implemented; burn pending |
+| 1 | Fireball | Complete existing content: random ranged targets, 2/3/4 projectiles, burn, GDD levels | Implemented; user confirmed burn, broader level/balance acceptance pending |
 | 2 | Force Wave | Frontal short-range area damage and knockback | Planned |
 | 3 | Drone | Player-following drone, targeting/fire cadence, second drone, boss rate bonus | Planned |
 | 4 | Acid Bottle | Random-target bottles, lasting damage areas, L8 slow | Planned |

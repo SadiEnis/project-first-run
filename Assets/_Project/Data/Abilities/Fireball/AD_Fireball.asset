@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Abilities.Fireball.FireballDefinition
   _stableId: ability.fireball
   _displayName: Fireball
-  _gameplayEffect: Launches 2 fireballs at visible enemies within 20 metres. Each deals 25 damage. 2 second cooldown.
+  _gameplayEffect: Launches 2 fireballs at visible enemies within 20 metres. Each deals 25 damage and burns for 5 damage every 0.5 seconds for 1.5 seconds. 2 second cooldown.
   _cooldown: 2
   _damage: 25
   _maximumLevel: 8
@@ -23,30 +23,37 @@ MonoBehaviour:
     _damage: 30
     _projectileSpeed: 12
     _projectileCount: 2
-  - _cooldown: 1.75
+    _burnDuration: 1.5
+  - _cooldown: 1.5
     _damage: 30
     _projectileSpeed: 12
     _projectileCount: 2
-  - _cooldown: 1.75
+    _burnDuration: 1.5
+  - _cooldown: 1.5
+    _damage: 30
+    _projectileSpeed: 12
+    _projectileCount: 3
+    _burnDuration: 1.5
+  - _cooldown: 1.5
     _damage: 35
     _projectileSpeed: 12
     _projectileCount: 3
-  - _cooldown: 1.75
-    _damage: 35
-    _projectileSpeed: 14
-    _projectileCount: 3
+    _burnDuration: 1.5
   - _cooldown: 1.5
     _damage: 35
-    _projectileSpeed: 14
+    _projectileSpeed: 16
     _projectileCount: 3
+    _burnDuration: 1.5
   - _cooldown: 1.5
-    _damage: 40
-    _projectileSpeed: 14
+    _damage: 35
+    _projectileSpeed: 16
     _projectileCount: 4
-  - _cooldown: 1.25
-    _damage: 45
-    _projectileSpeed: 14
+    _burnDuration: 1.5
+  - _cooldown: 1.5
+    _damage: 35
+    _projectileSpeed: 16
     _projectileCount: 4
+    _burnDuration: 3
   _projectilePrefab: {fileID: -8950674959978754803, guid: 2e5b82cedb8361e488c365735d709892, type: 3}
   _projectileSpeed: 12
   _projectileLifetime: 5
@@ -60,3 +67,6 @@ MonoBehaviour:
     m_Bits: 247
   _collisionRadius: 0.12
   _travelRange: 60
+  _burnDamage: 5
+  _burnDuration: 1.5
+  _burnVisual: {fileID: 2904472604213358125, guid: 7ed57d281b1c0814aa9a5489db5f6c15, type: 3}

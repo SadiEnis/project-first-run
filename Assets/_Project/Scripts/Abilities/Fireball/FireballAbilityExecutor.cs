@@ -11,6 +11,8 @@ namespace ProjectFirstRun.Abilities.Fireball
     public sealed class FireballAbilityExecutor : IAbilityExecutor
     {
         private readonly FireballProjectile _prefab;
+        private readonly GameObject _burnVisual;
+        private readonly Func<FireballProjectile, Vector3, Quaternion, FireballProjectile> _spawn;
         private readonly GameObject _damageSource;
         private readonly PlayerStatCollection _stats;
         private readonly FireballTargetSelector _targets;
@@ -19,15 +21,18 @@ namespace ProjectFirstRun.Abilities.Fireball
         private FireballRuntimeConfig _config;
 
         public FireballAbilityExecutor(FireballDefinition definition, GameObject damageSource,
-            PlayerStatCollection stats, FireballTargetSelector targets = null)
+            PlayerStatCollection stats, FireballTargetSelector targets = null,
+            Func<FireballProjectile, Vector3, Quaternion, FireballProjectile> spawn = null)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
             _damageSource = damageSource != null ? damageSource : throw new ArgumentNullException(nameof(damageSource));
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
             _prefab = definition.ProjectilePrefab; _targets = targets;
+            _burnVisual = definition.BurnVisual;
+            _spawn = spawn ?? ((prefab, position, rotation) => UnityEngine.Object.Instantiate(prefab, position, rotation));
             _radius = definition.CollisionRadius; _range = definition.TravelRange; _mask = definition.CollisionMask;
             _config = new FireballRuntimeConfig(definition.CreateRuntimeConfig(), definition.Damage,
-                definition.ProjectileSpeed, definition.ProjectileLifetime, definition.ProjectileCount);
+                definition.ProjectileSpeed, definition.ProjectileLifetime, definition.ProjectileCount, definition.BurnDamage, definition.BurnDuration);
         }
         internal void ApplyConfiguration(FireballRuntimeConfig config) => _config = config;
 
@@ -43,6 +48,8 @@ namespace ProjectFirstRun.Abilities.Fireball
             if (targets.Count == 0) return AbilityExecutionResult.Failed;
 
             float damage = _stats.Evaluate(PlayerStatType.AbilityDamage, _config.Damage);
+            float burnDamage = _stats.Evaluate(PlayerStatType.AbilityDamage, _config.BurnDamage);
+            if (!float.IsFinite(burnDamage) || burnDamage <= 0) throw new InvalidOperationException("Evaluated Fireball burn must be finite and positive.");
             if (!float.IsFinite(damage) || damage <= 0) throw new InvalidOperationException("Evaluated Fireball damage must be finite and positive.");
             if (!float.IsFinite(_radius) || _radius <= 0 || !float.IsFinite(_range) || _range <= 0)
                 throw new InvalidOperationException("Invalid Fireball movement bounds.");
@@ -70,11 +77,12 @@ namespace ProjectFirstRun.Abilities.Fireball
             {
                 foreach (var direction in directions)
                 {
-                    var projectile = UnityEngine.Object.Instantiate(_prefab, start, Quaternion.LookRotation(direction, Vector3.up));
+                    var projectile = _spawn(_prefab, start, Quaternion.LookRotation(direction, Vector3.up));
+                    if (projectile == null) throw new InvalidOperationException("Fireball construction returned no projectile.");
                     spawned.Add(projectile);
                     SceneManager.MoveGameObjectToScene(projectile.gameObject, SceneManager.GetActiveScene());
                     projectile.Initialize(direction, damage, _config.ProjectileSpeed, _config.ProjectileLifetime,
-                        _damageSource, _radius, _range, _mask);
+                        _damageSource, _radius, _range, _mask, burnDamage, _config.BurnDuration, _burnVisual);
                     projectile.SetLaunchBlocker(blocker);
                 }
             }

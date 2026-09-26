@@ -1,5 +1,15 @@
 # Fireball content — design and implementation progress
 
+## Checkpoint 3 — burn and authored levels (2026-09-26)
+
+The target eight-level table below is now authored in the existing asset. Fireball snapshots AbilityDamage for direct hits and burn separately at launch. Accepted non-lethal hits start a 5-base-damage burn ticking every .5 s for 1.5 s (3 s at L8). Refresh replaces the damage snapshot and duration without resetting the pending tick or adding stacks. Plasma and Fireball use separate component identities with a shared `TimedBurn` lifecycle and `TimedBurnState` clock. Plasma retains its three-second duration and weapon damage callback.
+
+Burns live on their receivers and stop on target disable/death or source death/destruction. Map-owned projectiles and target-owned burns are removed with their scene. The saved arena and reward catalog continue using the same Fireball identity. The existing Plasma burn marker is reused as temporary feedback; final Fireball-specific presentation is deferred. User confirmed that burning works in gameplay; broader level/balance acceptance is not implied by that report.
+
+Earlier checkpoint sections below are historical records, not outstanding implementation instructions.
+
+Validation: full isolated suites passed **875/875 EditMode** and **533/533 PlayMode** (`fireball-burn-final-EditMode.xml` / `fireball-burn-final-PlayMode.xml` under `.codex-temp/xp-attraction`). Added cases cover partial volley construction rollback, authored eight-level values, three/six ticks, refresh phase and non-stacking, coexistence with Plasma, source death, disable/reuse, actual pause, direct-hit integration and owning-scene cleanup. Existing Plasma regressions also passed. No Windows build was performed.
+
 ## Checkpoint 2 — targeting and volley (2026-09-25)
 
 Implemented random target cycles within 20 m, world line-of-sight filtering, registry rebinding, one cooldown for simultaneous volleys, launch snapshots and swept collision. Source-to-origin clearance starts at the source collider center to avoid treating the ground at the player's feet as a launch obstruction. Projectiles ignore source colliders, triggers and sibling Fireballs; world cover wins ambiguous initial overlaps. Source death/destruction disarms flight. Cast construction cleans up partially created projectiles on failure.

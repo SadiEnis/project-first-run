@@ -26,6 +26,8 @@ namespace ProjectFirstRun.Abilities.Fireball
         private int _mask;
         private HealthComponent _sourceHealth;
         private Collider _launchBlocker;
+        private float _burnDamage, _burnDuration;
+        private GameObject _burnVisual;
         public bool IsResolved => _hasResolvedHit;
         public void SetLaunchBlocker(Collider blocker) => _launchBlocker = blocker;
 
@@ -89,7 +91,8 @@ namespace ProjectFirstRun.Abilities.Fireball
             float damage,
             float speed,
             float lifetime,
-            GameObject damageSource, float collisionRadius = .12f, float range = 60, int collisionMask = 247)
+            GameObject damageSource, float collisionRadius = .12f, float range = 60, int collisionMask = 247,
+            float burnDamage = 0, float burnDuration = 1.5f, GameObject burnVisual = null)
         {
             if (_isInitialized)
             {
@@ -100,6 +103,7 @@ namespace ProjectFirstRun.Abilities.Fireball
 
             ValidateDirection(
                 direction);
+            if (burnDamage != 0) new TimedBurnState().Refresh(burnDamage, burnDuration);
             ValidatePositive(collisionRadius, nameof(collisionRadius)); ValidatePositive(range, nameof(range));
 
             ValidatePositive(
@@ -136,6 +140,7 @@ namespace ProjectFirstRun.Abilities.Fireball
                 damageSource;
             _radius = collisionRadius; _remainingRange = range; _mask = collisionMask;
             _sourceHealth = damageSource.GetComponent<HealthComponent>();
+            _burnDamage = burnDamage; _burnDuration = burnDuration; _burnVisual = burnVisual;
 
             _isInitialized = true;
         }
@@ -195,8 +200,9 @@ namespace ProjectFirstRun.Abilities.Fireball
                         transform.position),
                     hitDirection);
 
-            health.ApplyDamage(
-                in damageInfo);
+            var result = health.ApplyDamage(in damageInfo);
+            if (result.WasApplied && !result.WasLethal && _burnDamage > 0)
+                FireballBurn.Apply(_damageSource, health, hitCollider, _burnDamage, _burnDuration, _burnVisual);
         }
 
         private bool BelongsToDamageSource(

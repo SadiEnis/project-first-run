@@ -1,5 +1,15 @@
 # Fireball içeriği — tasarım ve uygulama durumu
 
+## Checkpoint 3 — yanma ve kayıtlı seviyeler (2026-09-26)
+
+Aşağıdaki sekiz seviyelik hedef tablo mevcut asset'e uygulandı. Fireball doğrudan hasar ve yanma için AbilityDamage değerlerini atış anında ayrı ayrı hesaplayıp korur. Kabul edilen öldürücü olmayan isabet, .5 saniyede bir 5 temel hasar veren 1.5 saniyelik yanma başlatır (L8'de 3 saniye). Yenileme hasar kopyasını ve süreyi değiştirir; bekleyen tick'i ertelemez, katman eklemez. Plasma ve Fireball ayrı component kimlikleriyle ortak `TimedBurn` yaşam döngüsünü ve `TimedBurnState` saatini kullanır. Plasma'nın üç saniyelik süresi ve silah hasarı bildirimi korunur.
+
+Yanma hedef üzerinde yaşar; hedef kapanınca/ölünce veya kaynak ölünce/yok olunca sonlanır. Haritaya ait mermiler ve hedefteki yanmalar sahneleriyle temizlenir. Kayıtlı arena ve ödül kataloğu aynı Fireball kimliğini kullanır. Geçici geri bildirim için mevcut Plasma yanma işareti kullanılır; Fireball'a özel nihai sunum ertelenmiştir. Kullanıcı yanmanın oynanışta çalıştığını doğruladı; bu geri bildirim tüm seviyelerin/denge değerlerinin kabulü olarak yorumlanmaz.
+
+Aşağıdaki önceki checkpoint bölümleri tarihsel kayıttır; kalan uygulama talimatı değildir.
+
+Doğrulama: izole tam paketlerde **875/875 EditMode**, **533/533 PlayMode** geçti (`.codex-temp/xp-attraction` altında `fireball-burn-final-EditMode.xml` / `fireball-burn-final-PlayMode.xml`). Eklenen senaryolar: kısmi salvo oluşturma hatasında geri alma, sekiz seviyenin asset değerleri, üç/altı tick, yenilemede ritim koruma ve birikmeme, Plasma ile birlikte çalışma, kaynak ölümü, kapatma/yeniden kullanım, gerçek pause, doğrudan isabet entegrasyonu ve sahne temizliği. Mevcut Plasma regresyonları da geçti. Windows build alınmadı.
+
 ## Checkpoint 2 — hedefleme ve salvo (2026-09-25)
 
 20 m içinde rastgele hedef turları, dünya görüş hattı kontrolü, registry yeniden bağlama, eşzamanlı salvo başına tek cooldown, atış anındaki değerlerin korunması ve süpürmeli çarpışma uygulandı. Kaynaktan çıkış noktasına açıklık kontrolü oyuncunun ayaklarının zemini yanlış engel saymaması için kaynak collider merkezinden başlar. Mermiler kaynak collider'larını, trigger'ları ve diğer Fireball'ları yok sayar; belirsiz başlangıç örtüşmelerinde dünya engeli önceliklidir. Kaynağın ölmesi/yok olması uçuşu etkisizleştirir. Atış oluşturulurken hata oluşursa o salvola kısmen oluşturulan mermiler temizlenir.

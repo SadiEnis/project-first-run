@@ -49,3 +49,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 43. [Plasma Rifle İçeriği](Plasma-Rifle-Content.md)
 44. [Yetenek İçerik Planı](Abilities-Content-Plan.md)
 45. [Fireball İçeriği](Fireball-Content.md)
+46. [Force Wave İçeriği](Force-Wave-Content.md)

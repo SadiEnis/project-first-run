@@ -12,7 +12,7 @@ Each ability: discuss mechanics → EN/TR TDD and docs checkpoint → coherent i
 | --- | --- | --- | --- |
 | 1 | Fireball | Complete existing content: random ranged targets, 2/3/4 projectiles, burn, GDD levels | Implemented; user confirmed burn, broader level/balance acceptance pending |
 | 2 | Force Wave | Frontal short-range area damage and knockback | User accepted mechanic and revised cooldowns; full regression rerun deferred |
-| 3 | Drone | Player-following drone, targeting/fire cadence, second drone, boss rate bonus | Planned |
+| 3 | Drone | Player-following drone, targeting/fire cadence, second drone, boss rate bonus | User accepted gameplay including two drones and facing; selected arena fixtures 26/26 passed |
 | 4 | Acid Bottle | Random-target bottles, lasting damage areas, L8 slow | Planned |
 | 5 | Lightning Staff | Random strikes, additional strikes, stun, L8 chain | Planned |
 | 6 | Shuriken | Two rotations around player, controlled repeat hits, second shuriken, bleed | Planned |
@@ -24,3 +24,5 @@ All have eight base levels. GDD upgrade order is authoritative; numerical balanc
 Evolution gameplay, gold/meta, ammunition sources, final presentation and Windows builds are excluded. Temporary readable feedback is included. Boss-specific rules may use automated rank fixtures where playable boss content is unavailable.
 
 Initial checkpoint: Plasma gameplay acceptance recorded; [Fireball design](Fireball-Content.md) prepared. No new ability implementation or test run at this checkpoint.
+
+Workflow update: the user runs EditMode/PlayMode and performs check-ins/commits. The assistant supplies messages/commands and handles only missing or failing tests identified by the user; do not automatically run complete suites. This supersedes the earlier validation ownership.

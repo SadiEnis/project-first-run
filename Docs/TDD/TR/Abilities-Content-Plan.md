@@ -12,7 +12,7 @@ Her yetenek: mekanik konuşması → EN/TR TDD ve docs checkpoint'i → anlamlı
 | --- | --- | --- | --- |
 | 1 | Fireball | Mevcut içeriği tamamlama: menzilde rastgele hedef, 2/3/4 mermi, yanma, GDD seviyeleri | Uygulandı; kullanıcı yanmayı doğruladı, genel seviye/denge kabulü bekliyor |
 | 2 | Force Wave | Öne doğru kısa menzilli alan hasarı ve itme | Kullanıcı mekaniği ve değiştirdiği cooldown'ları kabul etti; tam regresyon tekrarı ertelendi |
-| 3 | Drone | Oyuncuyu takip, hedefleme/atış ritmi, ikinci drone, boss hız bonusu | Planlandı |
+| 3 | Drone | Oyuncuyu takip, hedefleme/atış ritmi, ikinci drone, boss hız bonusu | İki drone ve hedefe yönelme dahil oynanış kabul edildi; seçili arena testleri 26/26 geçti |
 | 4 | Acid Bottle | Rastgele hedefe şişe, süreli hasar alanı, L8 yavaşlatma | Planlandı |
 | 5 | Lightning Staff | Rastgele yıldırım, artan saldırı sayısı, sersemletme, L8 zincir | Planlandı |
 | 6 | Shuriken | Oyuncu etrafında iki tur, kontrollü tekrar isabeti, ikinci shuriken, kanama | Planlandı |
@@ -24,3 +24,5 @@ Hepsi sekiz temel seviyelidir. GDD yükseltme sırası esas alınır; sayısal d
 Evolution oynanışı, altın/meta, mühimmat kaynakları, nihai sunum ve Windows build kapsam dışıdır. Okunabilir geçici geri bildirim dahildir. Oynanabilir boss içeriği yoksa boss kuralları otomatik rank fixture'larıyla doğrulanabilir.
 
 İlk checkpoint: Plasma oynanış kabulü kaydedildi; [Fireball tasarımı](Fireball-Content.md) hazırlandı. Bu checkpoint'te yeni yetenek uygulaması veya test çalıştırma yoktur.
+
+İş akışı güncellemesi: EditMode/PlayMode çalıştırma ve check-in/commit kullanıcıya aittir. Asistan mesajları/komutları verir; yalnızca kullanıcının bildirdiği eksik veya başarısız testlerle ilgilenir, tam paketleri kendiliğinden çalıştırmaz. Önceki doğrulama sorumluluğunun yerine bu kural geçer.

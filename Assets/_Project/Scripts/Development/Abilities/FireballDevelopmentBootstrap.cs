@@ -89,6 +89,9 @@ namespace ProjectFirstRun.Development.Abilities
 
             factoryRegistry.Register(
                 fireballFactory);
+            // This legacy bootstrap owns the development ability registry for saved fixtures.
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.ForceWave.ForceWaveRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
 
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);

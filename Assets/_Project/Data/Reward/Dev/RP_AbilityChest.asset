@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: RP_AbilityChest
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Rewards.RewardItemPool
   _items:
+  - {fileID: 11400000, guid: c94d6653da914af59f1a208040280006, type: 2}
   - {fileID: 11400000, guid: d8030a403a11f6c4684ddb91f6b829ec, type: 2}

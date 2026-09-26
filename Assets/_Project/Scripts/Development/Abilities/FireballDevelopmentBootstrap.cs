@@ -92,6 +92,8 @@ namespace ProjectFirstRun.Development.Abilities
             // This legacy bootstrap owns the development ability registry for saved fixtures.
             factoryRegistry.Register(new ProjectFirstRun.Abilities.ForceWave.ForceWaveRuntimeFactory(
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.Drone.DroneRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
 
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);

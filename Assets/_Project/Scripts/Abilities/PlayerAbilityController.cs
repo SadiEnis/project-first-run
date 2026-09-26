@@ -107,6 +107,8 @@ namespace ProjectFirstRun.Abilities
 
             TickCooldowns(
                 deltaTime);
+            foreach (var entry in _entries)
+                entry.TickContinuous(deltaTime, AbilityOrigin.position, _abilityControlEnabled && isActiveAndEnabled);
 
             if (!_abilityControlEnabled)
             {
@@ -135,7 +137,7 @@ namespace ProjectFirstRun.Abilities
             foreach (AbilityRuntimeEntry entry
                      in _entries)
             {
-                if (!entry.IsReady)
+                if (entry.IsContinuous || !entry.IsReady)
                 {
                     continue;
                 }

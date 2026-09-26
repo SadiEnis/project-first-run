@@ -94,6 +94,8 @@ namespace ProjectFirstRun.Development.Abilities
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
             factoryRegistry.Register(new ProjectFirstRun.Abilities.Drone.DroneRuntimeFactory(
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.AcidBottle.AcidBottleRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
 
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);

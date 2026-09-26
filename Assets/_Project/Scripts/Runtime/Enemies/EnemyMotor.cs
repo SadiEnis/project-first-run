@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using ProjectFirstRun.Combat;
@@ -18,6 +19,30 @@ namespace ProjectFirstRun.Enemies
         private bool _isInitialized;
         private bool _movementEnabled;
         private bool _destinationOverride;
+        private float _baseSpeed;
+        private readonly Dictionary<object, float> _movementModifiers = new Dictionary<object, float>();
+        public float MovementMultiplier { get; private set; } = 1;
+        public void SetMovementModifier(object owner, float multiplier)
+        {
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+            if (!float.IsFinite(multiplier) || multiplier <= 0 || multiplier > 1)
+                throw new ArgumentOutOfRangeException(nameof(multiplier));
+            _movementModifiers[owner] = multiplier; RefreshMovementSpeed();
+        }
+        public void RemoveMovementModifier(object owner)
+        {
+            if (owner != null && _movementModifiers.Remove(owner)) RefreshMovementSpeed();
+        }
+        private void RefreshMovementSpeed()
+        {
+            MovementMultiplier = 1;
+            foreach (var value in _movementModifiers.Values) MovementMultiplier = Mathf.Min(MovementMultiplier, value);
+            if (_agent != null && _isInitialized) _agent.speed = _baseSpeed * MovementMultiplier;
+        }
+        private void OnDisable()
+        {
+            _movementModifiers.Clear(); RefreshMovementSpeed();
+        }
 
         public bool CanNavigate => CanUseAgent();
 
@@ -70,6 +95,7 @@ namespace ProjectFirstRun.Enemies
         {
             blocked = true;
             if (!CanUseAgent() || distance <= 0f) return 0f;
+            distance *= MovementMultiplier;
             Stop();
             Vector3 origin = transform.position;
             float allowed = distance;
@@ -159,8 +185,9 @@ namespace ProjectFirstRun.Enemies
             _destinationUpdateInterval =
                 definition.DestinationUpdateInterval;
 
-            _agent.speed =
-                definition.MovementSpeed;
+            _baseSpeed = definition.MovementSpeed;
+            _movementModifiers.Clear(); MovementMultiplier = 1;
+            _agent.speed = _baseSpeed;
 
             _agent.acceleration =
                 definition.Acceleration;

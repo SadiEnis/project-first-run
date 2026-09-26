@@ -92,15 +92,16 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(enemy.transform.position.z - before.z, Is.InRange(0, 1.4f));
             yield return null;
         }
-        [UnityTest] public IEnumerator AbilityChestClaimsWaveThenExcludesItsMaximumLevel()
+        [UnityTest] public IEnumerator AbilityChestClaimsOfferedAbilityThenExcludesItsMaximumLevel()
         {
-            var wave = arena.Items[Index];
             Assert.That(arena.SpawnChest(1), Is.True);
             Find<ChestController>().Last(x => x.gameObject.activeInHierarchy).TryOpen();
-            Assert.That(arena.Selection.ActiveSession.Offer.Choices, Has.Member(wave));
+            // Four eligible abilities compete for three choices; no specific item is guaranteed.
+            var wave = arena.Selection.ActiveSession.Offer.Choices.First();
+            int itemIndex = arena.Items.ToList().FindIndex(x => x == wave);
             Assert.That(arena.Selection.Select(wave), Is.EqualTo(RewardClaimResult.Claimed));
-            Assert.That(arena.ItemLevel(Index), Is.EqualTo(1));
-            for (int i = 1; i < 8; i++) arena.LevelUp(Index);
+            Assert.That(arena.ItemLevel(itemIndex), Is.EqualTo(1));
+            for (int i = 1; i < 8; i++) arena.LevelUp(itemIndex);
             yield return null;
             Assert.That(arena.SpawnChest(1), Is.True);
             Find<ChestController>().Last(x => x.gameObject.activeInHierarchy).TryOpen();

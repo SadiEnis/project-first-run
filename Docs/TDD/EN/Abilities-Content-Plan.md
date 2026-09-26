@@ -13,7 +13,7 @@ Each ability: discuss mechanics → EN/TR TDD and docs checkpoint → coherent i
 | 1 | Fireball | Complete existing content: random ranged targets, 2/3/4 projectiles, burn, GDD levels | Implemented; user confirmed burn, broader level/balance acceptance pending |
 | 2 | Force Wave | Frontal short-range area damage and knockback | User accepted mechanic and revised cooldowns; full regression rerun deferred |
 | 3 | Drone | Player-following drone, targeting/fire cadence, second drone, boss rate bonus | User accepted gameplay including two drones and facing; selected arena fixtures 26/26 passed |
-| 4 | Acid Bottle | Random-target bottles, lasting damage areas, L8 slow | Planned |
+| 4 | Acid Bottle | Random-target bottles, lasting damage areas, L8 slow | User gameplay accepted; L8 slow 50%, balance provisional |
 | 5 | Lightning Staff | Random strikes, additional strikes, stun, L8 chain | Planned |
 | 6 | Shuriken | Two rotations around player, controlled repeat hits, second shuriken, bleed | Planned |
 | 7 | Enchanted Staff | Piercing beams with limited lifetime and random direction changes | Planned |

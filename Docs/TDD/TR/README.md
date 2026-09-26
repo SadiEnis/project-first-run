@@ -51,3 +51,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 45. [Fireball İçeriği](Fireball-Content.md)
 46. [Force Wave İçeriği](Force-Wave-Content.md)
 47. [Drone İçeriği](Drone-Content.md)
+48. [Acid Bottle İçeriği](Acid-Bottle-Content.md)

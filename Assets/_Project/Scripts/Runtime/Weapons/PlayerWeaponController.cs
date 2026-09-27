@@ -327,7 +327,8 @@ namespace ProjectFirstRun.Weapons
                 throw new InvalidOperationException("Weapon recoil requires an enabled PlayerLook.");
 
             WeaponFireResult fireResult =
-                _runtimeState.TryFire();
+                _runtimeState.TryFire(_statsController.Evaluate(
+                    PlayerStatType.WeaponFireRate, entry.ShotsPerSecond));
 
             if (fireResult ==
                 WeaponFireResult.EmptyMagazine)

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: RP_UpgradeChest
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Rewards.RewardItemPool
   _items:
-  - {fileID: 11400000, guid: 8453e39dc742d424b892c30922c791dc, type: 2}
+  - {fileID: 11400000, guid: 294be1073f5e462db7ee962961716da1, type: 2}
+  - {fileID: 11400000, guid: 294be1073f5e462db7ee962961716da2, type: 2}
+  - {fileID: 11400000, guid: 294be1073f5e462db7ee962961716da3, type: 2}

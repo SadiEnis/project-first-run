@@ -2,7 +2,13 @@
 
 ## Status and scope
 
-Mechanics accepted for Wrath Seal, Windweave and Fire Rhythm on upgrades-content. This is the pre-implementation documentation checkpoint; no new gameplay implementation or test execution is claimed.
+Wrath Seal, Windweave and Fire Rhythm are implemented on upgrades-content; Unity compilation, EditMode/PlayMode execution and gameplay acceptance are pending user validation.
+
+Implementation: three new five-level assets replace the development damage item in the saved content arena, its builder and the shared upgrade/mixed reward pools. The original development asset and its identity remain unchanged for legacy fixtures (including the disabled Test_Waves bootstrap). No save-ID migration is claimed. The content catalog now has 16 items; the upgrade pool has 3.
+
+PlayerMotor evaluates MoveSpeed from its configured walk/sprint speed on each movement tick. PlayerWeaponController evaluates WeaponFireRate from the active weapon level immediately before firing; WeaponRuntimeState captures that rate only for a successful new shot. Existing waits, weapon switching state, reload duration and preparation duration are unchanged. Weapon/ability damage consumers already evaluate their respective damage stats; their existing snapshot timing is retained.
+
+Added FireRhythmTimingTests and CoreStatUpgradeTests cover timing, invalid rates, reload isolation, all five levels, additive stacking, maximum level, movement non-compounding and removal of a movement modifier. Updated existing catalog/pool count assertions. These tests have not been executed by the assistant. End-to-end scene travel, input behavior and damage visuals still require the existing suites/manual acceptance; the new tests do not claim that coverage.
 
 Shared progression: nine stat upgrades have five levels; seven traits have three. Ordinary percentage bonuses to the same stat add together. Each upgrade level replaces that upgrade's previous full effect set; it does not add every earlier level again. Other sources remain intact. Trait costs/caps and remaining item rules will be discussed separately.
 

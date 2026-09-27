@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectFirstRun.Stats;
 
 namespace ProjectFirstRun.Player
 {
@@ -22,6 +23,17 @@ namespace ProjectFirstRun.Player
 
         private CharacterController _characterController;
         private float _verticalVelocity;
+        private PlayerStatsController _stats;
+
+        public float EvaluateMovementSpeed(bool isSprinting)
+        {
+            if (_stats == null) _stats = GetComponent<PlayerStatsController>();
+            float baseSpeed = isSprinting ? _sprintSpeed : _walkSpeed;
+            float speed = _stats == null ? baseSpeed : _stats.Evaluate(PlayerStatType.MoveSpeed, baseSpeed);
+            if (!float.IsFinite(speed) || speed < 0f)
+                throw new System.InvalidOperationException("Movement speed must be finite and non-negative.");
+            return speed;
+        }
 
         public bool IsGrounded => _characterController.isGrounded;
 
@@ -56,7 +68,7 @@ namespace ProjectFirstRun.Player
                 1f);
 
             float movementSpeed =
-                isSprinting ? _sprintSpeed : _walkSpeed;
+                EvaluateMovementSpeed(isSprinting);
 
             UpdateVerticalVelocity(deltaTime);
 

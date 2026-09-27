@@ -2,7 +2,13 @@
 
 ## Durum ve kapsam
 
-upgrades-content üzerinde Hiddet Mührü, Rüzgâr Örgüsü ve Ateş Ritmi mekanikleri onaylandı. Bu uygulama öncesi doküman checkpoint'idir; yeni oynanış uygulaması veya test çalıştırma tamamlanmış değildir.
+upgrades-content üzerinde Hiddet Mührü, Rüzgâr Örgüsü ve Ateş Ritmi uygulandı. Unity derlemesi, EditMode/PlayMode çalıştırılması ve oynanış kabulü kullanıcı doğrulamasını bekliyor.
+
+Üç yeni beş seviyeli asset; kayıtlı içerik arenasında, sahne oluşturucusunda ve ortak upgrade/karışık ödül havuzlarında geliştirme hasar öğesinin yerini aldı. Eski geliştirme asset'i ve kimliği geçmiş testler için değişmeden korundu (Test_Waves içindeki devre dışı bootstrap dahil). Kayıt kimliği göçü yapılmadı. İçerik kataloğu 16, upgrade havuzu 3 öğedir.
+
+PlayerMotor her hareket adımında yapılandırılmış yürüme/koşma hızından MoveSpeed hesaplar. PlayerWeaponController ateş etmeden önce aktif silah seviyesinden WeaponFireRate hesaplar; WeaponRuntimeState yalnızca başarılı yeni atışın aralığını bu değerden üretir. Mevcut bekleme, silah değişimindeki durum, şarjör ve hazırlık süreleri değişmez. Silah/yetenek hasar yolları zaten ilgili statları kullandığından mevcut hasar anlık görüntüsü zamanlamaları korunur.
+
+Eklenen FireRhythmTimingTests ve CoreStatUpgradeTests; atış zamanlaması, geçersiz hızlar, şarjör süresinin korunması, beş seviye, yüzdelerin toplanması, maksimum seviye, hareket bonusunun katlanmaması ve kaldırılmasını kapsar. Mevcut katalog/havuz sayısı kontrolleri güncellendi. Testler asistan tarafından çalıştırılmadı. Uçtan uca sahne geçişi, giriş davranışı ve hasarın görsel doğrulaması mevcut testler/manuel kabul gerektirir; yeni testlerin bunları doğruladığı iddia edilmez.
 
 Ortak ilerleme: dokuz stat güçlendirmesi beş, yedi özellik güçlendirmesi üç seviyelidir. Aynı stata gelen normal yüzdeler toplanır. Her seviye kendi güçlendirmesinin önceki tam etki grubunun yerini alır; önceki seviyeler tekrar eklenmez. Diğer kaynaklar korunur. Özellik bedelleri/sınırları ve kalan eşyaların kuralları ayrıca konuşulacak.
 

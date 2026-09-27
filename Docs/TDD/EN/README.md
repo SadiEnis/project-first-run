@@ -60,3 +60,4 @@ Project First Run is the current development codename. The final commercial titl
 54. [Upgrades Content Plan](Upgrades-Content-Plan.md)
 55. [Core Stat Upgrades](Core-Stat-Upgrades.md)
 56. [Survival Stat Upgrades](Survival-Stat-Upgrades.md)
+57. [Pickup and XP Upgrades](Pickup-XP-Upgrades.md)

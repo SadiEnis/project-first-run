@@ -48,7 +48,7 @@ Discuss each group's mechanics before implementing. Record EN/TR TDD before code
 - Accepted progression: five levels for the nine stat upgrades and three for the seven traits. Ordinary percentages add; each level replaces its previous full effect set. The first group's values and contracts are in [Core Stat Upgrades](Core-Stat-Upgrades.md); other item values remain open.
 - Each level represents the full effect set, not an accumulating increment. Respect existing upgrade ownership, replacement and maximum-level exclusion.
 - Verify damage coverage for weapon/ability hits, fragments and timed effects; document snapshot versus live recalculation.
-- Maximum-health gain/loss, damage-reduction formula/cap and regeneration rules are approved in [Survival Stat Upgrades](Survival-Stat-Upgrades.md); implementation and validation are pending.
+- Maximum-health gain/loss, damage-reduction formula/cap and regeneration are implemented per [Survival Stat Upgrades](Survival-Stat-Upgrades.md); user validation is pending.
 - Decide ability cooldown coverage explicitly: ordinary casts, Shuriken post-orbit cooldown, Drone cadence and active effects must not accidentally share one interpretation.
 - Blood Pact already trades maximum health for damage. Using increased incoming damage for Glass Heart is a proposal to distinguish it, not yet an accepted formula.
 - Specify Last Stand threshold/re-evaluation, Iron Oath speed floor, and whether Fluid Mechanism reduces or removes an existing reload penalty. Do not invent a penalty solely to make the item useful without agreement.

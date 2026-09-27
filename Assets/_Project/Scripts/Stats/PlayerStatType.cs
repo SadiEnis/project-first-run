@@ -9,6 +9,8 @@ namespace ProjectFirstRun.Stats
         ReloadSpeed = 4,
         AbilityCooldown = 5,
         MaxHealth = 6,
-        Luck = 7
+        Luck = 7,
+        DamageReduction = 8,
+        HealthRegeneration = 9
     }
 }

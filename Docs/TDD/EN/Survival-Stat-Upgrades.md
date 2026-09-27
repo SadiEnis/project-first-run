@@ -2,7 +2,15 @@
 
 ## Status and scope
 
-Mechanics approved for Second Heart, Ironhide and Lifesprout on upgrades-content. This is the pre-implementation documentation checkpoint. No runtime implementation or test execution is claimed.
+Second Heart, Ironhide and Lifesprout are implemented on upgrades-content. Unity compilation, automated test execution and manual gameplay acceptance are pending user validation.
+
+Implementation adds validated healing/live maximum changes to HealthState/HealthComponent and a PlayerSurvivalController on the saved player prefab. DamageReduction (8) and HealthRegeneration (9) extend the stat enum without renumbering existing values. Reduction is stored as additive percentage points via Flat modifiers against zero; regeneration is flat health/second. MaxHealth uses the existing percentage operation.
+
+The controller subscribes once to stat changes, preserves the configured base maximum, and drives scaled-time regeneration. Pauses/control locks reset the partial tick, so resuming needs a full second. Full health, death and disable also discard partial ticks; level changes do not. The optional run reference (Inspector or BindRun) stops healing on Victory/Defeat and is connected by the existing two-session development bootstrap. Custom run hosts must also bind their run; map scenes without a run controller use player control/death/time gates.
+
+The existing scene-travel flow moves the same player object and freezes gameplay, preserving these stats and health. Fresh player creation starts clean; ResetHealth is still a revive/refill operation, not an upgrade/build reset.
+
+The saved content catalog now contains 19 items; upgrade/mixed pools contain 6/19. Added SurvivalHealthStateTests and SurvivalUpgradeTests cover health boundaries, mitigation, progression, regeneration, enable cycles, scene relocation and a fresh player. Scene relocation is not a full asynchronous loading test. Catalog tests were updated. No Unity test pass or compilation is claimed.
 
 Use the existing shared upgrade slots and five-level progression. Each level replaces the item's previous full effect set; other sources remain intact. Values are provisional balance.
 

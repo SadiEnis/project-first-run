@@ -7,7 +7,7 @@ namespace ProjectFirstRun.Combat
     /// </summary>
     public sealed class HealthState
     {
-        public float MaximumHealth { get; }
+        public float MaximumHealth { get; private set; }
         public float CurrentHealth { get; private set; }
         public bool IsDead => CurrentHealth <= 0f;
 
@@ -25,8 +25,31 @@ namespace ProjectFirstRun.Combat
             CurrentHealth = maximumHealth;
         }
 
-        public DamageResult ApplyDamage(float requestedDamage)
+        public bool SetMaximumHealth(float maximumHealth)
         {
+            if (!IsFinite(maximumHealth) || maximumHealth <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(maximumHealth));
+            if (maximumHealth == MaximumHealth) return false;
+            float difference = maximumHealth - MaximumHealth;
+            MaximumHealth = maximumHealth;
+            if (!IsDead)
+                CurrentHealth = Math.Min(maximumHealth, CurrentHealth + Math.Max(0f, difference));
+            return true;
+        }
+
+        public float Heal(float amount)
+        {
+            if (!IsFinite(amount) || amount < 0f)
+                throw new ArgumentOutOfRangeException(nameof(amount));
+            if (IsDead) return 0f;
+            float restored = Math.Min(amount, MaximumHealth - CurrentHealth);
+            CurrentHealth += restored;
+            return restored;
+        }
+
+        public DamageResult ApplyDamage(float requestedDamage, float damageReduction = 0f)
+        {
+            if (!IsFinite(damageReduction)) throw new ArgumentOutOfRangeException(nameof(damageReduction));
             if (!IsFinite(requestedDamage) ||
                 requestedDamage <= 0f ||
                 IsDead)
@@ -38,7 +61,7 @@ namespace ProjectFirstRun.Combat
 
             float previousHealth = CurrentHealth;
             float appliedDamage = Math.Min(
-                requestedDamage,
+                requestedDamage * (1f - Math.Clamp(damageReduction, 0f, .75f)),
                 previousHealth);
 
             CurrentHealth = Math.Max(

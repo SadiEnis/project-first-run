@@ -2,7 +2,15 @@
 
 ## Durum ve kapsam
 
-upgrades-content üzerinde İkinci Kalp, Demir Deri ve Yaşam Filizi mekanikleri onaylandı. Bu uygulama öncesi doküman checkpoint'idir. Oynanış uygulaması veya test çalıştırılması tamamlanmış değildir.
+upgrades-content üzerinde İkinci Kalp, Demir Deri ve Yaşam Filizi uygulandı. Unity derlemesi, otomatik test çalıştırılması ve manuel oynanış kabulü kullanıcı doğrulamasını bekliyor.
+
+HealthState/HealthComponent'e doğrulamalı iyileştirme ve canlı maksimum-can değişimi; kayıtlı oyuncu prefab'ına PlayerSurvivalController eklendi. Mevcut stat numaraları değiştirilmeden DamageReduction (8) ve HealthRegeneration (9) eklendi. Hasar azaltma sıfır temel üzerine Flat modifier ile yüzde puanı olarak toplanır; yenilenme düz can/sn değeridir. MaxHealth mevcut yüzde işlemini kullanır.
+
+Controller stat değişikliklerine bir kez abone olur, yapılandırılmış temel maksimumu korur ve ölçeklenmiş zamanda yenilenmeyi yürütür. Duraklama/kontrol kilidi kısmi tick'i sıfırlar; dönüşte tam bir saniye gerekir. Tam can, ölüm ve devre dışı kalma da kısmi tick'i siler; seviye değişimi silmez. İsteğe bağlı run referansı (Inspector veya BindRun) Victory/Defeat durumunda iyileştirmeyi durdurur; mevcut iki oturumlu geliştirme bootstrap'ına bağlandı. Özel run yöneticileri de kendi run'ını bağlamalıdır; run controller olmayan haritalar oyuncu kontrolü/ölüm/zaman koşullarını kullanır.
+
+Mevcut sahne geçişi aynı oyuncu nesnesini taşır ve oynanışı dondurur; statlar ve can korunur. Yeni oyuncu temiz başlar; ResetHealth halen diriltme/can doldurma işlemidir, güçlendirme/build sıfırlaması değildir.
+
+Kayıtlı içerik kataloğu 19; upgrade/karışık havuzlar 6/19 öğedir. SurvivalHealthStateTests ve SurvivalUpgradeTests; can sınırları, azaltma, ilerleme, yenilenme, yeniden etkinleştirme, sahneye taşıma ve yeni oyuncuyu kapsar. Sahneye taşıma testi tam asenkron yükleme testi değildir. Katalog testleri güncellendi. Unity derlemesi veya başarılı test sonucu iddia edilmez.
 
 Mevcut ortak güçlendirme slotları ve beş seviyeli ilerleme kullanılır. Her seviye öğenin önceki tam etki grubunu değiştirir; diğer kaynaklar korunur. Değerler başlangıç dengesidir.
 

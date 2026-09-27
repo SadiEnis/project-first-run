@@ -61,6 +61,7 @@ namespace ProjectFirstRun.Development.Arenas
 
             _run = gameObject.AddComponent<RunSessionController>();
             _run.Initialize(new IArenaSession[] { _arenaSessionController, nextArena }, _playerDeathController);
+            _playerDeathController.GetComponent<PlayerSurvivalController>()?.BindRun(_run);
             var transitions = gameObject.AddComponent<ArenaTransitionController>();
             var entry = new GameObject("Second Arena Entry").transform;
             entry.SetParent(transform);

@@ -391,7 +391,7 @@ Acid bottles fall onto random targets and create damaging areas.
 
 **Role:** Unpredictable piercing beams and battlefield coverage.
 
-The ability fires beams in random directions. Beams travel for a limited duration, pass through enemies, and change direction at random points.
+The ability fires beams in random horizontal directions. Beams travel for a limited duration, pass through enemies, and reflect from solid world obstacles. They change direction only on collision, not randomly mid-flight; camera/screen boundaries do not cause bounces. This Runetracer-inspired behavior supersedes the earlier random-turn proposal.
 
 | Level | Current Design |
 | --- | --- |

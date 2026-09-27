@@ -56,3 +56,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 50. [Shuriken İçeriği](Shuriken-Content.md)
 51. [Düşman Can Çubukları](Enemy-Health-Bars.md)
 52. [Efsun Asası İçeriği](Enchanted-Staff-Content.md)
+53. [Sniper Bomb İçeriği](Sniper-Bomb-Content.md)

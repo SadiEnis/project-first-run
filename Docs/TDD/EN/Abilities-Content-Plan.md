@@ -17,7 +17,7 @@ Each ability: discuss mechanics → EN/TR TDD and docs checkpoint → coherent i
 | 5 | Lightning Staff | Random strikes, additional strikes, stun, L8 chain | User gameplay accepted; automated test results unreported |
 | 6 | Shuriken | Two rotations around player, controlled repeat hits, second shuriken, bleed | Implemented; Unity tests and gameplay acceptance pending |
 | 7 | Enchanted Staff | Limited-lifetime piercing beams reflecting from world obstacles | User behavior accepted; balance deferred, automated results unreported |
-| 8 | Sniper Bomb | Elite/boss priority, homing explosions, second bomb, retarget on target death | Planned |
+| 8 | Sniper Bomb | Elite/boss priority, homing explosions, second bomb, retarget on target death | Mechanic agreed; TDD ready, implementation next |
 
 All have eight base levels. GDD upgrade order is authoritative; numerical balance and unspecified targeting/status rules are discussed before each ability. Reuse validated behavior where suitable, extracting shared code only when a concrete second consumer requires it. Do not couple ability damage to weapon damage. Preserve cross-map registry rebinding and existing run lifecycle.
 

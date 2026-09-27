@@ -48,7 +48,7 @@ Her grubun mekaniği uygulama öncesinde konuşulur. Koddan önce EN/TR TDD kayd
 - Onaylanan ilerleme: dokuz stat güçlendirmesi beş, yedi özellik güçlendirmesi üç seviye. Normal yüzdeler toplanır; yeni seviye önceki tam etki grubunun yerini alır. İlk grubun değerleri ve kuralları [Temel Stat Güçlendirmeleri](Core-Stat-Upgrades.md) belgesindedir; diğer eşya değerleri açıktır.
 - Her seviye üst üste eklenen farkı değil tam etki grubunu tanımlar. Mevcut etki sahipliği, değiştirme ve maksimum seviyede havuzdan çıkarma korunur.
 - Silah/yetenek isabetleri, parçacıklar ve zamanlı hasar kapsamı doğrulanır; atış anında alınan değerler ile canlı hesaplama belgelenir.
-- Maksimum can artışı/azalışında mevcut can, zırh formülü/sınırı, yenilenme aralığı ve hangi run durumlarında iyileşilebileceği kararlaştırılır.
+- Maksimum can artışı/azalışı, hasar azaltma formülü/sınırı ve yenilenme kuralları [Hayatta Kalma Stat Güçlendirmeleri](Survival-Stat-Upgrades.md) içinde onaylandı; uygulama ve doğrulama bekliyor.
 - Cooldown kapsamı açıkça belirlenir: normal atışlar, Shuriken dönüş sonrası bekleme, Drone atış aralığı ve etkin etkiler kazara tek yorumla değiştirilmez.
 - Kan Ahdi maksimum canı hasara dönüştürür. Cam Kalp için alınan hasarı artırma fikri ayırt edici bir öneridir; henüz onaylanmış formül değildir.
 - Son Direniş eşiği/yeniden değerlendirmesi, Demir Yemin hız alt sınırı ve Akıcı Mekanizma'nın mevcut reload cezasını azaltması mı kaldırması mı gerektiği belirlenir. Eşyayı işe yarar yapmak için onaysız yeni ceza icat edilmez.

@@ -53,3 +53,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 47. [Drone İçeriği](Drone-Content.md)
 48. [Acid Bottle İçeriği](Acid-Bottle-Content.md)
 49. [Lightning Staff İçeriği](Lightning-Staff-Content.md)
+50. [Shuriken İçeriği](Shuriken-Content.md)

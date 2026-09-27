@@ -14,7 +14,7 @@ Her yetenek: mekanik konuşması → EN/TR TDD ve docs checkpoint'i → anlamlı
 | 2 | Force Wave | Öne doğru kısa menzilli alan hasarı ve itme | Kullanıcı mekaniği ve değiştirdiği cooldown'ları kabul etti; tam regresyon tekrarı ertelendi |
 | 3 | Drone | Oyuncuyu takip, hedefleme/atış ritmi, ikinci drone, boss hız bonusu | İki drone ve hedefe yönelme dahil oynanış kabul edildi; seçili arena testleri 26/26 geçti |
 | 4 | Acid Bottle | Rastgele hedefe şişe, süreli hasar alanı, L8 yavaşlatma | Kullanıcı oynanış kabulü tamam; L8 yavaşlatma %50, denge geçici |
-| 5 | Lightning Staff | Rastgele yıldırım, artan saldırı sayısı, sersemletme, L8 zincir | Mekanik onaylandı; TDD hazır, sırada uygulama |
+| 5 | Lightning Staff | Rastgele yıldırım, artan saldırı sayısı, sersemletme, L8 zincir | Kullanıcı oynanış kabulü tamam; otomatik test sonucu bildirilmedi |
 | 6 | Shuriken | Oyuncu etrafında iki tur, kontrollü tekrar isabeti, ikinci shuriken, kanama | Planlandı |
 | 7 | Enchanted Staff | Süreli, delici ve rastgele yön değiştiren ışınlar | Planlandı |
 | 8 | Sniper Bomb | Elite/boss önceliği, güdümlü patlama, ikinci bomba, hedef ölünce yeniden seçim | Planlandı |

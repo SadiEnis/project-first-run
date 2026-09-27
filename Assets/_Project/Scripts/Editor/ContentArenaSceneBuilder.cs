@@ -203,7 +203,8 @@ namespace ProjectFirstRun.Editor
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_RocketLauncher.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Abilities/AD_ForceWave.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Abilities/AD_Drone.asset"),
-                Load<ItemDefinition>("Assets/_Project/Data/Abilities/AD_AcidBottle.asset"));
+                Load<ItemDefinition>("Assets/_Project/Data/Abilities/AD_AcidBottle.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Abilities/AD_LightningStaff.asset"));
             SetArray(arena, "_chests",
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_WeaponChest.asset"),
                 Load<ChestDefinition>("Assets/_Project/Data/Chests/Dev/CD_AbilityChest.asset"),

@@ -130,6 +130,7 @@ namespace ProjectFirstRun.Enemies
             _isDead = true;
 
             _enemyMotor.Stop();
+            _enemyMotor.ClearStun();
             Unregister();
 
             Died?.Invoke(

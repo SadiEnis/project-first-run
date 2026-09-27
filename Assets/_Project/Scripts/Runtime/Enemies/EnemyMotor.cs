@@ -20,6 +20,27 @@ namespace ProjectFirstRun.Enemies
         private bool _movementEnabled;
         private bool _destinationOverride;
         private float _baseSpeed;
+        private float _stunUntil;
+        private bool _stunStoppedAgent;
+        public bool IsStunned => Time.time < _stunUntil;
+        public void ApplyStun(float duration)
+        {
+            if (!float.IsFinite(duration) || duration <= 0) throw new ArgumentOutOfRangeException(nameof(duration));
+            if (!isActiveAndEnabled || !_isInitialized) return;
+            _stunUntil = Mathf.Max(_stunUntil, Time.time + duration);
+            if (CanUseAgent())
+            {
+                _agent.isStopped = true;
+                _agent.velocity = Vector3.zero;
+                _stunStoppedAgent = true;
+            }
+        }
+        public void ClearStun()
+        {
+            _stunUntil = 0;
+            if (_stunStoppedAgent && CanUseAgent()) _agent.isStopped = !_movementEnabled;
+            _stunStoppedAgent = false;
+        }
         private readonly Dictionary<object, float> _movementModifiers = new Dictionary<object, float>();
         public float MovementMultiplier { get; private set; } = 1;
         public void SetMovementModifier(object owner, float multiplier)
@@ -41,6 +62,7 @@ namespace ProjectFirstRun.Enemies
         }
         private void OnDisable()
         {
+            ClearStun();
             _movementModifiers.Clear(); RefreshMovementSpeed();
         }
 
@@ -86,7 +108,7 @@ namespace ProjectFirstRun.Enemies
                 return false;
             _movementEnabled = true;
             _destinationOverride = true;
-            _agent.isStopped = false;
+            _agent.isStopped = IsStunned;
             return _agent.SetDestination(destination);
         }
 
@@ -94,6 +116,7 @@ namespace ProjectFirstRun.Enemies
         public float MoveCharge(Vector3 direction, float distance, out bool blocked)
         {
             blocked = true;
+            if (IsStunned) { blocked = false; return 0f; }
             if (!CanUseAgent() || distance <= 0f) return 0f;
             distance *= MovementMultiplier;
             Stop();
@@ -138,6 +161,8 @@ namespace ProjectFirstRun.Enemies
 
         private void Update()
         {
+            if (IsStunned) return;
+            if (_stunStoppedAgent) ClearStun();
             if (!_isInitialized ||
                 !_movementEnabled ||
                 _target == null)
@@ -186,6 +211,7 @@ namespace ProjectFirstRun.Enemies
                 definition.DestinationUpdateInterval;
 
             _baseSpeed = definition.MovementSpeed;
+            ClearStun();
             _movementModifiers.Clear(); MovementMultiplier = 1;
             _agent.speed = _baseSpeed;
 
@@ -222,7 +248,7 @@ namespace ProjectFirstRun.Enemies
 
             if (CanUseAgent())
             {
-                _agent.isStopped = false;
+                _agent.isStopped = IsStunned;
                 TryUpdateDestination();
             }
         }
@@ -243,6 +269,7 @@ namespace ProjectFirstRun.Enemies
 
         private void TryUpdateDestination()
         {
+            if (IsStunned) return;
             if (_target == null ||
                 !CanUseAgent())
             {

@@ -68,6 +68,24 @@ namespace ProjectFirstRun.Tests.PlayMode.Enemies
         }
 
         [Test]
+        public void StunPreservesCommittedChargeAndAcidModifier()
+        {
+            BeginCharge();
+            object acid = new object();
+            _motor.SetMovementModifier(acid, .5f);
+            Vector3 start = _enemy.transform.position;
+            _motor.ApplyStun(.5f);
+            _attack.Tick(1);
+            Assert.That(_attack.ChargeState.Phase, Is.EqualTo(EnemyChargePhase.Charging));
+            Assert.That(_enemy.transform.position, Is.EqualTo(start));
+            Assert.That(_target.CurrentHealth, Is.EqualTo(100));
+            _motor.ClearStun();
+            Assert.That(_motor.MovementMultiplier, Is.EqualTo(.5f));
+            _attack.Tick(.1f);
+            Assert.That(_enemy.transform.position.z, Is.GreaterThan(start.z));
+        }
+
+        [Test]
         public void SweptCharge_HitsOnceEvenWhenOneStepPassesBeyondTarget()
         {
             int hits = 0; _attack.AttackPerformed += (_, _) => hits++;

@@ -2,7 +2,7 @@
 
 ## Durum
 
-abilities-content üzerindeki beşinci yetenek; GDD 12.4 temel alınır. Rastgele hedefli alan yıldırımları, L6 sersemletme ve L8 tek sıçramalı zincir kullanıcı tarafından onaylandı. Bu checkpoint yalnızca dokümantasyondur; uygulama ve doğrulama henüz yapılmadı.
+abilities-content üzerindeki beşinci yetenek; GDD 12.4 temel alınır. Runtime, sekiz seviyeli asset, kayıtlı arena/F1 ve ödül entegrasyonu uygulandı. Kullanıcı oynanış kabulü tamamlandı: yıldırım davranışı, sayı/hasar ilerlemesi ve L8 zincir aktarımı doğrulandı. Denge değerleri geçicidir. Asistan Unity derlemesi veya otomatik test çalıştırmadı; bu geliştirme için otomatik test sonucu henüz bildirilmedi.
 
 ## Mekanik
 
@@ -39,3 +39,9 @@ Hedef menzili her seviyede 15 m, isabet yarıçapı 2 m. Hasarlar ve 4 m zincir 
 5. EditMode/PlayMode ve oynanış kabulünü kullanıcı yapar; asistan yalnızca özellikle istenen eksik/başarısız testleri çalıştırır. Evolution, nihai görseller, build ve VCS işlemleri kapsam dışıdır.
 
 Docs ve uygulama ayrı check-in noktalarıdır. Shuriken öncesinde oynanış kabulü için durulur.
+
+## Uygulama kaydı
+
+EnemyMotor ölçeklenen oyun zamanıyla bir sersemletme bitiş anı tutar; NavMeshAgent yolunu silmeden geçici durdurur. EnemyAttackController tüm saldırı türlerinde durum ilerlemesinden önce sersemletmeyi kontrol eder. Bitişte hareket, motor sahibinin güncel etkinlik durumuna göre geri verilir; asit hız katkıları bağımsız kalır. Ölüm, devre dışı bırakma ve yeniden başlatma sersemletmeyi temizler.
+
+Yazılan kontroller: seviye/geçersiz ayarlar; alan collider tekilleştirme; engellenen hedef; tekrarlı yıldırım; zincir dışlamaları, menzil ve duvar; registry değiştirme; pause/oyuncu ölümü; cooldown korunması; öldürücü isabette kayıt silme; asitle sersemletme yenileme/bitiş/devre dışı bırakma; Charger hareketi ve Ranger hazırlığının durması. Testler çalıştırılmadı, başarı sayısı belirtilmiyor. Kayıtlı içerik arenasında L1/L4/L6/L7/L8 elle denenebilir. Kat ayrımı uç durumları ve tam sahne boşaltma entegrasyonu ayrıca doğrulanmalı.

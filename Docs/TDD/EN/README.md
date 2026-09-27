@@ -57,3 +57,4 @@ Project First Run is the current development codename. The final commercial titl
 51. [Enemy Health Bars](Enemy-Health-Bars.md)
 52. [Enchanted Staff Content](Enchanted-Staff-Content.md)
 53. [Sniper Bomb Content](Sniper-Bomb-Content.md)
+54. [Upgrades Content Plan](Upgrades-Content-Plan.md)

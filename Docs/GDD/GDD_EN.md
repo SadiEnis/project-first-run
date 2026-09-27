@@ -429,7 +429,7 @@ Upgrades support the player's general statistics or provide traits that change h
 
 All upgrades use the same slot pool. The distinction between stat upgrades and traits exists for design organization only.
 
-The target is currently ten upgrades, but the final selection has not been completed.
+The accepted content scope is sixteen upgrades: all nine stat upgrades and seven traits below. Working display names are approved and may change with the final theme; numerical rules and level counts remain to be agreed before implementation. See the EN/TR Upgrades Content Plan for the name mapping and implementation order.
 
 ### 13.1 Stat Upgrade Candidates
 
@@ -459,7 +459,7 @@ A dedicated burn-damage upgrade is currently not preferred because it may be unu
 | Ammo Expert | Removes or reduces the movement penalty while reloading |
 | Vampire | Provides a chance or method to recover health by killing enemies |
 
-Trait values, level structures, interactions, and final inclusion are not yet confirmed.
+All seven traits are included in the planned scope. Values, level structures and interactions remain to be agreed. Trait reward cards are planned to use a bright frame glowing inward without an outward halo; visual reference and implementation are deferred. This presentation does not change their shared slot pool or establish a new rarity.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Eighth and final planned base ability on abilities-content, following GDD 12.8. The user accepted the targeting, homing and retarget rules below; revisions remain possible after gameplay testing. This checkpoint is documentation only. No implementation or test execution yet; no evolution.
+Eighth and final planned base ability on abilities-content, following GDD 12.8. Runtime, eight-level asset, saved arena/F1 and reward integration are implemented. The user reported that the ability works well and accepted gameplay progression to the next stage. This is general gameplay acceptance, not confirmation of every edge case. The assistant has not run Unity compilation or tests; automated results have not been reported. Balance remains provisional; no evolution.
 
 ## Agreed behavior
 
@@ -44,3 +44,9 @@ The previously discussed 20 m acquisition range, 10 m/s speed, 6/4 s cooldown an
 5. Author tests for ranks/distance/visibility, empty acquisition, tracking, target death/reuse, fallback/retarget, wall ordering, explosion deduplication/cover, timeout, two bombs, level snapshots, pause/death/map cleanup.
 
 User runs EditMode/PlayMode and gameplay acceptance; assistant only executes specifically requested missing/failing tests. No automatic commits or merges. Separate docs and implementation check-ins. Stop for acceptance before assessing completion of the abilities-content stage.
+
+## Implementation notes
+
+Flight uses 0.025 s swept substeps. The second bomb has a 0.12 s release delay for readability; both lock at activation and the delay counts toward lifetime. Target SpawnVersion distinguishes reuse; destroyed targets also trigger the invalid-target path. Explosion uses the swept sphere center on the near side of a contacted surface to avoid placing the blast inside cover. Temporary orange spheres show flight and a 0.2 s expanding blast.
+
+Authored checks cover level data, invalid config, rank/nearest/visible priority, explosion deduplication, wall occlusion, last-position fallback, destroyed-target reacquisition, no-replacement commitment, pause/source death, no-target cooldown and paired-bomb damage. No tests were run. Timeout, target reuse, moving-target pursuit, live-bomb map cleanup and corner/initial-overlap cases still require additional validation.

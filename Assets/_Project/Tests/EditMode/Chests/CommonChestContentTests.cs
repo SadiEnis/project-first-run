@@ -23,7 +23,7 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
     public sealed class CommonChestContentTests
     {
         [TestCase("Weapon", ChestRewardCategory.Weapon, ItemCategory.Weapon, 5)]
-        [TestCase("Ability", ChestRewardCategory.Ability, ItemCategory.Ability, 7)]
+        [TestCase("Ability", ChestRewardCategory.Ability, ItemCategory.Ability, 8)]
         [TestCase("Upgrade", ChestRewardCategory.Upgrade, ItemCategory.Upgrade, 1)]
         public void CommonContent_HasMatchingPoolAndSingleClaimChoiceCount(string name,
             ChestRewardCategory category, ItemCategory itemCategory, int count)

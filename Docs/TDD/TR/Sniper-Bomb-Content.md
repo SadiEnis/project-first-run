@@ -2,7 +2,7 @@
 
 ## Durum
 
-abilities-content üzerindeki sekizinci ve son planlı temel yetenek; GDD 12.8. Kullanıcı aşağıdaki hedefleme, güdüm ve yeniden seçim kurallarını onayladı; oynanış testinden sonra revize edilebilir. Bu checkpoint yalnızca dokümantasyondur. Henüz uygulama veya test çalıştırma yoktur; evolution kapsam dışıdır.
+abilities-content üzerindeki sekizinci ve son planlı temel yetenek; GDD 12.8. Runtime, sekiz seviyeli asset, kayıtlı arena/F1 ve ödül entegrasyonu uygulandı. Kullanıcı yeteneğin güzel çalıştığını bildirdi ve ilerlemeyi onayladı. Bu genel oynanış kabulüdür; bütün uç durumların doğrulandığı anlamına gelmez. Asistan Unity derlemesi/testleri çalıştırmadı; otomatik sonuç bildirilmedi. Denge geçicidir; evolution kapsam dışıdır.
 
 ## Kararlaştırılan davranış
 
@@ -44,3 +44,9 @@ Konuşulan 20 m hedef menzili, 10 m/s hız, 6/4 s cooldown ve 2/3/4 m patlama ya
 5. Rank/mesafe/görüş, hedefsiz atış, takip, hedef ölümü/yeniden kullanım, son konum/yeniden seçim, duvar sıralaması, patlama tekilleştirme/engel, süre bitişi, çift bomba, seviye anlık görüntüsü ve pause/ölüm/harita temizleme testlerini yazma.
 
 EditMode/PlayMode ve oynanış kabulünü kullanıcı yapar; asistan yalnızca özellikle istenen eksik/başarısız testleri çalıştırır. Otomatik commit/merge yoktur. Docs ve uygulama ayrı check-in noktalarıdır. abilities-content aşamasının tamamlanmasını değerlendirmeden önce kullanıcı kabulü için durulur.
+
+## Uygulama notları
+
+Uçuş 0,025 s süpürmeli alt adımlar kullanır. Okunabilirlik için ikinci bombada 0,12 s çıkış gecikmesi vardır; ikisi de aktivasyonda kilitlenir ve gecikme yaşam süresine dahildir. Hedef SpawnVersion değeri yeniden kullanımı ayırt eder; silinmiş hedef de geçersiz hedef akışını tetikler. Patlama, engelin içine yerleşmemek için temas edilen yüzeyin yakın tarafındaki süpürülen küre merkezini kullanır. Geçici turuncu küreler uçuşu ve 0,2 s genişleyen patlamayı gösterir.
+
+Yazılan kontroller seviye verileri, geçersiz ayar, rank/yakınlık/görüş önceliği, patlama tekilleştirme, duvar engeli, son konuma devam, silinmiş hedef sonrası seçim, aday yokken son konuma bağlı kalma, pause/kaynak ölümü, hedefsiz cooldown ve çift bomba hasarını kapsar. Testler çalıştırılmadı. Süre bitişi, hedef yeniden kullanımı, hareketli hedef takibi, uçan bombada harita temizliği ve köşe/başlangıç örtüşmesi ek doğrulama gerektirir.

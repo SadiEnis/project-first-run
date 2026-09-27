@@ -102,6 +102,8 @@ namespace ProjectFirstRun.Development.Abilities
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
             factoryRegistry.Register(new ProjectFirstRun.Abilities.EnchantedStaff.EnchantedRuntimeFactory(
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.SniperBomb.SniperRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
 
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);

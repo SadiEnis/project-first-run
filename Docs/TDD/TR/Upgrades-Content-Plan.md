@@ -45,7 +45,7 @@ Her grubun mekaniği uygulama öncesinde konuşulur. Koddan önce EN/TR TDD kayd
 ## Ortak kurallar ve açık kararlar
 
 - Tüm 16 eşya mevcut ortak güçlendirme slot havuzundadır; stat/özellik ayrımı yeni kategori veya ayrı kapasite değildir.
-- Maksimum seviyeler ve sayısal ilerleme kararlaştırılacak; silah/yeteneklerin sekiz seviyesi otomatik kopyalanmaz. Geliştirme hasar asset'i üç geçici seviye kullanır.
+- Onaylanan ilerleme: dokuz stat güçlendirmesi beş, yedi özellik güçlendirmesi üç seviye. Normal yüzdeler toplanır; yeni seviye önceki tam etki grubunun yerini alır. İlk grubun değerleri ve kuralları [Temel Stat Güçlendirmeleri](Core-Stat-Upgrades.md) belgesindedir; diğer eşya değerleri açıktır.
 - Her seviye üst üste eklenen farkı değil tam etki grubunu tanımlar. Mevcut etki sahipliği, değiştirme ve maksimum seviyede havuzdan çıkarma korunur.
 - Silah/yetenek isabetleri, parçacıklar ve zamanlı hasar kapsamı doğrulanır; atış anında alınan değerler ile canlı hesaplama belgelenir.
 - Maksimum can artışı/azalışında mevcut can, zırh formülü/sınırı, yenilenme aralığı ve hangi run durumlarında iyileşilebileceği kararlaştırılır.

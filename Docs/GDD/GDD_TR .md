@@ -429,7 +429,7 @@ Güçlendirmeler oyuncunun genel istatistiklerini destekler veya çatışmaya ya
 
 Tüm güçlendirmeler aynı slot havuzunu kullanır. İstatistik güçlendirmesi ve özellik ayrımı yalnızca tasarım organizasyonu için kullanılır.
 
-Kabul edilen içerik kapsamı aşağıdaki dokuz stat ve yedi özellik güçlendirmesinin tamamı olmak üzere on altı eşyadır. Görünen çalışma adları onaylandı; nihai temayla değişebilir. Sayısal kurallar ve seviye sayıları uygulama öncesinde kararlaştırılacaktır. İsim eşlemesi ve uygulama sırası EN/TR Güçlendirme İçerik Planı'nda bulunur.
+Kabul edilen içerik kapsamı aşağıdaki dokuz stat ve yedi özellik güçlendirmesinin tamamı olmak üzere on altı eşyadır. Stat güçlendirmeleri beş, özellik güçlendirmeleri üç seviyelidir. Görünen çalışma adları onaylandı; nihai temayla değişebilir. Normal yüzdeler toplanır; yeni seviye güçlendirmenin önceki tam etki grubunun yerini alır. Eşyaya özel değerler ve kurallar grup bazında uygulama öncesi kararlaştırılır. İsim eşlemesi ve uygulama sırası EN/TR Güçlendirme İçerik Planı'nda bulunur.
 
 ### 13.1 İstatistik Güçlendirmesi Adayları
 
@@ -459,7 +459,7 @@ Yalnızca yakma hasarını artıran özel bir güçlendirme, çok fazla build i�
 | Ammo Expert | Yeniden doldurma sırasındaki hareket cezasını kaldırır veya azaltır |
 | Vampire | Düşman öldürerek can kazanma ihtimali veya yöntemi sağlar |
 
-Yedi özellik güçlendirmesinin tamamı plan kapsamındadır. Sayısal değerleri, seviyeleri ve etkileşimleri henüz kararlaştırılmamıştır. Ödül kartlarında dışa taşmayan, çerçevenin içine doğru parlayan ışıltı planlanır; görsel referans ve uygulama sonraya bırakılır. Bu sunum ortak slot havuzunu değiştirmez veya yeni nadirlik oluşturmaz.
+Yedi özellik güçlendirmesinin tamamı plan kapsamındadır ve üç seviyelidir. Sayısal değerleri ve etkileşimleri ayrıca kararlaştırılacaktır. Ödül kartlarında dışa taşmayan, çerçevenin içine doğru parlayan ışıltı planlanır; görsel referans ve uygulama sonraya bırakılır. Bu sunum ortak slot havuzunu değiştirmez veya yeni nadirlik oluşturmaz.
 
 ---
 

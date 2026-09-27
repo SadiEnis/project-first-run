@@ -58,3 +58,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 52. [Efsun Asası İçeriği](Enchanted-Staff-Content.md)
 53. [Sniper Bomb İçeriği](Sniper-Bomb-Content.md)
 54. [Güçlendirme İçerik Planı](Upgrades-Content-Plan.md)
+55. [Temel Stat Güçlendirmeleri](Core-Stat-Upgrades.md)

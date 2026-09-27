@@ -45,7 +45,7 @@ Discuss each group's mechanics before implementing. Record EN/TR TDD before code
 ## Shared contracts and unresolved decisions
 
 - All 16 use the existing shared upgrade slot pool; stat/trait grouping is not a new category or separate capacity.
-- Confirm maximum levels and numerical progression; do not automatically copy eight weapon/ability levels. Existing development damage asset has three provisional levels.
+- Accepted progression: five levels for the nine stat upgrades and three for the seven traits. Ordinary percentages add; each level replaces its previous full effect set. The first group's values and contracts are in [Core Stat Upgrades](Core-Stat-Upgrades.md); other item values remain open.
 - Each level represents the full effect set, not an accumulating increment. Respect existing upgrade ownership, replacement and maximum-level exclusion.
 - Verify damage coverage for weapon/ability hits, fragments and timed effects; document snapshot versus live recalculation.
 - Decide maximum-health gain/loss behavior, armor formula/cap, regeneration cadence and whether healing is allowed during particular run states.

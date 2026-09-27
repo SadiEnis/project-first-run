@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a691be3180904718b09dec784d310001, type: 3}
+  m_Name: AD_EnchantedStaff
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Abilities.EnchantedStaff.EnchantedDefinition
+  _stableId: ability.enchanted-staff
+  _displayName: Enchanted Staff
+  _gameplayEffect: Fires a piercing beam every 5 seconds. Deals 20 damage and ricochets for 2 seconds.
+  _maximumLevel: 8
+  _cooldown: 5
+  _levels:
+  - _damage: 20
+    _lifetime: 2
+    _cooldown: 5
+    _count: 1
+  - _damage: 30
+    _lifetime: 2
+    _cooldown: 5
+    _count: 1
+  - _damage: 30
+    _lifetime: 3
+    _cooldown: 5
+    _count: 1
+  - _damage: 30
+    _lifetime: 3
+    _cooldown: 4
+    _count: 1
+  - _damage: 30
+    _lifetime: 3
+    _cooldown: 4
+    _count: 2
+  - _damage: 40
+    _lifetime: 3
+    _cooldown: 4
+    _count: 2
+  - _damage: 40
+    _lifetime: 4
+    _cooldown: 4
+    _count: 2
+  - _damage: 40
+    _lifetime: 4
+    _cooldown: 3
+    _count: 2
+  _speed: 8
+  _radius: 0.15
+  _worldMask:
+    serializedVersion: 2
+    m_Bits: 129
+  _material: {fileID: 2100000, guid: 59fc06ca518765647a3b43e55cc4410a, type: 2}

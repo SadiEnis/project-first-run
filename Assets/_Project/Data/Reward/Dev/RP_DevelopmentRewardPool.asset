@@ -13,6 +13,13 @@ MonoBehaviour:
   m_Name: RP_DevelopmentRewardPool
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Rewards.RewardItemPool
   _items:
+  - {fileID: 11400000, guid: b302da308cda48959bc8e6c6acd10007, type: 2}
+  - {fileID: 11400000, guid: e709d34c75f641cbb4d711e5a8100005, type: 2}
+  - {fileID: 11400000, guid: a802e5c9b12044a28a2cce62d7500006, type: 2}
+  - {fileID: 11400000, guid: a691be3180904718b09dec784d310005, type: 2}
+  - {fileID: 11400000, guid: c17f164510bc495e995501d93ac10007, type: 2}
+  - {fileID: 11400000, guid: f145cf216bc346b68010e77a58d10007, type: 2}
+  - {fileID: 11400000, guid: c94d6653da914af59f1a208040280006, type: 2}
   - {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
   - {fileID: 11400000, guid: 3c155094935549918fe6802191af691c, type: 2}
   - {fileID: 11400000, guid: b5b6982cfb67513489ea021e5025fd84, type: 2}

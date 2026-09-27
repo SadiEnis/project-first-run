@@ -391,7 +391,7 @@ Asit şişeleri rastgele hedeflerin üzerine düşer ve hasar veren alanlar olu�
 
 **Rol:** Tahmin edilemeyen delici ışınlar ve savaş alanı kapsaması.
 
-Rastgele yönlere ışınlar gönderir. Işınlar sınırlı bir süre hareket eder, düşmanların içinden geçer ve rastgele noktalarda yön değiştirir.
+Rastgele yatay yönlere ışınlar gönderir. Işınlar sınırlı süre hareket eder, düşmanların içinden geçer ve katı dünya engellerinden yansır. Yalnızca çarpışmada yön değiştirir; uçuş sırasında rastgele dönüş veya kamera/ekran sınırından sekme yoktur. Runetracer referanslı bu davranış önceki rastgele dönüş önerisinin yerini alır.
 
 | Seviye | Mevcut Tasarım |
 | --- | --- |

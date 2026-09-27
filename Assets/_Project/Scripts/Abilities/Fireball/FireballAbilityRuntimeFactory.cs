@@ -78,17 +78,16 @@ namespace ProjectFirstRun.Abilities.Fireball
 
             ValidateRuntimeDependencies();
 
-            NearestEnemyTargetSelector targetSelector =
-                new NearestEnemyTargetSelector(
-                    _enemyRegistry);
+            FireballRuntimeConfig[] levels = definition.CreateLevelConfigs();
+            FireballTargetSelector targetSelector = new FireballTargetSelector(
+                _enemyRegistry, _damageSource, definition.TargetRange, definition.WorldMask);
 
             FireballAbilityExecutor executor =
                 new FireballAbilityExecutor(
                     definition,
                     _damageSource,
-                    _stats);
+                    _stats, targetSelector);
 
-            FireballRuntimeConfig[] levels = definition.CreateLevelConfigs();
             executor.ApplyConfiguration(levels[0]);
             return new AbilityRuntimeEntry(
                 definition,

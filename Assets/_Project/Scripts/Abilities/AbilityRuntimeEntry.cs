@@ -17,6 +17,12 @@ namespace ProjectFirstRun.Abilities
 
         public bool IsReady =>
             State.IsReady;
+        public bool IsContinuous => _executor is IContinuousAbilityRuntime;
+        public void TickContinuous(float deltaTime, Vector3 origin, bool controlEnabled)
+        {
+            if (_executor is IContinuousAbilityRuntime continuous)
+                continuous.TickContinuous(deltaTime, origin, controlEnabled);
+        }
 
         public void BindEnemyRegistry(ProjectFirstRun.Enemies.EnemyRegistry registry)
         {
@@ -82,6 +88,7 @@ namespace ProjectFirstRun.Abilities
         {
             ValidateOrigin(
                 origin);
+            if (IsContinuous) return AbilityAutoCastResult.ExecutionFailed;
 
             if (!State.IsReady)
             {

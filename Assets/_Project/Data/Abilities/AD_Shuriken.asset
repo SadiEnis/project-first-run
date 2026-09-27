@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a802e5c9b12044a28a2cce62d7500001, type: 3}
+  m_Name: AD_Shuriken
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Abilities.Shuriken.ShurikenDefinition
+  _stableId: ability.shuriken
+  _displayName: Shuriken
+  _gameplayEffect: Orbits twice, dealing 15 damage per enemy per turn. Waits 3 seconds after orbiting.
+  _maximumLevel: 8
+  _cooldown: 3
+  _levels:
+  - _damage: 15
+    _turnSeconds: 1.5
+    _cooldown: 3
+    _radius: 2.5
+    _bleedDamage: 0
+    _count: 1
+  - _damage: 25
+    _turnSeconds: 1.5
+    _cooldown: 3
+    _radius: 2.5
+    _bleedDamage: 0
+    _count: 1
+  - _damage: 25
+    _turnSeconds: 1
+    _cooldown: 3
+    _radius: 2.5
+    _bleedDamage: 0
+    _count: 1
+  - _damage: 25
+    _turnSeconds: 1
+    _cooldown: 2
+    _radius: 2.5
+    _bleedDamage: 0
+    _count: 1
+  - _damage: 35
+    _turnSeconds: 1
+    _cooldown: 2
+    _radius: 2.5
+    _bleedDamage: 0
+    _count: 1
+  - _damage: 35
+    _turnSeconds: 1
+    _cooldown: 2
+    _radius: 2.5
+    _bleedDamage: 0
+    _count: 2
+  - _damage: 35
+    _turnSeconds: 1
+    _cooldown: 2
+    _radius: 3.5
+    _bleedDamage: 0
+    _count: 2
+  - _damage: 35
+    _turnSeconds: 1
+    _cooldown: 2
+    _radius: 3.5
+    _bleedDamage: 5
+    _count: 2
+  _material: {fileID: 2100000, guid: 59fc06ca518765647a3b43e55cc4410a, type: 2}
+  _worldMask:
+    serializedVersion: 2
+    m_Bits: 129
+  _contactRadius: 0.3

@@ -54,3 +54,4 @@ Project First Run is the current development codename. The final commercial titl
 48. [Acid Bottle Content](Acid-Bottle-Content.md)
 49. [Lightning Staff Content](Lightning-Staff-Content.md)
 50. [Shuriken Content](Shuriken-Content.md)
+51. [Enemy Health Bars](Enemy-Health-Bars.md)

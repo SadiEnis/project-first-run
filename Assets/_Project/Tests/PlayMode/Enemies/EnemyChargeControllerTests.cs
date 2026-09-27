@@ -68,6 +68,33 @@ namespace ProjectFirstRun.Tests.PlayMode.Enemies
         }
 
         [Test]
+        public void HealthBarUpdatesForDamageInitializationDeathAndReuse()
+        {
+            var camera = Make("Health bar camera").AddComponent<Camera>();
+            var bar = _enemy.gameObject.AddComponent<EnemyHealthBar>();
+            typeof(EnemyHealthBar).GetField("_cameraOverride", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(bar, camera);
+            bar.Refresh();
+            Assert.That(bar.IsVisible, Is.True);
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(1));
+            var damage = new DamageInfo(25, null, Vector3.zero, Vector3.up);
+            _enemy.Health.ApplyDamage(in damage);
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(.75f));
+            _enemy.Health.Initialize(200);
+            bar.Refresh();
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(1));
+            var lethal = new DamageInfo(1000, null, Vector3.zero, Vector3.up);
+            _enemy.Health.ApplyDamage(in lethal);
+            Assert.That(bar.IsVisible, Is.False);
+            _enemy.Initialize(_definition, _target.transform, _registry);
+            bar.Refresh();
+            Assert.That(bar.IsVisible, Is.True);
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(1));
+            bar.enabled = false;
+            Assert.That(bar.IsVisible, Is.False);
+        }
+
+        [Test]
         public void StunPreservesCommittedChargeAndAcidModifier()
         {
             BeginCharge();

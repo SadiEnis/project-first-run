@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-Sixth ability on abilities-content, following GDD 12.5. The user accepted the proposed orbit/contact/bleed mechanics. This checkpoint is documentation only; implementation and validation are pending. No evolution gameplay or final art.
+Sixth ability on abilities-content, following GDD 12.5. The user accepted the proposed orbit/contact/bleed mechanics. Runtime, level asset, saved arena/F1 and reward integration are implemented. Unity compilation, test execution and gameplay acceptance remain unverified. No evolution gameplay or final art.
 
 ## Agreed behavior
 
@@ -44,3 +44,10 @@ Values not previously discussed (damage, L7 radius, bleed magnitude and contact 
 5. Author EditMode/PlayMode checks for progression, exactly two turns, independent hit limits, long-frame boundaries, movement/walls, post-orbit cooldown, upgrade snapshots, bleed refresh/coexistence and pause/death/reuse/map cleanup.
 
 User runs tests and gameplay acceptance. Assistant only executes specifically requested missing/failing tests. Separate docs and implementation check-ins; stop for acceptance before Enchanted Staff.
+
+## Implementation notes
+
+- Uses the existing continuous-ability hook with its own orbit/post-orbit cooldown; other abilities' cooldown behavior is unchanged. ShurikenRuntime.CooldownRemaining is authoritative, not the generic entry cooldown.
+- Sweeps subdivide each revolution into at least 72 segments and player translation into at most 0.1 m steps. A center displacement greater than 6 m in one tick cancels as a teleport; explicit registry rebinding also cancels. Extremely large normal movement can therefore cancel rather than sweep. At most one new set starts in a tick, even after a long hitch.
+- Enemy SpawnVersion distinguishes reinitialized targets in hit ledgers and bleed cleanup. Bleed reuses TimedBurnState but has a separate component/lifecycle because it survives source death.
+- Authored checks cover progression/invalid data, two-turn hit limits, double shurikens, mid-orbit upgrades, wall blocking, pause/control cancellation, teleport/rebind, bleed refresh/burn coexistence/source death, target reuse and L8 application. No tests were executed. Fine-step versus hitch equivalence, moving-center contact and complete scene unload remain additional validation targets.

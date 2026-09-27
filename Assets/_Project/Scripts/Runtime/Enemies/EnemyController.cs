@@ -19,6 +19,7 @@ namespace ProjectFirstRun.Enemies
         private bool _isInitialized;
         private bool _isDead;
         private bool _isRegistered;
+        public int SpawnVersion { get; private set; }
 
         public event Action<
             EnemyController,
@@ -97,6 +98,7 @@ namespace ProjectFirstRun.Enemies
             }
 
             definition.ValidateBehavior();
+            SpawnVersion++;
             EnsureReferences();
             Unregister();
 

@@ -2,7 +2,7 @@
 
 ## Durum ve kapsam
 
-abilities-content üzerindeki altıncı yetenek; GDD 12.5 temel alınır. Kullanıcı dönüş/temas/kanama mekaniğini onayladı. Bu checkpoint yalnızca dokümantasyondur; uygulama ve doğrulama bekleniyor. Evolution oynanışı ve nihai görseller kapsam dışıdır.
+abilities-content üzerindeki altıncı yetenek; GDD 12.5 temel alınır. Kullanıcı dönüş/temas/kanama mekaniğini onayladı. Runtime, seviye asset'i, kayıtlı arena/F1 ve ödül entegrasyonu uygulandı. Unity derlemesi, test çalıştırma ve oynanış kabulü henüz doğrulanmadı. Evolution oynanışı ve nihai görseller kapsam dışıdır.
 
 ## Kararlaştırılan davranış
 
@@ -44,3 +44,10 @@ Başarılı temas, düşman dönüş alanından çıktıktan sonra da süren zam
 5. Seviye, tam iki tur, bağımsız isabet sınırları, uzun kare/tur sınırları, hareket/duvar, dönüş sonrası cooldown, seviye anlık görüntüsü, kanama yenileme/birlikte çalışma ve pause/ölüm/yeniden kullanım/harita temizleme EditMode/PlayMode testlerini yazma.
 
 Testleri ve oynanış kabulünü kullanıcı yapar. Asistan yalnızca özellikle istenen eksik/başarısız testleri çalıştırır. Docs ve uygulama ayrı check-in noktalarıdır; Enchanted Staff öncesi kabul için durulur.
+
+## Uygulama notları
+
+- Mevcut sürekli yetenek bağlantısı kullanılır; dönüş/dönüş sonrası cooldown kendi içinde yönetilir. Diğer yeteneklerin cooldown davranışı değişmez. Doğru cooldown kaynağı genel entry sayacı değil, ShurikenRuntime.CooldownRemaining değeridir.
+- Tarama her turu en az 72 parçaya, oyuncu hareketini en fazla 0,1 m adımlara böler. Tek tick'te merkez 6 m'den fazla yer değiştirirse ışınlanma sayılıp iptal edilir; registry yeniden bağlama da iptal eder. Çok büyük normal hareketler bu nedenle tarama yerine iptal oluşturabilir. Uzun takılmada dahi tick başına en fazla bir yeni grup başlar.
+- Enemy SpawnVersion, yeniden başlatılan düşmanları isabet kaydında ve kanama temizliğinde ayırt eder. Kanama TimedBurnState sayacını kullanır; kaynak ölümünden sonra sürdüğü için ayrı component/yaşam döngüsüne sahiptir.
+- Yazılan kontroller seviye/geçersiz veri, iki tur isabet sınırı, çift shuriken, dönüş sırasında seviye artışı, duvar, pause/kontrol iptali, ışınlanma/registry, kanama yenileme/yanmayla birliktelik/kaynak ölümü, hedef yeniden kullanımı ve L8 uygulamasını kapsar. Testler çalıştırılmadı. Küçük adım ile uzun kare eşdeğerliği, hareketli merkez teması ve tam sahne boşaltma ek doğrulama hedefleridir.

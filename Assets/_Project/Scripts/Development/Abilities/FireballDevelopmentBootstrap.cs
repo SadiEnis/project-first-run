@@ -98,6 +98,8 @@ namespace ProjectFirstRun.Development.Abilities
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
             factoryRegistry.Register(new ProjectFirstRun.Abilities.Lightning.LightningRuntimeFactory(
                 _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.Shuriken.ShurikenRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
 
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);

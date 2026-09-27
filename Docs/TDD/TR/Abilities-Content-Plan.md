@@ -16,7 +16,7 @@ Her yetenek: mekanik konuşması → EN/TR TDD ve docs checkpoint'i → anlamlı
 | 4 | Acid Bottle | Rastgele hedefe şişe, süreli hasar alanı, L8 yavaşlatma | Kullanıcı oynanış kabulü tamam; L8 yavaşlatma %50, denge geçici |
 | 5 | Lightning Staff | Rastgele yıldırım, artan saldırı sayısı, sersemletme, L8 zincir | Kullanıcı oynanış kabulü tamam; otomatik test sonucu bildirilmedi |
 | 6 | Shuriken | Oyuncu etrafında iki tur, kontrollü tekrar isabeti, ikinci shuriken, kanama | Uygulandı; Unity testleri ve oynanış kabulü bekleniyor |
-| 7 | Enchanted Staff | Süreli, delici ve dünya engellerinden seken ışınlar | Mekanik onaylandı; TDD hazır, sırada uygulama |
+| 7 | Enchanted Staff | Süreli, delici ve dünya engellerinden seken ışınlar | Kullanıcı davranış kabulü tamam; denge ertelendi, otomatik sonuç bildirilmedi |
 | 8 | Sniper Bomb | Elite/boss önceliği, güdümlü patlama, ikinci bomba, hedef ölünce yeniden seçim | Planlandı |
 
 Hepsi sekiz temel seviyelidir. GDD yükseltme sırası esas alınır; sayısal denge ve belirsiz hedefleme/statü kuralları her yetenekten önce konuşulur. Uygun doğrulanmış davranışlar tekrar kullanılır; ortak kod somut ikinci tüketici gerektirdiğinde çıkarılır. Yetenek hasarı silah hasarına bağlanmaz. Haritalar arası registry yeniden bağlama ve mevcut run yaşam döngüsü korunur.

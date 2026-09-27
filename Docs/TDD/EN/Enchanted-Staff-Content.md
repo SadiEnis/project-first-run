@@ -2,7 +2,9 @@
 
 ## Status and scope
 
-Seventh ability on abilities-content; GDD 12.7. The user accepted the Runetracer-inspired revision: random launch directions, enemy piercing and reflection from real world obstacles. No random mid-flight turns, screen-edge bounce or homing. This is a documentation checkpoint; runtime, content and tests are not yet implemented.
+Seventh ability on abilities-content; GDD 12.7. The user accepted the implemented Runetracer-inspired behavior: random launch directions, enemy piercing and reflection from real world obstacles. No random mid-flight turns, screen-edge bounce or homing. Runtime, eight-level asset, arena/F1 and reward integration are implemented. User gameplay behavior acceptance is complete; the assistant has not run Unity compilation or tests, and automated results have not been reported.
+
+Balance follow-up: the user observed limited effectiveness against 3–4 enemies and chose to defer evaluation rather than change the mechanic. Larger crowds and enclosed arenas may improve hit opportunities, but that expectation has not been validated. Keep random launch directions unchanged; revisit low-density accuracy and crowd performance during balancing.
 
 ## Agreed mechanics
 
@@ -42,3 +44,11 @@ Previously proposed speed 8 m/s, lifetime 2/3/4 s and cooldown 5/4/3 s remain in
 5. User runs EditMode/PlayMode and gameplay acceptance. Assistant runs only specifically requested missing/failing tests. No automatic VCS writes.
 
 Stop for user acceptance before Sniper Bomb. Docs and implementation have separate check-in checkpoints.
+
+## Implementation checkpoint
+
+Presentation update: each purple beam retains a thinner world-space line along its entire travelled path until it expires. Swept segment endpoints include within-frame bounce points, so the path follows ricochets rather than joining across corners. The path is a child of the beam and disappears immediately with it on expiry, death or map cleanup. It is visual only and deals no damage. A path/bounce/pause/cleanup test was added but not run.
+
+Beams use 0.025 s substeps with at most eight collision resolutions per substep. Each beam keeps its own hit timestamps keyed by enemy and SpawnVersion. Source-body launch positioning avoids firing through cover from an offset muzzle. Visuals use a short purple segment and change orientation at each bounce; there is no separate bounce particle effect yet.
+
+Authored tests cover progression/invalid config, multiple-target piercing, collider deduplication, wall ordering/reflection, repeat-hit protection across a bounce, later repeat hits, independent beams, initial solid overlap, pause/expiry, source death and registry rebinding/cooldown preservation. Tests were not executed. Corner stress, slopes and full scene-unload validation remain manual/additional checks.

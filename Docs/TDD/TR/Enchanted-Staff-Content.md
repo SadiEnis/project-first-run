@@ -2,7 +2,9 @@
 
 ## Durum ve kapsam
 
-abilities-content üzerindeki yedinci yetenek; GDD 12.7. Kullanıcı Runetracer referanslı değişikliği onayladı: rastgele atış yönü, düşman delme ve gerçek dünya engellerinden yansıma. Uçuş sırasında rastgele dönüş, ekran kenarından sekme ve güdüm yoktur. Bu bir doküman checkpoint'idir; runtime, içerik ve testler henüz uygulanmadı.
+abilities-content üzerindeki yedinci yetenek; GDD 12.7. Kullanıcı uygulanan Runetracer referanslı davranışı onayladı: rastgele atış yönü, düşman delme ve gerçek dünya engellerinden yansıma. Uçuş sırasında rastgele dönüş, ekran kenarından sekme ve güdüm yoktur. Runtime, sekiz seviyeli asset, arena/F1 ve ödül entegrasyonu uygulandı. Kullanıcı oynanış davranışı kabulü tamamlandı; asistan Unity derlemesi/testleri çalıştırmadı, otomatik test sonucu bildirilmedi.
+
+Denge takibi: kullanıcı 3–4 düşmana karşı etkinliği düşük buldu ve mekaniği değiştirmek yerine değerlendirmeyi erteledi. Kalabalık ve kapalı alanlarda daha fazla isabet fırsatı beklenebilir, ancak bu beklenti doğrulanmadı. Rastgele başlangıç yönü korunur; düşük düşman yoğunluğunda isabet ve kalabalık performansı dengelemede yeniden ele alınır.
 
 ## Kararlaştırılan mekanik
 
@@ -42,3 +44,11 @@ abilities-content üzerindeki yedinci yetenek; GDD 12.7. Kullanıcı Runetracer 
 5. EditMode/PlayMode ve oynanış kabulünü kullanıcı yapar. Asistan yalnızca özellikle istenen eksik/başarısız testleri çalıştırır. Otomatik VCS işlemi yoktur.
 
 Sniper Bomb öncesinde kullanıcı kabulü için durulur. Docs ve uygulama ayrı check-in noktalarıdır.
+
+## Uygulama kaydı
+
+Görsel güncelleme: mor ışın, ömrü boyunca geçtiği bütün yolu daha ince bir world-space çizgi olarak bırakır. Tarama parçalarının uçları kare içindeki sekme noktalarını da içerir; iz köşeyi kesmek yerine sekmeyi takip eder. İz ışının alt nesnesidir; süre bitişi, ölüm veya harita temizliğinde ışınla birlikte anında kaybolur. Yalnızca görseldir, hasar vermez. Yol/sekme/pause/temizleme testi eklendi ancak çalıştırılmadı.
+
+Işınlar 0,025 s alt adımlar ve alt adım başına en fazla sekiz çarpışma çözümü kullanır. Her ışın düşman ve SpawnVersion anahtarıyla ayrı isabet zamanları tutar. Kaynak gövdesinden başlatma, öne taşmış namludan duvarın ötesine atış yapılmasını önler. Kısa mor çizgi her sekmede yön değiştirir; ayrı sekme parçacık efekti henüz yoktur.
+
+Yazılan testler seviye/geçersiz ayar, çoklu hedef delme, collider tekilleştirme, duvar sırası/yansıma, sekmede tekrar isabet koruması, gecikmiş tekrar isabet, bağımsız ışınlar, başlangıç katı örtüşmesi, pause/süre bitişi, kaynak ölümü ve registry/cooldown korunmasını kapsar. Testler çalıştırılmadı. Köşe stresi, eğimler ve tam sahne boşaltma elle/ek doğrulama bekler.

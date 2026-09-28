@@ -50,8 +50,8 @@ Her grubun mekaniği uygulama öncesinde konuşulur. Koddan önce EN/TR TDD kayd
 - Silah/yetenek isabetleri, parçacıklar ve zamanlı hasar kapsamı doğrulanır; atış anında alınan değerler ile canlı hesaplama belgelenir.
 - Maksimum can artışı/azalışı, hasar azaltma formülü/sınırı ve yenilenme [Hayatta Kalma Stat Güçlendirmeleri](Survival-Stat-Upgrades.md) doğrultusunda uygulandı; kullanıcı doğrulaması bekleniyor.
 - Onaylanan cooldown kapsamı normal yeniden kullanım ve Shuriken yörünge-sonu beklemesidir; Drone sıklığı ve aktif etkiler hızlandırılmaz. Bkz. [Kırık Kum Saati](Broken-Hourglass-Upgrade.md). Önce uygulanabilir güçlendirmeler tamamlanır; ek sistem gerektirenler sonra tek tek ele alınır.
-- Kan Ahdi maksimum canı hasara dönüştürür. Cam Kalp için alınan hasarı artırma fikri ayırt edici bir öneridir; henüz onaylanmış formül değildir.
-- Son Direniş eşiği/yeniden değerlendirmesi, Demir Yemin hız alt sınırı ve Akıcı Mekanizma'nın mevcut reload cezasını azaltması mı kaldırması mı gerektiği belirlenir. Eşyayı işe yarar yapmak için onaysız yeni ceza icat edilmez.
+- Son Direniş, Demir Yemin, Kan Ahdi ve Cam Kalp mekanikleri [Koşullu ve Bedelli Güçlendirmeler](Conditional-Tradeoff-Upgrades.md) içinde onaylandı. Tek tek uygulanıp her öğeden sonra kabul alınır; Cam Kalp zırhtan önce gelen hasarı artırır.
+- Akıcı Mekanizma reload hareket cezası kimliği değişmeden ertelenmiş kalır. Eşyayı işe yarar yapmak için onaysız yeni ceza icat edilmez.
 - Kızıl Diş için silah/yetenek/zamanlı hasar öldürmelerinin sahipliği, şanslı mı garantili mi iyileştirme ve maksimum can üstü davranış belirlenir.
 - Hileli Zar'ın hangi mevcut sandık/drop/nadirlik olasılıklarını değiştirdiği tek tek belirlenir. Sessizce evolution oynanışı, altın/meta veya yeni nadirlik sistemi eklenmez.
 - Run sahipliği, sıfırlama ve haritalar arası davranış korunur; yalnızca tekil edinme değil kombinasyonlar da test edilir.

@@ -62,3 +62,4 @@ Project First Run is the current development codename. The final commercial titl
 56. [Survival Stat Upgrades](Survival-Stat-Upgrades.md)
 57. [Pickup and XP Upgrades](Pickup-XP-Upgrades.md)
 58. [Broken Hourglass](Broken-Hourglass-Upgrade.md)
+59. [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md)

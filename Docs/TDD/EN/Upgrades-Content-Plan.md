@@ -50,8 +50,8 @@ Discuss each group's mechanics before implementing. Record EN/TR TDD before code
 - Verify damage coverage for weapon/ability hits, fragments and timed effects; document snapshot versus live recalculation.
 - Maximum-health gain/loss, damage-reduction formula/cap and regeneration are implemented per [Survival Stat Upgrades](Survival-Stat-Upgrades.md); user validation is pending.
 - Approved cooldown scope: ordinary recast waits and Shuriken post-orbit waits only; no Drone cadence or active-effect acceleration. See [Broken Hourglass](Broken-Hourglass-Upgrade.md). Implement available upgrades first, then revisit additional-system dependencies individually.
-- Blood Pact already trades maximum health for damage. Using increased incoming damage for Glass Heart is a proposal to distinguish it, not yet an accepted formula.
-- Specify Last Stand threshold/re-evaluation, Iron Oath speed floor, and whether Fluid Mechanism reduces or removes an existing reload penalty. Do not invent a penalty solely to make the item useful without agreement.
+- Last Stand, Iron Oath, Blood Pact and Glass Heart mechanics are approved in [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md). Implement individually with acceptance after each; Glass Heart uses incoming damage amplification before armor.
+- Fluid Mechanism remains deferred without changing its reload movement-penalty identity. Do not invent a penalty solely to make the item useful without agreement.
 - Specify Crimson Fang attribution for weapon/ability/DoT kills, chance versus guaranteed healing and overheal behavior.
 - Specify exactly which existing chest/drop/rarity probabilities Loaded Dice changes. Do not silently add evolution gameplay, gold/meta systems or a new rarity system.
 - Preserve run ownership, reset and cross-map behavior; test combinations, not only isolated acquisitions.

@@ -1,4 +1,5 @@
 using System;
+using ProjectFirstRun.Stats;
 using UnityEngine;
 
 namespace ProjectFirstRun.Progression
@@ -8,6 +9,8 @@ namespace ProjectFirstRun.Progression
     {
         private ExperienceState _state;
         private bool _isNotifying;
+        private PlayerStatsController _stats;
+        public decimal FractionalExperience { get; private set; }
 
         public bool IsInitialized => _state != null;
         public int Level => GetState().Level;
@@ -39,11 +42,19 @@ namespace ProjectFirstRun.Progression
                     "Experience cannot be awarded during an experience notification.");
             }
 
-            ExperienceGainResult result = state.GainExperience(amount);
-            if (amount == 0)
-            {
-                return result;
-            }
+            if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
+            if (amount == 0) return state.GainExperience(0);
+            if (_stats == null) _stats = GetComponent<PlayerStatsController>();
+            float multiplier = _stats == null ? 1f : _stats.Evaluate(PlayerStatType.ExperienceGain, 1f);
+            if (!float.IsFinite(multiplier) || multiplier <= 0f)
+                throw new InvalidOperationException("XP multiplier must be finite and positive.");
+            // Decimal conversion removes binary float noise at configured percentage precision.
+            // Calculate everything before committing either the integer XP or the remainder.
+            decimal scaled = checked(amount * (decimal)multiplier + FractionalExperience);
+            int awarded = checked((int)decimal.Floor(scaled));
+            decimal remainder = scaled - awarded;
+            ExperienceGainResult result = state.GainExperience(awarded);
+            FractionalExperience = remainder;
 
             _isNotifying = true;
             try

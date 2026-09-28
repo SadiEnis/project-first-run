@@ -2,7 +2,13 @@
 
 ## Durum
 
-upgrades-content üzerinde Çekim Çekirdeği ve Hafıza Kristali mekanikleri onaylandı. Uygulama öncesi doküman checkpoint'idir; uygulama veya test çalıştırıldığı iddia edilmez.
+upgrades-content üzerinde Çekim Çekirdeği ve Hafıza Kristali uygulandı. Unity derlemesi, test çalıştırılması ve oynanış kabulü kullanıcı doğrulamasını bekliyor.
+
+Mevcut statlar yeniden numaralandırılmadan PickupRadius (10) ve ExperienceGain (11) eklendi. Toplayıcı sorgularda ve runtime gizmo'da yapılandırılmış temel yarıçaptan hesap yapar. PlayerExperienceController XP çarpanını bir kez uygular ve decimal kesirli kalan tutar; hesaplanan float çarpan decimal hassasiyetine çevrilerek ikili kayan nokta gürültüsü taşınmaz. Mevcut tamsayı kazanç sınırını aşan istekler XP veya kalan değiştirilmeden reddedilir.
+
+Mevcut F1 XP verme işlemi oynanış bonusunu kullanır; artık temel tutarın yanında gerçekten kazanılan tamsayı XP'yi bildirir. Öğe seviyelendirme kontrolleri değişmedi. Pickup bildirim hatası yönetimi, kazanımın işlenip işlenmediğini hem tamsayı XP hem kesirli kalandan kontrol eder.
+
+Kayıtlı katalog ve karışık havuz 21; upgrade havuzu 8 öğedir. Sandık etkileşim kodu değişmedi. PickupExperienceUpgradeTests ve genişletilen CoreStatUpgradeTests; ilerleme, menzil sınırları, kesirler, toplama anındaki bonus, reddedilen kazanç, bildirim hatası, çoklu seviye, sahneye taşıma ve yeni oyuncuları kapsar. Sahneye taşıma tam asenkron yükleme testi değildir. Testleri kullanıcı çalıştıracaktır.
 
 İkisi de mevcut ortak güçlendirme slotlarını ve beş seviyeyi kullanır. Her seviye önceki tam etki grubunun yerini alır; farklı kaynakların normal yüzdeleri toplanır. Sayılar başlangıç dengesidir.
 

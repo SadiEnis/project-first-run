@@ -11,6 +11,8 @@ namespace ProjectFirstRun.Stats
         MaxHealth = 6,
         Luck = 7,
         DamageReduction = 8,
-        HealthRegeneration = 9
+        HealthRegeneration = 9,
+        PickupRadius = 10,
+        ExperienceGain = 11
     }
 }

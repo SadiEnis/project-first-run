@@ -2,7 +2,13 @@
 
 ## Status
 
-Approved mechanics for Attraction Core and Memory Crystal on upgrades-content. Pre-implementation documentation checkpoint; no implementation or test execution is claimed.
+Attraction Core and Memory Crystal are implemented on upgrades-content. Unity compilation, test execution and gameplay acceptance are pending user validation.
+
+PickupRadius (10) and ExperienceGain (11) were appended without renumbering existing stats. The collector evaluates its configured base radius for queries and runtime gizmos. PlayerExperienceController applies the XP multiplier once and stores a decimal fractional remainder; conversion from the evaluated float multiplier uses decimal precision rather than retaining binary float noise. Awards exceeding the existing integer-award limit fail before either state or remainder commits.
+
+The existing F1 XP grant uses the gameplay bonus and now reports the actual integer XP gained alongside the base amount. Item-level controls are unchanged. Pickup notification-error handling checks both integer XP and the fraction before deciding whether an award committed.
+
+Saved catalog and mixed pool now contain 21 items; the upgrade pool contains 8. No chest interaction code changed. Added PickupExperienceUpgradeTests and expanded CoreStatUpgradeTests cover progression, boundaries, fractions, collection-time bonuses, rejected awards, notification failures, multiple levels, scene relocation and fresh players. Scene relocation is not a full asynchronous loading test. Test execution remains with the user.
 
 Both use the existing shared upgrade slots and five levels. Each level replaces its previous full effect set; ordinary percentages from different sources add. Numbers remain provisional balance.
 

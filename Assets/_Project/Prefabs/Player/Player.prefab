@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 4415958744459970661}
   - component: {fileID: 4176090071755457054}
   - component: {fileID: 871119203000000001}
+  - component: {fileID: 871119203000000002}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -80,6 +81,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d41c5487f004e2db7112cd290a00001, type: 3}
   m_Name:
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Player.PlayerSurvivalController
+--- !u!114 &871119203000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539692866985262834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce01824446e8423b8c10f31466010001, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Player.PlayerLastStandController
 --- !u!4 &8807263902820193614
 Transform:
   m_ObjectHideFlags: 0

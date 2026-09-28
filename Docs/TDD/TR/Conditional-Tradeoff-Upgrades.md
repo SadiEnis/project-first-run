@@ -4,6 +4,14 @@
 
 upgrades-content üzerinde mekanikler onaylandı. Bu uygulama öncesi doküman checkpoint'idir; burada asset, oynanış değişikliği veya test çalıştırıldığı iddia edilmez.
 
+### Son Direniş uygulama güncellemesi
+
+Son Direniş uygulandı; Demir Yemin, Kan Ahdi ve Cam Kalp bekliyor. Son Direniş'in Unity derlemesi, otomatik test sonucu ve manuel kabulü henüz doğrulanmadı.
+
+Üç seviyeli asset, yeni LowHealthDamageBonus statında (12) düz 0,20/0,30/0,40 değeri tutar. Kayıtlı oyuncu prefab'ındaki PlayerLastStandController can/stat değişikliklerini dinler ve runtime.last-stand kaynağıyla iki ayrı toplamsal hasar modifier'ına sahip olur. İkisini bildirimden önce değiştirir; devre dışı kalınca yalnızca kendi etkilerini kaldırır. Bonus değişmediyse işlem yapmaz; bildirim döngüsü ve tekrar birikme engellenir. Maksimum-can güncellemeleri mevcut survival controller'ı kullanır; mermi/zamanlı etki tüketicileri değişmedi.
+
+Öğe kayıtlı arena, oluşturucu ve ödül havuzlarına eklendi (katalog/karışık havuz 23; upgrade havuzu 10). LastStandUpgradeTests eşit/üst/alt eşik, iyileşme, ölüm/reset, yaralı edinme, üç seviye, diğer kaynakları koruma, maksimum-can etkileşimi ve devre dışı/yeniden etkinleştirmeyi kapsar. Mevcut hasar anlık görüntüsü davranışı değişmedi; yeni testler tam hasar iletimi veya sahne yükleme kapsamı iddia etmez. Testler asistan tarafından çalıştırılmadı.
+
 Sıra: Son Direniş, Demir Yemin, Kan Ahdi, Cam Kalp. Her öğeden sonra kullanıcı oynanış kabulü için durulur. Mevcut branch ve ortak güçlendirme slotları korunur; her özellik üç seviyelidir. Yeni seviye önceki kendi etkilerini değiştirir; eski seviyeler birikmez, diğer kaynaklar kaldırılmaz. Değerler başlangıç dengesidir.
 
 | Öğe | İngilizce ad | L1 avantaj | L2 avantaj | L3 avantaj | Koşul veya sabit bedel |

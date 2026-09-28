@@ -61,3 +61,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 55. [Temel Stat Güçlendirmeleri](Core-Stat-Upgrades.md)
 56. [Hayatta Kalma Stat Güçlendirmeleri](Survival-Stat-Upgrades.md)
 57. [Toplama ve XP Güçlendirmeleri](Pickup-XP-Upgrades.md)
+58. [Kırık Kum Saati](Broken-Hourglass-Upgrade.md)

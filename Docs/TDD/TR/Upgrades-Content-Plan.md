@@ -35,7 +35,7 @@ Bu checkpoint yalnızca dokümantasyondur. Yeni asset, runtime entegrasyonu veya
 2. Hiddet Mührü, Rüzgâr Örgüsü, Ateş Ritmi: temel hasar/hareket bağlantıları.
 3. İkinci Kalp, Demir Deri, Yaşam Filizi: maksimum can, hasar azaltma ve iyileşme.
 4. Çekim Çekirdeği, Hafıza Kristali: pickup ve XP.
-5. Kırık Kum Saati, Akıcı Mekanizma: farklı yetenek sayaçları ve reload hareketi.
+5. Kırık Kum Saati: [Kırık Kum Saati](Broken-Hourglass-Upgrade.md) kapsamındaki bekleme azaltımı. Akıcı Mekanizma reload hareket cezası tasarlanıncaya kadar kimliği korunarak ertelendi; şarjör hızına çevrilmez.
 6. Son Direniş, Demir Yemin, Kan Ahdi, Cam Kalp: koşullu ve bedelli etkiler.
 7. Kızıl Diş, Hileli Zar: öldürme sahipliği/iyileşme ve kapsamı belirlenmiş olasılık etkileri.
 8. Ödül/F1 entegrasyonu ve birlikte çalışma değerlendirmesi, ardından kullanıcı kabulü ve dal kapanışı.
@@ -49,7 +49,7 @@ Her grubun mekaniği uygulama öncesinde konuşulur. Koddan önce EN/TR TDD kayd
 - Her seviye üst üste eklenen farkı değil tam etki grubunu tanımlar. Mevcut etki sahipliği, değiştirme ve maksimum seviyede havuzdan çıkarma korunur.
 - Silah/yetenek isabetleri, parçacıklar ve zamanlı hasar kapsamı doğrulanır; atış anında alınan değerler ile canlı hesaplama belgelenir.
 - Maksimum can artışı/azalışı, hasar azaltma formülü/sınırı ve yenilenme [Hayatta Kalma Stat Güçlendirmeleri](Survival-Stat-Upgrades.md) doğrultusunda uygulandı; kullanıcı doğrulaması bekleniyor.
-- Cooldown kapsamı açıkça belirlenir: normal atışlar, Shuriken dönüş sonrası bekleme, Drone atış aralığı ve etkin etkiler kazara tek yorumla değiştirilmez.
+- Onaylanan cooldown kapsamı normal yeniden kullanım ve Shuriken yörünge-sonu beklemesidir; Drone sıklığı ve aktif etkiler hızlandırılmaz. Bkz. [Kırık Kum Saati](Broken-Hourglass-Upgrade.md). Önce uygulanabilir güçlendirmeler tamamlanır; ek sistem gerektirenler sonra tek tek ele alınır.
 - Kan Ahdi maksimum canı hasara dönüştürür. Cam Kalp için alınan hasarı artırma fikri ayırt edici bir öneridir; henüz onaylanmış formül değildir.
 - Son Direniş eşiği/yeniden değerlendirmesi, Demir Yemin hız alt sınırı ve Akıcı Mekanizma'nın mevcut reload cezasını azaltması mı kaldırması mı gerektiği belirlenir. Eşyayı işe yarar yapmak için onaysız yeni ceza icat edilmez.
 - Kızıl Diş için silah/yetenek/zamanlı hasar öldürmelerinin sahipliği, şanslı mı garantili mi iyileştirme ve maksimum can üstü davranış belirlenir.

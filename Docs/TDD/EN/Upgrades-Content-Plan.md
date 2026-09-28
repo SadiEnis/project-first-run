@@ -35,7 +35,7 @@ This checkpoint is documentation only. Do not claim new upgrade assets, runtime 
 2. Wrath Seal, Windweave, Fire Rhythm: basic offensive/movement consumers.
 3. Second Heart, Ironhide, Lifesprout: maximum health, mitigation and healing.
 4. Attraction Core, Memory Crystal: pickups and XP.
-5. Broken Hourglass, Fluid Mechanism: distinct ability clocks and reload movement.
+5. Broken Hourglass: scoped cooldown reduction per [Broken Hourglass](Broken-Hourglass-Upgrade.md). Fluid Mechanism is deferred unchanged until reload movement-penalty design exists; do not replace it with reload speed.
 6. Last Stand, Iron Oath, Blood Pact, Glass Heart: conditional and trade-off effects.
 7. Crimson Fang, Loaded Dice: kill attribution/healing and precisely scoped probability consumers.
 8. Reward/F1 integration and interactions review, followed by user acceptance and branch closure.
@@ -49,7 +49,7 @@ Discuss each group's mechanics before implementing. Record EN/TR TDD before code
 - Each level represents the full effect set, not an accumulating increment. Respect existing upgrade ownership, replacement and maximum-level exclusion.
 - Verify damage coverage for weapon/ability hits, fragments and timed effects; document snapshot versus live recalculation.
 - Maximum-health gain/loss, damage-reduction formula/cap and regeneration are implemented per [Survival Stat Upgrades](Survival-Stat-Upgrades.md); user validation is pending.
-- Decide ability cooldown coverage explicitly: ordinary casts, Shuriken post-orbit cooldown, Drone cadence and active effects must not accidentally share one interpretation.
+- Approved cooldown scope: ordinary recast waits and Shuriken post-orbit waits only; no Drone cadence or active-effect acceleration. See [Broken Hourglass](Broken-Hourglass-Upgrade.md). Implement available upgrades first, then revisit additional-system dependencies individually.
 - Blood Pact already trades maximum health for damage. Using increased incoming damage for Glass Heart is a proposal to distinguish it, not yet an accepted formula.
 - Specify Last Stand threshold/re-evaluation, Iron Oath speed floor, and whether Fluid Mechanism reduces or removes an existing reload penalty. Do not invent a penalty solely to make the item useful without agreement.
 - Specify Crimson Fang attribution for weapon/ability/DoT kills, chance versus guaranteed healing and overheal behavior.

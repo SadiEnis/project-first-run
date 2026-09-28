@@ -84,7 +84,7 @@ namespace ProjectFirstRun.Abilities
         }
 
         public AbilityAutoCastResult TryAutoCast(
-            Vector3 origin)
+            Vector3 origin, float cooldownMultiplier = 1f)
         {
             ValidateOrigin(
                 origin);
@@ -115,6 +115,9 @@ namespace ProjectFirstRun.Abilities
                     origin,
                     target);
 
+            // Validate before executing gameplay effects; only a successful cast starts a wait.
+            float multiplier = AbilityCooldownScaling.ClampMultiplier(cooldownMultiplier);
+
             AbilityExecutionResult executionResult =
                 _executor.TryExecute(
                     in context);
@@ -134,7 +137,7 @@ namespace ProjectFirstRun.Abilities
             }
 
             AbilityCastResult castResult =
-                State.TryCommitCast();
+                State.TryCommitCast(multiplier);
 
             if (castResult !=
                 AbilityCastResult.Performed)

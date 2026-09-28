@@ -21,6 +21,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Abilities
         private ShurikenRuntime _runtime;
         private EnemyDefinition _enemyDefinition;
         private ShurikenDefinition _definition;
+        private PlayerStatCollection _stats;
         private GameObject Make(string name) { var go = new GameObject(name); _objects.Add(go); return go; }
         [SetUp] public void Setup()
         {
@@ -34,7 +35,8 @@ namespace ProjectFirstRun.Tests.PlayMode.Abilities
             _registry = Make("Registry").AddComponent<EnemyRegistry>();
             _player = Make("Source").AddComponent<HealthComponent>(); _player.Initialize(100);
             _definition = AssetDatabase.LoadAssetAtPath<ShurikenDefinition>("Assets/_Project/Data/Abilities/AD_Shuriken.asset");
-            _runtime = new ShurikenRuntime(_definition, _registry, _player.gameObject, new PlayerStatCollection());
+            _stats = new PlayerStatCollection();
+            _runtime = new ShurikenRuntime(_definition, _registry, _player.gameObject, _stats);
             _enemyDefinition = ScriptableObject.CreateInstance<EnemyDefinition>(); _objects.Add(_enemyDefinition);
         }
         private EnemyController Enemy(float x = 2.5f)
@@ -69,6 +71,26 @@ namespace ProjectFirstRun.Tests.PlayMode.Abilities
             Assert.That(_runtime.CooldownRemaining, Is.EqualTo(3).Within(.001f));
             Tick(2.9f); Assert.That(enemy.Health.CurrentHealth, Is.EqualTo(970));
             Tick(.2f); Assert.That(_runtime.IsOrbiting, Is.True);
+        }
+        [Test] public void HourglassChangesPostOrbitWaitNotOrbitOrExistingWait()
+        {
+            Tick(.1f);
+            _stats.Add(new StatModifier(PlayerStatType.AbilityCooldown,
+                StatModifierOperation.AdditivePercent, -.25f, "hourglass"));
+            Tick(2.8f);
+            Assert.That(_runtime.IsOrbiting, Is.True);
+            Tick(.1f);
+            Assert.That(_runtime.IsOrbiting, Is.False);
+            Assert.That(_runtime.CooldownRemaining, Is.EqualTo(2.25f).Within(.001f));
+            _stats.RemoveBySource("hourglass");
+            _runtime.BindEnemyRegistry(_registry);
+            Assert.That(_runtime.CooldownRemaining, Is.EqualTo(2.25f).Within(.001f));
+            Tick(2.2f);
+            Assert.That(_runtime.IsOrbiting, Is.False);
+            Tick(.1f);
+            Assert.That(_runtime.IsOrbiting, Is.True);
+            _runtime.CancelOrbit();
+            Assert.That(_runtime.CooldownRemaining, Is.EqualTo(3f).Within(.001f));
         }
         [Test] public void TwoShurikensHaveIndependentHitLedgers()
         {

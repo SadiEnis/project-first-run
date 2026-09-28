@@ -18,6 +18,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Upgrades
         [TestCase("FireRhythm", PlayerStatType.WeaponFireRate, .1f)]
         [TestCase("AttractionCore", PlayerStatType.PickupRadius, .2f)]
         [TestCase("MemoryCrystal", PlayerStatType.ExperienceGain, .1f)]
+        [TestCase("BrokenHourglass", PlayerStatType.AbilityCooldown, -.05f)]
         public void FiveLevelsReplaceOwnBonusAndKeepOtherSources(string name, PlayerStatType stat, float step)
         {
             var player = new GameObject("Core upgrade test");

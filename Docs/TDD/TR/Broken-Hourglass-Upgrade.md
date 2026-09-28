@@ -2,7 +2,13 @@
 
 ## Durum ve kapsam
 
-upgrades-content üzerinde mekanikler onaylandı. Uygulama öncesi doküman checkpoint'idir; oynanış değişikliği veya test çalıştırıldığı iddia edilmez.
+upgrades-content üzerinde uygulandı; Unity derlemesi, otomatik test çalıştırılması ve oynanış kabulü kullanıcı doğrulamasını bekliyor.
+
+AbilityCooldown, bir temel süre çarpanı üzerine negatif AdditivePercent değerleri kullanır. AbilityCooldownScaling çarpanı 0,25–1 aralığına sınırlar. PlayerAbilityController normal kullanımlara güncel çarpanı iletir; AbilityRuntimeEntry çalıştırmadan önce doğrular, AbilityRuntimeState yalnızca başarılı kullanımda kaydeder. Temel bekleme ve başlamış sayaçlar değişmez.
+
+Shuriken mevcut CancelOrbit yolunda yörünge-sonu bekleme başlarken aynı çarpanı alır (mevcut iptal durumları dahil). Yörüngenin özgün temel yapılandırmasını korur; başlamış beklemeyi yeniden ölçeklemez. Drone kodu ve sürekli çalışan yeteneklerin tick süreleri değişmedi.
+
+Yeni asset kayıtlı arena, sahne oluşturucu ve ödül havuzlarında: katalog/karışık havuz 22, upgrade havuzu 9 öğedir. Beş asset seviyesi, süre hesabı/sınır, kaynakların toplanması, başarısız kullanım, controller bağlantısı, sürekli zamanın korunması ve Shuriken yörünge/bekleme sınırları için testler genişletildi. Testler çalıştırılmadı. Sürekli sayaç kontrolü tam bir Drone savaş regresyon testi değildir; uçtan uca sahne geçişi mevcut testler/manuel doğrulama gerektirir.
 
 Kırık Kum Saati (Broken Hourglass), ortak güçlendirme slotlarını ve beş seviyeyi kullanır. Tam etkiler önceki seviyenin yerini alır; uygun kaynakların yüzdeleri toplanır. Denge değerleri başlangıç niteliğindedir.
 

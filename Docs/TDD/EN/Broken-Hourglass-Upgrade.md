@@ -2,7 +2,13 @@
 
 ## Status and scope
 
-Approved mechanics on upgrades-content. Documentation checkpoint before implementation; no runtime changes or test execution claimed.
+Implemented on upgrades-content; Unity compilation, automated execution and gameplay acceptance await user validation.
+
+AbilityCooldown uses negative AdditivePercent values against a duration multiplier of one. AbilityCooldownScaling clamps that multiplier to 0.25–1. PlayerAbilityController supplies the current multiplier to ordinary casts; AbilityRuntimeEntry validates it before execution and AbilityRuntimeState captures it only on successful commit. Base cooldown and existing waits remain unchanged.
+
+Shuriken captures the same multiplier when its existing CancelOrbit path starts the post-orbit wait (including existing cancellation cases). It retains the orbit's original base configuration and does not rescale a wait already underway. Drone code and continuous tick delta times are unchanged.
+
+The new asset is in the saved arena, scene builder and reward pools: catalog/mixed pool 22, upgrade pool 9. Tests were extended for the five asset levels, duration math/cap, additive sources, failed casts, controller integration, unchanged continuous time and Shuriken orbit/wait boundaries. These tests have not been run. The continuous clock probe is not a complete Drone combat regression, and full scene travel still needs existing suites/manual validation.
 
 Broken Hourglass (Kırık Kum Saati) uses the shared upgrade slots and five levels. Full effects replace the previous level; percentages from applicable sources add. Balance values are provisional.
 

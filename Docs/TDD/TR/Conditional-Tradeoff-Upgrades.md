@@ -6,7 +6,13 @@ upgrades-content üzerinde mekanikler onaylandı. Bu uygulama öncesi doküman c
 
 ### Son Direniş uygulama güncellemesi
 
-Son Direniş uygulandı; Demir Yemin, Kan Ahdi ve Cam Kalp bekliyor. Son Direniş'in Unity derlemesi, otomatik test sonucu ve manuel kabulü henüz doğrulanmadı.
+Son Direniş uygulandı ve kullanıcı tarafından manuel kabul edildi. Otomatik test sonucu doğrulanmadı. Kan Ahdi ve Cam Kalp bekliyor; Demir Yemin'in durumu aşağıdadır.
+
+### Demir Yemin uygulama güncellemesi
+
+Demir Yemin mevcut DamageReduction (Flat, 0,10/0,15/0,20) ve MoveSpeed (AdditivePercent, her seviyede -0,10) tüketicileriyle uygulandı; yeni runtime davranışı gerekmedi. Üç seviyeli asset kayıtlı arena, sahne oluşturucu ve ödül havuzlarına eklendi. Katalog/karışık havuz 24, upgrade havuzu 11 öğedir.
+
+IronOathUpgradeTests tüm seviyeler, sabit hareket bedeli, gerçek hasar azaltma, maksimum-seviye reddi, gerçek Demir Deri/Rüzgâr Örgüsü asset'leriyle birleşim, ortak sınır, etki kaldırma ve can/yerçekimi/temel hızın değişmemesini kapsar. Asistan Unity derlemesi veya otomatik test çalıştırmadı. Manuel kabul bekleniyor; nihai denge ertelenmiş durumda.
 
 Üç seviyeli asset, yeni LowHealthDamageBonus statında (12) düz 0,20/0,30/0,40 değeri tutar. Kayıtlı oyuncu prefab'ındaki PlayerLastStandController can/stat değişikliklerini dinler ve runtime.last-stand kaynağıyla iki ayrı toplamsal hasar modifier'ına sahip olur. İkisini bildirimden önce değiştirir; devre dışı kalınca yalnızca kendi etkilerini kaldırır. Bonus değişmediyse işlem yapmaz; bildirim döngüsü ve tekrar birikme engellenir. Maksimum-can güncellemeleri mevcut survival controller'ı kullanır; mermi/zamanlı etki tüketicileri değişmedi.
 

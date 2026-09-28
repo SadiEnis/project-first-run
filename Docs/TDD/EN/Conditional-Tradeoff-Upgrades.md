@@ -6,7 +6,13 @@ Mechanics approved on upgrades-content. This is the documentation checkpoint bef
 
 ### Last Stand implementation update
 
-Last Stand is now implemented; Iron Oath, Blood Pact and Glass Heart remain pending. Unity compilation, automated execution and manual acceptance of Last Stand are not yet confirmed.
+Last Stand is implemented and manually accepted by the user. Automated execution is not confirmed. Blood Pact and Glass Heart remain pending; Iron Oath status follows below.
+
+### Iron Oath implementation update
+
+Iron Oath is implemented using the existing DamageReduction (Flat, 0.10/0.15/0.20) and MoveSpeed (AdditivePercent, -0.10 at all levels) consumers; no new runtime behavior was needed. The saved arena, scene builder and reward pools include its three-level asset. Catalog/mixed pool now has 24 items; upgrade pool has 11.
+
+IronOathUpgradeTests covers all levels, fixed movement cost, actual damage reduction, maximum-level rejection, stacking with real Ironhide/Windweave assets, the shared cap, effect removal and unchanged health/gravity/base speed. No Unity compilation or automated tests were run by the assistant. Manual acceptance is pending; final balance remains deferred.
 
 Its three-level asset stores a flat LowHealthDamageBonus (new stat 12) of 0.20/0.30/0.40. PlayerLastStandController on the saved player prefab subscribes to health/stat changes and owns two separate runtime.last-stand additive damage modifiers. It replaces both before notification and removes only its own effects on disable; unchanged bonus values are no-ops, preventing notification recursion and repeated stacking. Maximum-health updates reuse the existing survival controller; no projectile or timed-effect consumers were changed.
 

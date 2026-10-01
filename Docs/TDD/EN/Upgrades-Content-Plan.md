@@ -52,7 +52,7 @@ Discuss each group's mechanics before implementing. Record EN/TR TDD before code
 - Approved cooldown scope: ordinary recast waits and Shuriken post-orbit waits only; no Drone cadence or active-effect acceleration. See [Broken Hourglass](Broken-Hourglass-Upgrade.md). Implement available upgrades first, then revisit additional-system dependencies individually.
 - Last Stand, Iron Oath, Blood Pact and Glass Heart mechanics are approved in [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md). Implement individually with acceptance after each; Glass Heart uses incoming damage amplification before armor.
 - Fluid Mechanism remains deferred without changing its reload movement-penalty identity. Do not invent a penalty solely to make the item useful without agreement.
-- Specify Crimson Fang attribution for weapon/ability/DoT kills, chance versus guaranteed healing and overheal behavior.
+- Crimson Fang is approved: guaranteed 2/5/7 health per player-owned kill, including timed damage; no overheal or resurrection. See [Crimson Fang](Crimson-Fang-Upgrade.md). Implementation and validation are pending.
 - Specify exactly which existing chest/drop/rarity probabilities Loaded Dice changes. Do not silently add evolution gameplay, gold/meta systems or a new rarity system.
 - Preserve run ownership, reset and cross-map behavior; test combinations, not only isolated acquisitions.
 - The development damage item must have an explicit replacement/migration decision; avoid accidental duplicate real damage upgrades in pools.

@@ -29,7 +29,7 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<LevelUpChestSource>(true)).Count(), Is.EqualTo(1));
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<NavMeshSurface>(true)).Single().navMeshData, Is.Not.Null);
                 Assert.That(arena.EnemyDefinitions.Count, Is.EqualTo(3));
-                Assert.That(arena.Items.Count, Is.EqualTo(25));
+                Assert.That(arena.Items.Count, Is.EqualTo(26));
                 Assert.That(arena.Player.GetComponent<PlayerLastStandController>(), Is.Not.Null);
                 Assert.That(arena.Player.GetComponent<ProjectFirstRun.Player.PlayerSurvivalController>(), Is.Not.Null);
                 Assert.That(arena.Chests.Count, Is.EqualTo(7));

@@ -47,9 +47,12 @@ namespace ProjectFirstRun.Combat
             return restored;
         }
 
-        public DamageResult ApplyDamage(float requestedDamage, float damageReduction = 0f)
+        public DamageResult ApplyDamage(float requestedDamage, float damageReduction = 0f,
+            float incomingDamageMultiplier = 1f)
         {
             if (!IsFinite(damageReduction)) throw new ArgumentOutOfRangeException(nameof(damageReduction));
+            if (!IsFinite(incomingDamageMultiplier) || incomingDamageMultiplier <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(incomingDamageMultiplier));
             if (!IsFinite(requestedDamage) ||
                 requestedDamage <= 0f ||
                 IsDead)
@@ -60,8 +63,9 @@ namespace ProjectFirstRun.Combat
             }
 
             float previousHealth = CurrentHealth;
-            float appliedDamage = Math.Min(
-                requestedDamage * (1f - Math.Clamp(damageReduction, 0f, .75f)),
+            // Double intermediate avoids overflow before armor and remaining-health clamping.
+            float appliedDamage = (float)Math.Min(
+                (double)requestedDamage * incomingDamageMultiplier * (1f - Math.Clamp(damageReduction, 0f, .75f)),
                 previousHealth);
 
             CurrentHealth = Math.Max(

@@ -13,6 +13,13 @@ namespace ProjectFirstRun.Combat
         private HealthState _healthState;
         public float BaseMaximumHealth => _maximumHealth;
         public float DamageReduction { get; private set; }
+        public float IncomingDamageMultiplier { get; private set; } = 1f;
+
+        public void SetIncomingDamageMultiplier(float value)
+        {
+            if (!float.IsFinite(value) || value <= 0f) throw new ArgumentOutOfRangeException(nameof(value));
+            IncomingDamageMultiplier = value;
+        }
 
         public void SetDamageReduction(float value)
         {
@@ -86,6 +93,7 @@ namespace ProjectFirstRun.Combat
             _maximumHealth = maximumHealth;
             _healthState = newHealthState;
             DamageReduction = 0f;
+            IncomingDamageMultiplier = 1f;
         }
 
         public DamageResult ApplyDamage(
@@ -94,7 +102,7 @@ namespace ProjectFirstRun.Combat
             EnsureInitialized();
 
             DamageResult result =
-                _healthState.ApplyDamage(damageInfo.Amount, DamageReduction);
+                _healthState.ApplyDamage(damageInfo.Amount, DamageReduction, IncomingDamageMultiplier);
 
             if (!result.WasApplied)
             {

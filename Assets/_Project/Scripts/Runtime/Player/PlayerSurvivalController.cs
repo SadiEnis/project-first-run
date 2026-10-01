@@ -58,9 +58,11 @@ namespace ProjectFirstRun.Player
             float maximum = _stats.Evaluate(PlayerStatType.MaxHealth, _health.BaseMaximumHealth);
             float reduction = _stats.Evaluate(PlayerStatType.DamageReduction, 0f);
             float regeneration = _stats.Evaluate(PlayerStatType.HealthRegeneration, 0f);
-            if (maximum <= 0f || regeneration < 0f)
+            float incomingDamage = _stats.Evaluate(PlayerStatType.IncomingDamage, 1f);
+            if (maximum <= 0f || regeneration < 0f || incomingDamage <= 0f)
                 throw new InvalidOperationException("Invalid survival stat configuration.");
             _health.SetDamageReduction(reduction);
+            _health.SetIncomingDamageMultiplier(incomingDamage);
             RegenerationPerSecond = regeneration;
             _health.SetMaximumHealth(maximum);
         }

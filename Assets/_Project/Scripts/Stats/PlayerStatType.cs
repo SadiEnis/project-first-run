@@ -14,6 +14,7 @@ namespace ProjectFirstRun.Stats
         HealthRegeneration = 9,
         PickupRadius = 10,
         ExperienceGain = 11,
-        LowHealthDamageBonus = 12
+        LowHealthDamageBonus = 12,
+        IncomingDamage = 13
     }
 }

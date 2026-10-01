@@ -6,7 +6,13 @@ Mechanics approved on upgrades-content. This is the documentation checkpoint bef
 
 ### Last Stand implementation update
 
-Last Stand and Iron Oath are implemented and manually accepted by the user. Automated execution is not confirmed. Blood Pact is implemented awaiting acceptance; Glass Heart remains pending.
+Last Stand, Iron Oath and Blood Pact are implemented and manually accepted by the user. Automated execution is not confirmed. Glass Heart is implemented awaiting acceptance.
+
+### Glass Heart implementation update
+
+Glass Heart grants additive WeaponDamage/AbilityDamage bonuses of 0.20/0.35/0.50 and fixed +0.25 IncomingDamage (new stat 13). PlayerSurvivalController evaluates incoming damage against a base multiplier of one and forwards it to HealthComponent. HealthState applies amplification before capped armor reduction and remaining-health clamping, preserving the original requested damage in the result. Shared health defaults to multiplier one; spawn initialization restores that default. Healing and maximum-health changes do not use the multiplier.
+
+The asset is connected to the saved arena, builder and reward pools: catalog/mixed count 26, upgrade count 13. GlassHeartUpgradeTests covers progression/fixed cost, real Iron Oath integration, original damage/event data, healing/clamping isolation, stacking/removal, enemy defaults, lethal events and invalid multipliers. No Unity compilation or test execution is claimed. Manual acceptance and final balance are pending.
 
 ### Blood Pact implementation update
 

@@ -6,7 +6,13 @@ upgrades-content üzerinde mekanikler onaylandı. Bu uygulama öncesi doküman c
 
 ### Son Direniş uygulama güncellemesi
 
-Son Direniş ve Demir Yemin uygulandı ve kullanıcı tarafından manuel kabul edildi. Otomatik test sonucu doğrulanmadı. Kan Ahdi uygulandı, kabul bekliyor; Cam Kalp henüz uygulanmadı.
+Son Direniş, Demir Yemin ve Kan Ahdi uygulandı ve kullanıcı tarafından manuel kabul edildi. Otomatik test sonucu doğrulanmadı. Cam Kalp uygulandı, kabul bekliyor.
+
+### Cam Kalp uygulama güncellemesi
+
+Cam Kalp toplamsal WeaponDamage/AbilityDamage bonusu (0,20/0,35/0,50) ve sabit +0,25 IncomingDamage (yeni stat 13) verir. PlayerSurvivalController gelen hasarı bir temel çarpanı üzerinden hesaplayıp HealthComponent'e aktarır. HealthState artırımı önce, sınırlı zırh azaltımını sonra uygular ve gerçek kaybı kalan canla sınırlar; sonuçta orijinal istenen hasar korunur. Ortak can bileşeninde varsayılan çarpan birdir; spawn başlangıcı bu varsayılanı geri yükler. İyileştirme ve maksimum-can değişimleri çarpanı kullanmaz.
+
+Asset kayıtlı arena, oluşturucu ve ödül havuzlarına bağlandı: katalog/karışık havuz 26, upgrade havuzu 13 öğedir. GlassHeartUpgradeTests ilerleme/sabit bedel, gerçek Demir Yemin ile birleşim, orijinal hasar/olay verileri, iyileştirme/sınırlama ayrımı, toplama/kaldırma, düşman varsayılanları, ölüm olayları ve geçersiz çarpanları kapsar. Unity derlemesi veya test çalıştırıldığı iddia edilmez. Manuel kabul ve nihai denge bekliyor.
 
 ### Kan Ahdi uygulama güncellemesi
 

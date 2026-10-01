@@ -208,6 +208,7 @@ namespace ProjectFirstRun.Editor
                 Load<ItemDefinition>("Assets/_Project/Data/Upgrade/UD_BrokenHourglass.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Upgrade/UD_LastStand.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Upgrade/UD_IronOath.asset"),
+                Load<ItemDefinition>("Assets/_Project/Data/Upgrade/UD_BloodPact.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Shotgun.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_Minigun.asset"),
                 Load<ItemDefinition>("Assets/_Project/Data/Items/Weapons/WD_RocketLauncher.asset"),

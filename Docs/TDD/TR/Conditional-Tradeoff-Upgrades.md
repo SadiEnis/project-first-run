@@ -6,7 +6,13 @@ upgrades-content üzerinde mekanikler onaylandı. Bu uygulama öncesi doküman c
 
 ### Son Direniş uygulama güncellemesi
 
-Son Direniş uygulandı ve kullanıcı tarafından manuel kabul edildi. Otomatik test sonucu doğrulanmadı. Kan Ahdi ve Cam Kalp bekliyor; Demir Yemin'in durumu aşağıdadır.
+Son Direniş ve Demir Yemin uygulandı ve kullanıcı tarafından manuel kabul edildi. Otomatik test sonucu doğrulanmadı. Kan Ahdi uygulandı, kabul bekliyor; Cam Kalp henüz uygulanmadı.
+
+### Kan Ahdi uygulama güncellemesi
+
+Kan Ahdi mevcut WeaponDamage/AbilityDamage toplamsal bonuslarını (0,15/0,25/0,35) ve sabit MaxHealth bedelini (-0,20) kullanır. Runtime tüketicilerinin değişmesi gerekmedi. Asset kayıtlı arena, sahne oluşturucu ve upgrade/karışık havuzlara bağlandı; güncel katalog/karışık havuz 25, upgrade havuzu 12 öğedir.
+
+BloodPactUpgradeTests üç seviye, sabit bedel, hasar/ölüm olayı oluşturmayan tam/yaralı can sınırlaması, maksimum-seviye reddi, gerçek İkinci Kalp/Hiddet Mührü ile farklı edinme sıralarında toplama, Son Direniş eşik değişimi ve diriltmeme davranışını kapsar. Mevcut fırlatma anındaki hasar değerleri değişmedi. Testler ve Unity derlemesi asistan tarafından çalıştırılmadı; oynanış kabulü ve nihai denge bekliyor.
 
 ### Demir Yemin uygulama güncellemesi
 

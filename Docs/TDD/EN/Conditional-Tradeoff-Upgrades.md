@@ -6,7 +6,13 @@ Mechanics approved on upgrades-content. This is the documentation checkpoint bef
 
 ### Last Stand implementation update
 
-Last Stand is implemented and manually accepted by the user. Automated execution is not confirmed. Blood Pact and Glass Heart remain pending; Iron Oath status follows below.
+Last Stand and Iron Oath are implemented and manually accepted by the user. Automated execution is not confirmed. Blood Pact is implemented awaiting acceptance; Glass Heart remains pending.
+
+### Blood Pact implementation update
+
+Blood Pact uses the existing WeaponDamage/AbilityDamage additive bonuses (0.15/0.25/0.35) and fixed MaxHealth additive cost (-0.20). No runtime consumer changes were needed. Its asset is connected to the saved arena, scene builder and upgrade/mixed pools; current catalog/mixed count is 25 and upgrade count is 12.
+
+BloodPactUpgradeTests covers three levels, unchanged cost, full/injured health clamping without damage/death events, maximum-level rejection, real Second Heart/Wrath Seal stacking in both acquisition orders, Last Stand threshold changes and no resurrection. Existing launch-time damage snapshots are unchanged. Tests and Unity compilation have not been run by the assistant; gameplay acceptance and final balance remain pending.
 
 ### Iron Oath implementation update
 

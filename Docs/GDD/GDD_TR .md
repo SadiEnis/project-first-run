@@ -576,17 +576,37 @@ Geçerli bir ödül varken altın onun yerine verilmez. Altın yalnızca ilgili 
 
 ---
 
+### 15.9. Temel Sandık Dağılımları
+
+Aşağıdaki değerler, şans etkileri uygulanmadan önceki onaylı temel dağılımdır. Açıkça revize edilene kadar sonraki uygulama ve dengeleme çalışmalarında bu değerler esas alınacaktır.
+
+| Kaynak | Sandık oluşturma ihtimali | Basit (toplam) | Yeşil | Mor | Efsanevi |
+| --- | --- | --- | --- | --- | --- |
+| Normal düşman ölümü | %25 | %65 | %20 | %10 | %5 |
+| Elit düşman ölümü | %50 | %40 | %30 | %25 | %5 |
+| Seviye atlama | Kesin: bir sandık | %30 | %50 | %15 | %5 |
+
+- Dört tür yüzdesi her düşman ölümüne değil, **sandık oluşturulduktan sonraki tür seçimine** aittir. Her satırın tür dağılımı toplamı %100'dür.
+- Basit toplamı Silah, Yetenek ve Güçlendirme Sandıklarını kapsar; bu üç tür basit sandık payını eşit paylaşır.
+- Sandık oluşturma ihtimalleri değişmez. Bu revizyon oluşturulan sandık sayısını değil, tür dağılımını değiştirir.
+- Seviye atlamalar, gelişmiş sandıklarla karşılaşmak için düzenli fırsatlar sunar. Elitler daha ödüllendirici bir kalite dağılımına sahiptir; basit sandıklar her iki düşman sınıfı için de değerli sonuçlar olarak korunur.
+- Bu dağılımlara Boss ve Altın Sandık dahil değildir. Bir boss'un birden fazla sandık verip vermeyeceği dahil boss ödül kuralları, boss aşamasında ayrıca tasarlanacaktır. 15.7–15.8 bölümleri kesinleşmiş bir boss düşürme uygulamasını değil, uzun vadeli ödül fikirlerini anlatır.
+- Hileli Zar'ın kesin seviye bonusları ve bu yeni dağılımlara nasıl uygulanacağı ayrıca netleştirilecektir. Temel dağılımdaki yüzdeler evrim ihtimalleri değildir.
+- Uygulama durumu: Bu tablo onaylı tasarım temelidir; oyun içi düşürme tablosu asset'lerinin güncellenmesi sonraki iştir.
+
+---
+
 ## 16. Deneyim ve Seviye Sistemi
 
 Düşmanlar öldürüldüğünde deneyim nesneleri düşürür.
 
 Yeterli deneyim toplandığında oyuncunun mevcut tur seviyesi artar. Tur seviyesi, tur bittiğinde sıfırlanır.
 
-Her seviye atlamada kesin olarak bir sandık kazanılır. Sandık türü ağırlıklı bir olasılık tablosuyla belirlenir.
+Her seviye atlamada kesin olarak bir sandık kazanılır. Sandık türü, 15.9 bölümündeki seviye atlama dağılımıyla belirlenir.
 
 Normal ve elit düşmanlar da sandık düşürebilir. Sandık düşürme ihtimalleri ve sandık türü ağırlıkları iki düşman türü için ayrı hesaplanır.
 
-Boss'lar kendilerine ait Boss Sandığı ödülünü kullanır. Son boss ayrıca Altın Sandık sağlar.
+Boss Sandığı ve son boss için Altın Sandık ödülleri uzun vadeli fikirler olarak korunur. Düşürme kuralları ve adetleri boss aşamasında ayrıca kesinleştirilecektir.
 
 Deneyim sistemi kısa vadeli ilerlemenin ana kaynaklarından biridir ve oyuncuya sık sık bir sonraki ödüle yaklaştığını hissettirmelidir.
 
@@ -748,7 +768,7 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 - Gerekli evrim güçlendirmesinin de maksimum seviyeye ulaşması zorunlu olmalı mı?
 - Bir eşyanın birden fazla olası evrimi bulunabilir mi?
 - Ara boss'lar mevcut tur altınının bir kısmını kalıcı olarak güvenceye almalı mı?
-- Son sandık düşürme ihtimalleri ne olacak?
+- Oynanış dengelemesi sonrasında 15.9 bölümündeki temel sandık dağılımı değişmeli mi; boss'ların ayrı ödülleri ve sandık adetleri ne olmalı?
 - Şans etkileri sonrasında evrim ihtimalleri nasıl hesaplanacak?
 - Lucky güçlendirmesi farklı olasılık sistemlerini nasıl etkileyecek?
 - Slotlar ve altın koruması haricinde hangi kalıcı geliştirmeler bulunacak?
@@ -819,3 +839,4 @@ Görsel efektler gücü desteklemeli, ancak düşmanları veya tehlikeleri gizle
 | --- | --- | --- |
 | v0.1 | 31.07.2026 | İlk temel GDD oluşturuldu. Vizyon, tasarım ilkeleri, temel döngü, ekipman yapısı, mevcut silah ve yetenek tasarımları, güçlendirme adayları, evrim kuralları, sandık sistemi, ekonomi, kalıcı ilerleme, kapsam, açık sorular ve ilk tasarım kararları belgelendi. |
 | v0.2 | 20.09.2026 | Keşfedilebilir harita yönüyle birlikte üs → run → ölümde üs döngüsü, isteğe bağlı dungeon/ana alan savaşları ve sandık kaynaklı mekanik çeşitlilik netleştirildi. Altın/meta uygulaması ertelenmiş durumda. |
+| v0.3 | 03.10.2026 | Normal düşman, elit ve seviye atlama için kaynak bazlı temel sandık dağılımları onaylandı. Sandık oluşturma ihtimalleri korundu; boss ödül kuralları ve Hileli Zar dengesi sonraya bırakıldı. Oyun içi düşürme tablosu değişiklikleri henüz uygulanmadı. |

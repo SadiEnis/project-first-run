@@ -576,17 +576,37 @@ Gold is not intended to replace a valid reward. It is used only when every relev
 
 ---
 
+### 15.9. Baseline Chest Distributions
+
+The following values are the approved baseline, without luck modifiers. They remain the reference for future implementation and balancing until explicitly revised.
+
+| Source | Chance to generate a chest | Common (combined) | Green | Purple | Legendary |
+| --- | --- | --- | --- | --- | --- |
+| Normal enemy defeated | 25% | 65% | 20% | 10% | 5% |
+| Elite enemy defeated | 50% | 40% | 30% | 25% | 5% |
+| Level-up | Guaranteed: one chest | 30% | 50% | 15% | 5% |
+
+- The four type percentages apply **after a chest is generated**, not to every enemy kill. Each row's type distribution totals 100%.
+- Common combines Weapon, Ability, and Upgrade Chests; these three share the common allocation equally.
+- Chest-generation chances remain unchanged. This revision changes the type distribution, not the number of chests generated.
+- Level-ups provide reliable opportunities to encounter advanced chests. Elites offer a more rewarding quality distribution, while common chests remain useful outcomes from both enemy ranks.
+- These distributions do not include Boss or Golden Chests. Boss reward rules, including whether a boss awards multiple chests, will be designed separately during the boss phase. Sections 15.7–15.8 describe longer-term reward concepts, not a finalized boss-drop implementation.
+- Loaded Dice's exact level bonuses and their application to these new distributions remain to be finalized. The baseline percentages are not evolution probabilities.
+- Implementation status: this is an approved design baseline; updating the runtime drop-table assets is a subsequent task.
+
+---
+
 ## 16. Experience and Leveling
 
 Enemies drop experience pickups when defeated.
 
 Collecting enough experience increases the player's current run level. Run level resets when the run ends.
 
-Every level-up guarantees a chest. The chest type is determined by a weighted probability table.
+Every level-up guarantees one chest. The chest type follows the level-up distribution in section 15.9.
 
 Normal enemies and elite enemies may also drop chests. Their chest-drop chances and chest-type weightings are calculated separately.
 
-Bosses use their dedicated Boss Chest reward, while the final boss also provides the Golden Chest.
+Boss Chest and final-boss Golden Chest rewards remain longer-term concepts. Their drop rules and quantities will be finalized separately during the boss phase.
 
 Experience is one of the main sources of short-term progression and should create a frequent sense of approaching the next reward.
 
@@ -748,7 +768,7 @@ Features may be reconsidered only if they clearly support the core design pillar
 - Must the required evolution upgrade also be at maximum level?
 - Can an item have more than one possible evolution?
 - Will intermediate bosses permanently bank part of the current run gold?
-- What are the final chest-drop probabilities?
+- Does the chest baseline in section 15.9 need adjustment after gameplay balancing, and what separate rewards and chest quantities should bosses provide?
 - What are the final evolution probabilities after luck modifiers?
 - How will the Lucky upgrade affect separate probability systems?
 - What permanent upgrades will exist beyond slots and gold retention?
@@ -819,3 +839,4 @@ Features may be reconsidered only if they clearly support the core design pillar
 | --- | --- | --- |
 | v0.1 | 2026-07-31 | Created the initial foundation GDD. Documented the vision, design pillars, core loop, equipment concepts, current weapon and ability designs, upgrade candidates, evolution rules, chest system, economy, meta progression, scope, open questions, and initial decisions. |
 | v0.2 | 2026-09-20 | Clarified explorable-map progression, hub → run → death-to-hub loop, optional dungeon/main-area combat and chest-driven mechanical variety. Gold/meta implementation remains deferred. |
+| v0.3 | 2026-10-03 | Approved source-specific baseline chest distributions for normal enemies, elites, and level-ups. Preserved chest-generation chances; deferred boss reward rules and Loaded Dice tuning. Runtime drop-table changes remain pending. |

@@ -2,7 +2,15 @@
 
 ## Status and scope
 
-Mechanics approved on upgrades-content. Pre-implementation documentation checkpoint; no runtime implementation or test execution is claimed.
+Implemented on upgrades-content; Unity compilation, test execution and gameplay acceptance await user validation.
+
+## Implementation notes
+
+Existing weapon and ability damage carries its player source, including burn and bleed. Instead of registry subscriptions, EnemyController's initialized, once-per-spawn death guard directly routes lethal source ownership to PlayerKillHealingController on that source or its parent. It sets its dead flag before routing; disabling/unregistering does not route kills. Healing notification failures cannot bypass the subsequent registry/death cleanup. This avoids the unregister-before-Died subscription hazard and requires no map rebind or retained enemy references.
+
+The player prefab owns the recipient. It reads current HealthOnKill (new stat 14, Flat values 2/5/7), checks enabled/alive state and uses HealthComponent.Heal. It does not change damage snapshots or timed-effect lifecycles. Missing/unrelated source objects receive no player credit.
+
+Asset, saved arena, builder and pools are connected: catalog/mixed count 27, upgrade count 14. CrimsonFangUpgradeTests exercises real EnemyController deaths, three levels, duplicate-hit rejection, missing/unrelated source, despawn, Fireball burn, Shuriken bleed, pooled reuse/new registry, health cap/no banking, dead-player rejection and Last Stand healing interaction. It does not execute every weapon/projectile or a full asynchronous scene load. Tests have been authored, not run.
 
 Crimson Fang (Kızıl Diş) uses the existing shared upgrade slots and three levels. Each level replaces the previous full effect; no accumulated earlier-level healing.
 

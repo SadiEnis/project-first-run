@@ -133,12 +133,18 @@ namespace ProjectFirstRun.Enemies
 
             _enemyMotor.Stop();
             _enemyMotor.ClearStun();
-            Unregister();
-
-            Died?.Invoke(
-                this,
-                damageInfo,
-                damageResult);
+            try
+            {
+                if (damageResult.WasLethal && damageInfo.Source != null)
+                    damageInfo.Source.GetComponentInParent<ProjectFirstRun.Player.PlayerKillHealingController>()
+                        ?.OnCreditedKill();
+            }
+            finally
+            {
+                // Healing observers must not prevent registry/death cleanup.
+                Unregister();
+                Died?.Invoke(this, damageInfo, damageResult);
+            }
         }
 
         private void Register()

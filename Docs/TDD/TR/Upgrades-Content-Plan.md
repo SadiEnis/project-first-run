@@ -52,7 +52,7 @@ Her grubun mekaniği uygulama öncesinde konuşulur. Koddan önce EN/TR TDD kayd
 - Onaylanan cooldown kapsamı normal yeniden kullanım ve Shuriken yörünge-sonu beklemesidir; Drone sıklığı ve aktif etkiler hızlandırılmaz. Bkz. [Kırık Kum Saati](Broken-Hourglass-Upgrade.md). Önce uygulanabilir güçlendirmeler tamamlanır; ek sistem gerektirenler sonra tek tek ele alınır.
 - Son Direniş, Demir Yemin, Kan Ahdi ve Cam Kalp mekanikleri [Koşullu ve Bedelli Güçlendirmeler](Conditional-Tradeoff-Upgrades.md) içinde onaylandı. Tek tek uygulanıp her öğeden sonra kabul alınır; Cam Kalp zırhtan önce gelen hasarı artırır.
 - Akıcı Mekanizma reload hareket cezası kimliği değişmeden ertelenmiş kalır. Eşyayı işe yarar yapmak için onaysız yeni ceza icat edilmez.
-- Kızıl Diş onaylandı: zamanlı hasar dahil oyuncuya ait öldürmede garantili 2/5/7 can; maksimumu aşma veya diriltme yok. Bkz. [Kızıl Diş](Crimson-Fang-Upgrade.md). Uygulama ve doğrulama bekliyor.
+- Kızıl Diş uygulandı: zamanlı hasar dahil oyuncuya ait öldürmede garantili 2/5/7 can; maksimumu aşma veya diriltme yok. Bkz. [Kızıl Diş](Crimson-Fang-Upgrade.md). Kullanıcı doğrulaması bekleniyor.
 - Hileli Zar'ın hangi mevcut sandık/drop/nadirlik olasılıklarını değiştirdiği tek tek belirlenir. Sessizce evolution oynanışı, altın/meta veya yeni nadirlik sistemi eklenmez.
 - Run sahipliği, sıfırlama ve haritalar arası davranış korunur; yalnızca tekil edinme değil kombinasyonlar da test edilir.
 - Geliştirme hasar öğesinin değiştirilmesi/geçişi açıkça kararlaştırılır; havuzlarda yanlışlıkla aynı rolü taşıyan gerçek hasar öğeleri çoğaltılmaz.

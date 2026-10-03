@@ -15,6 +15,7 @@ namespace ProjectFirstRun.Stats
         PickupRadius = 10,
         ExperienceGain = 11,
         LowHealthDamageBonus = 12,
-        IncomingDamage = 13
+        IncomingDamage = 13,
+        HealthOnKill = 14
     }
 }

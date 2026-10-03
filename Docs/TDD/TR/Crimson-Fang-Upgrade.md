@@ -2,7 +2,15 @@
 
 ## Durum ve kapsam
 
-upgrades-content üzerinde mekanikler onaylandı. Uygulama öncesi doküman checkpoint'idir; runtime uygulaması veya test çalıştırıldığı iddia edilmez.
+upgrades-content üzerinde uygulandı; Unity derlemesi, test çalıştırılması ve oynanış kabulü kullanıcı doğrulamasını bekliyor.
+
+## Uygulama notları
+
+Mevcut silah/yetenek hasarı, yanma ve kanama dahil oyuncu kaynağını taşır. Registry aboneliği yerine EnemyController'ın başlatılmış ve spawn başına tek ölüm koruması, ölümcül hasarın kaynağındaki veya üst nesnesindeki PlayerKillHealingController'a doğrudan bildirim gönderir. Bildirimden önce ölü bayrağı atanır; devre dışı bırakma/unregister öldürme bildirimi göndermez. İyileştirme bildirimindeki hata, ardından gelen registry/ölüm temizliğini atlatmaz. Böylece unregister-before-Died abonelik sorunu oluşmaz; haritada yeniden bağlantı veya düşman referansı saklama gerekmez.
+
+Alıcı oyuncu prefab'ındadır. Güncel HealthOnKill değerini (yeni stat 14, Flat 2/5/7) okur, aktif/hayatta olma durumunu kontrol eder ve HealthComponent.Heal kullanır. Hasar anlık görüntülerini veya zamanlı etki yaşam döngülerini değiştirmez. Eksik/ilgisiz kaynaklar oyuncuya öldürme yazmaz.
+
+Asset, kayıtlı arena, oluşturucu ve havuzlar bağlandı: katalog/karışık havuz 27, upgrade havuzu 14 öğe. CrimsonFangUpgradeTests gerçek EnemyController ölümü, üç seviye, yinelenen vuruş reddi, eksik/ilgisiz kaynak, despawn, Fireball yanması, Shuriken kanaması, havuzdan yeniden kullanım/yeni registry, can sınırı/biriktirmeme, ölü oyuncu ve Son Direniş etkileşimini kapsar. Her silah/mermi veya tam asenkron sahne yüklemesi yürütülmez. Testler yazıldı, çalıştırılmadı.
 
 Kızıl Diş (Crimson Fang) mevcut ortak güçlendirme slotlarını ve üç seviyeyi kullanır. Her seviye önceki tam etkiyi değiştirir; önceki seviyelerin iyileştirmesi birikmez.
 

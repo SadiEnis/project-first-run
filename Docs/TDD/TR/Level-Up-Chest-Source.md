@@ -1,6 +1,6 @@
 # Level atlama kaynaklı sandık
 
-Güncel içerik: [Common Kategori Sandıkları](Common-Chest-Types.md) tablonun tek geliştirme seçimini eşit ağırlıklı Weapon/Ability/Upgrade tanımlarıyla, tek başlangıç düzeneğini üç etiketli örnekle değiştirir. Aşağıdaki hak, seçimin korunması ve konum sözleşmeleri değişmez; tek geliştirme sandığı örnekleri önceki adımı anlatır.
+Güncel temel (03.10.2026, GDD 15.9): normal düşman Basit/Yeşil/Mor/Efsanevi = %65/20/10/5; elit = %40/30/25/5; seviye atlama = %30/50/15/5. Basit payı Weapon/Ability/Upgrade arasında eşit bölünür. Bu altı giriş sırasındaki tam sayı ağırlıkları Normal 65/65/65/60/30/15, Elite 40/40/40/90/75/15, LevelUp 30/30/30/150/45/15 olur (her toplam 300). Düşman sandık oluşturma ihtimalleri %25/%50; seviye atlamada bir sandık garantisi korunur. Boss/Altın ve şans etkileri dahil değildir. Seçimin korunması, konum ve ölüm işleme sözleşmeleri değişmez; aşağıdaki yalnızca basit sandık içeren eski tablo örnekleri tarihseldir. Asset regresyon testleri rastgele örnekleme yerine kesin ağırlıkları ve her seçim değerini doğrular. Unity testlerini proje sahibi çalıştırır.
 
 ## Kapsam
 

@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ using ProjectFirstRun.Enemies;
 using ProjectFirstRun.Stats;
 using ProjectFirstRun.Player;
 using ProjectFirstRun.Items;
+using ProjectFirstRun.Rewards;
 using ProjectFirstRun.Rewards.Claims;
 using ProjectFirstRun.UI.Rewards;
 using UnityEditor;
@@ -81,9 +83,8 @@ namespace ProjectFirstRun.Tests.PlayMode.Development.Chests
                 Assert.That(view.VisualRoot.GetComponentsInChildren<TextMesh>(true).Length, Is.EqualTo(1), "Reenable must not duplicate labels.");
 
                 Assert.That(chest.TryOpen(), Is.EqualTo(ChestOpenResult.SelectionOpened), chest.Definition.DisplayName);
-                int expectedChoiceCount = i < 2 ? 3 : 1;
-                Assert.That(chest.ActiveSession.Offer.Choices.Count, Is.EqualTo(expectedChoiceCount),
-                    "Expanded pools offer three weapons, three abilities or one upgrade.");
+                Assert.That(chest.ActiveSession.Offer.Choices.Count, Is.EqualTo(3),
+                    "Expanded weapon, ability and upgrade pools each offer three choices.");
                 var reward = chest.ActiveSession.Offer.Choices.First(choice =>
                     build.GetLevel(choice.Category, choice.StableId) == 0);
                 Assert.That(reward.Category, Is.EqualTo((ItemCategory)i));
@@ -97,13 +98,32 @@ namespace ProjectFirstRun.Tests.PlayMode.Development.Chests
                 Assert.That(selection.IsOpen, Is.False);
                 Assert.That(Time.timeScale, Is.EqualTo(1f));
 
-                var request = new ChestSpawnRequest(chest.Definition, new Vector3(20f, 0f, i * 3f), Quaternion.identity);
-                var exhausted = spawner.Spawn(in request).ChestController;
-                Assert.That(exhausted.TryOpen(), Is.EqualTo(ChestOpenResult.SelectionOpened));
-                Assert.That(selection.Select(exhausted.ActiveSession.Offer.Choices.First(choice =>
-                    build.GetLevel(choice.Category, choice.StableId) > 0)),
-                    Is.EqualTo(RewardClaimResult.Claimed));
-                Assert.That(exhausted.Status, Is.EqualTo(ChestStatus.Opened));
+                // A random offer from an expanded pool need not include the previously claimed item.
+                // Isolate the repeat-claim contract without modifying the shared content assets.
+                var repeatDefinition = Object.Instantiate(chest.Definition);
+                var repeatPool = ScriptableObject.CreateInstance<RewardItemPool>();
+                ChestController repeatChest = null;
+                try
+                {
+                    SetField(repeatPool, "_items", new List<ItemDefinition> { reward });
+                    SetField(repeatDefinition, "_rewardItemPool", repeatPool);
+                    int previousLevel = build.GetLevel(reward.Category, reward.StableId);
+                    var request = new ChestSpawnRequest(repeatDefinition,
+                        new Vector3(20f, 0f, i * 3f), Quaternion.identity);
+                    repeatChest = spawner.Spawn(in request).ChestController;
+                    Assert.That(repeatChest.TryOpen(), Is.EqualTo(ChestOpenResult.SelectionOpened));
+                    Assert.That(repeatChest.ActiveSession.Offer.Choices, Has.Count.EqualTo(1));
+                    Assert.That(repeatChest.ActiveSession.Offer.Choices[0], Is.SameAs(reward));
+                    Assert.That(selection.Select(reward), Is.EqualTo(RewardClaimResult.Claimed));
+                    Assert.That(build.GetLevel(reward.Category, reward.StableId), Is.EqualTo(previousLevel + 1));
+                    Assert.That(repeatChest.Status, Is.EqualTo(ChestStatus.Opened));
+                }
+                finally
+                {
+                    if (repeatChest != null) Object.DestroyImmediate(repeatChest.gameObject);
+                    Object.DestroyImmediate(repeatDefinition);
+                    Object.DestroyImmediate(repeatPool);
+                }
             }
             Assert.Throws<System.InvalidOperationException>(() => bootstrap.SpawnChest());
             Object.DestroyImmediate(bootstrap.SpawnedChest.gameObject);

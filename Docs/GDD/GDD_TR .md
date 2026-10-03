@@ -592,7 +592,7 @@ Aşağıdaki değerler, şans etkileri uygulanmadan önceki onaylı temel dağı
 - Seviye atlamalar, gelişmiş sandıklarla karşılaşmak için düzenli fırsatlar sunar. Elitler daha ödüllendirici bir kalite dağılımına sahiptir; basit sandıklar her iki düşman sınıfı için de değerli sonuçlar olarak korunur.
 - Bu dağılımlara Boss ve Altın Sandık dahil değildir. Bir boss'un birden fazla sandık verip vermeyeceği dahil boss ödül kuralları, boss aşamasında ayrıca tasarlanacaktır. 15.7–15.8 bölümleri kesinleşmiş bir boss düşürme uygulamasını değil, uzun vadeli ödül fikirlerini anlatır.
 - Hileli Zar'ın kesin seviye bonusları ve bu yeni dağılımlara nasıl uygulanacağı ayrıca netleştirilecektir. Temel dağılımdaki yüzdeler evrim ihtimalleri değildir.
-- Uygulama durumu: Bu tablo onaylı tasarım temelidir; oyun içi düşürme tablosu asset'lerinin güncellenmesi sonraki iştir.
+- Uygulama durumu: Normal, elit ve seviye atlama düşürme tablosu asset'leri bu temele güncellendi. Bu güncellemenin Unity doğrulaması ve oynanış kabulü henüz beklenmektedir.
 
 ---
 

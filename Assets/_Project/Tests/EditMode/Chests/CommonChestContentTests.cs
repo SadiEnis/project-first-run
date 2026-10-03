@@ -90,15 +90,51 @@ namespace ProjectFirstRun.Tests.EditMode.Chests
             Assert.DoesNotThrow(() => definition.Validate());
         }
 
-        [TestCase("LevelUp")]
-        [TestCase("Normal")]
-        [TestCase("Elite")]
-        public void SourceTables_ContainAllThreeCommonDefinitionsWithEqualWeights(string name)
+        [TestCase("LevelUp", 30, 150, 45, 15)]
+        [TestCase("Normal", 65, 60, 30, 15)]
+        [TestCase("Elite", 40, 90, 75, 15)]
+        public void SourceTables_MatchBaselineForEverySelectionRoll(string name,
+            int common, int green, int purple, int legendary)
         {
             var table = AssetDatabase.LoadAssetAtPath<ChestDropTable>($"Assets/_Project/Data/Chests/Dev/CDT_Development{name}.asset");
-            Assert.That(table.Validate(), Is.EqualTo(3));
-            Assert.That(table.Entries.Select(entry => entry.Definition), Is.EqualTo(new[] { Load("Weapon"), Load("Ability"), Load("Upgrade") }));
-            Assert.That(table.Entries.All(entry => entry.Weight == 1), Is.True);
+            var definitions = new[] { Load("Weapon"), Load("Ability"), Load("Upgrade"),
+                Load("Green"), Load("Purple"), Load("Legendary") };
+            var weights = new[] { common, common, common, green, purple, legendary };
+            Assert.That(table, Is.Not.Null);
+            Assert.That(table.Validate(), Is.EqualTo(300));
+            Assert.That(table.Entries.Select(entry => entry.Definition), Is.EqualTo(definitions));
+            Assert.That(table.Entries.Select(entry => entry.Weight), Is.EqualTo(weights));
+            int roll = 0;
+            for (int entry = 0; entry < weights.Length; entry++)
+                for (int offset = 0; offset < weights[entry]; offset++, roll++)
+                    Assert.That(table.Select(new FixedRoll(roll)), Is.SameAs(definitions[entry]),
+                        $"{name}: roll {roll}");
+            Assert.That(roll, Is.EqualTo(300));
+        }
+
+        [TestCase("Normal", 2500)]
+        [TestCase("Elite", 5000)]
+        public void EnemyProfiles_PreserveGenerationChanceAndSourceTable(string name, int chance)
+        {
+            var profile = AssetDatabase.LoadAssetAtPath<EnemyChestDropProfile>(
+                $"Assets/_Project/Data/Chests/Dev/CDP_Development{name}.asset");
+            Assert.That(profile, Is.Not.Null);
+            Assert.That(profile.ChanceBasisPoints, Is.EqualTo(chance));
+            Assert.That(profile.DropTable, Is.EqualTo(AssetDatabase.LoadAssetAtPath<ChestDropTable>(
+                $"Assets/_Project/Data/Chests/Dev/CDT_Development{name}.asset")));
+            Assert.That(profile.Validate(), Is.EqualTo(300));
+        }
+
+        private sealed class FixedRoll : IRandomSource
+        {
+            private readonly int _roll;
+            public FixedRoll(int roll) => _roll = roll;
+            public int Next(int minInclusive, int maxExclusive)
+            {
+                Assert.That(minInclusive, Is.Zero);
+                Assert.That(maxExclusive, Is.EqualTo(300));
+                return _roll;
+            }
         }
 
         [Test]

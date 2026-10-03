@@ -2,7 +2,15 @@
 
 ## Durum ve kapsam
 
-Davranış dokümantasyon için kararlaştırıldı; oyun kodu uygulaması ve Unity doğrulaması bekliyor. Hileli Zar (Loaded Dice) ortak güçlendirme slotlarını kullanır ve üç seviyelidir. Her seviye, önceki seviyelerle birikmek yerine önceki tam etkinin yerini alır.
+Uygulandı ve kullanıcı tarafından kabul edildi. Kullanıcı EditMode/PlayMode hatası olmadığını ve L3 ile 20 seviye atlama sandığında dört basit, iki efsanevi, kalanlarda yeşil/mor gözlemlediğini bildirdi. Bu, L3 için beklenen %21,13 basit ihtimaliyle uyumludur; istatistiksel kanıt veya nihai denge değildir. Hileli Zar (Loaded Dice) ortak güçlendirme slotlarını kullanır ve üç seviyelidir. Her seviye, önceki seviyelerle birikmek yerine önceki tam etkinin yerini alır.
+
+## Uygulama notları
+
+Luck, 1 tabanında hesaplanan 0,2/0,4/0,6 AdditivePercent değiştiricilerini kullanır. İki sahne kaynağı da seçim anında oyuncunun güncel statlarını okur; bekleyen seçilmiş tanımlar kimliklerini korur. Eksik/başlatılmamış statlar 1 kullanır. Paylaşılan asset'ler değişmez. ChestDefinition.AffectedByLuck açık katılım alanıdır: yalnızca Yeşil/Mor/Efsanevi asset'lerinde açıktır; Boss ve diğer tanımların nadirliği Legendary olsa dahi varsayılan false kalır.
+
+Çarpan 1 yolu mevcut tam sayı rastgelelik aralıklarını korur. Bonuslu seçim, ağırlıkları double hassasiyetinde tutup [0, 1.000.000.000) aralığındaki tek tam sayı örneğini normalize edilmiş birikimli sınırlarla karşılaştırır. Giriş ağırlıkları tek tek yuvarlanmadan olasılık yaklaşık milyarda bir çözünürlüğe ayrılır. 1 altı veya sonlu olmayan çarpanlar reddedilir. Profil oluşturma seçimlerinin [0,10000) aralığı ve eşikleri değişmez.
+
+Katalog/karma havuz 28, güçlendirme havuzu 15 öğe oldu. LoadedDiceChestTests ve LoadedDiceUpgradeTests eklendi; kaynak tekrar deneme testleri ve içerik kontrolleri genişletildi. Seçim sınırları, istisnalar, oluşturma eşikleri, sahiplik/seviye değiştirme ve yeni oyuncunun statları kapsanır. Tam asenkron sahne geçişi ve elle olasılık dengelemesi bu testlerle çalıştırılmış veya yeniden doğrulanmış değildir.
 
 | Seviye | Yeşil/Mor/Efsanevi ağırlık çarpanı |
 | --- | --- |
@@ -45,4 +53,4 @@ Başlangıçta %20/40/60 ağırlık bonusları korunur. Ölçümlerden sonra ayn
 
 Üç kaynak için eşyasız/üç seviyeli olasılıklar, seçim sınırları, basit türlerin eşit payları, gelişmiş türlerin göreli oranları, Boss/Altın istisnaları, geçersiz girdiler, değişmeyen ortak asset'ler, korunan düşürme sıklıkları, seviye değiştirme, maksimum seviye, eksik statlar, bekleyen yerleştirmede seçimin korunması ve run/harita sahipliği için deterministik testler yazılır. Küçük rastgele örneklemler olasılık testlerinin geçti/kaldı ölçütü yapılmaz.
 
-Derleme, EditMode/PlayMode ve elle kabulü kullanıcı yapar. Yalnızca dokümantasyon içeren bu adımda test çalıştırılmadı. Uygulamadan önce docs checkpoint'inde durulur.
+Kullanıcı EditMode/PlayMode başarısını ve elle kabulü bildirdi. Testler asistan tarafından çalıştırılmadı. Bu adım uygulama check-in'ine hazırdır; genel ödül ekonomisi dengelemesi açık kalır.

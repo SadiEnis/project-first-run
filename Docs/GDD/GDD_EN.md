@@ -591,7 +591,7 @@ The following values are the approved baseline, without luck modifiers. They rem
 - Chest-generation chances remain unchanged. This revision changes the type distribution, not the number of chests generated.
 - Level-ups provide reliable opportunities to encounter advanced chests. Elites offer a more rewarding quality distribution, while common chests remain useful outcomes from both enemy ranks.
 - These distributions do not include Boss or Golden Chests. Boss reward rules, including whether a boss awards multiple chests, will be designed separately during the boss phase. Sections 15.7–15.8 describe longer-term reward concepts, not a finalized boss-drop implementation.
-- Loaded Dice's exact level bonuses and their application to these new distributions remain to be finalized. The baseline percentages are not evolution probabilities.
+- Loaded Dice increases Green/Purple/Legendary selection weights by 20/40/60% at levels 1/2/3, then normalizes the distribution; it does not increase chest-generation chance. These are initial balance values; see [Loaded Dice](../TDD/EN/Loaded-Dice-Upgrade.md). The baseline percentages are not evolution probabilities.
 - Implementation status: the normal, elite and level-up drop-table assets now use this baseline. Unity validation and gameplay acceptance of this update remain pending.
 
 ---

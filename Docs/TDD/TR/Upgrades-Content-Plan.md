@@ -53,7 +53,7 @@ Her grubun mekaniği uygulama öncesinde konuşulur. Koddan önce EN/TR TDD kayd
 - Son Direniş, Demir Yemin, Kan Ahdi ve Cam Kalp mekanikleri [Koşullu ve Bedelli Güçlendirmeler](Conditional-Tradeoff-Upgrades.md) içinde onaylandı. Tek tek uygulanıp her öğeden sonra kabul alınır; Cam Kalp zırhtan önce gelen hasarı artırır.
 - Akıcı Mekanizma reload hareket cezası kimliği değişmeden ertelenmiş kalır. Eşyayı işe yarar yapmak için onaysız yeni ceza icat edilmez.
 - Kızıl Diş uygulandı: zamanlı hasar dahil oyuncuya ait öldürmede garantili 2/5/7 can; maksimumu aşma veya diriltme yok. Bkz. [Kızıl Diş](Crimson-Fang-Upgrade.md). Kullanıcı doğrulaması bekleniyor.
-- Hileli Zar'ın belgelenen davranışı Yeşil/Mor/Efsanevi seçim ağırlıklarını %20/40/60 artırır; sandık adedi ve oluşturma ihtimali değişmez. Kapsam, olasılık hesabı ve denge ölçütleri için bkz. [Hileli Zar](Loaded-Dice-Upgrade.md). Uygulama bekliyor; evolution, altın/meta ve şanssızlık koruması kapsam dışıdır.
+- Hileli Zar, Yeşil/Mor/Efsanevi seçim ağırlıklarını %20/40/60 artırır; sandık adedi ve oluşturma ihtimali değişmez. Kapsam, olasılık hesabı ve denge ölçütleri için bkz. [Hileli Zar](Loaded-Dice-Upgrade.md). Uygulandı; kullanıcı EditMode/PlayMode başarısını ve oynanış kabulünü bildirdi. Evolution, altın/meta ve şanssızlık koruması kapsam dışıdır.
 - Run sahipliği, sıfırlama ve haritalar arası davranış korunur; yalnızca tekil edinme değil kombinasyonlar da test edilir.
 - Geliştirme hasar öğesinin değiştirilmesi/geçişi açıkça kararlaştırılır; havuzlarda yanlışlıkla aynı rolü taşıyan gerçek hasar öğeleri çoğaltılmaz.
 

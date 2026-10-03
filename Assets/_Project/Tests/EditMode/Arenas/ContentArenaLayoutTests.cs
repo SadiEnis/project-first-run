@@ -29,7 +29,8 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<LevelUpChestSource>(true)).Count(), Is.EqualTo(1));
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<NavMeshSurface>(true)).Single().navMeshData, Is.Not.Null);
                 Assert.That(arena.EnemyDefinitions.Count, Is.EqualTo(3));
-                Assert.That(arena.Items.Count, Is.EqualTo(27));
+                Assert.That(arena.Items.Count, Is.EqualTo(28));
+                Assert.That(arena.Items.Count(item => item.StableId == "upgrade.loaded_dice"), Is.EqualTo(1));
                 Assert.That(arena.Player.GetComponent<PlayerKillHealingController>(), Is.Not.Null);
                 Assert.That(arena.Player.GetComponent<PlayerLastStandController>(), Is.Not.Null);
                 Assert.That(arena.Player.GetComponent<ProjectFirstRun.Player.PlayerSurvivalController>(), Is.Not.Null);

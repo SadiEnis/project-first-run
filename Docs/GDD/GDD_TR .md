@@ -591,7 +591,7 @@ Aşağıdaki değerler, şans etkileri uygulanmadan önceki onaylı temel dağı
 - Sandık oluşturma ihtimalleri değişmez. Bu revizyon oluşturulan sandık sayısını değil, tür dağılımını değiştirir.
 - Seviye atlamalar, gelişmiş sandıklarla karşılaşmak için düzenli fırsatlar sunar. Elitler daha ödüllendirici bir kalite dağılımına sahiptir; basit sandıklar her iki düşman sınıfı için de değerli sonuçlar olarak korunur.
 - Bu dağılımlara Boss ve Altın Sandık dahil değildir. Bir boss'un birden fazla sandık verip vermeyeceği dahil boss ödül kuralları, boss aşamasında ayrıca tasarlanacaktır. 15.7–15.8 bölümleri kesinleşmiş bir boss düşürme uygulamasını değil, uzun vadeli ödül fikirlerini anlatır.
-- Hileli Zar'ın kesin seviye bonusları ve bu yeni dağılımlara nasıl uygulanacağı ayrıca netleştirilecektir. Temel dağılımdaki yüzdeler evrim ihtimalleri değildir.
+- Hileli Zar, 1/2/3. seviyelerde Yeşil/Mor/Efsanevi seçim ağırlıklarını %20/40/60 artırır ve dağılım yeniden normalize edilir; sandık oluşturma ihtimalini artırmaz. Bunlar başlangıç denge değerleridir; bkz. [Hileli Zar](../TDD/TR/Loaded-Dice-Upgrade.md). Temel dağılımdaki yüzdeler evrim ihtimalleri değildir.
 - Uygulama durumu: Normal, elit ve seviye atlama düşürme tablosu asset'leri bu temele güncellendi. Bu güncellemenin Unity doğrulaması ve oynanış kabulü henüz beklenmektedir.
 
 ---

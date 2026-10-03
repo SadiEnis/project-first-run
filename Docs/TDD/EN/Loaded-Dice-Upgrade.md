@@ -2,7 +2,15 @@
 
 ## Status and scope
 
-Behavior agreed for documentation; runtime implementation and Unity validation are pending. Loaded Dice (Hileli Zar) uses the shared upgrade slots and three levels. Each level replaces the previous full effect, rather than stacking earlier levels.
+Implemented and accepted by the user. The user reports EditMode/PlayMode without errors and an L3 gameplay sample of 20 level-up chests: four common and two legendary, with the rest green/purple. This is compatible with the expected 21.13% common probability at L3, not statistical proof or final balance. Loaded Dice (Hileli Zar) uses the shared upgrade slots and three levels. Each level replaces the previous full effect, rather than stacking earlier levels.
+
+## Implementation notes
+
+Luck uses AdditivePercent modifiers 0.2/0.4/0.6 evaluated against base 1. Both scene sources read the player's current stats at selection time; cached pending definitions retain their identity. Missing/uninitialized stats use 1. Shared assets are not mutated. ChestDefinition.AffectedByLuck is explicit opt-in: only Green/Purple/Legendary assets enable it; Boss and other definitions default to false even when their rarity is Legendary.
+
+The multiplier-1 path preserves existing integer random ranges. Boosted selection keeps weights in double precision and uses a single integer random sample in [0, 1,000,000,000) against normalized cumulative boundaries. This discretizes probability to approximately one-billionth without rounding individual weights. Multipliers below 1 or non-finite values are rejected. Profile generation rolls retain their original [0,10000) range and threshold.
+
+Catalog/mixed pool now contain 28 items, upgrade pool 15. Added LoadedDiceChestTests and LoadedDiceUpgradeTests; extended source retry tests and content checks. Coverage includes selection boundaries, exclusions, generation thresholds, ownership/level replacement and fresh-player stats. A full asynchronous scene-travel run and manual probability balancing have not been executed or newly verified by these tests.
 
 | Level | Green/Purple/Legendary weight multiplier |
 | --- | --- |
@@ -45,4 +53,4 @@ Keep 20/40/60% weight bonuses initially. Adjust one balance lever at a time afte
 
 Author deterministic tests for unowned/three-level probabilities across all three sources, selection boundaries, equal common shares, preserved advanced relative proportions, excluded Boss/Golden entries, invalid input, unchanged shared assets, preserved generation chances, level replacement, maximum level, missing stats, pending-placement retention and run/map ownership. Do not use small random samples as pass/fail probability assertions.
 
-The user runs compilation, EditMode/PlayMode and manual acceptance. No tests have been run for this documentation-only stage. Stop at the docs checkpoint before implementation.
+The user reports successful EditMode/PlayMode and manual acceptance. Tests were not run by the assistant. This increment is ready for the implementation check-in; broader reward-economy balancing remains open.

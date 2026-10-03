@@ -12,6 +12,7 @@ using ProjectFirstRun.Enemies.Lifecycle;
 using ProjectFirstRun.Enemies.Spawning;
 using ProjectFirstRun.Progression;
 using ProjectFirstRun.Rewards;
+using ProjectFirstRun.Stats;
 using ProjectFirstRun.UI.Rewards;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -358,11 +359,28 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
             _objects.Add(item);
             return item;
         }
+        [Test]
+        public void QueuedDropKeepsSelectionWhenLuckChangesAndNewDropsReadCurrentLuck()
+        {
+            // First selection has no stats component and must use the original integer range.
+            Assert.That(_source.TryQueueDrop(_profile, Vector3.zero, Vector3.forward), Is.True);
+            Assert.That(_random.LastMaximum, Is.EqualTo(1));
+            var stats = _health.gameObject.AddComponent<PlayerStatsController>();
+            stats.Stats.Add(new StatModifier(PlayerStatType.Luck, StatModifierOperation.AdditivePercent, .6f, "test.luck"));
+            Assert.That(_source.TrySpawnPendingChest(out var chest), Is.True);
+            Assert.That(chest.Definition, Is.SameAs(_chestDefinition));
+            Assert.That(_random.Calls, Is.EqualTo(1), "Spawning must not reroll a queued selection.");
+            Assert.That(_source.TryQueueDrop(_profile, Vector3.right * 8, Vector3.forward), Is.True);
+            Assert.That(_random.LastMaximum, Is.EqualTo(1000000000));
+            Assert.That(_random.Calls, Is.EqualTo(2));
+        }
+
         private sealed class CountingRandom : IRandomSource
         {
+            public int LastMaximum;
             public int Calls;
             public int Value;
-            public int Next(int minInclusive, int maxExclusive) { Calls++; return Value; }
+            public int Next(int minInclusive, int maxExclusive) { Calls++; LastMaximum = maxExclusive; return Value; }
         }
         private static void SetField(object target, string name, object value) =>
             target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);

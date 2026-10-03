@@ -23,14 +23,16 @@ namespace ProjectFirstRun.Chests.Spawning
             return _dropTable.Validate();
         }
 
-        public bool TryRoll(IRandomSource random, out ChestDefinition definition)
+        public bool TryRoll(IRandomSource random, out ChestDefinition definition, float luckMultiplier = 1f)
         {
             if (random == null) throw new ArgumentNullException(nameof(random));
+            if (!float.IsFinite(luckMultiplier) || luckMultiplier < 1f)
+                throw new ArgumentOutOfRangeException(nameof(luckMultiplier));
             definition = null;
             Validate();
             if (_chanceBasisPoints == 0) return false;
             if (_chanceBasisPoints < 10000 && Next(random, 10000) >= _chanceBasisPoints) return false;
-            definition = _dropTable.Select(random);
+            definition = _dropTable.Select(random, luckMultiplier);
             return true;
         }
 

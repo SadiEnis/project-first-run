@@ -64,3 +64,4 @@ Project First Run is the current development codename. The final commercial titl
 58. [Broken Hourglass](Broken-Hourglass-Upgrade.md)
 59. [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md)
 60. [Crimson Fang](Crimson-Fang-Upgrade.md)
+61. [Loaded Dice](Loaded-Dice-Upgrade.md)

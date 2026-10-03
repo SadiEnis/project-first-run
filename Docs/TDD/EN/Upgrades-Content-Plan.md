@@ -53,7 +53,7 @@ Discuss each group's mechanics before implementing. Record EN/TR TDD before code
 - Last Stand, Iron Oath, Blood Pact and Glass Heart mechanics are approved in [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md). Implement individually with acceptance after each; Glass Heart uses incoming damage amplification before armor.
 - Fluid Mechanism remains deferred without changing its reload movement-penalty identity. Do not invent a penalty solely to make the item useful without agreement.
 - Crimson Fang is implemented: guaranteed 2/5/7 health per player-owned kill, including timed damage; no overheal or resurrection. See [Crimson Fang](Crimson-Fang-Upgrade.md). User validation is pending.
-- Specify exactly which existing chest/drop/rarity probabilities Loaded Dice changes. Do not silently add evolution gameplay, gold/meta systems or a new rarity system.
+- Loaded Dice's documented contract boosts Green/Purple/Legendary selection weights by 20/40/60%, not chest counts or generation chances. See [Loaded Dice](Loaded-Dice-Upgrade.md) for scope, probability math and balance criteria. Implementation is pending; evolution, gold/meta and bad-luck protection remain excluded.
 - Preserve run ownership, reset and cross-map behavior; test combinations, not only isolated acquisitions.
 - The development damage item must have an explicit replacement/migration decision; avoid accidental duplicate real damage upgrades in pools.
 

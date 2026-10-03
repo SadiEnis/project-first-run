@@ -64,3 +64,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 58. [Kırık Kum Saati](Broken-Hourglass-Upgrade.md)
 59. [Koşullu ve Bedelli Güçlendirmeler](Conditional-Tradeoff-Upgrades.md)
 60. [Kızıl Diş](Crimson-Fang-Upgrade.md)
+61. [Hileli Zar](Loaded-Dice-Upgrade.md)

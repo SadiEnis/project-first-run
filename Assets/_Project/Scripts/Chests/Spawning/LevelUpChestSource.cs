@@ -2,6 +2,7 @@ using System;
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Progression;
 using ProjectFirstRun.Rewards;
+using ProjectFirstRun.Stats;
 using UnityEngine;
 
 namespace ProjectFirstRun.Chests.Spawning
@@ -134,7 +135,9 @@ namespace ProjectFirstRun.Chests.Spawning
             if (!_hasPendingSelection)
             {
                 if (_dropTable == null) throw new InvalidOperationException("Level-up chest drop table was destroyed.");
-                _pendingDefinition = _dropTable.Select(_random);
+                var stats = _playerExperience.GetComponent<PlayerStatsController>();
+                float luck = stats != null && stats.IsInitialized ? stats.Evaluate(PlayerStatType.Luck, 1f) : 1f;
+                _pendingDefinition = _dropTable.Select(_random, luck);
                 _hasPendingSelection = true;
             }
             if (_pendingDefinition == null)

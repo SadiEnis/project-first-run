@@ -1,5 +1,6 @@
 using System;
 using ProjectFirstRun.Combat;
+using ProjectFirstRun.Stats;
 using UnityEngine;
 
 namespace ProjectFirstRun.Progression
@@ -16,10 +17,22 @@ namespace ProjectFirstRun.Progression
         private PlayerExperienceController _experience;
         private HealthComponent _health;
 
-        public float AttractionRadius => _attractionRadius;
+        private PlayerStatsController _stats;
+        public float AttractionRadius
+        {
+            get
+            {
+                if (_stats == null) _stats = GetComponent<PlayerStatsController>();
+                float radius = _stats == null || !_stats.IsInitialized ? _attractionRadius :
+                    _stats.Evaluate(PlayerStatType.PickupRadius, _attractionRadius);
+                if (!float.IsFinite(radius) || radius < 0f)
+                    throw new InvalidOperationException("Pickup radius must be finite and non-negative.");
+                return radius;
+            }
+        }
         public Vector3 CollectionPosition => transform.TransformPoint(_collectionOffset);
 
-        // Future stat integration can supply the evaluated radius without changing pickup logic.
+        // Sets the base radius; active stat bonuses are evaluated separately.
         public void SetAttractionRadius(float radius)
         {
             if (float.IsNaN(radius) || float.IsInfinity(radius) || radius < 0f)
@@ -27,8 +40,12 @@ namespace ProjectFirstRun.Progression
             _attractionRadius = radius;
         }
 
-        public bool CanAttract(Vector3 position) => CanCollect && _attractionRadius > 0f &&
-            (position - CollectionPosition).sqrMagnitude <= _attractionRadius * _attractionRadius;
+        public bool CanAttract(Vector3 position)
+        {
+            if (!CanCollect) return false;
+            float radius = AttractionRadius;
+            return radius > 0f && (position - CollectionPosition).sqrMagnitude <= radius * radius;
+        }
 
         public PlayerExperienceController Experience
         {
@@ -53,14 +70,16 @@ namespace ProjectFirstRun.Progression
 
         private void FixedUpdate()
         {
-            if (!CanCollect || _attractionRadius <= 0f)
+            if (!CanCollect)
                 return;
+            float radius = AttractionRadius;
+            if (radius <= 0f) return;
 
             int count;
             // Grow only on saturation; never silently skip pickups in a dense pile.
             while (true)
             {
-                count = Physics.OverlapSphereNonAlloc(CollectionPosition, _attractionRadius,
+                count = Physics.OverlapSphereNonAlloc(CollectionPosition, radius,
                     _nearbyColliders, _pickupLayers, QueryTriggerInteraction.Collide);
                 if (count < _nearbyColliders.Length)
                     break;
@@ -86,7 +105,7 @@ namespace ProjectFirstRun.Progression
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(CollectionPosition, _attractionRadius);
+            Gizmos.DrawWireSphere(CollectionPosition, Application.isPlaying ? AttractionRadius : _attractionRadius);
         }
 
         private void EnsureReferences()

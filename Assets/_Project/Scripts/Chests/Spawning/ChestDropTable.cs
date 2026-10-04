@@ -42,5 +42,29 @@ namespace ProjectFirstRun.Chests.Spawning
             }
             throw new InvalidOperationException("Chest weight selection failed.");
         }
+
+        public ChestDefinition Select(IRandomSource random, float luckMultiplier)
+        {
+            if (random == null) throw new ArgumentNullException(nameof(random));
+            if (!float.IsFinite(luckMultiplier) || luckMultiplier < 1f)
+                throw new ArgumentOutOfRangeException(nameof(luckMultiplier));
+            if (luckMultiplier == 1f) return Select(random);
+            Validate();
+            // Keep fractional weights; discretize only the final random draw (one-billionth resolution).
+            double total = 0;
+            foreach (WeightedChestEntry entry in _entries)
+                total += entry.Weight * (entry.Definition.AffectedByLuck ? (double)luckMultiplier : 1d);
+            const int resolution = 1000000000;
+            int sample = random.Next(0, resolution);
+            if (sample < 0 || sample >= resolution)
+                throw new InvalidOperationException("Random source returned a value outside the requested range.");
+            double cumulative = 0;
+            foreach (WeightedChestEntry entry in _entries)
+            {
+                cumulative += entry.Weight * (entry.Definition.AffectedByLuck ? (double)luckMultiplier : 1d);
+                if (sample < cumulative / total * resolution) return entry.Definition;
+            }
+            throw new InvalidOperationException("Luck-adjusted chest selection failed.");
+        }
     }
 }

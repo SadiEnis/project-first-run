@@ -59,6 +59,7 @@ namespace ProjectFirstRun.Progression
 
             PlayerExperienceController experience = collector.Experience;
             long previousTotal = experience.TotalExperience;
+            decimal previousFraction = experience.FractionalExperience;
             IsCollected = true;
             try
             {
@@ -67,7 +68,8 @@ namespace ProjectFirstRun.Progression
             catch
             {
                 // An observer may fail AFTER state commits. Do not duplicate that award.
-                IsCollected = experience.TotalExperience != previousTotal;
+                IsCollected = experience.TotalExperience != previousTotal ||
+                    experience.FractionalExperience != previousFraction;
                 throw;
             }
             finally

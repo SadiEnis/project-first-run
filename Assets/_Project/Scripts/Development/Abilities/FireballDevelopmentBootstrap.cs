@@ -89,6 +89,21 @@ namespace ProjectFirstRun.Development.Abilities
 
             factoryRegistry.Register(
                 fireballFactory);
+            // This legacy bootstrap owns the development ability registry for saved fixtures.
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.ForceWave.ForceWaveRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.Drone.DroneRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.AcidBottle.AcidBottleRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.Lightning.LightningRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.Shuriken.ShurikenRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.EnchantedStaff.EnchantedRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
+            factoryRegistry.Register(new ProjectFirstRun.Abilities.SniperBomb.SniperRuntimeFactory(
+                _enemyRegistry, _damageSource, _playerStatsController.Stats));
 
             _playerAbilityAcquisitionController.Initialize(
                 factoryRegistry);

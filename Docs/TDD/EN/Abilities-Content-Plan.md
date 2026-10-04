@@ -1,0 +1,28 @@
+# Abilities content plan
+
+## Workflow
+
+Git: `content → feature/content/abilities-content`; Plastic: `/main/dev/content → abilities-content`. One branch for all eight abilities. The user creates branches, commits/checks in and merges. Do not create per-ability branches or implement directly on content.
+
+Each ability: discuss mechanics → EN/TR TDD and docs checkpoint → coherent implementation increments → automated EditMode/PlayMode validation → saved arena/reward/F1 integration → stop for user gameplay acceptance. A single branch does not imply one commit per ability: split at meaningful independently verifiable boundaries, not every file change. No automatic commits or merges.
+
+## Order
+
+| Order | Ability | Main scope | Status |
+| --- | --- | --- | --- |
+| 1 | Fireball | Complete existing content: random ranged targets, 2/3/4 projectiles, burn, GDD levels | Implemented; user confirmed burn, broader level/balance acceptance pending |
+| 2 | Force Wave | Frontal short-range area damage and knockback | User accepted mechanic and revised cooldowns; full regression rerun deferred |
+| 3 | Drone | Player-following drone, targeting/fire cadence, second drone, boss rate bonus | User accepted gameplay including two drones and facing; selected arena fixtures 26/26 passed |
+| 4 | Acid Bottle | Random-target bottles, lasting damage areas, L8 slow | User gameplay accepted; L8 slow 50%, balance provisional |
+| 5 | Lightning Staff | Random strikes, additional strikes, stun, L8 chain | User gameplay accepted; automated test results unreported |
+| 6 | Shuriken | Two rotations around player, controlled repeat hits, second shuriken, bleed | Implemented; Unity tests and gameplay acceptance pending |
+| 7 | Enchanted Staff | Limited-lifetime piercing beams reflecting from world obstacles | User behavior accepted; balance deferred, automated results unreported |
+| 8 | Sniper Bomb | Elite/boss priority, homing explosions, second bomb, retarget on target death | User gameplay accepted; automated results unreported |
+
+All have eight base levels. GDD upgrade order is authoritative; numerical balance and unspecified targeting/status rules are discussed before each ability. Reuse validated behavior where suitable, extracting shared code only when a concrete second consumer requires it. Do not couple ability damage to weapon damage. Preserve cross-map registry rebinding and existing run lifecycle.
+
+Evolution gameplay, gold/meta, ammunition sources, final presentation and Windows builds are excluded. Temporary readable feedback is included. Boss-specific rules may use automated rank fixtures where playable boss content is unavailable.
+
+Initial checkpoint: Plasma gameplay acceptance recorded; [Fireball design](Fireball-Content.md) prepared. No new ability implementation or test run at this checkpoint.
+
+Workflow update: the user runs EditMode/PlayMode and performs check-ins/commits. The assistant supplies messages/commands and handles only missing or failing tests identified by the user; do not automatically run complete suites. This supersedes the earlier validation ownership.

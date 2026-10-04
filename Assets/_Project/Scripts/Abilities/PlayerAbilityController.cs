@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using ProjectFirstRun.Stats;
 
 namespace ProjectFirstRun.Abilities
 {
@@ -19,6 +20,7 @@ namespace ProjectFirstRun.Abilities
         private ReadOnlyCollection<AbilityRuntimeEntry> _readOnlyEntries;
 
         private bool _abilityControlEnabled = true;
+        private PlayerStatsController _stats;
 
         public IReadOnlyList<AbilityRuntimeEntry> Entries
         {
@@ -107,6 +109,8 @@ namespace ProjectFirstRun.Abilities
 
             TickCooldowns(
                 deltaTime);
+            foreach (var entry in _entries)
+                entry.TickContinuous(deltaTime, AbilityOrigin.position, _abilityControlEnabled && isActiveAndEnabled);
 
             if (!_abilityControlEnabled)
             {
@@ -135,14 +139,20 @@ namespace ProjectFirstRun.Abilities
             foreach (AbilityRuntimeEntry entry
                      in _entries)
             {
-                if (!entry.IsReady)
+                if (entry.IsContinuous || !entry.IsReady)
                 {
                     continue;
                 }
 
                 entry.TryAutoCast(
-                    origin);
+                    origin, CurrentCooldownMultiplier());
             }
+        }
+
+        private float CurrentCooldownMultiplier()
+        {
+            if (_stats == null) _stats = GetComponent<PlayerStatsController>();
+            return AbilityCooldownScaling.Multiplier(_stats == null ? null : _stats.Stats);
         }
 
         private void EnsureReadOnlyEntries()

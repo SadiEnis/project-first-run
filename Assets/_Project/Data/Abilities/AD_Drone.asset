@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f145cf216bc346b68010e77a58d10002, type: 3}
+  m_Name: AD_Drone
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Abilities.Drone.DroneDefinition
+  _stableId: ability.drone
+  _displayName: Drone
+  _gameplayEffect: A following drone fires 2 raycast shots per second for 8 damage at visible enemies within 12 metres.
+  _maximumLevel: 8
+  _cooldown: 0.5
+  _material: {fileID: 2100000, guid: 59fc06ca518765647a3b43e55cc4410a, type: 2}
+  _worldMask:
+    serializedVersion: 2
+    m_Bits: 129
+  _hitMask:
+    serializedVersion: 2
+    m_Bits: 247
+  _levels:
+  - _damage: 8
+    _rate: 2
+    _range: 12
+    _count: 1
+    _bossMultiplier: 1
+  - _damage: 12
+    _rate: 2
+    _range: 12
+    _count: 1
+    _bossMultiplier: 1
+  - _damage: 12
+    _rate: 3
+    _range: 12
+    _count: 1
+    _bossMultiplier: 1
+  - _damage: 12
+    _rate: 3
+    _range: 18
+    _count: 1
+    _bossMultiplier: 1
+  - _damage: 16
+    _rate: 3
+    _range: 18
+    _count: 1
+    _bossMultiplier: 1
+  - _damage: 16
+    _rate: 3
+    _range: 18
+    _count: 2
+    _bossMultiplier: 1
+  - _damage: 16
+    _rate: 4
+    _range: 18
+    _count: 2
+    _bossMultiplier: 1
+  - _damage: 16
+    _rate: 4
+    _range: 18
+    _count: 2
+    _bossMultiplier: 1.5

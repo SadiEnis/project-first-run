@@ -68,6 +68,51 @@ namespace ProjectFirstRun.Tests.PlayMode.Enemies
         }
 
         [Test]
+        public void HealthBarUpdatesForDamageInitializationDeathAndReuse()
+        {
+            var camera = Make("Health bar camera").AddComponent<Camera>();
+            var bar = _enemy.gameObject.AddComponent<EnemyHealthBar>();
+            typeof(EnemyHealthBar).GetField("_cameraOverride", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(bar, camera);
+            bar.Refresh();
+            Assert.That(bar.IsVisible, Is.True);
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(1));
+            var damage = new DamageInfo(25, null, Vector3.zero, Vector3.up);
+            _enemy.Health.ApplyDamage(in damage);
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(.75f));
+            _enemy.Health.Initialize(200);
+            bar.Refresh();
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(1));
+            var lethal = new DamageInfo(1000, null, Vector3.zero, Vector3.up);
+            _enemy.Health.ApplyDamage(in lethal);
+            Assert.That(bar.IsVisible, Is.False);
+            _enemy.Initialize(_definition, _target.transform, _registry);
+            bar.Refresh();
+            Assert.That(bar.IsVisible, Is.True);
+            Assert.That(bar.DisplayedFraction, Is.EqualTo(1));
+            bar.enabled = false;
+            Assert.That(bar.IsVisible, Is.False);
+        }
+
+        [Test]
+        public void StunPreservesCommittedChargeAndAcidModifier()
+        {
+            BeginCharge();
+            object acid = new object();
+            _motor.SetMovementModifier(acid, .5f);
+            Vector3 start = _enemy.transform.position;
+            _motor.ApplyStun(.5f);
+            _attack.Tick(1);
+            Assert.That(_attack.ChargeState.Phase, Is.EqualTo(EnemyChargePhase.Charging));
+            Assert.That(_enemy.transform.position, Is.EqualTo(start));
+            Assert.That(_target.CurrentHealth, Is.EqualTo(100));
+            _motor.ClearStun();
+            Assert.That(_motor.MovementMultiplier, Is.EqualTo(.5f));
+            _attack.Tick(.1f);
+            Assert.That(_enemy.transform.position.z, Is.GreaterThan(start.z));
+        }
+
+        [Test]
         public void SweptCharge_HitsOnceEvenWhenOneStepPassesBeyondTarget()
         {
             int hits = 0; _attack.AttackPerformed += (_, _) => hits++;

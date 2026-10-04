@@ -17,6 +17,12 @@ namespace ProjectFirstRun.Abilities
 
         public bool IsReady =>
             State.IsReady;
+        public bool IsContinuous => _executor is IContinuousAbilityRuntime;
+        public void TickContinuous(float deltaTime, Vector3 origin, bool controlEnabled)
+        {
+            if (_executor is IContinuousAbilityRuntime continuous)
+                continuous.TickContinuous(deltaTime, origin, controlEnabled);
+        }
 
         public void BindEnemyRegistry(ProjectFirstRun.Enemies.EnemyRegistry registry)
         {
@@ -78,10 +84,11 @@ namespace ProjectFirstRun.Abilities
         }
 
         public AbilityAutoCastResult TryAutoCast(
-            Vector3 origin)
+            Vector3 origin, float cooldownMultiplier = 1f)
         {
             ValidateOrigin(
                 origin);
+            if (IsContinuous) return AbilityAutoCastResult.ExecutionFailed;
 
             if (!State.IsReady)
             {
@@ -108,6 +115,9 @@ namespace ProjectFirstRun.Abilities
                     origin,
                     target);
 
+            // Validate before executing gameplay effects; only a successful cast starts a wait.
+            float multiplier = AbilityCooldownScaling.ClampMultiplier(cooldownMultiplier);
+
             AbilityExecutionResult executionResult =
                 _executor.TryExecute(
                     in context);
@@ -127,7 +137,7 @@ namespace ProjectFirstRun.Abilities
             }
 
             AbilityCastResult castResult =
-                State.TryCommitCast();
+                State.TryCommitCast(multiplier);
 
             if (castResult !=
                 AbilityCastResult.Performed)

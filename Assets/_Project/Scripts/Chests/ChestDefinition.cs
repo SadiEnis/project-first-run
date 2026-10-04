@@ -23,6 +23,9 @@ namespace ProjectFirstRun.Chests
         [SerializeField] private ChestRarity _rarity = ChestRarity.Common;
         public ChestRarity Rarity => _rarity;
 
+        [SerializeField] private bool _affectedByLuck;
+        public bool AffectedByLuck => _affectedByLuck;
+
         [Header("Reward")]
         [SerializeField]
         private RewardItemPool _rewardItemPool;

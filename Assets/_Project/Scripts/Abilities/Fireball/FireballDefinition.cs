@@ -23,8 +23,26 @@ namespace ProjectFirstRun.Abilities.Fireball
 
         [SerializeField, Min(0.01f)]
         private float _projectileLifetime = 5f;
+        [SerializeField, Range(1, 4)] private int _projectileCount = 1;
+        [SerializeField, Min(.01f)] private float _targetRange = 20;
+        [SerializeField] private LayerMask _worldMask = 129;
+        [SerializeField] private LayerMask _collisionMask = 247;
+        [SerializeField, Min(.01f)] private float _collisionRadius = .12f;
+        [SerializeField, Min(.01f)] private float _travelRange = 60;
+        public int ProjectileCount => _projectileCount;
+        public float TargetRange => _targetRange;
+        public int WorldMask => _worldMask;
+        public int CollisionMask => _collisionMask;
+        public float CollisionRadius => _collisionRadius;
+        public float TravelRange => _travelRange;
+        [SerializeField, Min(.01f)] private float _burnDamage = 5;
+        [SerializeField, Range(.5f, 3)] private float _burnDuration = 1.5f;
+        [SerializeField] private GameObject _burnVisual;
+        public float BurnDamage => _burnDamage;
+        public float BurnDuration => _burnDuration;
+        public GameObject BurnVisual => _burnVisual;
 
-        [Header("Levels 2 and above (provisional effects)")]
+        [Header("Levels 2 and above")]
         [SerializeField] private FireballLevelData[] _additionalLevels = Array.Empty<FireballLevelData>();
 
         public float Damage =>
@@ -42,12 +60,15 @@ namespace ProjectFirstRun.Abilities.Fireball
         internal FireballRuntimeConfig[] CreateLevelConfigs()
         {
             ValidateLevelConfiguration();
+            if (!float.IsFinite(_targetRange) || _targetRange <= 0 || !float.IsFinite(_collisionRadius) ||
+                _collisionRadius <= 0 || !float.IsFinite(_travelRange) || _travelRange <= 0)
+                throw new InvalidOperationException("Fireball range and radius must be finite and positive.");
             if (_additionalLevels == null || _additionalLevels.Length != MaximumLevel - 1)
                 throw new InvalidOperationException("Fireball level data must match its configured maximum.");
             var levels = new FireballRuntimeConfig[MaximumLevel];
-            levels[0] = new FireballRuntimeConfig(CreateRuntimeConfig(), _damage, _projectileSpeed, _projectileLifetime);
+            levels[0] = new FireballRuntimeConfig(CreateRuntimeConfig(), _damage, _projectileSpeed, _projectileLifetime, _projectileCount, _burnDamage, _burnDuration);
             for (int i = 1; i < levels.Length; i++)
-                levels[i] = (_additionalLevels[i - 1] ?? throw new InvalidOperationException("Missing Fireball level data.")).CreateConfig(_projectileLifetime);
+                levels[i] = (_additionalLevels[i - 1] ?? throw new InvalidOperationException("Missing Fireball level data.")).CreateConfig(_projectileLifetime, _burnDamage);
             return levels;
         }
 

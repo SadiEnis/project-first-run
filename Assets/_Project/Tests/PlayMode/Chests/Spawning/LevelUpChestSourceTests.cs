@@ -9,6 +9,7 @@ using ProjectFirstRun.Chests.Spawning;
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Progression;
 using ProjectFirstRun.Rewards;
+using ProjectFirstRun.Stats;
 using ProjectFirstRun.UI.Rewards;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -344,12 +345,16 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
         }
 
         [Test]
-        public void PlacementRetryAndDisable_KeepSelectedDefinitionEvenIfTableChanges()
+        public void PlacementRetryAndDisable_KeepSelectedDefinitionEvenIfTableOrLuckChanges()
         {
+            var stats = _xp.gameObject.AddComponent<PlayerStatsController>();
+            stats.Stats.Add(new StatModifier(PlayerStatType.Luck, StatModifierOperation.AdditivePercent, .2f, "test.luck"));
             _ground.SetActive(false);
             _xp.GainExperience(100);
             Assert.That(_source.TrySpawnPendingChest(out _), Is.False);
             Assert.That(_random.Calls, Is.EqualTo(1));
+            Assert.That(_random.LastMaximum, Is.EqualTo(1000000000), "Source must read current player luck.");
+            stats.Stats.Add(new StatModifier(PlayerStatType.Luck, StatModifierOperation.AdditivePercent, .4f, "test.more-luck"));
             _source.enabled = false;
             SetField(_table, "_entries", Array.Empty<WeightedChestEntry>());
             _xp.GainExperience(150);
@@ -418,11 +423,13 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Spawning
 
         private sealed class CountingRandom : IRandomSource
         {
+            public int LastMaximum;
             private readonly Queue<int> _rolls;
             public int Calls;
             public CountingRandom(Queue<int> rolls) => _rolls = rolls;
             public int Next(int minInclusive, int maxExclusive)
             {
+                LastMaximum = maxExclusive;
                 Calls++;
                 return _rolls.Count > 0 ? _rolls.Dequeue() : 0;
             }

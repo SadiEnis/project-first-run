@@ -19,6 +19,7 @@ namespace ProjectFirstRun.Enemies
         private bool _isInitialized;
         private bool _isDead;
         private bool _isRegistered;
+        public int SpawnVersion { get; private set; }
 
         public event Action<
             EnemyController,
@@ -97,6 +98,7 @@ namespace ProjectFirstRun.Enemies
             }
 
             definition.ValidateBehavior();
+            SpawnVersion++;
             EnsureReferences();
             Unregister();
 
@@ -130,12 +132,19 @@ namespace ProjectFirstRun.Enemies
             _isDead = true;
 
             _enemyMotor.Stop();
-            Unregister();
-
-            Died?.Invoke(
-                this,
-                damageInfo,
-                damageResult);
+            _enemyMotor.ClearStun();
+            try
+            {
+                if (damageResult.WasLethal && damageInfo.Source != null)
+                    damageInfo.Source.GetComponentInParent<ProjectFirstRun.Player.PlayerKillHealingController>()
+                        ?.OnCreditedKill();
+            }
+            finally
+            {
+                // Healing observers must not prevent registry/death cleanup.
+                Unregister();
+                Died?.Invoke(this, damageInfo, damageResult);
+            }
         }
 
         private void Register()

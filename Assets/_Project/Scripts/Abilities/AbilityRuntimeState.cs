@@ -62,15 +62,16 @@ namespace ProjectFirstRun.Abilities
                     CooldownRemaining - deltaTime);
         }
 
-        public AbilityCastResult TryCommitCast()
+        public AbilityCastResult TryCommitCast(float cooldownMultiplier = 1f)
         {
+            float multiplier = AbilityCooldownScaling.ClampMultiplier(cooldownMultiplier);
             if (!IsReady)
             {
                 return AbilityCastResult.OnCooldown;
             }
 
             CooldownRemaining =
-                _cooldown;
+                _cooldown * multiplier;
 
             return AbilityCastResult.Performed;
         }

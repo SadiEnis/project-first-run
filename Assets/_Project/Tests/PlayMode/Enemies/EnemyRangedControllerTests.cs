@@ -59,6 +59,21 @@ namespace ProjectFirstRun.Tests.PlayMode.Enemies
         private void StartWindup() { _attack.Tick(.01f); Assert.That(_attack.RangedState.Phase, Is.EqualTo(EnemyRangedPhase.Windup)); }
 
         [Test]
+        public void StunSuspendsWindupWithoutResettingOrReleasingShot()
+        {
+            StartWindup();
+            float remaining = _attack.RangedState.TimeRemaining;
+            _motor.ApplyStun(.5f);
+            _attack.Tick(2);
+            Assert.That(_attack.RangedState.Phase, Is.EqualTo(EnemyRangedPhase.Windup));
+            Assert.That(_attack.RangedState.TimeRemaining, Is.EqualTo(remaining));
+            Assert.That(Object.FindFirstObjectByType<EnemyRangedProjectile>(), Is.Null);
+            _motor.ClearStun();
+            _attack.Tick(.6f);
+            Assert.That(Object.FindFirstObjectByType<EnemyRangedProjectile>(), Is.Not.Null);
+        }
+
+        [Test]
         public void RangerHoldsPreferredBandAndFiresProjectileAfterWarning()
         {
             StartWindup(); _attack.Tick(.6f);

@@ -79,6 +79,7 @@ namespace ProjectFirstRun.Enemies
         {
             if (!float.IsFinite(deltaTime) || deltaTime < 0)
                 throw new ArgumentOutOfRangeException(nameof(deltaTime));
+            if (_motor != null && _motor.IsStunned) return;
             if (_chargeState != null)
             {
                 TickCharge(deltaTime);

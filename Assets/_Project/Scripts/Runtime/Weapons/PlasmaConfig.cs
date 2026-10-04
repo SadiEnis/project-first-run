@@ -36,27 +36,9 @@ namespace ProjectFirstRun.Weapons
     }
 
     /// <summary>One non-stacking burn. Refresh preserves tick phase; catch-up is bounded by six ticks.</summary>
-    public sealed class PlasmaBurnState
+    public sealed class PlasmaBurnState : ProjectFirstRun.Combat.TimedBurnState
     {
-        public const float Duration = 3, Interval = .5f;
-        public float Remaining { get; private set; }
-        public float UntilTick { get; private set; } = Interval;
-        public float Damage { get; private set; }
-        public void Refresh(float damage)
-        {
-            RocketConfig.Positive(damage, nameof(damage));
-            if (Remaining <= 0) UntilTick = Interval;
-            Damage = damage; Remaining = Duration;
-        }
-        public int Advance(float delta)
-        {
-            if (!float.IsFinite(delta) || delta < 0) throw new ArgumentOutOfRangeException(nameof(delta));
-            float elapsed = Mathf.Min(delta, Remaining);
-            Remaining = Mathf.Max(0, Remaining - elapsed);
-            UntilTick -= elapsed;
-            int ticks = 0;
-            while (UntilTick <= .000001f && ticks < 6) { ticks++; UntilTick += Interval; }
-            return ticks;
-        }
+        public const float Duration = 3;
+        public void Refresh(float damage) => Refresh(damage, Duration);
     }
 }

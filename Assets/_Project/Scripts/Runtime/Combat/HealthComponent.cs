@@ -11,6 +11,36 @@ namespace ProjectFirstRun.Combat
         private float _maximumHealth = 100f;
 
         private HealthState _healthState;
+        public float BaseMaximumHealth => _maximumHealth;
+        public float DamageReduction { get; private set; }
+        public float IncomingDamageMultiplier { get; private set; } = 1f;
+
+        public void SetIncomingDamageMultiplier(float value)
+        {
+            if (!float.IsFinite(value) || value <= 0f) throw new ArgumentOutOfRangeException(nameof(value));
+            IncomingDamageMultiplier = value;
+        }
+
+        public void SetDamageReduction(float value)
+        {
+            if (!float.IsFinite(value)) throw new ArgumentOutOfRangeException(nameof(value));
+            DamageReduction = Mathf.Clamp(value, 0f, .75f);
+        }
+
+        public void SetMaximumHealth(float value)
+        {
+            EnsureInitialized();
+            if (_healthState.SetMaximumHealth(value))
+                HealthChanged?.Invoke(CurrentHealth, MaximumHealth);
+        }
+
+        public float Heal(float amount)
+        {
+            EnsureInitialized();
+            float restored = _healthState.Heal(amount);
+            if (restored > 0f) HealthChanged?.Invoke(CurrentHealth, MaximumHealth);
+            return restored;
+        }
 
         public event Action<float, float> HealthChanged;
         public event Action<DamageInfo, DamageResult> Damaged;
@@ -62,6 +92,8 @@ namespace ProjectFirstRun.Combat
 
             _maximumHealth = maximumHealth;
             _healthState = newHealthState;
+            DamageReduction = 0f;
+            IncomingDamageMultiplier = 1f;
         }
 
         public DamageResult ApplyDamage(
@@ -70,7 +102,7 @@ namespace ProjectFirstRun.Combat
             EnsureInitialized();
 
             DamageResult result =
-                _healthState.ApplyDamage(damageInfo.Amount);
+                _healthState.ApplyDamage(damageInfo.Amount, DamageReduction, IncomingDamageMultiplier);
 
             if (!result.WasApplied)
             {

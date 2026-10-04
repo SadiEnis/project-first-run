@@ -392,6 +392,22 @@ namespace ProjectFirstRun.Tests.EditMode.Abilities.Fireball
                 Throws.ArgumentException);
         }
 
+        [Test]
+        public void PartialVolleyFailure_RemovesPreviouslyCreatedProjectiles()
+        {
+            SetPrivateField(_definition, "_projectileCount", 2, typeof(FireballDefinition));
+            int spawned = 0;
+            var executor = new FireballAbilityExecutor(_definition, _damageSource, _stats, spawn: (prefab, position, rotation) =>
+            {
+                if (++spawned == 2) throw new System.InvalidOperationException("Injected second projectile failure");
+                return Object.Instantiate(prefab, position, rotation);
+            });
+            var context = new AbilityExecutionContext(Vector3.zero, _targetObject.transform);
+            Assert.Throws<System.InvalidOperationException>(() => executor.TryExecute(in context));
+            Assert.That(spawned, Is.EqualTo(2));
+            Assert.That(FindSpawnedProjectile(), Is.Null);
+        }
+
         private FireballAbilityExecutor CreateExecutor()
         {
             return new FireballAbilityExecutor(

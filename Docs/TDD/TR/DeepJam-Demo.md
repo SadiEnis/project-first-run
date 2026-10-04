@@ -2,9 +2,23 @@
 
 ## Durum ve çalışma sırası — 04.10.2026
 
-Git: `feature/deepjam-demo`. Kullanıcı demo dallarını oluşturdu. Bu checkpoint yalnızca tasarım dokümanıdır; sahne, model, paket veya oyun kodu eklenmedi. Başvuru hedefi 11 Ekim; 10 Ekim teslimi önerilen tampon hedeftir. Süre hedefi yaklaşık 8–12 dakikadır, kesin kabul şartı değildir.
+Git: `feature/deepjam-demo`. Tasarım checkpoint'i kullanıcı tarafından alındı. İlk açılış greybox'ı için authoring aracı ve çalışma zamanı bağlantıları eklendi; kayıtlı sahnenin Unity'de oluşturulması ve doğrulanması bekleniyor. Başvuru hedefi 11 Ekim; 10 Ekim teslimi önerilen tampon hedeftir. Süre hedefi yaklaşık 8–12 dakikadır, kesin kabul şartı değildir.
 
 Sıra: TDD ve docs checkpoint → erken oynanabilir greybox ve Windows build kontrolü → tüm rota/oyun döngüsü → sunum ve son dokunuşlar. İlk build için bitmiş harita, animasyon veya final beklenmez. Build ve Unity test çalıştırmaları kullanıcıya aittir; asistan uygulama/test kodunu ve talimatları hazırlar. Merge/check-in kullanıcıya aittir.
+
+## İlk uygulama dilimi — başlangıç / koridor / ödül
+
+- Unity menüsü: `Project First Run > Demo > Create Opening Greybox`. Mevcut `Test_ContentArena` sahnesinin bağlantıları ayrı bir dosyaya kopyalanır; kaynak sahne, prefablar ve test NavMesh'i değiştirilmez. Demo zaten varsa yalnızca açılır; kullanıcı düzenlemeleri yeniden üretimle ezilmez.
+- Hedef: `Assets/_Project/Scenes/Demo/DeepJam_Opening.unity`. Geometri, dört spawn noktası, aktivasyon hacmi ve ödül noktası Edit Mode'da görünür/kayıtlıdır. NavMesh oluşturma sırasında bake edilir. Play sırasında harita üretilmez; yalnızca normal düşman/ödül örnekleri oluşturulur.
+- Bu ilk ölçü/prova dilimi düz zemindedir: güvenli başlangıç → görüşü kesen giriş → siperli geniş koridor → ilk ödül odası. Aşağı iniş, bütün dungeon ve sinematik henüz yoktur.
+- Dört Chaser önceden hazırlanır, koridora girilince mevcut encounter sistemiyle etkinleşir. Bu dilimde yeni görüş konisi/LOS takibi henüz uygulanmadı; mevcut düşman davranışı kullanılır.
+- Grubun tamamı ölünce ödül odasının belirlenmiş noktasında bir Ability Chest kesin olarak oluşur. Normal düşman ve level-up sandıkları ayrıca mevcut olasılıklarla çalışır. Bu, ilk ödülü göstermek içindir; tüm ana rotaya kill-all kapısı eklenmez.
+- F1 paneli yoktur. Geçici can/mermi/XP/hedef göstergesi ve nişangâh bulunur. Sandık E ile açılır. Ödül seçimi tamamlanınca yalnızca bu dilimin tamamlandığı gösterilir; demo finali/Victory değildir.
+- Ölümde Enter veya Retry ile aynı sahne temiz yüklenir; geçici run kazanımları sıfırlanır. Henüz topraktan çıkış animasyonu yoktur. Yaşarken retry çağrısı yok sayılır.
+- İki silah yuvalı başlangıç build'de de çalışır; Editor-only silah değiştirme bootstrap'ı demo kopyasından kaldırılır. Mevcut ability kurulum servisi bu dilimde korunur.
+- Windows: `Project First Run > Demo > Build Windows Opening`. Yalnızca bu sahneyle `Builds/DeepJamOpening/ProjectFirstRun.exe` üretilir; mevcut Build Settings sahne listesi değişmez. Build alındıktan sonra exe elle açılarak kontrol edilir; çalışan oyundan Alt+F4 ile çıkılabilir, ölüm ekranında Quit da vardır.
+- Testler: `DemoOpeningLayoutTests`, `DemoOpeningTests`. Sahne henüz üretilmemişse açık gerekçeyle atlanır; bu başarı sayılmaz. Başlangıç güvenliği, gerçek aktivasyon hacmi, tek garanti ödül ve ölüm iptali kapsanır. Derleme, testler ve Windows açılışı bu değişiklik sırasında çalıştırılmadı.
+- İlk kabul: koridora kadar düşman takibi başlamaz; içeri girince dört düşman etkinleşir; öldürünce XP ve garanti sandık çalışır; E/seçim sonrası oynanış sürer; ölüm/yeniden deneme temiz başlar. Mermi kaynağı ve uzun run dengesi sonraki demo adımlarında ayrıca çözülmelidir.
 
 ## Deneyim ve kapsam
 

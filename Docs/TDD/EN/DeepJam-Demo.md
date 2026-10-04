@@ -2,9 +2,23 @@
 
 ## Status and order — 2026-10-04
 
-Git: `feature/deepjam-demo`. The user created the demo branches. This checkpoint is documentation only: no scene, model, package or runtime change. Application deadline is October 11; October 10 is the proposed buffered delivery target. Aim for roughly 8–12 minutes, not a fixed acceptance requirement.
+Git: `feature/deepjam-demo`. The user committed the design checkpoint. Opening-greybox authoring and runtime wiring are now implemented; generating and validating the saved scene in Unity remain pending. Application deadline is October 11; October 10 is the proposed buffered delivery target. Aim for roughly 8–12 minutes, not a fixed acceptance requirement.
 
 Order: TDD/docs checkpoint → small playable greybox and early Windows build → complete route/game loop → presentation and finishing touches. Do not wait for the finished map or cinematics before the first build. The user runs builds and Unity tests; the assistant authors implementation/tests and instructions. Check-ins and merges remain user-owned.
+
+## First implementation slice — start / corridor / reward
+
+- Unity menu: `Project First Run > Demo > Create Opening Greybox`. Copy the existing `Test_ContentArena` wiring into a separate file without editing the source scene, prefabs or test NavMesh. If the demo already exists, only open it; never overwrite user-authored layout changes.
+- Destination: `Assets/_Project/Scenes/Demo/DeepJam_Opening.unity`. Geometry, four spawn points, activation volume and reward anchor are visible and serialized in Edit Mode. Bake navigation during authoring. Play Mode instantiates ordinary enemies/loot, not the entire map.
+- This first scale/flow rehearsal is flat: safe start room → screened entrance → wide corridor with cover → first reward room. Descending stairs, the full dungeon and cinematics are not implemented yet.
+- Prepare four Chasers before entry; entering the corridor activates the existing encounter. The new view-cone/LOS perception policy is not implemented in this slice; existing enemy behavior remains.
+- Clearing this group creates one guaranteed Ability Chest at the authored reward anchor. Existing enemy/level-up drops remain independent and random. This introduces rewards, not a universal kill-all gate on the main route.
+- No F1 panel. Temporary health/ammo/XP/objective HUD and crosshair; E opens a chest. Claiming the guaranteed reward marks only this slice complete, not the demo finale or run Victory.
+- On death, Enter or Retry cleanly reloads the same scene and resets temporary run progression. Earth-emergence animation is not included. Retry requests while alive are ignored.
+- Two starting weapon slots work in standalone builds too; remove the Editor-only switching bootstrap from the demo copy. Retain the existing ability installation service for this slice.
+- Windows menu: `Project First Run > Demo > Build Windows Opening`. Build only this scene to `Builds/DeepJamOpening/ProjectFirstRun.exe` without changing the existing Build Settings scene list. Launch the executable manually afterward. Alt+F4 exits during gameplay; the death screen also has Quit.
+- Tests: `DemoOpeningLayoutTests`, `DemoOpeningTests`. Missing generated scene explicitly skips acceptance, not passes it. Cover safe start, the actual activation volume, a single guaranteed reward and death cancellation. Compilation, tests and Windows startup have not been run for this change.
+- First acceptance: no pursuit before corridor entry; four enemies activate on entry; killing them yields XP and the guaranteed chest; E/claim returns to gameplay; death/retry resets the run. Ammo supply and longer-run balance remain separate demo work.
 
 ## Experience and scope
 

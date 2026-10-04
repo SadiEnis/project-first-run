@@ -1,0 +1,98 @@
+# DeepJam demo — kapsam ve sahne tasarımı
+
+## Durum ve çalışma sırası — 04.10.2026
+
+Git: `feature/deepjam-demo`. Kullanıcı demo dallarını oluşturdu. Bu checkpoint yalnızca tasarım dokümanıdır; sahne, model, paket veya oyun kodu eklenmedi. Başvuru hedefi 11 Ekim; 10 Ekim teslimi önerilen tampon hedeftir. Süre hedefi yaklaşık 8–12 dakikadır, kesin kabul şartı değildir.
+
+Sıra: TDD ve docs checkpoint → erken oynanabilir greybox ve Windows build kontrolü → tüm rota/oyun döngüsü → sunum ve son dokunuşlar. İlk build için bitmiş harita, animasyon veya final beklenmez. Build ve Unity test çalıştırmaları kullanıcıya aittir; asistan uygulama/test kodunu ve talimatları hazırlar. Merge/check-in kullanıcıya aittir.
+
+## Deneyim ve kapsam
+
+Manuel FPS çatışması, otomatik yetenekler, sandıktan build oluşturma ve risk/ödül rotaları gösterilir. İlk denemede bitirmek mümkündür; zorunlu ölüm, kazanılamayan savaş veya gizli ilk-run engeli yoktur. Demo bitişi hikâyenin zaferle tamamlanması olmak zorunda değildir.
+
+Kullanıcının dungeon çizimi harita temelidir. Önceki enerji tesisi önerisi kesin tema değildir. Cehennem/yüzey yolculuğunun genel yönü ve nihai sanat dili ayrıca kararlaştırılır; karakterin topraktan çıkışı bunları tek başına belirlemez.
+
+Tek kayıtlı sahne önerilir; geometri ve bağlantılar Edit Mode'da hazırlanır, Inspector referansları açıkça bağlanır. Play sırasında tüm haritayı oluşturan test bootstrap'ı kullanılmaz. Mevcut test sahneleri korunur. Yeni silah/yetenek, Akıcı Mekanizma, altın/meta, gerçek evolution, prosedürel harita ve tam boss sistemi kapsam dışıdır.
+
+## Rota ve odaların görevleri
+
+| Alan | Amaç |
+| --- | --- |
+| Başlangıç | Topraktan çıkış, yön bulma ve kontrol devri |
+| Koridor savaşı | İlk silah/Chaser tanıtımı; yana hareket alanı olan koridor |
+| Aşağı iniş ve ilk oda | İlk ödül ve yeni gücü deneme |
+| İkinci oda | Ranger/siper ilişkisi ve büyük arenaya hazırlık |
+| Büyük arena | Mevcut düşman davranışlarını birleştirme, yan yol ve anahtar rotasını gösterme |
+| Ayrı opsiyonel oda | İsteğe bağlı risk karşılığında ek ödül; anahtar burada değildir |
+| Yukarı merdiven, giriş odası | Anahtar rotasının başlangıcı ve kısa çatışma |
+| Düşmansız zıplama parkuru | Üç sabit platform ve güvenli varış; düşüşte hasarlı yerel geri dönüş |
+| Küçük anahtar arenası | Başta boşluk/sessizlik ve yalnız parlayan anahtar; alımdan sonra pusu |
+| Final odası | Anahtarla erişilen dev düşman gösterisi ve demo sonu; boss savaşı yok |
+
+Anahtar rotası zorunludur; opsiyonel oda ile karıştırılmaz. Büyük arena ve ana rota için evrensel tüm düşmanları öldürme koşulu eklenmez. Anahtar pususu özel bir kilitli karşılaşmadır; mevcut serbest keşif yönü bu istisnayla korunur.
+
+## Büyük arenaya hâkim noktadan giriş
+
+Önceki oda oyuncuyu arenaya bakan üst sahanlığa çıkarır. Kamera kontrolü oyuncuda kalır; zorunlu panorama sinematiği yoktur. Final kapısı, anahtar rotasının merdiveni ve ayrı opsiyonel oda girişi ayırt edilebilir olmalıdır. Oyuncuya ortamı okumak için kısa bir fırsat verilir; giriş bütün düşmanları aynı anda alarma geçirmez.
+
+Sahanlığın iki yanında aşağı inen merdivenler bulunur. Yalnızca dekoratif simetri yerine farklı yaklaşma açıları hedeflenir; bir iniş daha korunaklı/yakın mesafeli, diğeri daha açık bir alternatif olabilir. Kesin siper yerleşimi greybox'ta seçilir. Üst nokta tüm arenanın risksiz temizlendiği bir mevzi olmamalıdır: siper ve görüş hatlarıyla bazı düşmanlar gizlenir; görünmez ateş engeli eklenmez.
+
+## Düşman algılama ve çatışmaya girme
+
+- Hazırlanma, oyuncuyu fark etme ve saldırı ayrı adımlardır. Düşmanlar önceden hazır olabilir; henüz fark etmedikleri oyuncuyu otomatik takip edip vurmazlar.
+- İlk görsel algılama için üç koşul birlikte sağlanır: algılama mesafesi, düşmanın bakışına göre görüş açısı ve arada engel olmayan görüş hattı. Duvar/kat arkasındaki yakınlık tek başına yeterli değildir. Mesafe ve açı değerleri yapılandırılabilir; sayılar oynanış testinde seçilir.
+- Fark etmek hemen hasar vermek değildir. Mevcut saldırı menzili, görüş, saldırı hazırlığı ve cooldown kuralları korunur.
+- Oyuncunun doğrudan veya ona ait yetenek/zamanlı hasarıyla vurulan, hayatta kalan düşman; başlangıç algılama konisi/mesafesi dışında da tepki verir. Kaynağı oyuncuya ait olmayan hasar otomatik oyuncu tespiti sayılmaz. Bu kural saldırının görüş/menzil kurallarını kaldırmaz.
+- Algılama sınırından çıkmak anında pasifleşme yaratmaz. Kısa takip hafızası ve son görülen konum kullanımı uygulama öncesinde mevcut takiple netleştirilir; duvar arkasında sonsuz kesin konum bilgisi verilmez. Süre, takip sınırı ve unutunca bekleme konumu açık ayar kararlarıdır.
+- Anahtar pususu karşılaşma tarafından doğrudan alarma geçirilebilir; bu yine duvar içinden saldırma izni vermez. Alarm tüm haritaya yayılmaz.
+- Ses algısı, devriye, gelişmiş arama ve grup alarm sistemi demo kapsamına eklenmez. Mevcut test sahnelerinin başlangıç davranışı sessizce değişmemeli; yeni algılama politikasının kapsamı entegrasyonda açıkça seçilir.
+
+Doğrulama: mesafe/açı sınırları, arkada/duvar arkasında oyuncu, doğrudan ve sahipli zamanlı hasarla alarm, kısa görüş kaybı, pusu alarmı, ölüm/disable temizliği ve saldırı koşullarının korunması. Sahanlık güvenliği ayrıca gerçek geometriyle elle değerlendirilir; yalnız algılama testleri level design kabulü değildir.
+
+## Parkur ve yerel geri dönüş
+
+İlk sürüm düşmansız üç sabit platform ve güvenli varıştan oluşur. İlk atlayış öğretici/geniş, diğerleri biraz daha dikkat isteyen fakat sprint gerektirmeyen mesafelerde olur. Mesafeler mevcut oyuncunun zıplamasıyla greybox'ta ölçülür. Yeni bulmaca sistemi veya dar spiral merdiven şartı yoktur.
+
+Düşüş algılandığında bir kez hasar uygulanır; başlangıç denge değeri maksimum canın %10'udur, oynanışta ayarlanabilir. Hayatta kalan oyuncu kısa kararmayla parkurun güvenli başlangıcına taşınır; düşüş hızı temizlenir. Aynı düşüşün birden fazla collider/olayla tekrar hasar vermesi önlenir. Ölümcül hasarda normal run ölümü işler; yerel geri dönüş oyuncuyu diriltmez. Hasarın zırh/diğer gelen-hasar değiştiricileriyle ilişkisi uygulamadan önce netleştirilecektir.
+
+Bu bir run checkpoint'i değildir: hayatta kalınan parkur hatası XP, ekipman, anahtar veya karşılaşmaları sıfırlamaz; başka yerde ölmek parkurdan başlatmaz. Alt zemin ateş/lav olarak sunulabilir ancak ilk sürümde orada yürüyüş, süreli yanma hasarı veya geri tırmanma döngüsü yoktur. Yıkılan üçüncü platform ancak sabit parkur kabulünden sonra değerlendirilecek isteğe bağlı iştir; ilk sürüme dahil değildir.
+
+Anahtar odasından parkuru ters yönde dönmek gerekmeyecek. Pusu tamamlanınca ayrı bir çıkış kapısı, merdiven/rampa ile aşağıdaki büyük arenaya ve final kapısına giden kısa yolu açar. Bu yol baştan yukarı çıkılarak parkurun/anahtarın atlanmasına izin vermemeli; başlangıçta kapalı olması ve final uygunluk kontrolü korunmalıdır.
+
+## Anahtar ve pusu sözleşmesi
+
+1. Final kapısı baştan kilitlidir; anahtar gerektiğini ve üst rotayı oyuncuya anlaşılır biçimde gösterir.
+2. Küçük arena ilk gelişte görünür düşman içermez. Anahtar kapı eşiğinden uzakta, oyuncu odaya tamamen girmişken alınabilecek konumdadır.
+3. Anahtarı alma tek seferliktir. Anahtar sahipliği run'a kaydedilir, oyuncunun geldiği giriş kapısı güvenli biçimde kapanır ve pusu bir kez başlar. Ayrı aşağı iniş kapısı karşılaşma tamamlanana kadar kapalıdır.
+4. Düşmanlar görüş dışında girişlerden veya okunaklı belirme sunumuyla gelir; oyuncunun üstünde sessizce oluşmaz. Geometrik yerleşim sonradan yapılır.
+5. Kaç wave/düşman olacağı henüz onaylanmadı. Başlangıç önerisi kısa iki grup; zorluk ve süre greybox'ta belirlenir. Yeni düşman tipi gerekmez.
+6. Karşılaşmanın tamamlanması: planlı bütün gruplar oluşturulmuş ve o karşılaşmaya ait yaşayan düşman kalmamış olmalıdır. Gruplar arasındaki anlık sıfır düşman sayısı kapıyı açmaz. Başka odadaki düşmanlar bu kapıyı tutmaz.
+7. Tamamlanınca geldiğimiz giriş kapısı yerine ayrı aşağı iniş kapısı açılır; giriş kapısı kapalı kalır. Oyuncu parkuru geri oynamadan büyük arenaya iner ve anahtarla final kapısına ilerler. Yeniden giriş anahtarı veya pusuyu yeniden üretmez; anahtar için genel envanter sistemi gerekmez.
+
+Parkur/kapı testleri: düşüşte tek hasar, güvenli konum/hız sıfırlama, ölümcül düşüşte diriltmeme, run ilerlemesini koruma, anahtar alımında girişin kapanması, pusu sırasında iki kapının kilitli olması, son grup tamamlanınca yalnız ayrı çıkışın açılması ve restart'ta başlangıç kapı düzeninin geri kurulması.
+8. Final sekansına yalnızca anahtar sahipliği ve pusu tamamlanması ile girilir; böylece kapı/trigger atlatmak karşılaşmayı atlamaz. Bariyer oyuncuyu sıkıştırmaz. Kaçan/erişilemeyen düşman veya spawn hatası karşılaşmayı sonsuza kadar kilitlememeli; uygulama aşamasında mevcut hata/cleanup sözleşmesine uygun kurtarma yolu tasarlanır.
+9. Normal ölüm/restart anahtar, pusu, kapılar, düşmanlar, drop'lar, XP ve run build'ini sıfırlar. Kalıcı meta kazanımı yoktur.
+
+## Kuşaksız açılış ve FPS kontrol devri
+
+İstenen sunum: kamera karakterin topraktan çıkışını dışarıdan gösterir, sonra gerçek FPS göz konumuna yumuşak geçer. Alt/üst siyah kuşak hiçbir açılışta kullanılmaz. HUD kamera hazır olunca görünür, ardından kontrol devredilir. Açılışta hareket, ateş, otomatik yetenekler ve oyuncuya hasar kapalıdır.
+
+Basit model yeterlidir. Mevcut FPS hareket sistemi değiştirilmez; dışarıdan görünen gövde yalnızca sunum olabilir. Modelin varlığı yerden çıkış animasyonunun hazır olduğu anlamına gelmez. Önerilen kısa deneme: bir görsel gövde, basit yükselme/doğrulma hareketi, toprak/toz ve ses. Gerçek terrain deformasyonu gerekmez.
+
+04.10 incelemesi: manifest'te Timeline mevcut, Cinemachine bağımlılığı yok; Assets dosya taramasında Robot/StarterAssets veya FBX bulunmadı. Model/paket seçimi ve lisans-kaynak kaydı uygulamadan önce yapılır; bu checkpoint bunları indirmez. Cinemachine sürüm uyumu kontrol edilmeden entegrasyon sözü verilmez.
+
+Kamera devrinde konum, yön ve FOV eşleşir; motorun yaw/pitch durumu da eşitlenir. İki kontrol sahibi veya iki AudioListener aynı anda çalışmaz. FPS görüşüne giren kafa/gövde mesh'i kırpılma yapmamalı; görsel gizleme ayrı tutulmalı, oyuncu kökü kapatılmamalıdır. Atlanan sinematik de aynı son kontrol/HUD durumuna ulaşmalıdır.
+
+Dış kamera/model denemesi takvimi zorlarsa kullanıcı tarafından kabul edilen alternatif FPS açılış ve FPS finaldir. Önerilen deneme bütçesi yarım gün; kesin animasyon/model seçimi açık. İlk açılış yaklaşık 5–7 saniye hedeflenir ve atlanabilir olmalıdır. Ölümden sonraki dönüş 1–2 saniyelik kısa varyanttır; her seferinde uzun sinematik yoktur. Açılış-görüldü bilgisi sahne yeniden yüklenirken oturum boyunca korunur; bu bilgi run ilerlemesi veya kalıcı kayıt değildir.
+
+## Final sekansı
+
+Oyuncu odaya girince devin silueti/sesi/hareketi görülür. Finale geçiş tek seferliktir; oyuncu kontrolü, otomatik saldırılar ve hasar işleme durur. Dev yere vurur; ses, kısa kamera tepkisi, toz ve kontrollü yıkıntı sunumu gelir. Görüş kapanır veya kısa düşüş hissiyle kararır; demo tamamlandı ekranı, tekrar oyna ve çıkış sunulur.
+
+Gerçek fizik tabanlı oda yıkımı veya dev için savaş AI'ı gerekmez. FPS sunum güvenli temel seçenektir; dışarı çekilen kamera ancak basit model ve sekansla kolayca yapılabiliyorsa eklenir. Bu son, normal Defeat/restart tetiklemez. Aynı karede ölüm/final tetiklenmesi ve tekrar trigger durumları için tek otorite gerekir; başlamış terminal sonuç diğer olayla değiştirilmez.
+
+## Erken build ve kabul
+
+İlk küçük greybox'ta Windows build al: doğru sahnede açılış, giriş/ateş, HUD, ödül UI, NavMesh/düşman, ölüm/restart, çıkış ve Editor bağımlılıklarının dışarı sızmaması kontrol edilir. O aşamada henüz olmayan final/anahtar adımları sonraki build kontrolüne eklenir; yapılmayan kontroller geçti sayılmaz. Mümkünse temiz klasörden ve başka bilgisayardan çalıştırılır.
+
+Son kabul: F1 gerektirmeyen baştan sona rota; ilk denemede bitirebilme; ayrı opsiyonel yol; anahtar pusu kilidinin doğru açılması; gruplar arası erken açılmama; tekrar alım/girişte çoğalmama; ölümde temiz reset; kamera kontrol/HUD devri ve skip; finalde boss hasarı/yanlış restart olmaması; parkurda takılmama; demo sonu ve yeniden deneme. Otomatik testler bu sözleşmelere göre yazılır, kullanıcı çalıştırır. Mühimmat ikmali ve ödül temposu demo kurulurken ayrıca netleştirilecek; bitişi engelleyen rezerv tükenmesi bırakılmaz.

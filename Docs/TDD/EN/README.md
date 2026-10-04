@@ -65,3 +65,4 @@ Project First Run is the current development codename. The final commercial titl
 59. [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md)
 60. [Crimson Fang](Crimson-Fang-Upgrade.md)
 61. [Loaded Dice](Loaded-Dice-Upgrade.md)
+62. [DeepJam Demo Scope and Scene Design](DeepJam-Demo.md)

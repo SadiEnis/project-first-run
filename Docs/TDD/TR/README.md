@@ -66,3 +66,4 @@ Project First Run mevcut geliştirme kod adıdır. Oyunun nihai ticari adı daha
 60. [Kızıl Diş](Crimson-Fang-Upgrade.md)
 61. [Hileli Zar](Loaded-Dice-Upgrade.md)
 62. [DeepJam Demo Kapsamı ve Sahne Tasarımı](DeepJam-Demo.md)
+63. [Düşman Algılama ve Takip Hafızası](Enemy-Perception.md)

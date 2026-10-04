@@ -96,6 +96,8 @@ Sahanlığın iki yanında aşağı inen merdivenler bulunur. Yalnızca dekorati
 
 ## Düşman algılama ve çatışmaya girme
 
+Uygulama sözleşmesi, ilk deneme değerleri ve görüş kaybında hareket/saldırı sahipliği [Düşman Algılama](Enemy-Perception.md) dokümanında netleştirildi. Aşağıdaki genel ilkeler korunur; başlangıç unutma davranışı, son bilgi noktasına yönelip 3 saniye sonunda bulunduğu yerde beklemektir. Henüz uygulanmadı.
+
 - Hazırlanma, oyuncuyu fark etme ve saldırı ayrı adımlardır. Düşmanlar önceden hazır olabilir; henüz fark etmedikleri oyuncuyu otomatik takip edip vurmazlar.
 - İlk görsel algılama için üç koşul birlikte sağlanır: algılama mesafesi, düşmanın bakışına göre görüş açısı ve arada engel olmayan görüş hattı. Duvar/kat arkasındaki yakınlık tek başına yeterli değildir. Mesafe ve açı değerleri yapılandırılabilir; sayılar oynanış testinde seçilir.
 - Fark etmek hemen hasar vermek değildir. Mevcut saldırı menzili, görüş, saldırı hazırlığı ve cooldown kuralları korunur.

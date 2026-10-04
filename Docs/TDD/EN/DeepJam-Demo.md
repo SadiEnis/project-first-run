@@ -96,6 +96,8 @@ Stairs descend on both sides. Aim for different approach angles rather than deco
 
 ## Enemy perception and combat engagement
 
+The implementation contract, initial trial values and lost-sight movement/attack ownership are defined in [Enemy Perception](Enemy-Perception.md). Preserve the general principles below; initially investigate the last information point and return to idle at the current location after 3 seconds without new information. Not implemented yet.
+
 - Preparation, detection and attack are separate stages. Enemies may already be prepared without automatically chasing or attacking an undetected player.
 - Initial visual detection requires all three: detection range, viewing angle relative to enemy facing, and unobstructed line of sight. Proximity through walls/floors alone is insufficient. Range and angle are configurable; choose values through playtesting.
 - Detection does not immediately deal damage. Preserve existing attack range, visibility, wind-up and cooldown rules.

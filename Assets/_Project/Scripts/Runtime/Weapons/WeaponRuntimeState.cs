@@ -92,6 +92,14 @@ namespace ProjectFirstRun.Weapons
 
         public WeaponFireResult TryFire()
         {
+            return TryFire(_config.ShotsPerSecond);
+        }
+
+        // The current wait is untouched; only a successful new shot captures this rate.
+        public WeaponFireResult TryFire(float shotsPerSecond)
+        {
+            if (!float.IsFinite(shotsPerSecond) || shotsPerSecond <= 0f || !float.IsFinite(1f / shotsPerSecond))
+                throw new ArgumentOutOfRangeException(nameof(shotsPerSecond));
             if (IsReloading)
             {
                 return WeaponFireResult.BlockedByReload;
@@ -108,7 +116,7 @@ namespace ProjectFirstRun.Weapons
             }
 
             MagazineAmmo--;
-            FireCooldownRemaining = _config.FireInterval;
+            FireCooldownRemaining = 1f / shotsPerSecond;
 
             return WeaponFireResult.Fired;
         }

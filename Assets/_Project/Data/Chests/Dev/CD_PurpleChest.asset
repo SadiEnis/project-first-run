@@ -11,6 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d76d7ee174c46f4a99da8344ffcb906, type: 3}
   m_Name: CD_PurpleChest
+  _affectedByLuck: 1
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.ChestDefinition
   _stableId: chest.advanced.purple
   _displayName: Purple Chest

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Rewards;
+using ProjectFirstRun.Stats;
 using UnityEngine;
 
 namespace ProjectFirstRun.Chests.Spawning
@@ -68,7 +69,9 @@ namespace ProjectFirstRun.Chests.Spawning
             if (profile == null) return false;
             if (!IsFinite(position) || !IsFinite(forward))
                 throw new ArgumentException("Death position and facing must be finite.");
-            if (!profile.TryRoll(_random, out ChestDefinition definition)) return false;
+            var stats = _playerHealth != null ? _playerHealth.GetComponent<PlayerStatsController>() : null;
+            float luck = stats != null && stats.IsInitialized ? stats.Evaluate(PlayerStatType.Luck, 1f) : 1f;
+            if (!profile.TryRoll(_random, out ChestDefinition definition, luck)) return false;
             _placement.ValidatePrefab(definition.WorldPrefab);
             _pending.Enqueue(new PendingDrop(definition, position, forward));
             return true;

@@ -1,6 +1,6 @@
 # Level-up chest source
 
-Current content: [Common Category Chests](Common-Chest-Types.md) replaces the table's development-only choice with Weapon/Ability/Upgrade definitions at equal weights and replaces the single starter fixture with three labelled examples. Entitlement, selection retention and placement contracts below are unchanged; the original development-only examples describe the earlier increment.
+Current baseline (2026-10-03, GDD 15.9): normal enemy Common/Green/Purple/Legendary = 65/20/10/5%; elite = 40/30/25/5%; level-up = 30/50/15/5%. Common is split equally across Weapon/Ability/Upgrade. Integer weights in that six-entry order are Normal 65/65/65/60/30/15, Elite 40/40/40/90/75/15, LevelUp 30/30/30/150/45/15 (total 300 each). Enemy chest-generation chances stay 25%/50%; each level-up still guarantees one chest. Boss/Golden and luck modifiers are excluded. Existing selection retention, placement and death-processing contracts remain unchanged; older common-only table examples below are historical. Asset regression tests verify exact weights and every selection roll, not a random sample. Unity test execution remains with the project owner.
 
 ## Scope
 

@@ -161,8 +161,10 @@ namespace ProjectFirstRun.Development.Arenas
         public bool GrantExperience(int amount) => Execute(() =>
         {
             if (amount <= 0 || amount > 10000) throw new ArgumentOutOfRangeException(nameof(amount));
-            _player.GetComponent<PlayerExperienceController>().GainExperience(amount);
-            return "Granted " + amount + " XP through gameplay progression";
+            var xp = _player.GetComponent<PlayerExperienceController>();
+            long previous = xp.TotalExperience;
+            xp.GainExperience(amount);
+            return "Granted " + (xp.TotalExperience - previous) + " XP (base " + amount + ")";
         });
 
         public bool SpawnChest(int index) => Execute(() =>

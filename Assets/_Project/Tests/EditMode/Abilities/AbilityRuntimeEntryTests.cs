@@ -12,6 +12,54 @@ namespace ProjectFirstRun.Tests.EditMode.Abilities
     {
         private TestRuntimeAbilityDefinition _definition;
 
+        [Test]
+        public void ReducedCooldownOnlyAppliesToNewSuccessfulCasts()
+        {
+            var executor = new FakeAbilityExecutor();
+            var entry = new AbilityRuntimeEntry(_definition, null, executor);
+            Assert.That(entry.TryAutoCast(Vector3.zero), Is.EqualTo(AbilityAutoCastResult.Performed));
+            entry.Tick(.5f);
+            Assert.That(entry.TryAutoCast(Vector3.zero, .75f), Is.EqualTo(AbilityAutoCastResult.OnCooldown));
+            Assert.That(entry.State.CooldownRemaining, Is.EqualTo(1.5f));
+            entry.Tick(1.5f);
+            executor.Result = AbilityExecutionResult.Failed;
+            Assert.That(entry.TryAutoCast(Vector3.zero, .75f), Is.EqualTo(AbilityAutoCastResult.ExecutionFailed));
+            Assert.That(entry.State.IsReady, Is.True);
+            executor.Result = AbilityExecutionResult.Performed;
+            entry.TryAutoCast(Vector3.zero, .75f);
+            Assert.That(entry.State.CooldownRemaining, Is.EqualTo(1.5f));
+            Assert.That(entry.State.Cooldown, Is.EqualTo(2f));
+        }
+
+        [TestCase(.95f, 1.9f)]
+        [TestCase(.90f, 1.8f)]
+        [TestCase(.85f, 1.7f)]
+        [TestCase(.80f, 1.6f)]
+        [TestCase(.75f, 1.5f)]
+        [TestCase(-1f, .5f)]
+        [TestCase(2f, 2f)]
+        public void CooldownMultiplierHasExpectedDurationAndCap(float multiplier, float expected)
+        {
+            var entry = new AbilityRuntimeEntry(_definition, null, new FakeAbilityExecutor());
+            entry.TryAutoCast(Vector3.zero, multiplier);
+            Assert.That(entry.State.CooldownRemaining, Is.EqualTo(expected).Within(.0001f));
+        }
+
+        [Test]
+        public void InvalidMultiplierCannotExecuteAndStatSourcesAdd()
+        {
+            var executor = new FakeAbilityExecutor();
+            var entry = new AbilityRuntimeEntry(_definition, null, executor);
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => entry.TryAutoCast(Vector3.zero, float.NaN));
+            Assert.That(executor.ExecutionCount, Is.Zero);
+            var stats = new ProjectFirstRun.Stats.PlayerStatCollection();
+            stats.Add(new ProjectFirstRun.Stats.StatModifier(ProjectFirstRun.Stats.PlayerStatType.AbilityCooldown,
+                ProjectFirstRun.Stats.StatModifierOperation.AdditivePercent, -.25f, "hourglass"));
+            stats.Add(new ProjectFirstRun.Stats.StatModifier(ProjectFirstRun.Stats.PlayerStatType.AbilityCooldown,
+                ProjectFirstRun.Stats.StatModifierOperation.AdditivePercent, -.15f, "other"));
+            Assert.That(AbilityCooldownScaling.Multiplier(stats), Is.EqualTo(.6f).Within(.0001f));
+        }
+
         [SetUp]
         public void SetUp()
         {

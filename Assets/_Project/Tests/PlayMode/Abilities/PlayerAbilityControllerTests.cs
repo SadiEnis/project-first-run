@@ -20,6 +20,36 @@ namespace ProjectFirstRun.Tests.PlayMode.Abilities
         private TestPlayerAbilityDefinition _firstDefinition;
         private TestPlayerAbilityDefinition _secondDefinition;
 
+        [Test]
+        public void HourglassIsAppliedByControllerWithoutAcceleratingContinuousTime()
+        {
+            var stats = _playerObject.AddComponent<ProjectFirstRun.Stats.PlayerStatsController>();
+            _playerObject.SetActive(true);
+            var entry = CreateTargetlessEntry(_secondDefinition, new FakeAbilityExecutor());
+            var continuous = new ClockProbe();
+            _controller.AddAbility(entry);
+            _controller.AddAbility(CreateTargetlessEntry(_firstDefinition, continuous));
+            stats.Stats.Add(new ProjectFirstRun.Stats.StatModifier(
+                ProjectFirstRun.Stats.PlayerStatType.AbilityCooldown,
+                ProjectFirstRun.Stats.StatModifierOperation.AdditivePercent, -.25f, "hourglass"));
+            _controller.Tick(.1f);
+            Assert.That(entry.State.CooldownRemaining, Is.EqualTo(1.5f));
+            Assert.That(continuous.Elapsed, Is.EqualTo(.1f));
+            stats.Stats.RemoveBySource("hourglass");
+            _controller.Tick(.5f);
+            Assert.That(entry.State.CooldownRemaining, Is.EqualTo(1f));
+            Assert.That(continuous.Elapsed, Is.EqualTo(.6f).Within(.0001f));
+            _controller.Tick(1f);
+            Assert.That(entry.State.CooldownRemaining, Is.EqualTo(2f));
+        }
+
+        private sealed class ClockProbe : IAbilityExecutor, IContinuousAbilityRuntime
+        {
+            public float Elapsed;
+            public void TickContinuous(float deltaTime, Vector3 origin, bool controlEnabled) => Elapsed += deltaTime;
+            public AbilityExecutionResult TryExecute(in AbilityExecutionContext context) => AbilityExecutionResult.Failed;
+        }
+
         [SetUp]
         public void SetUp()
         {

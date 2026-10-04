@@ -14,8 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Chests.Spawning.ChestDropTable
   _entries:
   - _definition: {fileID: 11400000, guid: 1710c972359c443b9d34891f2042100f, type: 2}
-    _weight: 1
+    _weight: 30
   - _definition: {fileID: 11400000, guid: 6a5b00f7836c4d6cbfc8f3f6840a26eb, type: 2}
-    _weight: 1
+    _weight: 30
   - _definition: {fileID: 11400000, guid: e1dca4d76d9649a6ad60669b9b8ad921, type: 2}
-    _weight: 1
+    _weight: 30
+  - _definition: {fileID: 11400000, guid: 2d8f8f96d6f74891886c9a16f264c3d1, type: 2}
+    _weight: 150
+  - _definition: {fileID: 11400000, guid: 45b5403b7a8f4f16a12b340ee0578d1a, type: 2}
+    _weight: 45
+  - _definition: {fileID: 11400000, guid: c2cb2f9e84784a7c9c84e4f8a1fcb3a7, type: 2}
+    _weight: 15

@@ -43,7 +43,7 @@ namespace ProjectFirstRun.Abilities.Shuriken
             enemy.isActiveAndEnabled && !enemy.IsDead && !enemy.Health.IsDead;
         public void CancelOrbit()
         {
-            if (_running) _cooldown = _active.Cooldown;
+            if (_running) _cooldown = _active.Cooldown * AbilityCooldownScaling.Multiplier(_stats);
             _running = false;
             foreach (var set in _hits) set.Clear();
             if (_view != null)

@@ -1,6 +1,6 @@
 # Düşman kaynaklı sandık drop'ları
 
-Güncel içerik: [Common Kategori Sandıkları](Common-Chest-Types.md) iki kaynak tablosuna eşit ağırlıklı Weapon/Ability/Upgrade tanımlarını koyar. Aşağıdaki eski tek geliştirme girişi örneği artık geçerli değildir; normal/elit ihtimalleri ve ölüm işleme akışı değişmez.
+Güncel temel (03.10.2026, GDD 15.9): normal düşman Basit/Yeşil/Mor/Efsanevi = %65/20/10/5; elit = %40/30/25/5; seviye atlama = %30/50/15/5. Basit payı Weapon/Ability/Upgrade arasında eşit bölünür. Bu altı giriş sırasındaki tam sayı ağırlıkları Normal 65/65/65/60/30/15, Elite 40/40/40/90/75/15, LevelUp 30/30/30/150/45/15 olur (her toplam 300). Düşman sandık oluşturma ihtimalleri %25/%50; seviye atlamada bir sandık garantisi korunur. Boss/Altın ve şans etkileri dahil değildir. Seçimin korunması, konum ve ölüm işleme sözleşmeleri değişmez; aşağıdaki yalnızca basit sandık içeren eski tablo örnekleri tarihseldir. Asset regresyon testleri rastgele örnekleme yerine kesin ağırlıkları ve her seçim değerini doğrular. Unity testlerini proje sahibi çalıştırır.
 
 Güncel seçim verisi: profiller artık ortak `ChestDropTable` yapısına referans verir; eski gömülü girişler [Sandık Seviyesi Temeli](Chest-Tier-Foundation.md) aşamasında ayrı normal/elit asset'lerine taşınmıştır. Aşağıdaki ihtimal değerleri ve ölüm/kuyruk sözleşmeleri değişmez. Nadirlik bir etikettir; ihtimal çekilişini değiştirmez.
 

@@ -23,7 +23,7 @@ Sıra: TDD ve docs checkpoint → erken oynanabilir greybox ve Windows build kon
 
 ## İkinci uygulama dilimi — yürünebilir harita greybox'ı
 
-Durum: tasarım/docs checkpoint'i. Bu bölümdeki sahne değişiklikleri henüz uygulanmadı. Aynı `DeepJam_Opening.unity` üzerinde ilerlenir; yeni harita veya test sahnesi oluşturulmaz. Başlangıç sahnesi üretme menüsü yeniden kullanılmaz. Mevcut başlangıç, koridor çatışması, oyuncu/servis bağlantıları ve sandık kuralları korunur.
+Durum: geometri mevcut `DeepJam_Opening.unity` dosyasına işlendi. Kullanıcı yeniden bake sonrası NavMesh testindeki sorunun çözüldüğünü ve oda yerleşimini şimdilik kabul ettiğini bildirdi. Odaların küçüklüğü ileride karşılaşmalarla değerlendirilecek; bu checkpoint'te ölçüler değiştirilmedi. Tüm otomatik testlerin geçtiği veya tam standalone oynanış kabulü yapıldığı iddia edilmez. Yeni harita veya test sahnesi oluşturulmadı. Başlangıç sahnesi üretme menüsü yeniden kullanılmaz. Mevcut başlangıç, koridor çatışması, oyuncu/servis bağlantıları ve sandık kuralları korunur.
 
 ### Yerleşim ve kot planı
 
@@ -45,6 +45,12 @@ Durum: tasarım/docs checkpoint'i. Bu bölümdeki sahne değişiklikleri henüz 
 - Algılama mesafesi/açısı/LOS, anahtar pususu, parkur, ayrı dönüş çıkışı ve final bu checkpoint'in uygulama kapsamı dışındadır. Önce yerleşim oynanarak kabul edilir; sonra mekanikler ayrı adımlarla bağlanır.
 
 ### Kabul ve sonraki adım
+
+Uygulanan ilk ölçüler: koridor sonundan 15 adet 0,2 m basamakla 3 m aşağı iniş; 16 × 14 m ödül odası; 16 × 16 m ikinci oda; 30 × 4 m sahanlık; 30 × 28 m arena tabanı. Arenanın iki merdiveninde 20'şer adet 0,2 m basamak, 4 m net basamak genişliği ve 0,6 m derinlik kullanıldı. Mevcut oyuncu step offset değeri 0,3 m'dir. Solda 12 × 12 m opsiyonel oda, sağda kısa çıkış merdiveniyle geçici sonlandırılan anahtar rotası, karşıda geçici final engeli bulunur. Rota renkleri: yeşil opsiyonel, sarı anahtar, camgöbeği final. Bunlar henüz ödül/pusu/anahtar mekaniği içermez.
+
+Sahneyi Unity'de yeniden açtıktan sonra `Project First Run > Demo > Rebake Demo Navigation` çalıştırılır. Bu menü yalnız sahnenin mevcut NavMesh asset'ini günceller ve sahneyi kaydeder; geometri oluşturmaz veya kullanıcı yerleşimini yeniden üretmez. Bake çıktısı olan `OpeningNavigation.asset` sonraki check-in'e dahil edilir. Bake yapılmadan eski NavMesh yeni alt katları temsil etmez; `DemoMapLayoutTests.BakedNavigationReachesNewElevationsAndOptionalRoom` bu eksikliği hata olarak bildirir.
+
+Otomatik kabul kodu: `DemoMapLayoutTests` hiyerarşiyi, ödül yüksekliğini, basamakları ve bake sonrası rota erişimini denetler. `DemoOpeningTests.ExpandedMapCanBeWalkedDownAndBackUpWithoutJumpOrTeleport` yalnız ilk konumlandırmada teleport yapıp kalan ana rotayı ve iki arena merdivenini mevcut PlayerMotor ile yürür. Testler çalıştırılmadı; bu kayıt başarı raporu değildir. Kaydedilen sahnenin yerel fileID referansları ve benzersizliği metin düzeyinde kontrol edildi; bu Unity görsel/fizik doğrulamasının yerine geçmez.
 
 - Başlangıçtan ilk ödüle mevcut akış bozulmaz; sandık sayısı/olasılıkları değişmez.
 - Oyuncu aşağı inişi, iki ara odayı ve üst sahanlığı yürüyerek geçebilir; her iki merdivenden arena tabanına inip geri çıkabilir.

@@ -137,6 +137,38 @@ namespace ProjectFirstRun.Editor
             Debug.Log("Demo opening saved. Play: start room > corridor > guaranteed ability chest. Windows build remains unverified.");
         }
 
+        [MenuItem("Project First Run/Demo/Rebake Demo Navigation")]
+        public static void RebakeNavigation()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Stop Play Mode before baking navigation.");
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            var scene = SceneManager.GetActiveScene();
+            if (scene.path != ScenePath) scene = EditorSceneManager.OpenScene(ScenePath);
+            var surface = Find<NavMeshSurface>(scene).Single();
+            string path = AssetDatabase.GetAssetPath(surface.navMeshData);
+            if (string.IsNullOrEmpty(path) || !path.StartsWith(Folder + "/", StringComparison.Ordinal))
+                throw new InvalidOperationException("Demo navigation must use its own saved asset.");
+            var saved = surface.navMeshData;
+            surface.BuildNavMesh();
+            var generated = surface.navMeshData;
+            if (generated == null) throw new InvalidOperationException("Demo NavMesh bake failed.");
+            if (generated != saved)
+            {
+                surface.RemoveData();
+                EditorUtility.CopySerialized(generated, saved);
+                Object.DestroyImmediate(generated);
+                surface.navMeshData = saved;
+                surface.AddData();
+            }
+            EditorUtility.SetDirty(saved);
+            EditorUtility.SetDirty(surface);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            Debug.Log("Demo navigation rebaked. Saved geometry and gameplay wiring were not regenerated.");
+        }
+
         [MenuItem("Project First Run/Demo/Build Windows Opening")]
         public static void BuildWindows()
         {

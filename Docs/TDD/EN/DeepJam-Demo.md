@@ -23,7 +23,7 @@ Order: TDD/docs checkpoint → small playable greybox and early Windows build �
 
 ## Second implementation slice — walkable map greybox
 
-Status: design/docs checkpoint; scene changes below are not implemented yet. Continue inside the same `DeepJam_Opening.unity`, without creating another map/test scene or rerunning the opening-scene creation menu. Preserve the start, corridor encounter, player/service wiring and chest rules.
+Status: geometry was authored into the existing `DeepJam_Opening.unity`. The user reported that rebaking resolved the navigation-test issue and accepted the room layout provisionally. Small room sizes will be evaluated with encounters later; dimensions were not changed in this checkpoint. This does not claim a full automated test pass or complete standalone gameplay acceptance. No new map/test scene was created. Do not rerun the opening-scene creation menu. Preserve the start, corridor encounter, player/service wiring and chest rules.
 
 ### Layout and elevation plan
 
@@ -45,6 +45,12 @@ Status: design/docs checkpoint; scene changes below are not implemented yet. Con
 - Range/cone/LOS perception, key ambush, platforming, separate return exit and finale remain outside this implementation checkpoint. Accept the walkable layout first, then connect mechanics in separate increments.
 
 ### Acceptance and next step
+
+Initial authored dimensions: 15 steps at 0.2 m descend 3 m after the corridor; 16 × 14 m reward room; 16 × 16 m second room; 30 × 4 m overlook; 30 × 28 m arena floor. Each arena staircase has twenty 0.2 m steps, 4 m tread width and 0.6 m tread depth. The current player step offset is 0.3 m. A 12 × 12 m optional room sits on the left; a short ascending key-route entrance terminates at a temporary barrier on the right; another temporary barrier marks the finale opposite the overlook. Route colors: green optional, yellow key, cyan finale. These areas do not yet contain reward/ambush/key mechanics.
+
+Reopen the scene in Unity, then run `Project First Run > Demo > Rebake Demo Navigation`. This updates only the scene's existing navigation asset and saves the scene; it does not generate geometry or rebuild user-authored layout. Include the resulting `OpeningNavigation.asset` in the next check-in. Until rebaked, the old navigation data does not represent the lower floors; `DemoMapLayoutTests.BakedNavigationReachesNewElevationsAndOptionalRoom` reports that omission as a failure.
+
+Authored acceptance code: `DemoMapLayoutTests` checks hierarchy, reward height, stairs and post-bake route reachability. `DemoOpeningTests.ExpandedMapCanBeWalkedDownAndBackUpWithoutJumpOrTeleport` teleports only for initial placement, then walks the main route and both arena stairs using the existing PlayerMotor. Tests have not been executed; this is not a pass report. Local fileID references and uniqueness in the saved scene were checked textually, not as a substitute for Unity visual/physics validation.
 
 - Preserve start-to-first-reward gameplay and chest counts/probabilities.
 - Walk down the first descent, through the intermediate rooms and onto the overlook; descend and return via each arena staircase.

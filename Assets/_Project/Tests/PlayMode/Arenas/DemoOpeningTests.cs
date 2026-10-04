@@ -6,6 +6,7 @@ using ProjectFirstRun.Arenas;
 using ProjectFirstRun.Chests;
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Development.Arenas;
+using ProjectFirstRun.Player;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -75,6 +76,44 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_demo.Health.IsDead, Is.True);
             Assert.That(_demo.Encounter.Status, Is.EqualTo(ArenaSessionStatus.Defeat));
             Assert.That(_demo.Reward, Is.Null);
+        }
+
+        [UnityTest]
+        public IEnumerator ExpandedMapCanBeWalkedDownAndBackUpWithoutJumpOrTeleport()
+        {
+            // Isolate geometry acceptance from combat. Teleport only once to the route's starting point.
+            _demo.Encounter.Cancel();
+            var player = _demo.Health.gameObject;
+            player.GetComponent<PlayerController>().enabled = false;
+            var motor = player.GetComponent<PlayerMotor>();
+            var checkpoints = _scene.GetRootGameObjects().Single(x => x.name == "Authored demo geometry")
+                .transform.Find("Traversal checkpoints");
+            Vector3 Point(string name) => checkpoints.Find(name).position;
+            motor.Teleport(Point("DescentTop") + Vector3.up * .05f, Quaternion.identity);
+            Physics.SyncTransforms();
+            foreach (string name in new[] {
+                "DescentBottom", "RewardExit", "SecondRoom", "Overlook",
+                "LeftStairTop", "LeftStairBottom", "LeftStairTop", "Overlook",
+                "RightStairTop", "RightStairBottom", "RightStairTop", "Overlook",
+                "SecondRoom", "RewardExit", "DescentBottom", "DescentTop" })
+            {
+                Vector3 target = Point(name);
+                bool reached = false;
+                for (int step = 0; step < 500; step++)
+                {
+                    Vector3 delta = target - player.transform.position;
+                    delta.y = 0;
+                    if (delta.magnitude < .2f && Mathf.Abs(player.transform.position.y - target.y) < .25f)
+                    { reached = true; break; }
+                    if (delta.sqrMagnitude > .0001f)
+                        player.transform.rotation = Quaternion.LookRotation(delta);
+                    motor.Tick(delta.magnitude < .05f ? Vector2.zero : Vector2.up, false, .02f);
+                    Assert.That(player.transform.position.y, Is.GreaterThan(-9), "Fell outside the layout near " + name);
+                    // Simulate several deterministic movement ticks per frame, without changing global time scale.
+                    if (step % 5 == 0) yield return null;
+                }
+                Assert.That(reached, Is.True, "Could not walk to " + name + "; position=" + player.transform.position);
+            }
         }
 
         [UnityTearDown]

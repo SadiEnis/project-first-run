@@ -2,7 +2,7 @@
 
 ## Status and order — 2026-10-04
 
-Git: `feature/deepjam-demo`. The user committed the design checkpoint. Opening-greybox authoring and runtime wiring are now implemented; generating and validating the saved scene in Unity remain pending. Application deadline is October 11; October 10 is the proposed buffered delivery target. Aim for roughly 8–12 minutes, not a fixed acceptance requirement.
+Git: `feature/deepjam-demo`. The opening slice was committed as `12a2dd0`; the user verified its combat/reward flow and Windows build startup. Full standalone gameplay acceptance and automated test results remain separate. Application deadline is October 11; October 10 is the proposed buffered delivery target. Aim for roughly 8–12 minutes, not a fixed acceptance requirement.
 
 Order: TDD/docs checkpoint → small playable greybox and early Windows build → complete route/game loop → presentation and finishing touches. Do not wait for the finished map or cinematics before the first build. The user runs builds and Unity tests; the assistant authors implementation/tests and instructions. Check-ins and merges remain user-owned.
 
@@ -17,8 +17,45 @@ Order: TDD/docs checkpoint → small playable greybox and early Windows build �
 - On death, Enter or Retry cleanly reloads the same scene and resets temporary run progression. Earth-emergence animation is not included. Retry requests while alive are ignored.
 - Two starting weapon slots work in standalone builds too; remove the Editor-only switching bootstrap from the demo copy. Retain the existing ability installation service for this slice.
 - Windows menu: `Project First Run > Demo > Build Windows Opening`. Build only this scene to `Builds/DeepJamOpening/ProjectFirstRun.exe` without changing the existing Build Settings scene list. Launch the executable manually afterward. Alt+F4 exits during gameplay; the death screen also has Quit.
-- Tests: `DemoOpeningLayoutTests`, `DemoOpeningTests`. Missing generated scene explicitly skips acceptance, not passes it. Cover safe start, the actual activation volume, a single guaranteed reward and death cancellation. Compilation, tests and Windows startup have not been run for this change.
+- Tests: `DemoOpeningLayoutTests`, `DemoOpeningTests`. Missing generated scene explicitly skips acceptance, not passes it. Cover safe start, the actual activation volume, a single guaranteed reward and death cancellation. Automated test results have not been reported. The user verified Windows build creation and startup.
+- The user observed three chests in the short opening: guaranteed reward, level-up and random enemy drop. The sources are independent; balance was not changed in response.
 - First acceptance: no pursuit before corridor entry; four enemies activate on entry; killing them yields XP and the guaranteed chest; E/claim returns to gameplay; death/retry resets the run. Ammo supply and longer-run balance remain separate demo work.
+
+## Second implementation slice — walkable map greybox
+
+Status: design/docs checkpoint; scene changes below are not implemented yet. Continue inside the same `DeepJam_Opening.unity`, without creating another map/test scene or rerunning the opening-scene creation menu. Preserve the start, corridor encounter, player/service wiring and chest rules.
+
+### Layout and elevation plan
+
+1. **Corridor end → descent:** add a wide staircase with protected edges. Prefer a readable straight or landing-based flight over a tight spiral. Initial target: approximately 3 m descent and at least 3 m clear passage, validated against the player collider and actual walking.
+2. **First reward room:** preserve the existing room's purpose and guaranteed chest; adapt it to the lower landing. Move the reward anchor with the floor so the chest neither floats nor intersects the ground. The layout change does not add a second guaranteed reward.
+3. **Second room:** a short connection leads to the future Ranger/cover teaching area. Provide at least two walkable approaches and sight-breaking cover. Do not add a Ranger or any new encounter in this slice.
+4. **Large arena overlook:** the second room leads onto a landing approximately 4 m above the arena. Retain player camera control. The floor and three route entrances should read from here. Initial floor target is approximately 30 × 28 m, not a final balance requirement.
+5. **Two descents:** stairs on each side of the overlook connect continuously to the arena floor. Use cover to make one approach more protected and the other more exposed. Both flights remain walkable in reverse; no one-way lock in this slice.
+6. **Future routes:** reserve a distinct optional-room entrance/volume, an ascending entrance for the mandatory key route and a recognizable final-door location. Clearly temporary physical barriers terminate unfinished key/finale routes. Do not present these as functioning key/lock mechanics or block safe circulation through the main layout.
+
+### Implementation boundaries
+
+- Group geometry by section in the Hierarchy and serialize it in the scene, never generate it on Play. Do not delete/rebuild existing objects wholesale; edit only necessary floors, boundary walls, connections and the reward anchor.
+- Stair and doorway dimensions must work with the current CharacterController without jumping, sprinting or teleporting. Choose step height against its configured step offset. Leave no exposed map-edge gaps through which the player can fall out.
+- Floors retain the existing ground-layer convention so elevation changes do not break XP/chest placement. Recheck the corridor activation volume and references when moving the reward room; do not duplicate a broad trigger across the expansion.
+- Rebake navigation against the changed geometry. Preserve corridor enemy navigation; do not wire new enemy spawn points or encounters into the new sections yet.
+- Use simple colors, door frames and temporary labels to distinguish the optional room, key route and finale. No final materials/models, lighting pass, HUD redesign or cinematics.
+- Update the opening-only completion HUD text so the additional walkable area does not appear to be beyond the end of the game.
+- Range/cone/LOS perception, key ambush, platforming, separate return exit and finale remain outside this implementation checkpoint. Accept the walkable layout first, then connect mechanics in separate increments.
+
+### Acceptance and next step
+
+- Preserve start-to-first-reward gameplay and chest counts/probabilities.
+- Walk down the first descent, through the intermediate rooms and onto the overlook; descend and return via each arena staircase.
+- All three route locations read from the overlook; the optional area is not mistaken for the key route. Cover prevents a single safe firing line over the entire floor; this is not a substitute for enemy perception acceptance.
+- Check floor continuity, head clearance, snagging and map escape at every connection. Unfinished boundaries are visible and do not open into voids.
+- Extend EditMode scene checks for serialized hierarchy/references and navigation connections, and PlayMode checks for opening-flow regression and key walking connections. The user runs tests; authored tests alone are not a pass.
+- After layout acceptance, implement enemy perception and connect new encounters. Do not expand into key/platforming/cinematics before this acceptance.
+
+### Working copies and build output
+
+The desktop checkout is the development workspace; `C:\Project\ProjectFirstRun` is a build-only copy. Check matching commits and required project settings before builds; do not develop the two copies independently. Pre-sync desktop settings remain preserved in the stash and are not restored wholesale during this map stage. Keep `Builds` excluded from Git and Plastic check-ins.
 
 ## Experience and scope
 

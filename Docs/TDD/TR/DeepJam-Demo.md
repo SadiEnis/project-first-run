@@ -2,7 +2,7 @@
 
 ## Durum ve çalışma sırası — 04.10.2026
 
-Git: `feature/deepjam-demo`. Tasarım checkpoint'i kullanıcı tarafından alındı. İlk açılış greybox'ı için authoring aracı ve çalışma zamanı bağlantıları eklendi; kayıtlı sahnenin Unity'de oluşturulması ve doğrulanması bekleniyor. Başvuru hedefi 11 Ekim; 10 Ekim teslimi önerilen tampon hedeftir. Süre hedefi yaklaşık 8–12 dakikadır, kesin kabul şartı değildir.
+Git: `feature/deepjam-demo`. İlk açılış bölümü `12a2dd0` ile kaydedildi; kullanıcı sahnedeki çatışma/ödül akışını ve Windows build açılışını doğruladı. Tam standalone oynanış kabulü ve otomatik test sonuçları ayrıca bekleniyor. Başvuru hedefi 11 Ekim; 10 Ekim teslimi önerilen tampon hedeftir. Süre hedefi yaklaşık 8–12 dakikadır, kesin kabul şartı değildir.
 
 Sıra: TDD ve docs checkpoint → erken oynanabilir greybox ve Windows build kontrolü → tüm rota/oyun döngüsü → sunum ve son dokunuşlar. İlk build için bitmiş harita, animasyon veya final beklenmez. Build ve Unity test çalıştırmaları kullanıcıya aittir; asistan uygulama/test kodunu ve talimatları hazırlar. Merge/check-in kullanıcıya aittir.
 
@@ -17,8 +17,45 @@ Sıra: TDD ve docs checkpoint → erken oynanabilir greybox ve Windows build kon
 - Ölümde Enter veya Retry ile aynı sahne temiz yüklenir; geçici run kazanımları sıfırlanır. Henüz topraktan çıkış animasyonu yoktur. Yaşarken retry çağrısı yok sayılır.
 - İki silah yuvalı başlangıç build'de de çalışır; Editor-only silah değiştirme bootstrap'ı demo kopyasından kaldırılır. Mevcut ability kurulum servisi bu dilimde korunur.
 - Windows: `Project First Run > Demo > Build Windows Opening`. Yalnızca bu sahneyle `Builds/DeepJamOpening/ProjectFirstRun.exe` üretilir; mevcut Build Settings sahne listesi değişmez. Build alındıktan sonra exe elle açılarak kontrol edilir; çalışan oyundan Alt+F4 ile çıkılabilir, ölüm ekranında Quit da vardır.
-- Testler: `DemoOpeningLayoutTests`, `DemoOpeningTests`. Sahne henüz üretilmemişse açık gerekçeyle atlanır; bu başarı sayılmaz. Başlangıç güvenliği, gerçek aktivasyon hacmi, tek garanti ödül ve ölüm iptali kapsanır. Derleme, testler ve Windows açılışı bu değişiklik sırasında çalıştırılmadı.
+- Testler: `DemoOpeningLayoutTests`, `DemoOpeningTests`. Sahne henüz üretilmemişse açık gerekçeyle atlanır; bu başarı sayılmaz. Başlangıç güvenliği, gerçek aktivasyon hacmi, tek garanti ödül ve ölüm iptali kapsanır. Otomatik test sonucu henüz bildirilmedi. Kullanıcı Windows build almayı ve açılışını doğruladı.
+- Kullanıcı ilk kısa bölümde garanti ödül, level-up ve rastgele düşman kaynağından toplam üç sandık gözlemledi. Kaynaklar bağımsızdır; bu gözlem üzerine denge değiştirilmedi.
 - İlk kabul: koridora kadar düşman takibi başlamaz; içeri girince dört düşman etkinleşir; öldürünce XP ve garanti sandık çalışır; E/seçim sonrası oynanış sürer; ölüm/yeniden deneme temiz başlar. Mermi kaynağı ve uzun run dengesi sonraki demo adımlarında ayrıca çözülmelidir.
+
+## İkinci uygulama dilimi — yürünebilir harita greybox'ı
+
+Durum: tasarım/docs checkpoint'i. Bu bölümdeki sahne değişiklikleri henüz uygulanmadı. Aynı `DeepJam_Opening.unity` üzerinde ilerlenir; yeni harita veya test sahnesi oluşturulmaz. Başlangıç sahnesi üretme menüsü yeniden kullanılmaz. Mevcut başlangıç, koridor çatışması, oyuncu/servis bağlantıları ve sandık kuralları korunur.
+
+### Yerleşim ve kot planı
+
+1. **Koridor sonu → aşağı iniş:** koridorun ardından geniş, kenarları korunan bir merdiven gelir. Dar spiral yerine okunabilir düz veya sahanlıklı iniş kullanılır. İlk ölçü hedefi yaklaşık 3 m kot farkı ve en az 3 m net geçiş genişliğidir; oyuncu collider'ı ve gerçek yürüyüşle doğrulanır.
+2. **İlk ödül odası:** mevcut odanın rolü ve garanti sandık korunur, oda merdiven sonundaki alt kota uyarlanır. Ödül noktası zeminle birlikte taşınır; sandık havada veya zeminin içinde kalmaz. Sırf yerleşim değişti diye ikinci garanti ödül eklenmez.
+3. **İkinci oda:** kısa bağlantının ardından ileride Ranger/siper ilişkisini gösterecek alan gelir. En az iki yürünebilir yaklaşma hattı ve aralarında görüşü bölen siperler hazırlanır. Bu aşamada Ranger veya başka yeni karşılaşma eklenmez.
+4. **Büyük arena üst girişi:** ikinci oda, arenanın yaklaşık 4 m üzerindeki sahanlığa açılır. Kamera oyuncuda kalır. Oyuncu buradan arena zeminini ve üç rota girişini okuyabilir. İlk ölçü hedefi yaklaşık 30 × 28 m arena tabanıdır; bu nihai denge ölçüsü değildir.
+5. **İki yandan iniş:** sahanlığın solunda ve sağında arena tabanına kesintisiz bağlanan merdivenler bulunur. Bir yaklaşım daha korunaklı, diğeri daha açık olacak şekilde siper konur. Merdivenler çıkış yönünde de yürünebilir; bu aşamada tek yönlü kilit eklenmez.
+6. **İleride bağlanacak rotalar:** opsiyonel oda için ayrı giriş/oda hacmi; zorunlu anahtar rotası için yukarı giden giriş; final odası için uzaktan ayırt edilen kapı konumu belirlenir. Anahtar ve final tarafındaki henüz yapılmamış yollar, açıkça geçici fiziksel engellerle sonlandırılır. Bunlar çalışan anahtar/kilit mekanizması gibi sunulmaz; ana rotanın güvenli dolaşımını kapatmaz.
+
+### Uygulama sınırları
+
+- Geometri Hierarchy'de bölüm adlarıyla gruplanır ve sahnede kayıtlı kalır; Play sırasında üretilmez. Mevcut nesneler topluca silinip yeniden kurulmaz; yalnız gerekli zemin, sınır duvarı, bağlantı ve ödül konumu düzenlenir.
+- Merdiven ve kapı ölçüleri mevcut CharacterController ile yürünerek geçilmeli; ilerlemek için zıplama, sprint veya teleport gerekmemeli. Basamak yüksekliği mevcut step offset sınırına göre belirlenir. Duvar kenarından harita dışına düşülebilen açıklık bırakılmaz.
+- Zeminler mevcut ground layer kuralına uyar; yeni kotlarda XP/sandık yerleşimi engellenmez. Ödül odası taşınırken mevcut koridor aktivasyon hacmi ve referansları kontrol edilir; yeni alanlara geniş bir tetikleyici kopyalanmaz.
+- NavMesh değişen geometriye göre yeniden bake edilir. Eski koridor düşmanlarının navigasyonu korunur; yeni alanlara henüz yeni düşman spawn noktaları/karşılaşmalar bağlanmaz.
+- Basit renk, kapı çerçevesi ve geçici etiketlerle anahtar rotası, opsiyonel oda ve final birbirinden ayrılır. Nihai materyal, model, ışık, HUD veya sinematik çalışması yapılmaz.
+- Mevcut HUD'daki yalnız açılış bölümünün bittiğini belirten metin, yeni yürünebilir alan varken oyunun tamamlandığı izlenimi vermeyecek şekilde güncellenir.
+- Algılama mesafesi/açısı/LOS, anahtar pususu, parkur, ayrı dönüş çıkışı ve final bu checkpoint'in uygulama kapsamı dışındadır. Önce yerleşim oynanarak kabul edilir; sonra mekanikler ayrı adımlarla bağlanır.
+
+### Kabul ve sonraki adım
+
+- Başlangıçtan ilk ödüle mevcut akış bozulmaz; sandık sayısı/olasılıkları değişmez.
+- Oyuncu aşağı inişi, iki ara odayı ve üst sahanlığı yürüyerek geçebilir; her iki merdivenden arena tabanına inip geri çıkabilir.
+- Sahanlıktan üç rota konumu ayırt edilir; opsiyonel alan anahtar yolu sanılmaz. Siperler bütün arena tabanını tek risksiz atış hattına dönüştürmez; bu kontrol düşman algılama kabulü yerine geçmez.
+- Her geçişte zemin sürekliliği, oyuncu baş mesafesi, sıkışma ve harita dışına kaçış kontrol edilir. Yeni bölüm sınırları görünürdür; boşluğa açılan tamamlanmamış çıkış yoktur.
+- EditMode sahne testleri kayıtlı hiyerarşi/referanslar ve NavMesh bağlantılarını; PlayMode testleri ilk bölümün korunmasını ve önemli yürüyüş bağlantılarını kapsayacak şekilde genişletilir. Testleri kullanıcı çalıştırır; yalnız yazılmış testler geçmiş kabul edilmez.
+- Bu kabulden sonra sıradaki mekanik adım düşman algılama ve yeni karşılaşmaların yerleşime bağlanmasıdır. Yerleşim kabul edilmeden anahtar/parkur/sinematik kapsamı büyütülmez.
+
+### Çalışma kopyaları ve build çıktısı
+
+Ana geliştirme masaüstündeki projede sürer; `C:\Project\ProjectFirstRun` yalnız build kopyasıdır. Build öncesinde aynı commit ve gerekli proje ayarları kullanıldığı kontrol edilir; kopyalar arasında bağımsız geliştirme yapılmaz. Masaüstü eşitlemesi öncesindeki yerel ayarlar stash yedeğinde korunur; bu harita aşamasında topluca geri uygulanmaz. `Builds` Git ve Plastic check-in dışında kalır.
 
 ## Deneyim ve kapsam
 

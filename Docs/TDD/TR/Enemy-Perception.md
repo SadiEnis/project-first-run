@@ -2,9 +2,19 @@
 
 ## Durum ve kapsam
 
-Tasarım checkpoint'i; henüz oyun kodu veya sahne bağlantısı değişmedi. `feature/deepjam-demo` içinde uygulanacak. Amaç, hazır düşmanların oyuncuyu görmeden takibe başlamamasıdır. Greybox oda ölçüleri bu aşamada değiştirilmez. Önce algılama ve mevcut açılış grubuyla entegrasyon; yeni odalara karşılaşma ekleme ayrı sonraki adımdır.
+`feature/deepjam-demo` üzerinde uygulandı. Kullanıcı 05.10.2026 tarihinde duvarın görüşü kesmesini, görüşe girince algılamayı, son bilinen noktaya yönelmeyi ve hafıza bitince beklemeyi doğruladı; aşağıdaki düzeltmelerden sonra testlerin yeşil olduğunu bildirdi. Bu, kullanıcı tarafından bildirilen kabuldür; asistanın test çalıştırdığı veya tam standalone regresyonun tamamlandığı anlamına gelmez. İsteğe bağlı profil kayıtlı açılış sahnesine bağlandı; spawn noktaları girişe bakıyor. Oda ölçüleri, NavMesh bake ve sandık değerleri değiştirilmedi. Yeni odalara karşılaşma ekleme ayrı sonraki adımdır.
+
+Uygulama: ayarlar `EnemyPerceptionProfile`, hafıza `EnemyPerceptionState`, görüş/hasar algısı `EnemyPerceptionController` tarafından tutulur. Saldırı yöneticisi tür kararlarından önce algıyı ilerletir; motor sonrasında güncellenir ve araştırma sırasında canlı hedef konumunu okuyamaz. Saldırı başlatma anında, periyodik görüş sorguları arasında da güncel LOS doğrulanır. Yeni sahne üretimi gerekmez.
+
+Yazılan doğrulamalar: `EnemyPerceptionStateTests`, `EnemyPerceptionTests`, `DemoOpeningLayoutTests` / `DemoOpeningTests` eklemeleri. Gerçek Fireball yanması/Shuriken kanaması, disable/yeniden initialize, hazırlanan açılış düşmanları, üç saldırı türü ve profilsiz eski davranış kapsanır. Asistan testleri çalıştırmadı. Kısmi/ulaşılamayan yollar ve son hareket hissi Unity oynanış kabulünde ayrıca kontrol edilmelidir.
+
+Elle kontrol: mevcut `DeepJam_Opening` sahnesini aç. Başlangıç güvenli kalır; koridora giriş karşılaşmayı etkinleştirir ama her düşman bağımsız algılar. Tam boy siper arkasına saklanınca son bilinen noktayı araştırıp hafıza bitiminde beklerler. Oyuncu kaynaklı hasar görmeden alarm oluşturur fakat kör saldırı izni vermez. Oluşan düşmanı seçerek Inspector/gizmo üzerinden durum ve hafızayı gözle; deneme değerleri `Scenes/Demo/EP_Demo.asset` içindedir. Bu checkpoint için yeniden NavMesh bake gerekmez.
 
 ## Mevcut koddaki entegrasyon noktaları
+
+### Test düzeltme notu — 05.10.2026
+
+Kullanıcı `EnemyPerceptionTests` içindeki 16 testten ikisinin başarısız olduğunu bildirdi. Son noktada bekleme testi, hasar alarmından sonra açık görüş hattındaki oyuncuyu yeniden algılıyordu; oyuncu artık takip menzili dışına taşınırken eski araştırma noktası korunuyor. Gizli takip/yeniden görme testi, NavMesh rota hazırlığının tamamlanmasını bekleyecek şekilde coroutine'e çevrildi; rota beklenirken düşmanın konumu sabit tutuluyor. Gizliyken hem hafızanın hem rota hedefinin sabitliği, yeniden görünce yeni hedefe geçiş doğrulanıyor. Bu düzeltmeler test senaryolarıyla sınırlı; oynanış kuralları değişmedi. Kullanıcı 05.10.2026 tarihinde düzeltilen testlerin yeşil olduğunu bildirdi.
 
 - `EnemyController.Initialize` motoru başlatır; `OnEnable` tekrar `Resume` çağırabilir. `EnemyMotor` hedef Transform'un güncel konumunu periyodik olarak takip eder. Görüş kaybında bu yolun son görülen konumu aşarak güncel oyuncu konumunu okuması engellenmelidir.
 - `EnemyAttackController` Chaser, Charger ve Ranger davranışlarını yürütür. Ranger geri çekilirken destination override kullanır; Charger atılış yönünü sabitler. Algılama bunlarla yarışan ikinci bir hareket sahibi olmamalıdır.
@@ -13,7 +23,7 @@ Tasarım checkpoint'i; henüz oyun kodu veya sahne bağlantısı değişmedi. `f
 
 ## Yapılandırma ve uyumluluk
 
-`EnemySpawner` üzerinde isteğe bağlı bir algılama profili referansı önerilir. Profil atanmadığında bugünkü otomatik takip/saldırı davranışı korunur. Demo için ayrı profil kullanılır; ortak düşman prefab'ı ve tanımları küresel olarak algılamaya zorlanmaz. Profil değişmez tasarım verisi, farkındalık/hafıza ise her düşmanın kendi runtime durumudur.
+`EnemySpawner` üzerindeki isteğe bağlı algılama profili politikayı etkinleştirir. Profil atanmadığında bugünkü otomatik takip/saldırı davranışı korunur. Demo için ayrı profil kullanılır; ortak düşman prefab'ı ve tanımları küresel olarak algılamaya zorlanmaz. Profil değişmez tasarım verisi, farkındalık/hafıza ise her düşmanın kendi runtime durumudur.
 
 İlk deneme değerleri, nihai denge değil:
 

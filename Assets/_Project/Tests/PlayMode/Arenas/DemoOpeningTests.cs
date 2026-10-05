@@ -7,6 +7,7 @@ using ProjectFirstRun.Chests;
 using ProjectFirstRun.Combat;
 using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Player;
+using ProjectFirstRun.Enemies;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -49,12 +50,23 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_demo.Encounter.Enemies.Count, Is.EqualTo(4));
             Assert.That(_demo.Reward, Is.Null);
             var body = _demo.Health.GetComponent<CharacterController>();
+            foreach (var enemy in _demo.Encounter.Enemies)
+            {
+                Assert.That(enemy.RequiresPerception, Is.True);
+                enemy.Perception.Tick(.2f, true);
+                Assert.That(enemy.Perception.State.Awareness, Is.EqualTo(EnemyAwareness.Idle));
+                Assert.That(enemy.GetComponent<EnemyMotor>().IsMovementEnabled, Is.False);
+            }
             body.enabled = false;
             _demo.Health.transform.position = new Vector3(2, .1f, 12);
             body.enabled = true;
             for (int i = 0; i < 60 && _demo.Encounter.Status != ArenaSessionStatus.Running; i++)
                 yield return new WaitForFixedUpdate();
             Assert.That(_demo.Encounter.Status, Is.EqualTo(ArenaSessionStatus.Running));
+            // Readiness/activation does not imply sight; allow a sampling interval first.
+            for (int i = 0; i < 60 && !_demo.Encounter.Enemies.Any(x => x.Perception.HasSight); i++) yield return null;
+            Assert.That(_demo.Encounter.Enemies.Any(x => x.Perception.HasSight), Is.True,
+                "An activated enemy facing the exposed player should detect them.");
             foreach (var enemy in _demo.Encounter.Enemies.ToArray())
                 enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, enemy.transform.position, Vector3.forward));
             yield return null;

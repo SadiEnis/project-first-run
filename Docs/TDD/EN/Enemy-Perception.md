@@ -2,9 +2,19 @@
 
 ## Status and scope
 
-Design checkpoint, not implemented yet. Work stays on `feature/deepjam-demo`. Prepared enemies must not pursue before detecting the player. Room dimensions remain unchanged. Implement perception and integrate the opening group first; new room encounters follow separately.
+Implemented on `feature/deepjam-demo`. On 2026-10-05 the user confirmed wall occlusion, detection on entering view, last-known-position investigation and waiting after memory expiry, and reported green tests after the corrections below. This is user-reported acceptance, not an assistant-executed test run or a full standalone regression claim. The optional profile is connected to the saved opening scene, with spawn points facing the entrance. Room dimensions, navigation bake and chest values remain unchanged. New room encounters follow separately.
+
+Implementation: `EnemyPerceptionProfile` owns settings, `EnemyPerceptionState` owns memory, and `EnemyPerceptionController` samples visibility/damage. The attack controller advances perception before family decisions; the motor updates afterward and cannot read the live target during investigation. Attack commitment also checks current LOS between scheduled sight samples. No new scene-generation step is required.
+
+Validation authored: `EnemyPerceptionStateTests`, `EnemyPerceptionTests`, and additions to `DemoOpeningLayoutTests` / `DemoOpeningTests`. Includes actual Fireball burn/Shuriken bleed ownership, disabled/reinitialized instances, prepared opening enemies, three attack families and legacy opt-out. Tests have not been executed by the assistant. Check partial/unreachable paths and final movement feel in Unity as part of gameplay acceptance.
+
+Manual check: open the existing `DeepJam_Opening` scene. Start remains safe; entering the corridor activates the encounter but each enemy detects independently. Hide behind full-height cover: enemies investigate the last known point and idle after memory expires. Owned damage alerts an unseen enemy without permitting blind attacks. Select a spawned enemy to inspect awareness/memory/gizmos; edit `Scenes/Demo/EP_Demo.asset` for trial settings. No navigation rebake is needed for this checkpoint.
 
 ## Existing integration points
+
+### Test correction note — 2026-10-05
+
+The user reported two failures among the 16 `EnemyPerceptionTests`. The arrival test was reacquiring the unobstructed player after a damage alarm; it now moves the player outside tracking range while retaining the old investigation point. The hidden-pursuit/reacquisition test now uses a coroutine to await navigation completion and holds the enemy position fixed during those waits. It verifies both the frozen memory and navigation destination while hidden, then the new destination on reacquisition. These changes are limited to test scenarios; gameplay rules are unchanged. The user subsequently reported the corrected tests green on 2026-10-05.
 
 - `EnemyController.Initialize` starts the motor; `OnEnable` can resume it. `EnemyMotor` periodically reads the live target Transform. Lost-sight pursuit must stop this path from leaking the player's current position.
 - `EnemyAttackController` owns Chaser/Charger/Ranger behavior. Ranger retreat uses destination overrides; Charger commits a direction. Perception must not become a competing movement owner.
@@ -13,7 +23,7 @@ Design checkpoint, not implemented yet. Work stays on `feature/deepjam-demo`. Pr
 
 ## Configuration and compatibility
 
-Propose an optional perception-profile reference on `EnemySpawner`. Null preserves existing automatic pursuit/attacks. Use a separate demo profile without globally opting shared enemy prefabs/definitions in. The profile is immutable configuration; awareness and memory belong to each runtime enemy.
+An optional perception-profile reference on `EnemySpawner` enables the policy. Null preserves existing automatic pursuit/attacks. A separate demo profile avoids globally opting shared enemy prefabs/definitions in. The profile is immutable configuration; awareness and memory belong to each runtime enemy.
 
 Initial trial values, not final balance:
 

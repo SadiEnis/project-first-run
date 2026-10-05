@@ -20,6 +20,20 @@ namespace ProjectFirstRun.Enemies
         private bool _isDead;
         private bool _isRegistered;
         public int SpawnVersion { get; private set; }
+        public bool RequiresPerception { get; private set; }
+        public EnemyPerceptionController Perception { get; private set; }
+
+        public void ConfigurePerception(EnemyPerceptionProfile profile)
+        {
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
+            profile.Validate();
+            RequiresPerception = true;
+            Perception = GetComponent<EnemyPerceptionController>();
+            if (Perception == null) Perception = gameObject.AddComponent<EnemyPerceptionController>();
+            Perception.Configure(profile, this);
+            EnsureReferences();
+            _enemyMotor.Stop();
+        }
 
         public event Action<
             EnemyController,
@@ -54,6 +68,7 @@ namespace ProjectFirstRun.Enemies
 
             if (_isInitialized && !_isDead)
             {
+                Perception?.Reactivate();
                 Register();
                 _enemyMotor.Resume();
             }
@@ -61,6 +76,7 @@ namespace ProjectFirstRun.Enemies
 
         private void OnDisable()
         {
+            Perception?.Suspend();
             if (_healthComponent != null)
             {
                 _healthComponent.Died -= HandleDied;
@@ -107,6 +123,7 @@ namespace ProjectFirstRun.Enemies
             _registry = registry;
 
             _isDead = false;
+            Perception?.Reactivate();
 
             _healthComponent.Initialize(
                 definition.MaximumHealth);
@@ -130,6 +147,7 @@ namespace ProjectFirstRun.Enemies
             }
 
             _isDead = true;
+            Perception?.Suspend();
 
             _enemyMotor.Stop();
             _enemyMotor.ClearStun();

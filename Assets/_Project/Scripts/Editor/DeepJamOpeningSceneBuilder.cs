@@ -31,6 +31,7 @@ namespace ProjectFirstRun.Editor
         public const string Folder = "Assets/_Project/Scenes/Demo";
         public const string ScenePath = Folder + "/DeepJam_Opening.unity";
         public const string WavePath = Folder + "/EW_DemoOpening.asset";
+        public const string PerceptionPath = Folder + "/EP_Demo.asset";
 
         [MenuItem("Project First Run/Demo/Create Opening Greybox")]
         public static void Create()
@@ -102,10 +103,11 @@ namespace ProjectFirstRun.Editor
             var points = new[] { new Vector3(-2, 0, 14), new Vector3(2, 0, 19), new Vector3(-2, 0, 24), new Vector3(2, 0, 28) }
                 .Select((position, index) => {
                     var point = New("Spawn " + (index + 1), encounter.transform).transform;
-                    point.position = position; return point;
+                    point.SetPositionAndRotation(position, Quaternion.Euler(0, 180, 0)); return point;
                 }).ToArray();
             Set(encounter, "_regionId", "demo.corridor"); Set(encounter, "_group", wave);
             Set(encounter, "_spawner", services.GetComponent<EnemySpawner>());
+            Set(services.GetComponent<EnemySpawner>(), "_perceptionProfile", Load<EnemyPerceptionProfile>(PerceptionPath));
             Set(encounter, "_registry", registry); Set(encounter, "_player", player.transform);
             Set(encounter, "_playerHealth", player.GetComponent<HealthComponent>());
             SetArray(encounter, "_spawnPoints", points);

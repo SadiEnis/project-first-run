@@ -8,6 +8,7 @@ namespace ProjectFirstRun.Enemies.Spawning
     public sealed class EnemySpawner : MonoBehaviour
     {
         [SerializeField] private EnemyChestDropSource _chestDropSource;
+        [SerializeField] private EnemyPerceptionProfile _perceptionProfile;
 
         public EnemySpawnResult Spawn(
             in EnemySpawnRequest request)
@@ -29,6 +30,7 @@ namespace ProjectFirstRun.Enemies.Spawning
             // A previously valid request may contain Unity objects
             // that were destroyed after its construction.
             request.Validate();
+            if (_perceptionProfile != null) _perceptionProfile.Validate();
 
             EnemyChestDropProfile dropProfile = request.Definition.ChestDropProfile;
             if (dropProfile != null)
@@ -62,6 +64,8 @@ namespace ProjectFirstRun.Enemies.Spawning
 
                 if (_chestDropSource != null && spawnedEnemy.TryGetComponent(out EnemyChestDrop chestDrop))
                     chestDrop.Initialize(_chestDropSource);
+
+                if (_perceptionProfile != null) spawnedEnemy.ConfigurePerception(_perceptionProfile);
 
                 spawnedEnemy.Initialize(
                     request.Definition,

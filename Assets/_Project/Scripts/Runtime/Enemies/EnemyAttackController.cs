@@ -24,6 +24,7 @@ namespace ProjectFirstRun.Enemies
 
         private bool _isInitialized;
         private bool _attackEnabled;
+        private bool _hadPerceptionSight;
 
         public event Action<DamageInfo, DamageResult> AttackPerformed;
         public event Action<DamageInfo, DamageResult> DamageApplied;
@@ -62,6 +63,7 @@ namespace ProjectFirstRun.Enemies
 
         private void OnDisable()
         {
+            _hadPerceptionSight = false;
             if (_enemyController != null)
             {
                 _enemyController.Died -= HandleEnemyDied;
@@ -79,6 +81,7 @@ namespace ProjectFirstRun.Enemies
         {
             if (!float.IsFinite(deltaTime) || deltaTime < 0)
                 throw new ArgumentOutOfRangeException(nameof(deltaTime));
+            if (_enemyController.RequiresPerception && !TickPerception(deltaTime)) return;
             if (_motor != null && _motor.IsStunned) return;
             if (_chargeState != null)
             {
@@ -116,12 +119,13 @@ namespace ProjectFirstRun.Enemies
                     Vector3.up);
 
             bool targetIsInRange =
-                planarOffset.sqrMagnitude <=
+                (_enemyController.RequiresPerception ? offset.sqrMagnitude : planarOffset.sqrMagnitude) <=
                 _attackState.RangeSquared;
 
             EnemyAttackAttemptResult attemptResult =
                 _attackState.TryCommitAttack(
-                    targetIsInRange);
+                    targetIsInRange && (!_enemyController.RequiresPerception ||
+                        _enemyController.Perception.ConfirmAttackSight()));
 
             if (attemptResult !=
                 EnemyAttackAttemptResult.Performed)
@@ -130,6 +134,55 @@ namespace ProjectFirstRun.Enemies
             }
 
             PerformAttack(offset);
+        }
+
+        private bool TickPerception(float deltaTime)
+        {
+            if (!_isInitialized || !_attackEnabled || deltaTime <= 0f) return false;
+            var perception = _enemyController.Perception;
+            bool targetAlive = _target != null && _target.gameObject.activeInHierarchy &&
+                _targetDamageableObject != null &&
+                !(_targetDamageableObject is HealthComponent health && health.IsDead);
+            if (perception != null) perception.Tick(deltaTime, targetAlive);
+            if (perception == null || !perception.CanAct || !targetAlive)
+            {
+                _hadPerceptionSight = false;
+                if (_motor.IsMovementEnabled) _motor.Stop();
+                _motor.ClearInvestigation();
+                _rangedState?.CancelWindup();
+                _chargeState?.Cancel();
+                return false;
+            }
+
+            // Existing committed charges keep their direction and recovery, even without sight.
+            bool committed = _chargeState != null &&
+                (_chargeState.Phase == EnemyChargePhase.Charging || _chargeState.Phase == EnemyChargePhase.Recovery);
+            if (perception.HasSight)
+            {
+                _motor.ClearInvestigation();
+                if (!committed && (_rangedState == null || _rangedState.Phase != EnemyRangedPhase.Windup) &&
+                    (_chargeState == null || _chargeState.Phase != EnemyChargePhase.Windup) &&
+                    (!_hadPerceptionSight || (_rangedState == null && _chargeState == null &&
+                        !_motor.IsMovementEnabled))) _motor.Resume();
+                _hadPerceptionSight = true;
+                return true;
+            }
+            _hadPerceptionSight = false;
+            _rangedState?.CancelWindup();
+            if (_chargeState != null && _chargeState.Phase == EnemyChargePhase.Windup) _chargeState.Cancel();
+            if (committed) return true;
+            if (_motor.IsStunned) return false;
+            _attackState.Tick(deltaTime);
+            if (_rangedState != null && _rangedState.Phase == EnemyRangedPhase.Cooldown) _rangedState.Tick(deltaTime);
+            if (perception.State.IsAlerted)
+                _motor.Investigate(perception.State.LastKnownPosition,
+                    Mathf.Max(.75f, _enemyController.Definition.StoppingDistance + .1f));
+            else
+            {
+                if (_motor.IsMovementEnabled) _motor.Stop();
+                _motor.ClearInvestigation();
+            }
+            return false;
         }
 
         public void Initialize(
@@ -174,6 +227,7 @@ namespace ProjectFirstRun.Enemies
             _rangedState = definition.Behavior == EnemyBehavior.Ranger
                 ? new EnemyRangedState(definition.CreateRangedConfig()) : null;
             _motor = GetComponent<EnemyMotor>();
+            _hadPerceptionSight = false;
 
             _target = target;
             _targetDamageable = targetDamageable;
@@ -202,6 +256,12 @@ namespace ProjectFirstRun.Enemies
         public void Stop()
         {
             _attackEnabled = false;
+            if (_enemyController != null && _enemyController.RequiresPerception)
+            {
+                _hadPerceptionSight = false;
+                _enemyController.Perception?.ResetAwareness();
+                if (_motor != null) _motor.Stop();
+            }
             if (_chargeState != null)
             {
                 _chargeState.Cancel();
@@ -283,6 +343,8 @@ namespace ProjectFirstRun.Enemies
 
         private bool HasLineOfSight()
         {
+            if (_enemyController.RequiresPerception)
+                return _enemyController.Perception != null && _enemyController.Perception.ConfirmAttackSight();
             Vector3 origin = transform.position + Vector3.up;
             Vector3 destination = _target.position + Vector3.up;
             RaycastHit[] hits = Physics.RaycastAll(origin, destination - origin,
@@ -325,10 +387,18 @@ namespace ProjectFirstRun.Enemies
             }
             if (deltaTime == 0) return;
 
+            if (_enemyController.RequiresPerception && _chargeState.Phase == EnemyChargePhase.Windup &&
+                !_enemyController.Perception.ConfirmAttackSight())
+            {
+                _chargeState.Cancel(); _motor.Stop(); return;
+            }
+
             switch (_chargeState.Phase)
             {
                 case EnemyChargePhase.Pursuing:
-                    if (_motor.CanNavigate && _chargeState.TryBegin(_target.position - transform.position))
+                    if (_motor.CanNavigate && (!_enemyController.RequiresPerception ||
+                        _enemyController.Perception.ConfirmAttackSight()) &&
+                        _chargeState.TryBegin(_target.position - transform.position))
                     {
                         _motor.Stop();
                         transform.rotation = Quaternion.LookRotation(_chargeState.Direction);

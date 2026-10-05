@@ -5,6 +5,7 @@ using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Development.Weapons;
 using ProjectFirstRun.Editor;
 using ProjectFirstRun.Player;
+using ProjectFirstRun.Enemies;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -36,6 +37,16 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 foreach (string name in new[] { "_group", "_spawner", "_registry", "_player", "_playerHealth" })
                     Assert.That(encounter.FindProperty(name).objectReferenceValue, Is.Not.Null, name);
                 Assert.That(encounter.FindProperty("_spawnPoints").arraySize, Is.EqualTo(4));
+                var spawner = new SerializedObject(encounter.FindProperty("_spawner").objectReferenceValue);
+                var profile = spawner.FindProperty("_perceptionProfile").objectReferenceValue as EnemyPerceptionProfile;
+                Assert.That(profile, Is.Not.Null);
+                Assert.DoesNotThrow(profile.Validate);
+                Assert.That(AssetDatabase.GetAssetPath(profile), Is.EqualTo(DeepJamOpeningSceneBuilder.PerceptionPath));
+                for (int i = 0; i < 4; i++)
+                {
+                    var point = (Transform)encounter.FindProperty("_spawnPoints").GetArrayElementAtIndex(i).objectReferenceValue;
+                    Assert.That(Vector3.Dot(point.forward, Vector3.back), Is.GreaterThan(.99f));
+                }
                 var trigger = roots.SelectMany(x => x.GetComponentsInChildren<RegionPreparationTrigger>(true)).Single();
                 var properties = new SerializedObject(trigger);
                 Assert.That(properties.FindProperty("_encounter").objectReferenceValue, Is.SameAs(demo.Encounter));

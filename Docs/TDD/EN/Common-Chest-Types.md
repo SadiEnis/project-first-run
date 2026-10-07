@@ -24,7 +24,7 @@ Typed definitions reject any pool item outside the declared category. This is a 
 
 Test_Waves sets `FireballDevelopmentBootstrap.Grant Starting Ability` to false: the factory registry is still installed, but Fireball is acquired through its chest. The new option defaults to true, preserving other scenes. The starter fixture retains its existing two-slot weapon loadout; the default one-slot player build is unchanged.
 
-Opening is still explicit with E/gamepad South. Empty offers leave the chest available with no modal; there is no gold fallback or reroll into a different category. After the three sample acquisitions, many subsequent chests legitimately have no eligible rewards. Do not interpret this as a drop-source bug.
+Opening is still explicit with E/gamepad RB/R1. Empty offers leave the chest available with no modal; there is no gold fallback or reroll into a different category. After the three sample acquisitions, many subsequent chests legitimately have no eligible rewards. Do not interpret this as a drop-source bug.
 
 Item-level rewards, additional item content, evolution, Golden Chest and gold fallback remain separate increments. Mixed Green/Purple content and Legendary/Boss multi-claim rules are defined in [Advanced Chest Types](Advanced-Chest-Types.md). Neither enum nor grey tint adds those behaviors by itself.
 

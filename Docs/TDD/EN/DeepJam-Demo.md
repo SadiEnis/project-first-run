@@ -153,7 +153,9 @@ Do not require reverse traversal after the key room. On ambush completion a sepa
 
 ### Fourth implementation increment: jumping and fixed traversal
 
-This checkpoint defines the contract only; the behaviors below are not yet implemented or verified.
+Implementation status: jump input/motor support and seven focused PlayMode tests have been added; Unity execution and user acceptance are pending. The three platforms, fall damage and local recovery are not implemented yet. The items below define acceptance for the complete increment.
+
+Resolved input conflict: gamepad south is now reserved for jumping; existing chest interaction moves to the unused right shoulder button. Keyboard interaction remains E. The chest interaction test uses the updated binding.
 
 - **Input and motor:** Use Input Actions with Space / gamepad south; update the generated C# wrapper with the asset. A fresh press while grounded initiates one jump; holding cannot automatically repeat. No double jump, dash or replacement movement system. Expose jump height in the Inspector, initially 1.2 m for trial, deriving velocity from existing gravity. Preserve horizontal air movement; ceiling contact cancels upward velocity.
 - **Control ownership:** Rewards, pause, death and control locks suppress jumping; queued presses cannot jump on unlock. Releasing the recovery-owned movement/fire lock must not release another system's lock. Do not reset automatic abilities or other encounters; introduce no new invulnerability rule.

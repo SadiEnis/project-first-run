@@ -24,7 +24,7 @@ Türlü tanımlar havuzda farklı kategoriye ait eşya varsa reddedilir. Bu bir 
 
 Test_Waves'te `FireballDevelopmentBootstrap.Grant Starting Ability` false yapılır: yetenek fabrikası kaydı kurulur fakat Fireball sandıktan edinilir. Yeni seçenek varsayılan olarak true kaldığından diğer sahneler korunur. Başlangıç düzeneğinin mevcut iki silah slotu korunur; varsayılan tek slotlu oyuncu kapasitesi değişmez.
 
-Sandık hâlâ E/gamepad South ile açılır. Boş teklif sandığı kullanılabilir bırakır ve modal açmaz; altın telafisi veya başka kategoriye yeniden çekiliş yoktur. Üç örnek edinildikten sonra sonraki birçok sandıkta uygun ödül kalmaması normaldir; drop kaynağı hatası değildir.
+Sandık hâlâ E/gamepad RB/R1 ile açılır. Boş teklif sandığı kullanılabilir bırakır ve modal açmaz; altın telafisi veya başka kategoriye yeniden çekiliş yoktur. Üç örnek edinildikten sonra sonraki birçok sandıkta uygun ödül kalmaması normaldir; drop kaynağı hatası değildir.
 
 Eşya seviyesi ödülleri, yeni eşya içerikleri, evolution, Golden Chest ve altın telafisi ayrı adımlardır. Karma Green/Purple içerikleri ile Legendary/Boss çoklu seçimi [Gelişmiş Sandık Türleri](Advanced-Chest-Types.md) içinde tanımlanır. Enum veya gri renk bu davranışları tek başına eklemiş sayılmaz.
 

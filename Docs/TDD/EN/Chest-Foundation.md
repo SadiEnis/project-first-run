@@ -87,7 +87,7 @@ Interact action.
 
 ```text
 Keyboard / Mouse  E
-Gamepad            Button South
+Gamepad            Right Shoulder (RB/R1)
 ```
 
 `PlayerChestInteractor` owns the raycast and calls the exact focused
@@ -316,7 +316,7 @@ disabled/dead gameplay input cannot interact
 ```text
 start gameplay
     ↓
-look at chest and press E / Gamepad South
+look at chest and press E / Gamepad RB/R1
     ↓
 reward selection opens
     ↓

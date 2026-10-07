@@ -109,7 +109,7 @@ namespace ProjectFirstRun.Development.Arenas
             GUI.Box(new Rect(16, 16, 390, 110), "DEMO — DUNGEON GREYBOX");
             GUI.Label(new Rect(28, 42, 365, 24), $"Health {_health.CurrentHealth:0}/{_health.MaximumHealth:0}   Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
             GUI.Label(new Rect(28, 66, 365, 24), $"Level {_experience.Level}   XP {_experience.CurrentExperience}/{_experience.RequiredExperience}");
-            GUI.Label(new Rect(28, 90, 365, 24), _weapon.IsReloading ? "Reloading..." : "WASD move · Mouse fire · R reload · Q switch");
+            GUI.Label(new Rect(28, 90, 365, 24), _weapon.IsReloading ? "Reloading..." : "WASD move · Space jump · R reload · Q switch");
             string objective = _rewardClaimed ? "Continue through the next room. Explore the overlook and both arena stairs." :
                 Reward != null ? "Collect your reward in the room beyond the corridor (E)." :
                 "Enter the corridor and defeat its four enemies for a guaranteed reward.";

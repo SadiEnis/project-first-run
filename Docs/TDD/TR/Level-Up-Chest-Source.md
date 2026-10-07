@@ -24,7 +24,7 @@ Bu, düz arena için konumlandırmadır; genel navigasyon/pathfinding sistemi de
 
 ## Mevcut ödül davranışı
 
-Sandığın oluşması ödül ekranını açmaz. Oyuncu sandığa bakıp E / gamepad South kullanır. Uygun ödül kalmadığında sandık, temeldeki davranış gibi kullanılabilir kalır; kaynak altın fallback uydurmaz. Küçük geliştirme ödül havuzu tükendiğinde ödül ilerlemesi genişletilene kadar sonraki sandıkların sunacak ödülü kalmayabilir.
+Sandığın oluşması ödül ekranını açmaz. Oyuncu sandığa bakıp E / gamepad RB/R1 kullanır. Uygun ödül kalmadığında sandık, temeldeki davranış gibi kullanılabilir kalır; kaynak altın fallback uydurmaz. Küçük geliştirme ödül havuzu tükendiğinde ödül ilerlemesi genişletilene kadar sonraki sandıkların sunacak ödülü kalmayabilir.
 
 ## Doğrulama
 

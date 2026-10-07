@@ -153,7 +153,9 @@ Anahtar odasından parkuru ters yönde dönmek gerekmeyecek. Pusu tamamlanınca 
 
 ### Dördüncü uygulama dilimi: zıplama ve sabit parkur
 
-Bu checkpoint yalnız tasarım sözleşmesidir; aşağıdaki davranışlar henüz uygulanmış veya test edilmiş sayılmaz.
+Uygulama durumu: zıplama girdisi/motor desteği ve yedi hedefli PlayMode testi eklendi; Unity çalıştırması ve kullanıcı kabulü bekleniyor. Üç platform, düşüş hasarı ve yerel geri dönüş henüz uygulanmadı. Aşağıdaki maddeler bütün dilimin kabul sözleşmesidir.
+
+Kontrol çakışması giderildi: gamepad güney tuşu zıplamaya ayrıldı; mevcut sandık etkileşimi boş olan sağ omuz tuşuna taşındı. Klavyede etkileşim E olarak kalır. Sandık etkileşim testi yeni eşlemeyi kullanır.
 
 - **Giriş ve motor:** Input Actions üzerinden Space / gamepad güney tuşu kullanılır; üretilen C# sarmalayıcı asset ile birlikte güncellenir. Yerdeyken yeni basış tek zıplama başlatır; basılı tutmak otomatik tekrar üretmez. Çift zıplama, dash ve yeni hareket sistemi yoktur. Zıplama yüksekliği Inspector ayarıdır; ilk deneme 1,2 m, hız mevcut yerçekiminden hesaplanır. Havada mevcut yatay hareket korunur; tavana çarpınca yukarı hız kesilir.
 - **Kontrol sahipliği:** Ödül ekranı, pause, ölüm veya kontrol kilidi sırasında zıplama alınmaz; bekleyen basış kilit açılınca zıplatmaz. Yerel geri dönüş kendi hareket/ateş kilidini kaldırırken başka sistemin kilidini açamaz. Otomatik yetenekler ve diğer karşılaşmalar sıfırlanmaz; yeni dokunulmazlık kuralı eklenmez.

@@ -14,6 +14,9 @@ namespace ProjectFirstRun.Player
         [SerializeField, Min(0f)]
         private float _sprintSpeed = 8f;
 
+        [SerializeField, Min(0f)]
+        private float _jumpHeight = 1.2f;
+
         [Header("Gravity")]
         [SerializeField]
         private float _gravity = -25f;
@@ -36,6 +39,7 @@ namespace ProjectFirstRun.Player
         }
 
         public bool IsGrounded => _characterController.isGrounded;
+        public float VerticalVelocity => _verticalVelocity;
 
         private void Awake()
         {
@@ -54,8 +58,10 @@ namespace ProjectFirstRun.Player
         public void Tick(
             Vector2 moveInput,
             bool isSprinting,
-            float deltaTime)
+            float deltaTime,
+            bool jumpPressed = false)
         {
+            if (deltaTime <= 0f || !_characterController.enabled) return;
             Vector3 movementDirection =
                 transform.right * moveInput.x +
                 transform.forward * moveInput.y;
@@ -70,13 +76,20 @@ namespace ProjectFirstRun.Player
             float movementSpeed =
                 EvaluateMovementSpeed(isSprinting);
 
-            UpdateVerticalVelocity(deltaTime);
+            if (jumpPressed && IsGrounded && _verticalVelocity <= 0f && _gravity < 0f && _jumpHeight > 0f)
+                _verticalVelocity = Mathf.Sqrt(-2f * _gravity * _jumpHeight);
+            else
+                UpdateVerticalVelocity(deltaTime);
 
             Vector3 velocity =
                 movementDirection * movementSpeed +
                 Vector3.up * _verticalVelocity;
 
-            _characterController.Move(velocity * deltaTime);
+            CollisionFlags collisions = _characterController.Move(velocity * deltaTime);
+            if ((collisions & CollisionFlags.Above) != 0 && _verticalVelocity > 0f)
+                _verticalVelocity = 0f;
+            if ((collisions & CollisionFlags.Below) != 0 && _verticalVelocity < 0f)
+                _verticalVelocity = _groundedVerticalSpeed;
         }
 
         private void UpdateVerticalVelocity(float deltaTime)
@@ -95,6 +108,7 @@ namespace ProjectFirstRun.Player
         {
             _walkSpeed = Mathf.Max(0f, _walkSpeed);
             _sprintSpeed = Mathf.Max(_walkSpeed, _sprintSpeed);
+            _jumpHeight = Mathf.Max(0f, _jumpHeight);
 
             if (_gravity > 0f)
             {

@@ -39,6 +39,7 @@ namespace ProjectFirstRun.Player
         private void Update()
         {
             float deltaTime = Time.deltaTime;
+            bool jumpPressed = _inputReader.ConsumeJumpPress(_controlEnabled && deltaTime > 0f);
 
             if (_controlEnabled)
             {
@@ -60,7 +61,8 @@ namespace ProjectFirstRun.Player
             _playerMotor.Tick(
                 moveInput,
                 isSprinting,
-                deltaTime);
+                deltaTime,
+                jumpPressed);
         }
 
         private void OnDisable()

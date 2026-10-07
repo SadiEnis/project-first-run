@@ -143,13 +143,26 @@ Doğrulama: mesafe/açı sınırları, arkada/duvar arkasında oyuncu, doğrudan
 
 ## Parkur ve yerel geri dönüş
 
-İlk sürüm düşmansız üç sabit platform ve güvenli varıştan oluşur. İlk atlayış öğretici/geniş, diğerleri biraz daha dikkat isteyen fakat sprint gerektirmeyen mesafelerde olur. Mesafeler mevcut oyuncunun zıplamasıyla greybox'ta ölçülür. Yeni bulmaca sistemi veya dar spiral merdiven şartı yoktur.
+İlk sürüm düşmansız üç sabit platform ve güvenli varıştan oluşur. İlk atlayış öğretici/geniş, diğerleri biraz daha dikkat isteyen fakat sprint gerektirmeyen mesafelerde olur. Mevcut PlayerMotor yalnız hareket ve yerçekimi içerir; önce zıplama eklenir, sonra mesafeler gerçek oyuncu kontrolüyle greybox'ta ölçülür. Yeni bulmaca sistemi veya dar spiral merdiven şartı yoktur.
 
-Düşüş algılandığında bir kez hasar uygulanır; başlangıç denge değeri maksimum canın %10'udur, oynanışta ayarlanabilir. Hayatta kalan oyuncu kısa kararmayla parkurun güvenli başlangıcına taşınır; düşüş hızı temizlenir. Aynı düşüşün birden fazla collider/olayla tekrar hasar vermesi önlenir. Ölümcül hasarda normal run ölümü işler; yerel geri dönüş oyuncuyu diriltmez. Hasarın zırh/diğer gelen-hasar değiştiricileriyle ilişkisi uygulamadan önce netleştirilecektir.
+Düşüş algılandığında bir kez hasar uygulanır; başlangıç denge değeri o andaki maksimum canın %10'u kadar temel hasardır, oynanışta ayarlanabilir. Hasar mevcut HealthComponent akışından geçer; gelen hasar artışı/azaltması ve mevcut hayatta kalma kuralları korunur. Doğrudan can çıkarılmaz, oyuncuya ait saldırı veya öldürme sayılmaz. Hayatta kalan oyuncu kısa kararmayla parkurun güvenli başlangıcına taşınır; düşüş hızı temizlenir. Aynı düşüşün birden fazla collider/olayla tekrar hasar vermesi önlenir. Ölümcül hasarda normal run ölümü işler; yerel geri dönüş oyuncuyu diriltmez.
 
 Bu bir run checkpoint'i değildir: hayatta kalınan parkur hatası XP, ekipman, anahtar veya karşılaşmaları sıfırlamaz; başka yerde ölmek parkurdan başlatmaz. Alt zemin ateş/lav olarak sunulabilir ancak ilk sürümde orada yürüyüş, süreli yanma hasarı veya geri tırmanma döngüsü yoktur. Yıkılan üçüncü platform ancak sabit parkur kabulünden sonra değerlendirilecek isteğe bağlı iştir; ilk sürüme dahil değildir.
 
 Anahtar odasından parkuru ters yönde dönmek gerekmeyecek. Pusu tamamlanınca ayrı bir çıkış kapısı, merdiven/rampa ile aşağıdaki büyük arenaya ve final kapısına giden kısa yolu açar. Bu yol baştan yukarı çıkılarak parkurun/anahtarın atlanmasına izin vermemeli; başlangıçta kapalı olması ve final uygunluk kontrolü korunmalıdır.
+
+### Dördüncü uygulama dilimi: zıplama ve sabit parkur
+
+Bu checkpoint yalnız tasarım sözleşmesidir; aşağıdaki davranışlar henüz uygulanmış veya test edilmiş sayılmaz.
+
+- **Giriş ve motor:** Input Actions üzerinden Space / gamepad güney tuşu kullanılır; üretilen C# sarmalayıcı asset ile birlikte güncellenir. Yerdeyken yeni basış tek zıplama başlatır; basılı tutmak otomatik tekrar üretmez. Çift zıplama, dash ve yeni hareket sistemi yoktur. Zıplama yüksekliği Inspector ayarıdır; ilk deneme 1,2 m, hız mevcut yerçekiminden hesaplanır. Havada mevcut yatay hareket korunur; tavana çarpınca yukarı hız kesilir.
+- **Kontrol sahipliği:** Ödül ekranı, pause, ölüm veya kontrol kilidi sırasında zıplama alınmaz; bekleyen basış kilit açılınca zıplatmaz. Yerel geri dönüş kendi hareket/ateş kilidini kaldırırken başka sistemin kilidini açamaz. Otomatik yetenekler ve diğer karşılaşmalar sıfırlanmaz; yeni dokunulmazlık kuralı eklenmez.
+- **Düşüş işlemi:** Yalnız parkurun altındaki açıkça atanmış hacim yerel geri dönüş başlatır; tüm haritanın düşüş kuralını değiştirmez. Bir işlem sürerken ek collider girişleri yeni hasar/taşıma başlatmaz. Güvenli dönüş tamamlanıp oyuncu tehlike hacminden çıktıktan sonra sonraki düşüş yeniden işlenebilir. Kararma sırasında ölüm gerçekleşirse ölüm önceliklidir; geri dönüş kontrolü açmaz veya can vermez.
+- **Güvenli konum:** Sahneye kaydedilmiş dönüş noktası zemin ve baş boşluğu olan, tehlike hacmi dışındaki parkur başlangıcıdır. CharacterController güvenli taşınır, düşey hız temizlenir; kök yönü ve PlayerLook bakışı başlangıç yönüne eşitlenir, kalan kamera sekmesi temizlenir. Geçersiz referans/yerleşim sessizce dünya merkezine taşımaz; doğrulama hatası olarak görünür.
+- **Sahne kapsamı:** Mevcut kayıtlı demo sahnesinde anahtar rotasına üç sabit platform, varış, düşüş hacmi ve dönüş noktası eklenir. Sahne yeniden üretilmez; kullanıcının geometri düzenlemeleri korunur. Atlayışlar yükseltmesiz yürüyüş hızıyla geçilebilir olmalıdır. Düşman navigasyonu boşluklar üzerinden otomatik yürüme yolu oluşturmamalıdır. Geometri sonrası NavMesh yeniden bake edilir ve mevcut oda yolları kontrol edilir.
+- **Sonraki dilim:** Anahtar alımı, pusu, kapılar ve aşağı kısa yol ayrı uygulamadır. Bu dilimin varışı tamamlanmış demo gibi sunulmaz; geçici test sonu açıkça belirtilir ve oyuncu geri yürüyerek/zıplayarak ayrılabilir. Pusu sonrası ters parkur gerektirmeyen nihai çıkış sözleşmesi değişmez.
+
+Doğrulama için testler yazılır, kullanıcı çalıştırır: yerde tek basış, havada/tuş basılıyken tekrar etmeme, kontrol kilidinde basış temizliği, tavana çarpma; aynı düşüşte tek hasar, maksimum can ve gelen-hasar değiştiricileri, güvenli poz/hız/bakış, ölümcül düşüş ve kararma sırasında ölüm, tekrar düşebilme, run ilerlemesinin korunması. Elle üç atlayışın yürüyüşle geçilmesi, her boşluktan güvenli dönüş, ödül/pause çakışması ve mevcut odalara regresyon kontrol edilir. Bu checkpoint Unity testleri veya Windows build çalıştırmaz.
 
 ## Anahtar ve pusu sözleşmesi
 

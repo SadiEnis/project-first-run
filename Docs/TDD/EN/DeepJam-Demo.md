@@ -143,13 +143,26 @@ Verify range/angle boundaries, targets behind enemies/walls, direct and owned ti
 
 ## Jumping and local recovery
 
-The first version uses three fixed platforms and a safe landing. Make the first jump wide/teaching-oriented; later jumps demand slightly more attention without requiring sprint. Measure distances with the existing player's jump in greybox. No new puzzle system or tight spiral staircase is required.
+The first version uses three fixed platforms and a safe landing. Make the first jump wide/teaching-oriented; later jumps demand slightly more attention without requiring sprint. The current PlayerMotor only provides movement and gravity: implement jumping first, then measure distances with the actual controller in greybox. No new puzzle system or tight spiral staircase is required.
 
-Apply damage once per detected fall; the initial tuning value is 10% of maximum health, adjustable after playtesting. Briefly fade and return surviving players to the safe traversal start, clearing falling velocity. Multiple colliders/events for the same fall must not apply repeated damage. Lethal damage invokes ordinary run death, never resurrection through local recovery. Settle armor/incoming-damage modifier interaction before implementation.
+Apply damage once per detected fall; the initial tuning value is base damage equal to 10% of current maximum health, adjustable after playtesting. Route it through HealthComponent, preserving incoming damage increases/reductions and existing survival rules. Do not subtract health directly or attribute it as a player attack/kill. Briefly fade and return surviving players to the safe traversal start, clearing falling velocity. Multiple colliders/events for the same fall must not apply repeated damage. Lethal damage invokes ordinary run death, never resurrection through local recovery.
 
 This is not a run checkpoint: a survived fall does not reset XP, equipment, key or encounters; dying elsewhere does not respawn here. The lower floor may visually suggest fire/lava, but walking on it, periodic burn damage and climbing back are not part of version one. A collapsing third platform is optional follow-up after fixed-platform acceptance, not part of the initial scope.
 
 Do not require reverse traversal after the key room. On ambush completion a separate exit door opens a short stair/ramp route down to the large arena and final door. Prevent approaching this shortcut from below to bypass the traversal/key: retain the initial closed door and final eligibility checks.
+
+### Fourth implementation increment: jumping and fixed traversal
+
+This checkpoint defines the contract only; the behaviors below are not yet implemented or verified.
+
+- **Input and motor:** Use Input Actions with Space / gamepad south; update the generated C# wrapper with the asset. A fresh press while grounded initiates one jump; holding cannot automatically repeat. No double jump, dash or replacement movement system. Expose jump height in the Inspector, initially 1.2 m for trial, deriving velocity from existing gravity. Preserve horizontal air movement; ceiling contact cancels upward velocity.
+- **Control ownership:** Rewards, pause, death and control locks suppress jumping; queued presses cannot jump on unlock. Releasing the recovery-owned movement/fire lock must not release another system's lock. Do not reset automatic abilities or other encounters; introduce no new invulnerability rule.
+- **Fall transaction:** Only the explicitly assigned volume beneath traversal initiates local recovery; do not change map-wide fall behavior. Additional collider entries during recovery cannot start another damage/teleport transaction. Rearm for the next fall after safe return completes and the player leaves the hazard volume. Death during the fade takes priority; recovery cannot restore control or health.
+- **Safe pose:** Serialize a return anchor at traversal start, outside the hazard with floor support and headroom. Safely teleport the CharacterController, clear vertical velocity, synchronize root facing and PlayerLook with the starting direction, and clear residual camera recoil. Invalid references/placement must surface as validation errors rather than silently teleporting to world origin.
+- **Scene scope:** Add three fixed platforms, landing, fall volume and return anchor along the key route in the existing saved demo scene. Do not regenerate the scene or overwrite user geometry edits. Jumps must work at unupgraded walking speed. Enemy navigation must not create automatic walking paths across gaps. Rebake NavMesh after geometry changes and check existing room routes.
+- **Next increment:** Key pickup, ambush, gates and the downward shortcut are separate implementation work. Do not present this landing as a completed demo; clearly label the temporary test endpoint and allow walking/jumping back out. The final contract still avoids reverse traversal after the ambush.
+
+Author tests for the user to run: one grounded press, no airborne/held repeat, clearing input under control locks, ceiling contact; one damage application per fall, maximum-health scaling and incoming damage modifiers, safe pose/velocity/look, lethal fall and death during fade, repeated separate falls, and preserved run progression. Manually check all three jumps at walking speed, safe recovery from every gap, reward/pause overlap and existing-room regressions. This checkpoint runs neither Unity tests nor a Windows build.
 
 ## Key and ambush contract
 

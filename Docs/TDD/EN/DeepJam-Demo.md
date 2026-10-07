@@ -63,6 +63,39 @@ Authored acceptance code: `DemoMapLayoutTests` checks hierarchy, reward height, 
 
 The desktop checkout is the development workspace; `C:\Project\ProjectFirstRun` is a build-only copy. Check matching commits and required project settings before builds; do not develop the two copies independently. Pre-sync desktop settings remain preserved in the stash and are not restored wholesale during this map stage. Keep `Builds` excluded from Git and Plastic check-ins.
 
+## Third implementation slice — room encounters (2026-10-05)
+
+Perception was accepted and the user reported taking the check-in/commit. The user approved implementation of the distribution below. It is now wired into the saved scene, not final balance. Unity compilation, tests and gameplay acceptance are pending; the assistant did not execute Unity tests.
+
+The scene's `Demo room encounters` root contains four independent encounters; including the opening there are five encounters and 16 enemies. `EW_DemoSecondRoom`, `EW_DemoArenaLeft`, `EW_DemoArenaRight` and `EW_DemoOptionalRoom` are demo-only assets. Preparation volumes begin at z=30 on the descent; activation begins at z=39 for the second room and z=49 for the arena/optional groups, extending over the subsequent route. These are early preparation/activation volumes, not gates or region borders. Perception still governs sight and attack permission. The demo HUD exposes preparation/reward failures.
+
+Geometry and navigation are unchanged; reopen the saved scene without rerunning generation. `DemoMapLayoutTests` checks spawn reachability against the existing bake. `DemoOpeningTests` now covers preparation/activation, re-entry, independent once-only rewards, cancellation and death; its geometry-walking test cancels the new encounters too. Fresh restart behavior and both approach routes still require manual acceptance.
+
+| Area | Initial trial group | Purpose / traversal |
+| --- | --- | --- |
+| Opening corridor | Existing 4 Chasers | Unchanged, including the guaranteed Ability Chest. |
+| First reward room | No new enemies | Reward selection and breathing space; no invisible barrier against pursuing enemies. |
+| Second room | 2 Chasers + 1 Ranger | Cover and approaching a Ranger under Chaser pressure; free exit. |
+| Large arena | Total 3 Chasers + 2 Rangers + 1 Charger | Two small placement groups supporting different stair approaches. Individual detection, not a simultaneous six-enemy alarm. No kill-all exit requirement. |
+| Optional room | 2 Chasers + 1 Charger | Close-range risk/reward with free entry and retreat. One guaranteed Green Chest after clearing only this group. |
+
+### Integration and boundaries
+
+Gameplay feedback (2026-10-05): the user confirmed timely activation and player damage alerting enemies outside acquisition range. All arena enemies could be killed from the balcony; this is not final layout acceptance. Enlarge the arena during the resizing pass and evaluate a higher overlook as an option. Height alone does not prevent safe clearing: reassess blind space below the landing, full-height cover, enemy placement and both stair approaches together. Do not add invisible shot blockers or damage immunity. The user plans manual scene resizing; regeneration must not overwrite these edits. Geometry changes require navigation, spawn/reward anchors and preparation/activation volumes to be rechecked. This feedback does not claim new automated tests passed; dimensions remain unchanged.
+
+- Use the same saved `DeepJam_Opening` scene, explicit room spawn points, separate group definitions and existing `PreparedRegionEncounter`. The two arena groups total six enemies, not six each. Re-entry never respawns them.
+- Start preparation in the preceding connection, before enemies become visible. Arena enemies must be active before the overlook offers a shot; avoid visible but invulnerable prepared enemies. Activation is not an alarm: the accepted perception profile governs pursuit and attacks.
+- If preparation lags, adjust lead-in distance/timing rather than spawning visibly or adding a kill-all gate to the main route. Report preparation failures explicitly; a failed group is not cleared and grants no completion reward.
+- Author facing, Ranger sightlines and Charger space against existing geometry. Overlook entry does not alert everyone, but exposed players may be seen. Enemies leaving a room are not deleted/healed and remain owned by their encounter.
+- The optional reward spawns once at its saved room anchor when its own encounter completes. Living enemies elsewhere do not block it. `EncounterChestReward` does not regenerate a removed/opened chest; death or cancellation gives no reward. Preserve enemy/level-up drop tables; add no guaranteed chests to the other new rooms.
+- Key route, platforming, key ambush, gate locks and finale are excluded. No new enemy type, elite, ammo source or global balance change. Record ammunition shortages during playtesting for the subsequent resupply decision.
+
+### Acceptance
+
+EditMode: saved group counts, prefab/definition/profile/player/registry dependencies, spawn-point navigation reachability and reward references. PlayMode: preparation versus activation, no re-entry duplication, independent encounter completion, a single optional reward, death/restart cleanup and opening regressions. The user executes tests.
+
+Manual: try both arena stairs separately; reach the key-route entrance without clearing the arena; skip the optional room, then enter and retreat in another attempt; evaluate Ranger cover and Charger dodge space. This checkpoint does not claim full-map or key/finale acceptance.
+
 ## Experience and scope
 
 Show manual FPS combat, automatic abilities, chest-driven builds and risk/reward routes. First-attempt completion is allowed; no forced death or hidden first-run gate. Completing the demo need not mean the protagonist wins narratively.
@@ -96,7 +129,7 @@ Stairs descend on both sides. Aim for different approach angles rather than deco
 
 ## Enemy perception and combat engagement
 
-The implementation contract, initial trial values and lost-sight movement/attack ownership are defined in [Enemy Perception](Enemy-Perception.md). Preserve the general principles below; initially investigate the last information point and return to idle at the current location after 3 seconds without new information. Implemented for the opening group; the user confirmed the perception gameplay and green corrected tests on 2026-10-05. New room encounters are not populated yet.
+The implementation contract, initial trial values and lost-sight movement/attack ownership are defined in [Enemy Perception](Enemy-Perception.md). Preserve the general principles below; initially investigate the last information point and return to idle at the current location after 3 seconds without new information. The user confirmed perception gameplay and green corrected tests for the opening group on 2026-10-05. The same profile is now wired to the new room groups; their acceptance is pending.
 
 - Preparation, detection and attack are separate stages. Enemies may already be prepared without automatically chasing or attacking an undetected player.
 - Initial visual detection requires all three: detection range, viewing angle relative to enemy facing, and unobstructed line of sight. Proximity through walls/floors alone is insufficient. Range and angle are configurable; choose values through playtesting.

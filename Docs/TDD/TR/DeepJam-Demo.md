@@ -63,6 +63,39 @@ Otomatik kabul kodu: `DemoMapLayoutTests` hiyerarşiyi, ödül yüksekliğini, b
 
 Ana geliştirme masaüstündeki projede sürer; `C:\Project\ProjectFirstRun` yalnız build kopyasıdır. Build öncesinde aynı commit ve gerekli proje ayarları kullanıldığı kontrol edilir; kopyalar arasında bağımsız geliştirme yapılmaz. Masaüstü eşitlemesi öncesindeki yerel ayarlar stash yedeğinde korunur; bu harita aşamasında topluca geri uygulanmaz. `Builds` Git ve Plastic check-in dışında kalır.
 
+## Üçüncü uygulama dilimi — oda karşılaşmaları (05.10.2026)
+
+Algılama kabul edildi ve kullanıcı check-in/commit aldığını bildirdi. Kullanıcı aşağıdaki dağılımla uygulamaya geçilmesini onayladı. Dağılım mevcut kayıtlı sahneye işlendi; nihai denge değildir. Unity derlemesi, testler ve oynanış kabulü bekleniyor; asistan Unity testlerini çalıştırmadı.
+
+Sahnedeki `Demo room encounters` kökü dört ayrı karşılaşma içerir; açılışla birlikte toplam beş karşılaşma ve 16 düşman vardır. `EW_DemoSecondRoom`, `EW_DemoArenaLeft`, `EW_DemoArenaRight`, `EW_DemoOptionalRoom` asset'leri yalnız demoya aittir. Hazırlık hacimleri aşağı inişin başında z=30'dan itibaren, etkinleştirme ikinci oda için z=39, arena ve opsiyonel oda için z=49'dan itibaren başlar; hacimler sonraki rotayı da kapsar. Bunlar kapı veya bölge sınırı değil, erkenden hazırlama/etkinleştirme hacimleridir. Görüş ve hasar kuralları algılama profilinde kalır. Başarısız hazırlık/ödül işlemi demo HUD'ında gösterilir.
+
+Geometri ve NavMesh değiştirilmedi; sahneyi yeniden açmak yeterlidir, oluşturma menüsü tekrar çalıştırılmaz. Spawn erişimi `DemoMapLayoutTests` ile mevcut bake üzerinde kontrol edilir. `DemoOpeningTests` hazırlık/etkinleşme, yeniden giriş, bağımsız ve tek ödül, iptal ve ölüm akışlarıyla genişletildi; geometri yürüyüş testi yeni karşılaşmaları da iptal ederek çatışmadan ayrıştırıldı. Restart sonrası temiz başlangıç ve iki farklı yaklaşım rotası ayrıca elle doğrulanmalıdır.
+
+| Alan | İlk deneme grubu | Oynanış amacı / geçiş |
+| --- | --- | --- |
+| Açılış koridoru | Mevcut 4 Chaser | Değişmez; mevcut garanti Ability Chest korunur. |
+| İlk ödül odası | Yeni düşman yok | Ödülü seçme ve kısa nefes; geriden takip eden düşmanlara görünmez engel yok. |
+| İkinci oda | 2 Chaser + 1 Ranger | Chaser baskısı altında siper ve Ranger'a yaklaşmayı öğretir; çıkış serbest. |
+| Büyük arena | Toplam 3 Chaser + 2 Ranger + 1 Charger | İki küçük yerleşim grubu; farklı merdiven/yaklaşım açıları. Oyuncuyu aynı anda altı düşmanla karşılamaz, farkındalık bireyseldir. Çıkışlar kill-all koşuluna bağlanmaz. |
+| Opsiyonel oda | 2 Chaser + 1 Charger | Yakın mesafe risk/ödül; giriş ve geri dönüş serbest. Yalnız bu grubu temizleyince bir garanti Green Chest. |
+
+### Entegrasyon ve sınırlar
+
+Oynanış geri bildirimi (05.10.2026): kullanıcı düşmanların uygun zamanda etkinleşmesini ve algılama mesafesi dışından oyuncu hasarıyla alarma geçip yaklaşmasını doğruladı. Balkondan tüm arena düşmanları öldürülebildi; bu, nihai yerleşim kabulü değildir. Boyutlandırma geçişinde arena büyütülecek; daha yüksek/hâkim sahanlık bir seçenek olarak değerlendirilecek. Yükseklik tek başına güvenli taramayı engellemez: sahanlık altındaki kör alanlar, tam boy siperler, düşman yerleşimi ve iki merdivenin yaklaşma hatları birlikte yeniden test edilmeli. Yapay görünmez ateş engeli veya hasar bağışıklığı eklenmeyecek. Kullanıcı sahne ölçülerini elle düzenlemeyi planlıyor; bu düzenlemeler yeniden üretimle ezilmeyecek. Geometri değişince NavMesh, spawn/ödül noktaları ve hazırlık/etkinleşme hacimleri yeniden kontrol edilecek. Bu geri bildirim yeni otomatik testlerin geçtiği anlamına gelmez; ölçüler henüz değiştirilmedi.
+
+- Aynı kayıtlı `DeepJam_Opening` sahnesi; oda başına açık spawn noktaları, ayrı grup tanımları ve mevcut `PreparedRegionEncounter` kullanılır. Büyük arenadaki iki grubun toplamı tablodaki altı düşmandır; yeniden girişte tekrar üretilmez.
+- Hazırlık, görüşe çıkıştan önceki bağlantıda başlatılır. Büyük arena grupları sahanlıktan atış yapılabilir hale gelmeden etkinleşmiş olmalıdır; görünür fakat vurulamayan hazırlık düşmanları bırakılmaz. Etkinleşmek alarm değildir: mevcut algılama profili takip ve saldırıyı yönetir.
+- Hazırlık gecikirse görünür noktada aniden oluşturma veya ana rotaya yeni kill-all kilidi eklemek yerine hazırlık mesafesi/zamanlaması düzeltilir. İlk prova boyunca hazırlık hataları görünür biçimde raporlanır; başarısız grup temizlenmiş sayılıp ödül verilmez.
+- Düşmanların bakış yönleri, Ranger atış hattı ve Charger atılış alanı mevcut geometriye göre yerleştirilir. Üst sahanlığa giriş toplu alarm oluşturmaz; açıkta duran oyuncu yine görülebilir. Oda dışına çıkan düşmanlar silinmez, canları yenilenmez ve kendi karşılaşmalarında sayılmaya devam eder.
+- Opsiyonel ödül yalnız kendi karşılaşmasının tamamlanmasıyla, bir kez ve oda içindeki kayıtlı noktada oluşur. Başka odadaki canlı düşmanlar ödülü engellemez. `EncounterChestReward` kaldırılmış/açılmış sandığı yeniden üretmez; ölüm veya iptal ödül vermez. Mevcut düşman/level-up drop tabloları değişmez, diğer yeni odalara garanti sandık eklenmez.
+- Anahtar rotası, parkur, anahtar pususu, kapı kilitleri ve final bu dilimin dışındadır. Yeni düşman türü, elite, mühimmat kaynağı veya genel denge değişikliği eklenmez. Mühimmat yetmezliği oynanışta kaydedilir ve sonraki ikmal kararında ele alınır.
+
+### Kabul
+
+EditMode: kayıtlı grup sayıları, prefab/tanım/profil/oyuncu/registry bağlantıları, spawn noktalarının NavMesh erişimi ve ödül referansları. PlayMode: hazırlık/etkinleşme ayrımı, yeniden girişte çoğalmama, bağımsız karşılaşma tamamlama, tek opsiyonel ödül, ölüm/restart temizliği ve açılış regresyonu. Testleri kullanıcı çalıştırır.
+
+Elle prova: iki arena merdivenini ayrı dene; düşmanları kesmeden anahtar yolu girişine ulaş; opsiyonel odaya girmeden ilerle ve girip geri çık; Ranger siperini ve Charger kaçınma alanını değerlendir. Tüm harita veya anahtar/final kabulü bu checkpoint'e dahil değildir.
+
 ## Deneyim ve kapsam
 
 Manuel FPS çatışması, otomatik yetenekler, sandıktan build oluşturma ve risk/ödül rotaları gösterilir. İlk denemede bitirmek mümkündür; zorunlu ölüm, kazanılamayan savaş veya gizli ilk-run engeli yoktur. Demo bitişi hikâyenin zaferle tamamlanması olmak zorunda değildir.
@@ -96,7 +129,7 @@ Sahanlığın iki yanında aşağı inen merdivenler bulunur. Yalnızca dekorati
 
 ## Düşman algılama ve çatışmaya girme
 
-Uygulama sözleşmesi, ilk deneme değerleri ve görüş kaybında hareket/saldırı sahipliği [Düşman Algılama](Enemy-Perception.md) dokümanında netleştirildi. Aşağıdaki genel ilkeler korunur; başlangıç unutma davranışı, son bilgi noktasına yönelip 3 saniye sonunda bulunduğu yerde beklemektir. Açılış grubuna uygulandı; kullanıcı 05.10.2026 tarihinde algılama oynanışını ve düzeltilen testlerin yeşil olduğunu doğruladı. Yeni odalara karşılaşmalar henüz yerleştirilmedi.
+Uygulama sözleşmesi, ilk deneme değerleri ve görüş kaybında hareket/saldırı sahipliği [Düşman Algılama](Enemy-Perception.md) dokümanında netleştirildi. Aşağıdaki genel ilkeler korunur; başlangıç unutma davranışı, son bilgi noktasına yönelip 3 saniye sonunda bulunduğu yerde beklemektir. Açılış grubunda kullanıcı 05.10.2026 tarihinde algılama oynanışını ve düzeltilen testlerin yeşil olduğunu doğruladı. Aynı profil yeni oda gruplarına bağlandı; yeni karşılaşmaların kabulü bekleniyor.
 
 - Hazırlanma, oyuncuyu fark etme ve saldırı ayrı adımlardır. Düşmanlar önceden hazır olabilir; henüz fark etmedikleri oyuncuyu otomatik takip edip vurmazlar.
 - İlk görsel algılama için üç koşul birlikte sağlanır: algılama mesafesi, düşmanın bakışına göre görüş açısı ve arada engel olmayan görüş hattı. Duvar/kat arkasındaki yakınlık tek başına yeterli değildir. Mesafe ve açı değerleri yapılandırılabilir; sayılar oynanış testinde seçilir.

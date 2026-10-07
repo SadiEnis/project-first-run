@@ -1,6 +1,9 @@
 using System.Linq;
 using NUnit.Framework;
 using ProjectFirstRun.Chests;
+using ProjectFirstRun.Arenas;
+using ProjectFirstRun.Enemies;
+using ProjectFirstRun.Waves;
 using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Editor;
 using UnityEditor;
@@ -39,21 +42,87 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.That(_geometry.Find("Combat corridor"), Is.Not.Null);
             foreach (string section in new[] {
                 "01 - Descent to reward room", "02 - Reward room continuation",
-                "03 - Second room - encounter pending", "04 - Arena overlook",
+                "03 - Second room", "04 - Arena overlook",
                 "05 - Arena left stairs", "06 - Arena right stairs",
-                "07 - Large arena - encounters pending", "08 - Optional room - reward pending",
+                "07 - Large arena", "08 - Optional room",
                 "09 - Key route entrance - unfinished", "10 - Final entrance - unfinished" })
                 Assert.That(_geometry.Find(section), Is.Not.Null, section);
             Assert.That(_geometry.Find("Traversal checkpoints").childCount, Is.EqualTo(12));
             var encounters = _scene.GetRootGameObjects().SelectMany(x =>
                 x.GetComponentsInChildren<ProjectFirstRun.Arenas.PreparedRegionEncounter>(true));
-            Assert.That(encounters.Count(), Is.EqualTo(1), "Expansion must not add combat yet.");
+            Assert.That(encounters.Count(), Is.EqualTo(5), "Opening plus four independent room groups.");
             foreach (var box in _geometry.GetComponentsInChildren<BoxCollider>())
                 if (box.name.StartsWith("Temporary "))
                 {
                     Assert.That(box.enabled && !box.isTrigger, Is.True);
                     Assert.That(box.GetComponent<MeshRenderer>().enabled, Is.True);
                 }
+        }
+
+        [Test]
+        public void RoomGroupsHaveExpectedCompositionNavigationAndExplicitDependencies()
+        {
+            var rooms = _scene.GetRootGameObjects().Single(x => x.name == "Demo room encounters");
+            var encounters = rooms.GetComponentsInChildren<PreparedRegionEncounter>();
+            Assert.That(encounters.Length, Is.EqualTo(4));
+            var expected = new[] {
+                (Id: "demo.second", Chasers: 2, Rangers: 1, Chargers: 0),
+                (Id: "demo.arena.left", Chasers: 3, Rangers: 0, Chargers: 0),
+                (Id: "demo.arena.right", Chasers: 0, Rangers: 2, Chargers: 1),
+                (Id: "demo.optional", Chasers: 2, Rangers: 0, Chargers: 1) };
+            foreach (var spec in expected)
+            {
+                var encounter = encounters.Single(x => new SerializedObject(x).FindProperty("_regionId").stringValue == spec.Id);
+                var properties = new SerializedObject(encounter);
+                foreach (string field in new[] { "_group", "_spawner", "_registry", "_player", "_playerHealth" })
+                    Assert.That(properties.FindProperty(field).objectReferenceValue, Is.Not.Null, spec.Id + field);
+                var group = (EnemyWaveDefinition)properties.FindProperty("_group").objectReferenceValue;
+                Assert.DoesNotThrow(group.Validate);
+                Assert.That(group.TotalEnemyCount, Is.EqualTo(3));
+                int Count(EnemyBehavior type) => group.Entries.Where(x => x.EnemyDefinition.Behavior == type).Sum(x => x.Count);
+                Assert.That(Count(EnemyBehavior.Chaser), Is.EqualTo(spec.Chasers));
+                Assert.That(Count(EnemyBehavior.Ranger), Is.EqualTo(spec.Rangers));
+                Assert.That(Count(EnemyBehavior.Charger), Is.EqualTo(spec.Chargers));
+                var spawner = new SerializedObject(properties.FindProperty("_spawner").objectReferenceValue);
+                Assert.That(spawner.FindProperty("_perceptionProfile").objectReferenceValue, Is.Not.Null);
+                var points = properties.FindProperty("_spawnPoints");
+                Assert.That(points.arraySize, Is.EqualTo(group.TotalEnemyCount));
+                Assert.That(NavMesh.SamplePosition(new Vector3(0, -3, 54), out var origin, .6f, NavMesh.AllAreas), Is.True);
+                for (int i = 0; i < points.arraySize; i++)
+                {
+                    var point = (Transform)points.GetArrayElementAtIndex(i).objectReferenceValue;
+                    Assert.That(point, Is.Not.Null);
+                    Assert.That(NavMesh.SamplePosition(point.position, out var hit, .6f, NavMesh.AllAreas), Is.True,
+                        spec.Id + " spawn " + i);
+                    var path = new NavMeshPath();
+                    Assert.That(NavMesh.CalculatePath(origin.position, hit.position, NavMesh.AllAreas, path), Is.True);
+                    Assert.That(path.status, Is.EqualTo(NavMeshPathStatus.PathComplete));
+                }
+                var triggers = encounter.GetComponentsInChildren<RegionPreparationTrigger>();
+                Assert.That(triggers.Length, Is.EqualTo(2));
+                foreach (var trigger in triggers)
+                {
+                    var triggerProperties = new SerializedObject(trigger);
+                    Assert.That(triggerProperties.FindProperty("_encounter").objectReferenceValue, Is.SameAs(encounter));
+                    Assert.That(triggerProperties.FindProperty("_player").objectReferenceValue, Is.Not.Null);
+                    var volume = (Collider)triggerProperties.FindProperty("_volume").objectReferenceValue;
+                    Assert.That(volume != null && volume.isTrigger && volume.enabled, Is.True);
+                }
+                var prepare = encounter.transform.Find("Prepare on descent").GetComponent<BoxCollider>();
+                var activate = encounter.transform.Find("Activate before sightline").GetComponent<BoxCollider>();
+                Assert.That(prepare.bounds.min.z, Is.LessThan(activate.bounds.min.z));
+                Assert.That(activate.bounds.min.z, Is.LessThan(57), "Activate before the overlook or second-room firing line.");
+            }
+            var reward = rooms.GetComponentsInChildren<EncounterChestReward>().Single();
+            Assert.DoesNotThrow(reward.ValidateConfiguration);
+            var rewardProperties = new SerializedObject(reward);
+            var definition = (ChestDefinition)rewardProperties.FindProperty("_definition").objectReferenceValue;
+            Assert.That(definition.StableId, Is.EqualTo("chest.advanced.green"));
+            var anchor = (Transform)rewardProperties.FindProperty("_anchor").objectReferenceValue;
+            var collider = definition.WorldPrefab.GetComponent<BoxCollider>();
+            float bottom = anchor.position.y + (collider.center.y - collider.size.y * .5f) * collider.transform.lossyScale.y;
+            Assert.That(bottom, Is.EqualTo(-6.98f).Within(.005f));
+            Assert.That(new SerializedObject(reward.Encounter).FindProperty("_regionId").stringValue, Is.EqualTo("demo.optional"));
         }
 
         [Test]

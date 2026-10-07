@@ -26,6 +26,8 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private ChestDefinition _firstReward;
         [SerializeField] private Transform _rewardPoint;
         [SerializeField] private RewardSelectionController _selection;
+        [SerializeField] private PreparedRegionEncounter[] _roomEncounters = Array.Empty<PreparedRegionEncounter>();
+        [SerializeField] private EncounterChestReward _optionalReward;
         private bool _restarting;
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
@@ -41,6 +43,11 @@ namespace ProjectFirstRun.Development.Arenas
                 _rewardPoint == null || _selection == null)
                 throw new InvalidOperationException("Assign all demo opening scene references.");
             _firstReward.Validate();
+            foreach (var room in _roomEncounters)
+                if (room == null) throw new InvalidOperationException("Missing demo room encounter reference.");
+            if (_roomEncounters.Length > 0 && _optionalReward == null)
+                throw new InvalidOperationException("Assign the optional room reward.");
+            if (_optionalReward != null) _optionalReward.ValidateConfiguration();
         }
 
         private void Awake()
@@ -106,7 +113,12 @@ namespace ProjectFirstRun.Development.Arenas
             string objective = _rewardClaimed ? "Continue through the next room. Explore the overlook and both arena stairs." :
                 Reward != null ? "Collect your reward in the room beyond the corridor (E)." :
                 "Enter the corridor and defeat its four enemies for a guaranteed reward.";
+            if (_health.transform.position.z > 53)
+                objective = "Explore freely. Green side room: bonus chest. Key/finale not ready yet.";
             GUI.Box(new Rect(16, Screen.height - 54, Mathf.Min(660, Screen.width - 32), 38), objective);
+            string preparationError = GetRoomError();
+            if (preparationError != null)
+                GUI.Box(new Rect(16, 138, Mathf.Min(800, Screen.width - 32), 64), preparationError);
             if (!_health.IsDead)
             {
                 GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 10, 20, 20), "+");
@@ -121,6 +133,16 @@ namespace ProjectFirstRun.Development.Arenas
         {
             if (_encounter != null) _encounter.Victory -= HandleVictory;
             if (Reward != null) Reward.ChestOpened -= HandleRewardClaimed;
+        }
+
+        private string GetRoomError()
+        {
+            foreach (var room in _roomEncounters)
+                if (room != null && room.LastError != null)
+                    return $"Encounter preparation failed: {room.name}\n{room.LastError.Message}";
+            if (_optionalReward != null && _optionalReward.LastError != null)
+                return "Optional reward failed: " + _optionalReward.LastError;
+            return null;
         }
     }
 }

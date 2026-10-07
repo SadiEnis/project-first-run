@@ -94,7 +94,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         public IEnumerator ExpandedMapCanBeWalkedDownAndBackUpWithoutJumpOrTeleport()
         {
             // Isolate geometry acceptance from combat. Teleport only once to the route's starting point.
-            _demo.Encounter.Cancel();
+            foreach (var encounter in AllEncounters()) encounter.Cancel();
             var player = _demo.Health.gameObject;
             player.GetComponent<PlayerController>().enabled = false;
             var motor = player.GetComponent<PlayerMotor>();
@@ -125,6 +125,107 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                     if (step % 5 == 0) yield return null;
                 }
                 Assert.That(reached, Is.True, "Could not walk to " + name + "; position=" + player.transform.position);
+            }
+        }
+
+        private PreparedRegionEncounter[] AllEncounters() => _scene.GetRootGameObjects()
+            .SelectMany(x => x.GetComponentsInChildren<PreparedRegionEncounter>()).ToArray();
+
+        private EncounterChestReward OptionalReward() => _scene.GetRootGameObjects()
+            .SelectMany(x => x.GetComponentsInChildren<EncounterChestReward>()).Single();
+
+        private void MovePlayer(Vector3 position)
+        {
+            var body = _demo.Health.GetComponent<CharacterController>();
+            body.enabled = false; _demo.Health.transform.position = position; body.enabled = true;
+            Physics.SyncTransforms();
+        }
+
+        private IEnumerator ActivateRooms()
+        {
+            MovePlayer(new Vector3(0, -2.9f, 54));
+            var rooms = AllEncounters().Where(x => x != _demo.Encounter).ToArray();
+            for (int i = 0; i < 180 && rooms.Any(x => x.Status != ArenaSessionStatus.Running); i++)
+                yield return null;
+            foreach (var room in rooms)
+            {
+                Assert.That(room.LastError, Is.Null);
+                Assert.That(room.Status, Is.EqualTo(ArenaSessionStatus.Running), room.name);
+                Assert.That(room.Enemies.Count, Is.EqualTo(3));
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator RoomPreparationPrecedesActivationAndReentryDoesNotRespawn()
+        {
+            var rooms = AllEncounters().Where(x => x != _demo.Encounter).ToArray();
+            Assert.That(rooms.Length, Is.EqualTo(4));
+            Assert.That(rooms.All(x => x.PreparationStatus == RegionPreparationStatus.Idle), Is.True);
+            MovePlayer(new Vector3(0, -.5f, 32));
+            for (int i = 0; i < 180 && rooms.Any(x => !x.IsReadyForPassage); i++) yield return null;
+            foreach (var room in rooms)
+            {
+                Assert.That(room.IsReadyForPassage, Is.True, room.LastError?.ToString());
+                Assert.That(room.Status, Is.EqualTo(ArenaSessionStatus.Ready));
+                Assert.That(room.Enemies.All(x => !x.enabled && !x.Perception.State.IsAlerted), Is.True);
+            }
+            var instances = rooms.SelectMany(x => x.Enemies).ToArray();
+            yield return ActivateRooms();
+            MovePlayer(new Vector3(0, .1f, -3)); yield return new WaitForFixedUpdate();
+            MovePlayer(new Vector3(0, -2.9f, 54)); yield return new WaitForFixedUpdate();
+            CollectionAssert.AreEquivalent(instances, rooms.SelectMany(x => x.Enemies).ToArray());
+            Assert.That(OptionalReward().Awarded, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator OptionalClearAwardsOnceRegardlessOfLivingEnemiesElsewhere()
+        {
+            yield return ActivateRooms();
+            var award = OptionalReward();
+            var enemies = award.Encounter.Enemies.ToArray();
+            enemies[0].Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, Vector3.zero, Vector3.forward));
+            yield return null;
+            Assert.That(award.Awarded, Is.False, "Partial clear cannot award the chest.");
+            foreach (var enemy in enemies.Skip(1))
+                enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, Vector3.zero, Vector3.forward));
+            yield return null; yield return null;
+            Assert.That(award.LastError, Is.Null);
+            Assert.That(award.Awarded, Is.True);
+            Assert.That(award.Reward, Is.Not.Null);
+            Assert.That(AllEncounters().Where(x => x != award.Encounter).Any(x => x.Enemies.Any(e => !e.IsDead)), Is.True);
+            var first = award.Reward;
+            award.Encounter.SetPlayerInside(false); award.Encounter.SetPlayerInside(true);
+            yield return null;
+            Assert.That(award.Reward, Is.SameAs(first));
+            Object.Destroy(first.gameObject); yield return null; yield return null;
+            Assert.That(award.Awarded, Is.True);
+            Assert.That(award.Reward == null, Is.True, "A removed reward must not be respawned.");
+        }
+
+        [UnityTest]
+        public IEnumerator CancelledOptionalEncounterDoesNotAwardChest()
+        {
+            yield return ActivateRooms();
+            var award = OptionalReward(); award.Encounter.Cancel();
+            yield return null;
+            Assert.That(award.Awarded, Is.False);
+            Assert.That(award.Reward, Is.Null);
+        }
+
+        [UnityTest]
+        public IEnumerator DeathCancelsRoomGroupsAndSuppressesPendingReward()
+        {
+            yield return ActivateRooms();
+            var award = OptionalReward();
+            foreach (var enemy in award.Encounter.Enemies.ToArray())
+                enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, Vector3.zero, Vector3.forward));
+            _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
+            yield return null;
+            Assert.That(award.Awarded, Is.False);
+            foreach (var room in AllEncounters())
+            {
+                Assert.That(room.Status, Is.EqualTo(ArenaSessionStatus.Defeat));
+                Assert.That(room.Enemies, Is.Empty);
             }
         }
 

@@ -47,7 +47,8 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                     var point = (Transform)encounter.FindProperty("_spawnPoints").GetArrayElementAtIndex(i).objectReferenceValue;
                     Assert.That(Vector3.Dot(point.forward, Vector3.back), Is.GreaterThan(.99f));
                 }
-                var trigger = roots.SelectMany(x => x.GetComponentsInChildren<RegionPreparationTrigger>(true)).Single();
+                var trigger = roots.SelectMany(x => x.GetComponentsInChildren<RegionPreparationTrigger>(true))
+                    .Single(x => new SerializedObject(x).FindProperty("_encounter").objectReferenceValue == demo.Encounter);
                 var properties = new SerializedObject(trigger);
                 Assert.That(properties.FindProperty("_encounter").objectReferenceValue, Is.SameAs(demo.Encounter));
                 Assert.That(properties.FindProperty("_volume").objectReferenceValue, Is.Not.Null);

@@ -28,6 +28,7 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private RewardSelectionController _selection;
         [SerializeField] private PreparedRegionEncounter[] _roomEncounters = Array.Empty<PreparedRegionEncounter>();
         [SerializeField] private EncounterChestReward _optionalReward;
+        [SerializeField] private DemoKeyAmbushController _keyAmbush;
         private bool _restarting;
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
@@ -114,9 +115,12 @@ namespace ProjectFirstRun.Development.Arenas
                 Reward != null ? "Collect your reward in the room beyond the corridor (E)." :
                 "Enter the corridor and defeat its four enemies for a guaranteed reward.";
             if (_health.transform.position.z > 53)
-                objective = "Green side room: bonus chest. Right stairs: jumping route. Key/finale not ready.";
+                objective = "Green side room: bonus chest. Right stairs and jumping route lead to the key.";
             if (_health.transform.position.x > 21 && _health.transform.position.z > 90)
-                objective = "Space / A-Cross: jump. Falling costs health and returns you. Key room not ready.";
+                objective = "Cross the platforms, enter the room and take the key: E / RB-R1.";
+            if (_keyAmbush != null && _keyAmbush.Session.HasKey)
+                objective = _keyAmbush.CanEnterFinal ? "Key secured. Follow the separate exit down to the arena. Finale not active yet." :
+                    "Clear both ambush groups to open the separate return exit.";
             GUI.Box(new Rect(16, Screen.height - 54, Mathf.Min(660, Screen.width - 32), 38), objective);
             string preparationError = GetRoomError();
             if (preparationError != null)

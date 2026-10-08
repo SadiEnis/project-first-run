@@ -50,7 +50,7 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.That(_geometry.Find("Traversal checkpoints").childCount, Is.EqualTo(12));
             var encounters = _scene.GetRootGameObjects().SelectMany(x =>
                 x.GetComponentsInChildren<ProjectFirstRun.Arenas.PreparedRegionEncounter>(true));
-            Assert.That(encounters.Count(), Is.EqualTo(5), "Opening plus four independent room groups.");
+            Assert.That(encounters.Count(), Is.EqualTo(7), "Opening, four independent room groups and two key ambush groups.");
             foreach (var box in _geometry.GetComponentsInChildren<BoxCollider>())
                 if (box.name.StartsWith("Temporary "))
                 {
@@ -185,6 +185,45 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.That(volume.isTrigger, Is.True);
             Assert.That(volume.bounds.max.y, Is.LessThan(platforms[0].bounds.min.y));
             Assert.That(root.transform.Find("Parkour safe landing - key room next increment"), Is.Not.Null);
+        }
+
+        [Test]
+        public void KeyAmbushHasIndependentGroupsGatesAndBakedRoomPaths()
+        {
+            var ambush = _geometry.GetComponentInChildren<DemoKeyAmbushController>();
+            Assert.That(ambush, Is.Not.Null);
+            Physics.SyncTransforms();
+            Assert.DoesNotThrow(ambush.ValidateConfiguration);
+            var properties = new SerializedObject(ambush);
+            foreach (string name in new[] { "_health", "_key", "_entranceGate", "_exitGate", "_entranceClearance", "_roomVolume", "_firstGroup", "_secondGroup" })
+                Assert.That(properties.FindProperty(name).objectReferenceValue, Is.Not.Null, name);
+            var groups = ambush.GetComponentsInChildren<PreparedRegionEncounter>();
+            Assert.That(groups.Length, Is.EqualTo(2));
+            Assert.That(NavMesh.SamplePosition(new Vector3(50, -5, 95), out var start, .5f, NavMesh.AllAreas), Is.True,
+                "Rebake Demo Navigation after opening the updated scene.");
+            for (int i = 0; i < groups.Length; i++)
+            {
+                var group = new SerializedObject(groups[i]);
+                var definition = (EnemyWaveDefinition)group.FindProperty("_group").objectReferenceValue;
+                Assert.That(definition.StableId, Is.EqualTo("demo.key." + (i + 1)));
+                Assert.That(definition.TotalEnemyCount, Is.EqualTo(3));
+                Assert.That(definition.Entries.Where(x => x.EnemyDefinition.Behavior == EnemyBehavior.Chaser).Sum(x => x.Count), Is.EqualTo(i == 0 ? 3 : 2));
+                Assert.That(groups[i].GetComponentsInChildren<RegionPreparationTrigger>(), Is.Empty,
+                    "Only the key flow may activate these groups.");
+                var points = group.FindProperty("_spawnPoints");
+                for (int j = 0; j < points.arraySize; j++)
+                {
+                    var point = (Transform)points.GetArrayElementAtIndex(j).objectReferenceValue;
+                    Assert.That(NavMesh.SamplePosition(point.position, out var target, .5f, NavMesh.AllAreas), Is.True);
+                    var path = new NavMeshPath();
+                    NavMesh.CalculatePath(start.position, target.position, NavMesh.AllAreas, path);
+                    Assert.That(path.status, Is.EqualTo(NavMeshPathStatus.PathComplete), point.name);
+                }
+            }
+            Assert.That(ambush.transform.Find("Return bridge"), Is.Not.Null);
+            Assert.That(ambush.transform.Find("Return arena connector"), Is.Not.Null);
+            var source = new SerializedObject(_demo);
+            Assert.That(source.FindProperty("_keyAmbush").objectReferenceValue, Is.SameAs(ambush));
         }
 
         [Test]

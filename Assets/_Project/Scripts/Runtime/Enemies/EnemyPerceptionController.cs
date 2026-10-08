@@ -114,6 +114,13 @@ namespace ProjectFirstRun.Enemies
             State.Alarm(_enemy.Target.position); Publish();
         }
 
+        public void AlarmAt(Vector3 lastKnownPosition)
+        {
+            if (!CanAct || State == null || Time.timeScale <= 0f) return;
+            State.Alarm(lastKnownPosition);
+            Publish();
+        }
+
         private void Publish()
         {
             _awareness = State?.Awareness ?? EnemyAwareness.Idle;

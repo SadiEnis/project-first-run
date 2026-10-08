@@ -14,6 +14,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.AI;
+using Unity.AI.Navigation;
 
 namespace ProjectFirstRun.Tests.PlayMode.Arenas
 {
@@ -129,7 +131,8 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         }
 
         private PreparedRegionEncounter[] AllEncounters() => _scene.GetRootGameObjects()
-            .SelectMany(x => x.GetComponentsInChildren<PreparedRegionEncounter>()).ToArray();
+            .SelectMany(x => x.GetComponentsInChildren<PreparedRegionEncounter>())
+            .Where(x => x.GetComponentInParent<DemoKeyAmbushController>() == null).ToArray();
 
         private EncounterChestReward OptionalReward() => _scene.GetRootGameObjects()
             .SelectMany(x => x.GetComponentsInChildren<EncounterChestReward>()).Single();
@@ -386,6 +389,225 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_demo.Health.CurrentHealth, Is.EqualTo(health));
             Assert.That(recovery.IsRecovering, Is.False);
             yield return null;
+        }
+
+        private DemoKeyAmbushController KeyAmbush() => _scene.GetRootGameObjects()
+            .SelectMany(x => x.GetComponentsInChildren<DemoKeyAmbushController>()).Single();
+
+        private void AimAtKey()
+        {
+            var motor = _demo.Health.GetComponent<PlayerMotor>();
+            motor.Teleport(new Vector3(47.5f, -4.9f, 97), Quaternion.Euler(0, 90, 0));
+            var origin = _demo.Health.GetComponent<ProjectFirstRun.Chests.Interaction.PlayerChestInteractor>().InteractionOrigin;
+            Vector3 target = KeyAmbush().transform.Find("Key pickup").position;
+            Vector3 delta = target - origin.position;
+            _demo.Health.GetComponent<PlayerLook>().ResetPitch(-Mathf.Asin(delta.normalized.y) * Mathf.Rad2Deg);
+            Physics.SyncTransforms();
+        }
+
+        private IEnumerator CollectKey()
+        {
+            AimAtKey();
+            Assert.That(KeyAmbush().CanCollect(), Is.True, KeyAmbush().Session.Error);
+            Press(Keyboard.current.eKey, queueEventOnly: true);
+            yield return null;
+            Release(Keyboard.current.eKey, queueEventOnly: true);
+            yield return null;
+            Assert.That(KeyAmbush().Session.HasKey, Is.True);
+        }
+
+        private IEnumerator WaitForAmbush(KeyAmbushPhase phase)
+        {
+            var ambush = KeyAmbush();
+            float deadline = Time.realtimeSinceStartup + 8;
+            while (Time.realtimeSinceStartup < deadline && ambush.Session.Phase != phase && ambush.Session.Phase != KeyAmbushPhase.Failed)
+                yield return null;
+            Assert.That(ambush.Session.Phase, Is.EqualTo(phase), ambush.Session.Error);
+        }
+
+        [UnityTest]
+        public IEnumerator KeyAmbushPickupAndTwoGroupsOpenOnlySeparateExit()
+        {
+            var ambush = KeyAmbush();
+            var groups = ambush.GetComponentsInChildren<PreparedRegionEncounter>();
+            var fields = new SerializedObject(ambush);
+            var entrance = (GameObject)fields.FindProperty("_entranceGate").objectReferenceValue;
+            var exit = (GameObject)fields.FindProperty("_exitGate").objectReferenceValue;
+            Assert.That(entrance.activeSelf, Is.False);
+            Assert.That(exit.activeSelf, Is.True);
+            Assert.That(groups.All(x => x.PreparationStatus == RegionPreparationStatus.Idle), Is.True);
+            yield return CollectKey();
+            Assert.That(entrance.activeSelf, Is.True);
+            Assert.That(ambush.transform.Find("Key pickup").gameObject.activeSelf, Is.False);
+            Assert.That(ambush.TryCollect(), Is.False);
+            yield return WaitForAmbush(KeyAmbushPhase.FightingFirst);
+            Assert.That(groups[0].Enemies.Count, Is.EqualTo(3));
+            Assert.That(groups[0].Enemies.All(x => x.Perception.State.IsAlerted), Is.True);
+            Assert.That(groups[1].PreparationStatus, Is.EqualTo(RegionPreparationStatus.Idle));
+            foreach (var enemy in groups[0].Enemies.ToArray())
+                enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, enemy.transform.position, Vector3.forward));
+            yield return WaitForAmbush(KeyAmbushPhase.Intermission);
+            Assert.That(exit.activeSelf, Is.True);
+            Assert.That(ambush.CanEnterFinal, Is.False);
+            Time.timeScale = 0;
+            for (int i = 0; i < 5; i++) yield return null;
+            Assert.That(ambush.Session.Phase, Is.EqualTo(KeyAmbushPhase.Intermission));
+            Time.timeScale = 1;
+            yield return WaitForAmbush(KeyAmbushPhase.FightingSecond);
+            Assert.That(groups[1].Enemies.Count, Is.EqualTo(3));
+            foreach (var enemy in groups[1].Enemies.ToArray())
+                enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, enemy.transform.position, Vector3.forward));
+            yield return WaitForAmbush(KeyAmbushPhase.Completed);
+            Assert.That(entrance.activeSelf, Is.True);
+            Assert.That(exit.activeSelf, Is.False);
+            Assert.That(ambush.CanEnterFinal, Is.True);
+            Assert.That(_demo.Encounter.Enemies.Any(x => x != null && !x.IsDead), Is.True,
+                "Unrelated living enemies must not hold the exit closed.");
+        }
+
+        [UnityTest]
+        public IEnumerator KeyAmbushPickupRequiresSightRangeAndUnpausedControl()
+        {
+            var ambush = KeyAmbush();
+            Assert.That(ambush.CanCollect(), Is.False);
+            AimAtKey();
+            Assert.That(ambush.CanCollect(), Is.True);
+            Time.timeScale = 0;
+            Assert.That(ambush.CanCollect(), Is.False);
+            Time.timeScale = 1;
+            _demo.Health.GetComponent<PlayerController>().SetControlEnabled(false);
+            Assert.That(ambush.CanCollect(), Is.False);
+            _demo.Health.GetComponent<PlayerController>().SetControlEnabled(true);
+            var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            try
+            {
+                wall.transform.position = new Vector3(48.2f, -3.5f, 97);
+                wall.transform.localScale = new Vector3(.2f, 2, 2);
+                Physics.SyncTransforms();
+                Assert.That(ambush.CanCollect(), Is.False, "Solid occlusion must block collection.");
+            }
+            finally { Object.Destroy(wall); }
+            Assert.That(ambush.Session.HasKey, Is.False);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator KeyAmbushDeathCancelsGroupsWithoutUnlockingExit()
+        {
+            yield return CollectKey();
+            yield return WaitForAmbush(KeyAmbushPhase.FightingFirst);
+            var ambush = KeyAmbush();
+            _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
+            yield return null;
+            Assert.That(ambush.Session.Phase, Is.EqualTo(KeyAmbushPhase.Cancelled));
+            Assert.That(ambush.Session.HasKey, Is.False);
+            Assert.That(ambush.CanEnterFinal, Is.False);
+            Assert.That(ambush.GetComponentsInChildren<PreparedRegionEncounter>().All(x => x.Enemies.Count == 0), Is.True);
+            Assert.That(ambush.transform.Find("Downward exit gate").gameObject.activeSelf, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator KeyAmbushFailedGroupDoesNotGrantCompletion()
+        {
+            yield return CollectKey();
+            yield return WaitForAmbush(KeyAmbushPhase.FightingFirst);
+            var ambush = KeyAmbush();
+            ambush.GetComponentsInChildren<PreparedRegionEncounter>()[0].Cancel();
+            yield return null;
+            Assert.That(ambush.Session.Phase, Is.EqualTo(KeyAmbushPhase.Failed));
+            Assert.That(ambush.Session.Error, Is.Not.Empty);
+            Assert.That(ambush.CanEnterFinal, Is.False);
+            Assert.That(ambush.transform.Find("Downward exit gate").gameObject.activeSelf, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator KeyAmbushMissingNavigationFailsEvenWhenPlayerIsFarFromSpawns()
+        {
+            var ambush = KeyAmbush();
+            var first = ambush.GetComponentsInChildren<PreparedRegionEncounter>()[0];
+            first.RequestPreparation();
+            float deadline = Time.realtimeSinceStartup + 8;
+            while (!first.IsReadyForPassage && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(first.IsReadyForPassage, Is.True);
+            AimAtKey();
+            Assert.That(first.Enemies.All(x => Vector3.Distance(x.transform.position, _demo.Health.transform.position) > 2f), Is.True);
+            // The fixture loads additively: the original scene may contain an overlapping
+            // copy of this NavMesh. Removing only the fixture's surface is not isolation.
+            var surfaces = NavMeshSurface.activeSurfaces.ToArray();
+            try
+            {
+                foreach (var surface in surfaces) surface.RemoveData();
+                // Do not use isOnNavMesh as proof of removal: dormant agents can retain
+                // that flag. Verify the actual data using the same type/mask as each agent.
+                foreach (var enemy in first.Enemies)
+                {
+                    var agent = enemy.GetComponent<NavMeshAgent>();
+                    var filter = new NavMeshQueryFilter { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask };
+                    Assert.That(NavMesh.SamplePosition(enemy.transform.position, out _, .5f, filter), Is.False,
+                        "Missing-navigation setup failed: navigation data remains at an ambush spawn.");
+                }
+                yield return CollectKey();
+                yield return WaitForAmbush(KeyAmbushPhase.Failed);
+                StringAssert.Contains("Rebake Demo Navigation", ambush.Session.Error);
+                Assert.That(ambush.CanEnterFinal, Is.False);
+                Assert.That(ambush.transform.Find("Downward exit gate").gameObject.activeSelf, Is.True);
+                Assert.That(ambush.GetComponentsInChildren<PreparedRegionEncounter>().All(x => x.Enemies.Count == 0), Is.True);
+            }
+            finally
+            {
+                foreach (var surface in surfaces)
+                    if (surface != null && surface.isActiveAndEnabled) surface.AddData();
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator KeyAmbushSecondGroupDisabledAgentFailsBeforeCombat()
+        {
+            var ambush = KeyAmbush();
+            var groups = ambush.GetComponentsInChildren<PreparedRegionEncounter>();
+            // Prepare the second group early only to inject a fault before its activation.
+            groups[1].RequestPreparation();
+            float deadline = Time.realtimeSinceStartup + 8;
+            while (!groups[1].IsReadyForPassage && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(groups[1].IsReadyForPassage, Is.True);
+            groups[1].Enemies[0].GetComponent<NavMeshAgent>().enabled = false;
+            yield return CollectKey();
+            yield return WaitForAmbush(KeyAmbushPhase.FightingFirst);
+            foreach (var enemy in groups[0].Enemies.ToArray())
+                enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, enemy.transform.position, Vector3.forward));
+            yield return WaitForAmbush(KeyAmbushPhase.Failed);
+            StringAssert.Contains("NavMesh", ambush.Session.Error);
+            Assert.That(ambush.CanEnterFinal, Is.False);
+            Assert.That(ambush.transform.Find("Downward exit gate").gameObject.activeSelf, Is.True);
+            Assert.That(groups.All(x => x.Enemies.Count == 0), Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator KeyReturnRouteCanBeWalkedBackToArenaWithoutParkour()
+        {
+            foreach (var encounter in AllEncounters()) encounter.Cancel();
+            var ambush = KeyAmbush();
+            ambush.enabled = false; // Isolate geometry, gate sequencing is covered separately.
+            ambush.transform.Find("Downward exit gate").gameObject.SetActive(false);
+            _demo.Health.GetComponent<PlayerController>().SetControlEnabled(false);
+            var motor = _demo.Health.GetComponent<PlayerMotor>();
+            motor.Teleport(new Vector3(49, -4.9f, 105), Quaternion.identity);
+            Physics.SyncTransforms();
+            foreach (var target in new[] {new Vector3(49,-7,115), new Vector3(19,-7,115),
+                new Vector3(19,-7,105), new Vector3(13,-7,105)})
+            {
+                bool reached = false;
+                for (int step = 0; step < 1000; step++)
+                {
+                    Vector3 delta = target - _demo.Health.transform.position; delta.y = 0;
+                    if (delta.magnitude < .2f) { reached = true; break; }
+                    _demo.Health.transform.rotation = Quaternion.LookRotation(delta);
+                    motor.Tick(Vector2.up, false, .02f);
+                    Assert.That(_demo.Health.transform.position.y, Is.GreaterThan(-8));
+                    if (step % 5 == 0) yield return null;
+                }
+                Assert.That(reached, Is.True, "Return route blocked before " + target);
+            }
         }
 
         [UnityTearDown]

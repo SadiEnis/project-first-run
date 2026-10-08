@@ -9,6 +9,14 @@ namespace ProjectFirstRun.Input
         private ProjectFirstRunInputActions _inputActions;
         private bool _jumpPending;
         private int _jumpFrame = -1;
+        private int _interactionConsumedFrame = -1;
+
+        public bool TryConsumeInteractionPress()
+        {
+            if (!WasInteractPressedThisFrame || _interactionConsumedFrame == Time.frameCount) return false;
+            _interactionConsumedFrame = Time.frameCount;
+            return true;
+        }
         private bool _jumpNeedsRelease;
         private bool _gameplayRequested = true;
         private readonly System.Collections.Generic.HashSet<object> _gameplayBlocks = new();

@@ -172,6 +172,27 @@ namespace ProjectFirstRun.Tests.PlayMode.Player
         }
 
         [Test]
+        public void WorldInteractionPressCanBeConsumedOnlyOncePerFrame()
+        {
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            var reader = _player.AddComponent<PlayerInputReader>();
+            Press(keyboard.eKey);
+            Assert.That(reader.TryConsumeInteractionPress(), Is.True);
+            Assert.That(reader.TryConsumeInteractionPress(), Is.False);
+        }
+
+        [Test]
+        public void BlockedWorldInteractionCannotConsumeAPress()
+        {
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            var reader = _player.AddComponent<PlayerInputReader>();
+            Press(keyboard.eKey);
+            var owner = new object();
+            reader.SetGameplayBlocked(owner, true);
+            Assert.That(reader.TryConsumeInteractionPress(), Is.False);
+        }
+
+        [Test]
         public void GamepadSouthJumps_RightShoulderInteracts_WithoutOverlap()
         {
             var pad = InputSystem.AddDevice<Gamepad>();

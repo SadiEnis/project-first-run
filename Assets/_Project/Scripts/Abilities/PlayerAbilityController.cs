@@ -20,6 +20,13 @@ namespace ProjectFirstRun.Abilities
         private ReadOnlyCollection<AbilityRuntimeEntry> _readOnlyEntries;
 
         private bool _abilityControlEnabled = true;
+        private readonly HashSet<object> _controlBlocks = new();
+        public void SetAbilityBlocked(object owner, bool blocked)
+        {
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+            if (blocked) _controlBlocks.Add(owner);
+            else _controlBlocks.Remove(owner);
+        }
         private PlayerStatsController _stats;
 
         public IReadOnlyList<AbilityRuntimeEntry> Entries
@@ -35,7 +42,7 @@ namespace ProjectFirstRun.Abilities
             _entries.Count;
 
         public bool IsAbilityControlEnabled =>
-            _abilityControlEnabled;
+            _abilityControlEnabled && _controlBlocks.Count == 0;
 
         public Transform AbilityOrigin =>
             _abilityOrigin != null
@@ -110,9 +117,9 @@ namespace ProjectFirstRun.Abilities
             TickCooldowns(
                 deltaTime);
             foreach (var entry in _entries)
-                entry.TickContinuous(deltaTime, AbilityOrigin.position, _abilityControlEnabled && isActiveAndEnabled);
+                entry.TickContinuous(deltaTime, AbilityOrigin.position, IsAbilityControlEnabled && isActiveAndEnabled);
 
-            if (!_abilityControlEnabled)
+            if (!IsAbilityControlEnabled)
             {
                 return;
             }

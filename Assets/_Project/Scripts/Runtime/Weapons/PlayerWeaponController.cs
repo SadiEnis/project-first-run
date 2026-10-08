@@ -36,6 +36,13 @@ namespace ProjectFirstRun.Weapons
         
 
         private bool _weaponControlEnabled = true;
+        private readonly System.Collections.Generic.HashSet<object> _controlBlocks = new();
+        public void SetWeaponBlocked(object owner, bool blocked)
+        {
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+            if (blocked) _controlBlocks.Add(owner);
+            else _controlBlocks.Remove(owner);
+        }
 
         public event Action<HitscanVolleyResult> ShotFired;
         public event Action<RocketProjectile> ProjectileLaunched;
@@ -68,7 +75,7 @@ namespace ProjectFirstRun.Weapons
             _runtimeState.IsReloading;
 
         public bool IsWeaponControlEnabled =>
-            _weaponControlEnabled;
+            _weaponControlEnabled && _controlBlocks.Count == 0;
 
         public float CurrentDamage =>
             IsInitialized
@@ -116,7 +123,7 @@ namespace ProjectFirstRun.Weapons
         private void Update()
         {
             if (!IsInitialized ||
-                !_weaponControlEnabled || Time.timeScale <= 0f)
+                !IsWeaponControlEnabled || Time.timeScale <= 0f)
             {
                 _preparedFire.Reset();
                 return;
@@ -142,7 +149,7 @@ namespace ProjectFirstRun.Weapons
                 }
                 var entry = _activeEntry;
                 _preparedFire.Tick(_runtimeState, Time.deltaTime, entry.Fire.PreparationDuration,
-                    () => _weaponControlEnabled && isActiveAndEnabled && Time.timeScale > 0 &&
+                    () => IsWeaponControlEnabled && isActiveAndEnabled && Time.timeScale > 0 &&
                           ReferenceEquals(entry, _activeEntry) && TryFire(false));
                 TryAutoReload();
                 return;
@@ -250,7 +257,7 @@ namespace ProjectFirstRun.Weapons
 
         private void TryAutoReload()
         {
-            if (IsInitialized && isActiveAndEnabled && _weaponControlEnabled && Time.timeScale > 0 &&
+            if (IsInitialized && isActiveAndEnabled && IsWeaponControlEnabled && Time.timeScale > 0 &&
                 _runtimeState.MagazineAmmo == 0 && _runtimeState.ReserveAmmo > 0 && !_runtimeState.IsReloading)
                 StartReload();
         }

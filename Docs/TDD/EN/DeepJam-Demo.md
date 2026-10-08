@@ -235,7 +235,13 @@ No physical room-destruction simulation or boss combat AI. FPS presentation is t
 
 ### Sixth implementation increment: final gate and demo ending
 
-Status: pre-implementation contract. The user accepted the key ambush and separate return route; this increment's code and scene wiring are not implemented yet. Continue on the same demo branch, preserving the authored scene.
+Status: first sub-increment implemented; Unity tests and user gameplay acceptance are pending. The key ambush and separate return route were previously accepted. Added DemoFinalSession and DemoFinalController, converted the existing final barrier into a conditional gate, and authored a small entry area behind it with a volume checking only the player capsule. Continue on the same demo branch, preserving the existing layout.
+
+Intermediate boundary: no giant, rubble/fade or completion screen yet. Entry freezes game time; the later presentation will use unscaled time. Acquire owner-based input/motor/weapon/ability/damage locks and hide the regular HUD. A temporary “Final entry reached” screen offers Restart preview / Quit; the state is Ending, not Completed. Restart preview reloads a fresh scene, without adding persistence/checkpoints. Disabling the final controller releases only its own locks. The next increment replaces this temporary screen with the actual ending sequence.
+
+New coverage: 5 EditMode cases in DemoFinalSessionTests; gate/volume/floor/reference validation in DemoMapLayoutTests; 3 PlayMode tests in DemoOpeningTests (gate condition and combat locking, pause/input/death guards, preservation of other owners' locks). No automated tests were executed for this increment; only static diff and new scene fileID references were checked. Completion/restart integration coverage will expand in the presentation increment.
+
+Gameplay trial: reopen the updated scene, run Demo → Rebake Demo Navigation after the geometry addition and save; do not regenerate the scene. Without the key the final gate stays closed. Collect the key, clear both groups and return by the separate route: the final gate should be open. Walk fully inside to stop movement/fire/automatic abilities and replace the HUD with the temporary final-entry screen. Restart preview should load a fresh run. Remaining large-arena enemies must not block the gate.
 
 - **Gate condition:** Replace the temporary final barrier with a gate that opens for a living player when `key collected AND both ambush groups completed`. Clearing the large arena or optional room is not required. Do not consume the key. Opening the gate does not start the ending.
 - **Entry:** Recheck eligibility when the player enters the interior trigger beyond the gate; begin exactly once. Enemy/projectile colliders, repeat entry, a dead player, an open reward modal or pause cannot start the ending. Do not trap the player in the doorway; closing the entrance behind them is unnecessary for the first version.

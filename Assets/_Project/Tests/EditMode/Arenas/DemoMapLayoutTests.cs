@@ -45,7 +45,7 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 "03 - Second room", "04 - Arena overlook",
                 "05 - Arena left stairs", "06 - Arena right stairs",
                 "07 - Large arena", "08 - Optional room",
-                "09 - Key route entrance - unfinished", "10 - Final entrance - unfinished" })
+                "09 - Key route entrance - unfinished", "10 - Final entrance" })
                 Assert.That(_geometry.Find(section), Is.Not.Null, section);
             Assert.That(_geometry.Find("Traversal checkpoints").childCount, Is.EqualTo(12));
             var encounters = _scene.GetRootGameObjects().SelectMany(x =>
@@ -57,6 +57,22 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                     Assert.That(box.enabled && !box.isTrigger, Is.True);
                     Assert.That(box.GetComponent<MeshRenderer>().enabled, Is.True);
                 }
+        }
+
+        [Test]
+        public void FinalGateHasIndependentInteriorAndExplicitPlayerDependencies()
+        {
+            var final = _geometry.GetComponentInChildren<DemoFinalController>();
+            Assert.That(final, Is.Not.Null);
+            Assert.DoesNotThrow(final.ValidateConfiguration);
+            var fields = new SerializedObject(final);
+            var gate = (GameObject)fields.FindProperty("_gate").objectReferenceValue;
+            var volume = (BoxCollider)fields.FindProperty("_entryVolume").objectReferenceValue;
+            Physics.SyncTransforms();
+            Assert.That(gate.activeSelf, Is.True);
+            Assert.That(volume.bounds.min.z, Is.GreaterThan(gate.GetComponent<Collider>().bounds.max.z));
+            Assert.That(final.transform.Find("Final entry floor"), Is.Not.Null);
+            Assert.That(new SerializedObject(_demo).FindProperty("_final").objectReferenceValue, Is.EqualTo(final));
         }
 
         [Test]

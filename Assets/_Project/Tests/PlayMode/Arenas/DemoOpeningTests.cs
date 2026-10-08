@@ -610,6 +610,110 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             }
         }
 
+        private DemoFinalController FinalEntry() => _scene.GetRootGameObjects()
+            .SelectMany(x => x.GetComponentsInChildren<DemoFinalController>()).Single();
+
+        private void CompleteKeyConditionForFinalTest()
+        {
+            // Isolate final entry; real combat ordering is covered by the ambush tests.
+            var session = KeyAmbush().Session;
+            Assert.That(session.TryCollect(true, true, true), Is.True);
+            Assert.That(session.TryStartGroup(0), Is.True);
+            session.CompleteGroup(0);
+            session.Tick(1);
+            Assert.That(session.TryStartGroup(1), Is.True);
+            session.CompleteGroup(1);
+        }
+
+        [UnityTest]
+        public IEnumerator FinalGateRequiresBothGroupsAndEntryLocksCombatWithoutDeath()
+        {
+            var final = FinalEntry();
+            Assert.That(final.IsGateOpen, Is.False);
+            var session = KeyAmbush().Session;
+            session.TryCollect(true, true, true);
+            yield return null;
+            Assert.That(final.IsGateOpen, Is.False, "A key alone is insufficient.");
+            // Complete the condition independently of enemy deaths for this focused test.
+            if (session.Phase == KeyAmbushPhase.PreparingFirst) session.TryStartGroup(0);
+            session.CompleteGroup(0);
+            session.Tick(1);
+            session.TryStartGroup(1);
+            session.CompleteGroup(1);
+            yield return null;
+            Assert.That(final.IsGateOpen, Is.True);
+            Assert.That(final.Session.Phase, Is.EqualTo(DemoFinalPhase.Playing));
+            Assert.That(_demo.Encounter.Enemies.Any(x => !x.IsDead), Is.True);
+            _demo.Health.GetComponent<PlayerMotor>().Teleport(new Vector3(0, -6.9f, 112), Quaternion.identity);
+            Physics.SyncTransforms();
+            yield return null;
+            Assert.That(final.Session.Phase, Is.EqualTo(DemoFinalPhase.Ending));
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(final.TryBegin(), Is.False);
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>().IsGameplayInputEnabled, Is.False);
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Weapons.PlayerWeaponController>().IsWeaponControlEnabled, Is.False);
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Abilities.PlayerAbilityController>().IsAbilityControlEnabled, Is.False);
+            float health = _demo.Health.CurrentHealth;
+            Assert.That(_demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero)).WasApplied, Is.False);
+            Assert.That(_demo.Health.CurrentHealth, Is.EqualTo(health));
+            Assert.That(_demo.Health.IsDead, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator FinalEntryRejectsPauseInputLocksAndDeath()
+        {
+            var final = FinalEntry();
+            CompleteKeyConditionForFinalTest();
+            yield return null;
+            _demo.Health.GetComponent<PlayerMotor>().Teleport(new Vector3(0, -6.9f, 112), Quaternion.identity);
+            Physics.SyncTransforms();
+            Time.timeScale = 0;
+            Assert.That(final.TryBegin(), Is.False);
+            Time.timeScale = 1;
+            var input = _demo.Health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>();
+            object owner = new object();
+            input.SetGameplayBlocked(owner, true);
+            Assert.That(final.TryBegin(), Is.False);
+            input.SetGameplayBlocked(owner, false);
+            _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
+            Assert.That(final.TryBegin(), Is.False);
+            yield return null;
+            Assert.That(final.Session.Phase, Is.EqualTo(DemoFinalPhase.Dead));
+            Assert.That(final.IsEnding, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator FinalReleasePreservesOtherOwnersCombatAndDamageBlocks()
+        {
+            var final = FinalEntry();
+            CompleteKeyConditionForFinalTest();
+            yield return null;
+            _demo.Health.GetComponent<PlayerMotor>().Teleport(new Vector3(0, -6.9f, 112), Quaternion.identity);
+            Physics.SyncTransforms();
+            Assert.That(final.TryBegin(), Is.True);
+            var weapons = _demo.Health.GetComponent<ProjectFirstRun.Weapons.PlayerWeaponController>();
+            var abilities = _demo.Health.GetComponent<ProjectFirstRun.Abilities.PlayerAbilityController>();
+            var input = _demo.Health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>();
+            object other = new object();
+            weapons.SetWeaponBlocked(other, true);
+            abilities.SetAbilityBlocked(other, true);
+            input.SetGameplayBlocked(other, true);
+            _demo.Health.SetDamageBlocked(other, true);
+            final.enabled = false;
+            Assert.That(weapons.IsWeaponControlEnabled, Is.False);
+            Assert.That(abilities.IsAbilityControlEnabled, Is.False);
+            Assert.That(input.IsGameplayInputEnabled, Is.False);
+            Assert.That(_demo.Health.ApplyDamage(new DamageInfo(1, null, Vector3.zero, Vector3.zero)).WasApplied, Is.False);
+            weapons.SetWeaponBlocked(other, false);
+            abilities.SetAbilityBlocked(other, false);
+            input.SetGameplayBlocked(other, false);
+            _demo.Health.SetDamageBlocked(other, false);
+            Assert.That(weapons.IsWeaponControlEnabled, Is.True);
+            Assert.That(abilities.IsAbilityControlEnabled, Is.True);
+            Assert.That(input.IsGameplayInputEnabled, Is.True);
+            Assert.That(_demo.Health.ApplyDamage(new DamageInfo(1, null, Vector3.zero, Vector3.zero)).WasApplied, Is.True);
+        }
+
         [UnityTearDown]
         public IEnumerator Unload()
         {

@@ -235,7 +235,13 @@ Gerçek fizik tabanlı oda yıkımı veya dev için savaş AI'ı gerekmez. FPS s
 
 ### Altıncı uygulama dilimi: final kapısı ve demo sonu
 
-Durum: uygulama öncesi sözleşme. Anahtar pususu ve ayrı dönüş yolu kullanıcı tarafından kabul edildi; bu dilimin kodu ve sahne bağlantıları henüz eklenmedi. Aynı demo branch'inde, kayıtlı sahne korunarak ilerlenir.
+Durum: ilk alt dilim uygulandı; Unity testleri ve kullanıcı oynanış kabulü bekleniyor. Anahtar pususu ve ayrı dönüş yolu önceden kabul edildi. DemoFinalSession ve DemoFinalController eklendi; mevcut final bariyeri koşullu kapıya dönüştürüldü. Kapının arkasında küçük, kayıtlı bir giriş alanı ve yalnız oyuncu kapsülünü kontrol eden hacim var. Aynı demo branch'inde mevcut yerleşim korunuyor.
+
+Ara sürüm sınırı: henüz dev, yıkıntı/kararma veya tamamlandı ekranı yoktur. Final başlangıcında oyun zamanı dondurulur; sonraki sunum ölçeklenmemiş zamanla işleyecektir. Sahip bazlı input/motor/silah/yetenek/hasar kilitleri alınır ve normal HUD gizlenir. Geçici “Final entry reached” ekranı Restart preview / Quit sunar; bu durum Completed değil Ending'dir. Restart preview yeni sahne yükler; kalıcı kayıt/checkpoint eklenmez. Final kontrol bileşeni kapanırken yalnız kendi kilitlerini bırakır. Sonraki dilim bu geçici ekranı gerçek bitiş sekansıyla değiştirir.
+
+Yeni kapsam: DemoFinalSessionTests içinde 5 EditMode vaka; DemoMapLayoutTests içinde kapı, hacim, zemin ve referans kontrolü; DemoOpeningTests içinde 3 PlayMode test (kapı koşulu ve mücadele kilidi, pause/input/ölüm engelleri, diğer sahiplerin kilitlerinin korunması). Otomatik testler bu dilimde çalıştırılmadı; yalnız statik diff ve yeni sahne fileID referansları kontrol edildi. Sonraki görsel dilimde tamamlanma/restart entegrasyon kapsamı genişletilecek.
+
+Oynanış denemesi: güncel sahneyi yeniden aç; geometri eklendiği için Demo → Rebake Demo Navigation çalıştır ve kaydet, sahneyi yeniden üretme. Anahtarsız final kapısı kapalı kalmalı. Anahtarı alıp iki grubu temizle, ayrı yoldan arenaya dön: final kapısı açık olmalı. Kapının ardına tamamen girince hareket/ateş/otomatik yetenekler durmalı, HUD yerine geçici final başlangıç ekranı görünmeli. Restart preview temiz bir run açmalı. Büyük arenada kalan düşmanlar kapıyı engellememeli.
 
 - **Kapı koşulu:** Mevcut geçici final bariyeri, yaşayan oyuncu için `anahtar alındı VE iki pusu grubu tamamlandı` olduğunda açılır. Büyük arenadaki veya opsiyonel odadaki bütün düşmanların ölmesi gerekmez. Anahtar harcanmaz. Kapının açılması kendi başına finali başlatmaz.
 - **Başlangıç:** Kapının ardındaki oda içi hacme oyuncu girince koşullar yeniden kontrol edilir ve final yalnız bir kez başlar. Düşman/mermi collider'ları, tekrar giriş, ölü oyuncu, açık ödül ekranı veya pause finali başlatamaz. Oyuncu kapı eşiğinde sıkıştırılmaz; ilk sürümde arkasındaki kapıyı tekrar kapatmak gerekmez.

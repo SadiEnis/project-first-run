@@ -29,6 +29,7 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private PreparedRegionEncounter[] _roomEncounters = Array.Empty<PreparedRegionEncounter>();
         [SerializeField] private EncounterChestReward _optionalReward;
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
+        [SerializeField] private DemoFinalController _final;
         private bool _restarting;
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
@@ -87,13 +88,13 @@ namespace ProjectFirstRun.Development.Arenas
         private void Update()
         {
             // Reward UI retains its own input/cursor authority. Retry never interrupts a live run.
-            if (_health.IsDead && Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
+            if ((_final == null || !_final.IsEnding) && _health.IsDead && Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
                 Restart();
         }
 
         public void Restart()
         {
-            if (_restarting || !_health.IsDead) return;
+            if (_restarting || !_health.IsDead || (_final != null && _final.IsEnding)) return;
             _restarting = true;
             Time.timeScale = 1;
 #if UNITY_EDITOR
@@ -106,7 +107,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void OnGUI()
         {
-            if (!IsReady || _selection.IsOpen) return;
+            if (!IsReady || _selection.IsOpen || (_final != null && _final.IsEnding)) return;
             GUI.Box(new Rect(16, 16, 390, 110), "DEMO — DUNGEON GREYBOX");
             GUI.Label(new Rect(28, 42, 365, 24), $"Health {_health.CurrentHealth:0}/{_health.MaximumHealth:0}   Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
             GUI.Label(new Rect(28, 66, 365, 24), $"Level {_experience.Level}   XP {_experience.CurrentExperience}/{_experience.RequiredExperience}");
@@ -119,7 +120,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (_health.transform.position.x > 21 && _health.transform.position.z > 90)
                 objective = "Cross the platforms, enter the room and take the key: E / RB-R1.";
             if (_keyAmbush != null && _keyAmbush.Session.HasKey)
-                objective = _keyAmbush.CanEnterFinal ? "Key secured. Follow the separate exit down to the arena. Finale not active yet." :
+                objective = _keyAmbush.CanEnterFinal ? "Key secured. Return to the arena and enter the final gate." :
                     "Clear both ambush groups to open the separate return exit.";
             GUI.Box(new Rect(16, Screen.height - 54, Mathf.Min(660, Screen.width - 32), 38), objective);
             string preparationError = GetRoomError();

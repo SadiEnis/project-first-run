@@ -11,6 +11,13 @@ namespace ProjectFirstRun.Combat
         private float _maximumHealth = 100f;
 
         private HealthState _healthState;
+        private readonly System.Collections.Generic.HashSet<object> _damageBlocks = new();
+        public void SetDamageBlocked(object owner, bool blocked)
+        {
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+            if (blocked) _damageBlocks.Add(owner);
+            else _damageBlocks.Remove(owner);
+        }
         public float BaseMaximumHealth => _maximumHealth;
         public float DamageReduction { get; private set; }
         public float IncomingDamageMultiplier { get; private set; } = 1f;
@@ -100,6 +107,7 @@ namespace ProjectFirstRun.Combat
             in DamageInfo damageInfo)
         {
             EnsureInitialized();
+            if (_damageBlocks.Count > 0) return DamageResult.Rejected(damageInfo.Amount, CurrentHealth);
 
             DamageResult result =
                 _healthState.ApplyDamage(damageInfo.Amount, DamageReduction, IncomingDamageMultiplier);

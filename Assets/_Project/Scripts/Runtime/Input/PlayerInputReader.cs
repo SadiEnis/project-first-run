@@ -10,6 +10,17 @@ namespace ProjectFirstRun.Input
         private bool _jumpPending;
         private int _jumpFrame = -1;
         private bool _jumpNeedsRelease;
+        private bool _gameplayRequested = true;
+        private readonly System.Collections.Generic.HashSet<object> _gameplayBlocks = new();
+
+        // Temporary owners must not overwrite the state requested by rewards/death.
+        public void SetGameplayBlocked(object owner, bool blocked)
+        {
+            if (owner == null) throw new System.ArgumentNullException(nameof(owner));
+            if (blocked) _gameplayBlocks.Add(owner);
+            else _gameplayBlocks.Remove(owner);
+            ApplyGameplayState();
+        }
 
         public bool ConsumeJumpPress(bool allowJump)
         {
@@ -36,6 +47,7 @@ namespace ProjectFirstRun.Input
         }
 
         public bool IsGameplayInputEnabled => _inputActions != null && _inputActions.Gameplay.enabled;
+        public bool IsGameplayInputRequested => _gameplayRequested;
 
         public Vector2 MoveInput =>
             _inputActions.Gameplay.Move.ReadValue<Vector2>();
@@ -53,16 +65,16 @@ namespace ProjectFirstRun.Input
             _inputActions.Gameplay.Fire.IsPressed();
 
         public bool WasFirePressedThisFrame =>
-            _inputActions.Gameplay.Fire.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.Fire.WasPressedThisFrame();
 
         public bool WasReloadPressedThisFrame =>
-            _inputActions.Gameplay.Reload.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.Reload.WasPressedThisFrame();
 
         public bool WasSwitchWeaponPressedThisFrame =>
-            _inputActions.Gameplay.SwitchWeapon.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.SwitchWeapon.WasPressedThisFrame();
 
         public bool WasInteractPressedThisFrame =>
-            _inputActions.Gameplay.Interact.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.Interact.WasPressedThisFrame();
 
         public bool IsLookInputFromGamepad =>
             _inputActions.Gameplay.Look.activeControl?.device is Gamepad;
@@ -77,7 +89,7 @@ namespace ProjectFirstRun.Input
         {
             _jumpPending = false;
             _jumpNeedsRelease = true;
-            _inputActions.Gameplay.Enable();
+            ApplyGameplayState();
         }
 
         private void OnDisable()
@@ -93,6 +105,13 @@ namespace ProjectFirstRun.Input
 
         public void SetGameplayInputEnabled(bool isEnabled)
         {
+            _gameplayRequested = isEnabled;
+            ApplyGameplayState();
+        }
+
+        private void ApplyGameplayState()
+        {
+            bool isEnabled = _gameplayRequested && _gameplayBlocks.Count == 0 && isActiveAndEnabled;
             if (IsGameplayInputEnabled == isEnabled) return;
             _jumpPending = false;
             _jumpNeedsRelease = true;

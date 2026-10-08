@@ -114,7 +114,9 @@ namespace ProjectFirstRun.Development.Arenas
                 Reward != null ? "Collect your reward in the room beyond the corridor (E)." :
                 "Enter the corridor and defeat its four enemies for a guaranteed reward.";
             if (_health.transform.position.z > 53)
-                objective = "Explore freely. Green side room: bonus chest. Key/finale not ready yet.";
+                objective = "Green side room: bonus chest. Right stairs: jumping route. Key/finale not ready.";
+            if (_health.transform.position.x > 21 && _health.transform.position.z > 90)
+                objective = "Space / A-Cross: jump. Falling costs health and returns you. Key room not ready.";
             GUI.Box(new Rect(16, Screen.height - 54, Mathf.Min(660, Screen.width - 32), 38), objective);
             string preparationError = GetRoomError();
             if (preparationError != null)

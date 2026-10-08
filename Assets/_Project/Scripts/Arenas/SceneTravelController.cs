@@ -196,7 +196,7 @@ namespace ProjectFirstRun.Arenas
                 _timeScale = Time.timeScale;
                 _input = player.GetComponent<PlayerInputReader>();
                 _health = player.GetComponent<HealthComponent>();
-                _inputWasEnabled = _input != null && _input.IsGameplayInputEnabled;
+                _inputWasEnabled = _input != null && _input.IsGameplayInputRequested;
                 Time.timeScale = 0;
                 Capture(player.GetComponent<PlayerController>());
                 Capture(player.GetComponent<PlayerWeaponController>());

@@ -123,6 +123,12 @@ namespace ProjectFirstRun.Weapons
             }
 
             TryAutoReload();
+            if (!_inputReader.IsGameplayInputEnabled)
+            {
+                _preparedFire.Reset();
+                UpdateRuntimeState(Time.deltaTime);
+                return;
+            }
             if (_activeEntry.Fire.PreparationDuration > 0)
             {
                 HandleReloadInput();

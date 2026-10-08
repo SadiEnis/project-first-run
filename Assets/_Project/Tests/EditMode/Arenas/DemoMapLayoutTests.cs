@@ -160,6 +160,34 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
         }
 
         [Test]
+        public void ParkourHasThreeFixedPlatformsAndExplicitRecoveryReferences()
+        {
+            var root = _scene.GetRootGameObjects().Single(x => x.name == "Demo parkour");
+            var recovery = root.GetComponent<ParkourRecovery>();
+            Assert.DoesNotThrow(recovery.ValidateConfiguration);
+            var properties = new SerializedObject(recovery);
+            foreach (string field in new[] { "_fallVolume", "_returnPoint", "_health" })
+                Assert.That(properties.FindProperty(field).objectReferenceValue, Is.Not.Null, field);
+            Assert.That(properties.FindProperty("_damageFraction").floatValue, Is.EqualTo(.1f));
+            var platforms = root.GetComponentsInChildren<BoxCollider>()
+                .Where(x => x.name.StartsWith("Parkour platform ")).OrderBy(x => x.name).ToArray();
+            Assert.That(platforms.Length, Is.EqualTo(3));
+            Physics.SyncTransforms();
+            for (int i = 0; i < platforms.Length; i++)
+            {
+                Assert.That(platforms[i].isTrigger, Is.False);
+                Assert.That(platforms[i].bounds.max.y, Is.EqualTo(-5).Within(.001f));
+                Assert.That(platforms[i].bounds.size.z, Is.GreaterThanOrEqualTo(3));
+                if (i > 0)
+                    Assert.That(platforms[i].bounds.min.x - platforms[i-1].bounds.max.x, Is.InRange(1.2f, 1.6f));
+            }
+            var volume = (BoxCollider)properties.FindProperty("_fallVolume").objectReferenceValue;
+            Assert.That(volume.isTrigger, Is.True);
+            Assert.That(volume.bounds.max.y, Is.LessThan(platforms[0].bounds.min.y));
+            Assert.That(root.transform.Find("Parkour safe landing - key room next increment"), Is.Not.Null);
+        }
+
+        [Test]
         public void BakedNavigationReachesNewElevationsAndOptionalRoom()
         {
             const string bakeHint = "Run Project First Run/Demo/Rebake Demo Navigation after scene geometry changes.";

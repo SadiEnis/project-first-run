@@ -153,7 +153,7 @@ Anahtar odasından parkuru ters yönde dönmek gerekmeyecek. Pusu tamamlanınca 
 
 ### Dördüncü uygulama dilimi: zıplama ve sabit parkur
 
-Uygulama durumu: zıplama girdisi/motor desteği ve yedi hedefli PlayMode testi eklendi; Unity çalıştırması ve kullanıcı kabulü bekleniyor. Üç platform, düşüş hasarı ve yerel geri dönüş henüz uygulanmadı. Aşağıdaki maddeler bütün dilimin kabul sözleşmesidir.
+Uygulama durumu: zıplama kullanıcı tarafından oynanışta kabul edildi ve kaydedildi. Üç sabit platform, varış alanı ve ParkourRecovery kayıtlı demo sahnesine eklendi; bu yeni bölümün Unity testleri ve oynanış kabulü bekleniyor. Aşağıdaki maddeler bütün dilimin kabul sözleşmesidir.
 
 Kontrol çakışması giderildi: gamepad güney tuşu zıplamaya ayrıldı; mevcut sandık etkileşimi boş olan sağ omuz tuşuna taşındı. Klavyede etkileşim E olarak kalır. Sandık etkileşim testi yeni eşlemeyi kullanır.
 
@@ -165,6 +165,16 @@ Kontrol çakışması giderildi: gamepad güney tuşu zıplamaya ayrıldı; mevc
 - **Sonraki dilim:** Anahtar alımı, pusu, kapılar ve aşağı kısa yol ayrı uygulamadır. Bu dilimin varışı tamamlanmış demo gibi sunulmaz; geçici test sonu açıkça belirtilir ve oyuncu geri yürüyerek/zıplayarak ayrılabilir. Pusu sonrası ters parkur gerektirmeyen nihai çıkış sözleşmesi değişmez.
 
 Doğrulama için testler yazılır, kullanıcı çalıştırır: yerde tek basış, havada/tuş basılıyken tekrar etmeme, kontrol kilidinde basış temizliği, tavana çarpma; aynı düşüşte tek hasar, maksimum can ve gelen-hasar değiştiricileri, güvenli poz/hız/bakış, ölümcül düşüş ve kararma sırasında ölüm, tekrar düşebilme, run ilerlemesinin korunması. Elle üç atlayışın yürüyüşle geçilmesi, her boşluktan güvenli dönüş, ödül/pause çakışması ve mevcut odalara regresyon kontrol edilir. Bu checkpoint Unity testleri veya Windows build çalıştırmaz.
+
+### Parkur entegrasyonu ve deneme rotası
+
+- Büyük arenanın sağındaki anahtar merdivenini çık. Başlangıç sahanlığı (22,5; -5; 97), platform merkezleri X=26,5 / 30,5 / 34,5; güvenli varış X=39,25'tir. Üç platforma çıkış ve son varış dahil dört boşluk atlanır. İlk boşluk 1,25 m, diğerleri 1,5 m; tüm üst yüzeyler Y=-5'tedir. Sprint gerekmez; platform kenarına yaklaşarak zıpla.
+- Sahne kökü `Demo parkour` altında geometri, düşüş hacmi ve dönüş noktası Inspector'dan düzenlenebilir. Geçici son bariyer X=24'ten X=41,5'e taşındı. Varışta anahtar odasının henüz hazır olmadığı belirtilir; şimdilik geri atlayarak çıkılır.
+- Parkur geometrisi düşman NavMeshSurface'inin çocukları dışında tutulur; zıplama boşlukları düşman yürüyüş rotası değildir. Mevcut anahtar girişindeki bariyer taşındığı için `Project First Run → Demo → Rebake Demo Navigation` çalıştırılıp sahne kaydedilir. Bu işlem asistan tarafından çalıştırılmadı; eski oda rotalarının bake testi korunur.
+- Düşüşte HealthComponent üzerinden tek hasar, 0,15 saniye kararma, güvenli konuma taşıma ve 0,15 saniye açılma uygulanır. Motorun düşey hızı, bakış eğimi ve kamera sekmesi temizlenir; oyuncu platformlara döndürülür. Pause süreyi durdurur; ölüm işlemi iptal eder. XP, şarjör, yetenekler ve karşılaşmalar sıfırlanmaz.
+- Geçici giriş engelleri sahip bazlıdır; PlayerInputReader istenen kontrol durumu ile geçici engelleri ayrı tutar. Motor da yalnız geri dönüş sahibinin askıya alma kaydını kaldırır. Ödül/ölüm kilitleri üzerine yazılmaz; geliştirme paneli ve sahne geçişi, girişin geçici engellenmiş halini kalıcı tercih gibi kaydetmez.
+- Dönüş noktası tehlike dışında, oyuncu kapsülü için boş ve zemine en fazla 0,35 m uzak olmalıdır. Başlangıçta ve taşıma öncesinde doğrulanır. Hatalı referans/yerleşim ekranda yapılandırma hatası gösterir; dünya merkezine taşıma veya yeniden hasar döngüsü yaratmaz. Oyuncu ölçeği bu ilk sürümde (1,1,1) olmalıdır.
+- Yeni doğrulama: `DemoMapLayoutTests.ParkourHasThreeFixedPlatformsAndExplicitRecoveryReferences` ve `DemoOpeningTests` içindeki yedi `Parkour...` testi. Bunlar dört atlayışın yürüyüşle geçilebilirliğini, hasarı, yeniden düşüşü, durum korumasını, ölüm/pause/kontrol kilitlerini ve hatalı dönüş noktasını kapsar. Testler yazıldı; çalıştırılmış/geçmiş sayılmaz.
 
 ## Anahtar ve pusu sözleşmesi
 

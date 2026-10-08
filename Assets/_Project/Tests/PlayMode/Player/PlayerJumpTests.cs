@@ -138,6 +138,40 @@ namespace ProjectFirstRun.Tests.PlayMode.Player
         }
 
         [Test]
+        public void TemporaryInputBlocksPreserveOtherOwnersAndRequestedControlState()
+        {
+            var reader = _player.AddComponent<PlayerInputReader>();
+            var first = new object();
+            var second = new object();
+            reader.SetGameplayBlocked(first, true);
+            reader.SetGameplayBlocked(second, true);
+            reader.SetGameplayBlocked(first, false);
+            Assert.That(reader.IsGameplayInputRequested, Is.True);
+            Assert.That(reader.IsGameplayInputEnabled, Is.False);
+            reader.SetGameplayInputEnabled(false);
+            reader.SetGameplayBlocked(second, false);
+            Assert.That(reader.IsGameplayInputEnabled, Is.False);
+            reader.SetGameplayInputEnabled(true);
+            Assert.That(reader.IsGameplayInputEnabled, Is.True);
+        }
+
+        [Test]
+        public void MotorSuspensionReleaseDoesNotRemoveAnotherOwnersLock()
+        {
+            var first = new object();
+            var second = new object();
+            _motor.SetSuspended(first, true);
+            _motor.SetSuspended(second, true);
+            _motor.SetSuspended(first, false);
+            var position = _player.transform.position;
+            _motor.Tick(Vector2.up, false, Step, true);
+            Assert.That(_player.transform.position, Is.EqualTo(position));
+            _motor.SetSuspended(second, false);
+            _motor.Tick(Vector2.up, false, Step, true);
+            Assert.That(_player.transform.position.y, Is.GreaterThan(position.y));
+        }
+
+        [Test]
         public void GamepadSouthJumps_RightShoulderInteracts_WithoutOverlap()
         {
             var pad = InputSystem.AddDevice<Gamepad>();

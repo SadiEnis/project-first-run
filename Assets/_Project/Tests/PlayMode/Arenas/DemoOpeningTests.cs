@@ -229,6 +229,165 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             }
         }
 
+        private ParkourRecovery IsolateParkour()
+        {
+            foreach (var encounter in AllEncounters()) encounter.Cancel();
+            var recovery = _scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<ParkourRecovery>()).Single();
+            Assert.That(recovery.LastError, Is.Null);
+            Assert.DoesNotThrow(recovery.ValidateReturnPoint);
+            // Drive only the recovery clock manually; isolate damage/position from enemies.
+            recovery.enabled = false;
+            return recovery;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourAllFourGapsCanBeJumpedAtUnupgradedWalkingSpeed()
+        {
+            IsolateParkour();
+            var motor = _demo.Health.GetComponent<PlayerMotor>();
+            motor.Teleport(new Vector3(22.5f, -4.9f, 97), Quaternion.Euler(0, 90, 0));
+            Physics.SyncTransforms();
+            for (int i = 0; i < 30; i++) motor.Tick(Vector2.zero, false, 1f / 60);
+            Assert.That(motor.IsGrounded, Is.True);
+            foreach (float launchX in new[] { 23.5f, 27.25f, 31.25f, 35.25f })
+            {
+                for (int i = 0; i < 100 && _demo.Health.transform.position.x < launchX; i++)
+                    motor.Tick(Vector2.up, false, 1f / 60);
+                Assert.That(motor.IsGrounded, Is.True, "Launch " + launchX);
+                motor.Tick(Vector2.up, false, 1f / 60, true);
+                for (int i = 0; i < 90 && !motor.IsGrounded; i++)
+                    motor.Tick(Vector2.up, false, 1f / 60);
+                Assert.That(motor.IsGrounded, Is.True, "Landing after " + launchX);
+                Assert.That(_demo.Health.transform.position.y, Is.InRange(-5.1f, -4.8f), "Missed platform after " + launchX);
+            }
+            Assert.That(_demo.Health.transform.position.x, Is.GreaterThan(37.25f));
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourFallDamagesOncePreservesRunAndRearmsAfterReturn()
+        {
+            var recovery = IsolateParkour();
+            var health = _demo.Health;
+            var weapon = health.GetComponent<ProjectFirstRun.Weapons.PlayerWeaponController>();
+            var experience = health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceController>();
+            var motor = health.GetComponent<PlayerMotor>();
+            var look = health.GetComponent<PlayerLook>();
+            var input = health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>();
+            int ammo = weapon.MagazineAmmo;
+            var level = experience.Level;
+            var xp = experience.CurrentExperience;
+            var states = AllEncounters().Select(x => x.Status).ToArray();
+            float before = health.CurrentHealth;
+            float damage = health.MaximumHealth * .1f;
+            look.ApplyRecoil(5);
+            MovePlayer(new Vector3(28.5f, -7.5f, 97));
+            recovery.Tick(.02f);
+            Assert.That(recovery.IsRecovering, Is.True);
+            Assert.That(input.IsGameplayInputEnabled, Is.False);
+            Assert.That(health.CurrentHealth, Is.EqualTo(before - damage).Within(.001f));
+            var fallingPosition = health.transform.position;
+            motor.Tick(Vector2.one, true, .1f, true);
+            Assert.That(health.transform.position, Is.EqualTo(fallingPosition), "Recovery suspends motor gravity and movement.");
+            for (int i = 0; i < 5; i++) recovery.Tick(.01f);
+            Assert.That(health.CurrentHealth, Is.EqualTo(before - damage).Within(.001f));
+            recovery.Tick(.2f); recovery.Tick(.2f);
+            Assert.That(recovery.LastError, Is.Null);
+            Assert.That(recovery.IsRecovering, Is.False);
+            Assert.That(Vector3.Distance(health.transform.position, new Vector3(22.5f, -4.9f, 97)), Is.LessThan(.01f));
+            Assert.That(Vector3.Angle(health.transform.forward, Vector3.right), Is.LessThan(.1f));
+            Assert.That(motor.VerticalVelocity, Is.Zero);
+            Assert.That(look.CurrentPitch, Is.Zero);
+            Assert.That(look.RecoilOffset, Is.Zero);
+            Assert.That(input.IsGameplayInputEnabled, Is.True);
+            Assert.That(weapon.MagazineAmmo, Is.EqualTo(ammo));
+            Assert.That(experience.Level, Is.EqualTo(level));
+            Assert.That(experience.CurrentExperience, Is.EqualTo(xp));
+            CollectionAssert.AreEqual(states, AllEncounters().Select(x => x.Status).ToArray());
+            recovery.Tick(.02f); // Observe departure from hazard before a separate fall.
+            MovePlayer(new Vector3(32.5f, -7.5f, 97)); recovery.Tick(.02f);
+            Assert.That(health.CurrentHealth, Is.EqualTo(before - 2 * damage).Within(.001f));
+            recovery.Tick(.2f); recovery.Tick(.2f);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourDamageUsesMaximumHealthAndExistingIncomingModifiers()
+        {
+            var recovery = IsolateParkour();
+            _demo.Health.Initialize(200);
+            _demo.Health.SetDamageReduction(.25f);
+            _demo.Health.SetIncomingDamageMultiplier(1.5f);
+            MovePlayer(new Vector3(28.5f, -7.5f, 97)); recovery.Tick(.02f);
+            Assert.That(_demo.Health.CurrentHealth, Is.EqualTo(200 - 20 * 1.5f * .75f).Within(.001f));
+            recovery.Tick(.2f); recovery.Tick(.2f);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourLethalFallNeverTeleportsOrRestoresInput()
+        {
+            var recovery = IsolateParkour();
+            _demo.Health.ApplyDamage(new DamageInfo(_demo.Health.CurrentHealth - 1, null, Vector3.zero, Vector3.zero));
+            MovePlayer(new Vector3(28.5f, -7.5f, 97)); var position = _demo.Health.transform.position;
+            recovery.Tick(.02f); recovery.Tick(1);
+            Assert.That(_demo.Health.IsDead, Is.True);
+            Assert.That(recovery.IsRecovering, Is.False);
+            Assert.That(_demo.Health.transform.position, Is.EqualTo(position));
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>().IsGameplayInputEnabled, Is.False);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourDeathDuringFadeOverridesRecovery()
+        {
+            var recovery = IsolateParkour();
+            MovePlayer(new Vector3(28.5f, -7.5f, 97)); recovery.Tick(.02f); recovery.Tick(.03f);
+            _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
+            var position = _demo.Health.transform.position;
+            recovery.Tick(1);
+            Assert.That(_demo.Health.IsDead, Is.True);
+            Assert.That(_demo.Health.transform.position, Is.EqualTo(position));
+            Assert.That(recovery.Fade, Is.Zero);
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>().IsGameplayInputEnabled, Is.False);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourPauseAndIndependentControlLockAreNotOverwritten()
+        {
+            var recovery = IsolateParkour();
+            var controller = _demo.Health.GetComponent<PlayerController>();
+            var input = _demo.Health.GetComponent<ProjectFirstRun.Input.PlayerInputReader>();
+            MovePlayer(new Vector3(28.5f, -7.5f, 97)); recovery.Tick(.02f);
+            controller.SetControlEnabled(false);
+            Time.timeScale = 0; recovery.Tick(1);
+            Assert.That(recovery.IsRecovering, Is.True);
+            Assert.That(_demo.Health.transform.position.x, Is.EqualTo(28.5f));
+            Time.timeScale = 1;
+            recovery.Tick(.2f); recovery.Tick(.2f);
+            Assert.That(controller.IsControlEnabled, Is.False);
+            Assert.That(input.IsGameplayInputEnabled, Is.False);
+            controller.SetControlEnabled(true);
+            Assert.That(input.IsGameplayInputEnabled, Is.True);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParkourRejectsUnsafeAnchorWithoutDamageOrTeleport()
+        {
+            var recovery = IsolateParkour();
+            var anchor = recovery.transform.Find("Parkour return point");
+            anchor.position = new Vector3(28.5f, -7.5f, 97);
+            MovePlayer(anchor.position);
+            float health = _demo.Health.CurrentHealth;
+            recovery.Tick(.02f);
+            Assert.That(recovery.LastError, Is.Not.Null);
+            Assert.That(_demo.Health.CurrentHealth, Is.EqualTo(health));
+            Assert.That(recovery.IsRecovering, Is.False);
+            yield return null;
+        }
+
         [UnityTearDown]
         public IEnumerator Unload()
         {

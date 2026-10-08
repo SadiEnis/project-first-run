@@ -153,7 +153,7 @@ Do not require reverse traversal after the key room. On ambush completion a sepa
 
 ### Fourth implementation increment: jumping and fixed traversal
 
-Implementation status: jump input/motor support and seven focused PlayMode tests have been added; Unity execution and user acceptance are pending. The three platforms, fall damage and local recovery are not implemented yet. The items below define acceptance for the complete increment.
+Implementation status: jumping was accepted in user gameplay and committed. Three fixed platforms, a landing and ParkourRecovery are now wired into the saved demo scene; Unity tests and gameplay acceptance for this new section are pending. The items below define acceptance for the complete increment.
 
 Resolved input conflict: gamepad south is now reserved for jumping; existing chest interaction moves to the unused right shoulder button. Keyboard interaction remains E. The chest interaction test uses the updated binding.
 
@@ -165,6 +165,16 @@ Resolved input conflict: gamepad south is now reserved for jumping; existing che
 - **Next increment:** Key pickup, ambush, gates and the downward shortcut are separate implementation work. Do not present this landing as a completed demo; clearly label the temporary test endpoint and allow walking/jumping back out. The final contract still avoids reverse traversal after the ambush.
 
 Author tests for the user to run: one grounded press, no airborne/held repeat, clearing input under control locks, ceiling contact; one damage application per fall, maximum-health scaling and incoming damage modifiers, safe pose/velocity/look, lethal fall and death during fade, repeated separate falls, and preserved run progression. Manually check all three jumps at walking speed, safe recovery from every gap, reward/pause overlap and existing-room regressions. This checkpoint runs neither Unity tests nor a Windows build.
+
+### Traversal integration and trial route
+
+- Take the key stairs on the right of the large arena. Start landing: (22.5, -5, 97); platform centers: X=26.5 / 30.5 / 34.5; safe destination: X=39.25. There are four gaps including entry onto the three platforms and exit onto the landing. The first gap is 1.25 m, the others 1.5 m; all top surfaces are Y=-5. Sprint is unnecessary; approach each edge before jumping.
+- Geometry, hazard volume and return anchor are editable under the saved scene root `Demo parkour`. The temporary endpoint barrier moved from X=24 to X=41.5. The landing states that the key room is not ready; temporarily jump back to leave.
+- Traversal geometry stays outside the enemy NavMeshSurface children; jumping gaps are not enemy walking routes. Because the existing key-entry barrier moved, run `Project First Run → Demo → Rebake Demo Navigation` and save the scene. The assistant has not performed this bake; existing room-path bake tests remain intact.
+- A fall applies one HealthComponent damage request, fades out for 0.15 seconds, teleports safely, then fades in for 0.15 seconds. Clear vertical velocity, pitch and camera recoil; face the platforms. Pause stops the recovery clock; death cancels recovery. XP, magazine contents, abilities and encounters are not reset.
+- Temporary input blocks are owner-based; PlayerInputReader separates requested control state from temporary blockers. The motor likewise removes only recovery's own suspension. Reward/death locks are not overwritten; the development panel and scene travel do not capture a temporarily blocked input map as a permanent preference.
+- The anchor must be outside the hazard, clear for the player capsule and within 0.35 m of supporting floor. Validate at startup and before teleport. Invalid references/placement show a configuration error rather than teleporting to origin or repeatedly damaging the player. This initial version requires unit player scale.
+- New coverage: `DemoMapLayoutTests.ParkourHasThreeFixedPlatformsAndExplicitRecoveryReferences` and seven `Parkour...` tests in `DemoOpeningTests`. They cover walking-speed completion of all four gaps, damage, separate falls, preserved state, death/pause/control locks and an unsafe anchor. Tests are authored, not claimed executed or passed.
 
 ## Key and ambush contract
 

@@ -39,9 +39,10 @@ namespace ProjectFirstRun.Player
         private void Update()
         {
             float deltaTime = Time.deltaTime;
-            bool jumpPressed = _inputReader.ConsumeJumpPress(_controlEnabled && deltaTime > 0f);
+            bool acceptsInput = _controlEnabled && _inputReader.IsGameplayInputEnabled;
+            bool jumpPressed = _inputReader.ConsumeJumpPress(acceptsInput && deltaTime > 0f);
 
-            if (_controlEnabled)
+            if (acceptsInput)
             {
                 _playerLook.Tick(
                     _inputReader.LookInput,
@@ -49,12 +50,12 @@ namespace ProjectFirstRun.Player
                     deltaTime);
             }
 
-            Vector2 moveInput = _controlEnabled
+            Vector2 moveInput = acceptsInput
                 ? _inputReader.MoveInput
                 : Vector2.zero;
 
             bool isSprinting =
-                _controlEnabled &&
+                acceptsInput &&
                 _inputReader.IsSprintHeld;
 
             // Motor continues processing gravity even when player input is disabled.

@@ -27,6 +27,14 @@ namespace ProjectFirstRun.Player
         private CharacterController _characterController;
         private float _verticalVelocity;
         private PlayerStatsController _stats;
+        private readonly System.Collections.Generic.HashSet<object> _suspensions = new();
+
+        public void SetSuspended(object owner, bool suspended)
+        {
+            if (owner == null) throw new System.ArgumentNullException(nameof(owner));
+            if (suspended) _suspensions.Add(owner);
+            else _suspensions.Remove(owner);
+        }
 
         public float EvaluateMovementSpeed(bool isSprinting)
         {
@@ -61,7 +69,7 @@ namespace ProjectFirstRun.Player
             float deltaTime,
             bool jumpPressed = false)
         {
-            if (deltaTime <= 0f || !_characterController.enabled) return;
+            if (deltaTime <= 0f || !_characterController.enabled || _suspensions.Count > 0) return;
             Vector3 movementDirection =
                 transform.right * moveInput.x +
                 transform.forward * moveInput.y;

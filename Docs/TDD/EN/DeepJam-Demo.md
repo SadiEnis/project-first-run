@@ -233,6 +233,22 @@ Reveal the giant through silhouette/sound/motion on entry. Enter the ending once
 
 No physical room-destruction simulation or boss combat AI. FPS presentation is the reliable baseline; an external pullback is optional only if straightforward with the chosen model/sequence. This ending must not trigger ordinary Defeat/restart. Resolve simultaneous death/ending and repeated triggers through one authority; do not overwrite an already-started terminal outcome.
 
+### Sixth implementation increment: final gate and demo ending
+
+Status: pre-implementation contract. The user accepted the key ambush and separate return route; this increment's code and scene wiring are not implemented yet. Continue on the same demo branch, preserving the authored scene.
+
+- **Gate condition:** Replace the temporary final barrier with a gate that opens for a living player when `key collected AND both ambush groups completed`. Clearing the large arena or optional room is not required. Do not consume the key. Opening the gate does not start the ending.
+- **Entry:** Recheck eligibility when the player enters the interior trigger beyond the gate; begin exactly once. Enemy/projectile colliders, repeat entry, a dead player, an open reward modal or pause cannot start the ending. Do not trap the player in the doorway; closing the entrance behind them is unnecessary for the first version.
+- **Outcome ownership:** Flow is `Playing → Ending → Completed` or `Playing → Dead`. An accepted terminal flow cannot switch to the other. If already dead at final acceptance, death wins; after Ending begins, further damage cannot kill the player. DemoOpeningController death/retry presentation must not compete with the ending screen.
+- **Control and combat:** Ending stops movement, look, firing, reload, interaction and automatic abilities; existing projectiles and damage-over-time cannot hurt the player. Blocking input alone is insufficient. Hide gameplay HUD. Locks respect existing ownership and never release another system's lock. Missing required references produce an actionable initialization error rather than stranding the player mid-sequence.
+- **Initial presentation:** Use the FPS camera baseline without downloading new models/packages or requiring Cinemachine. Author an editable simple giant silhouette and presentation anchors in the scene. Brief reveal/motion, ground strike, restrained camera response and dust/rubble impression lead into a fade. No destruction simulation, boss AI, boss health bar or boss reward. Expose timing through the Inspector; no letterbox bars.
+- **Completion and replay:** After fading, show demo completion, Replay and Quit with an unlocked cursor. Replay reloads the same scene once as a fresh run, resetting health, XP, inventory, key, groups and gates. Quit closes the player build. Time scale and temporary locks must not prevent a clean restart.
+- **Scope boundary:** Do not change the opening cinematic, arena dimensions, balcony advantage, ammo supply or reward balance here. Preserve user-authored layout; never regenerate the whole scene. Rebake navigation if geometry changes.
+
+Implementation order: (1) gate eligibility, one-shot ending entry and death/ending separation; (2) simple FPS ending presentation, completion screen and replay. These are meaningful intermediate checkpoints, not one commit per small edit.
+
+Test contract: gate remains closed without a key and with a key alone; opens after both groups; unrelated living enemies do not block it; player-only one-shot entry; pause/reward/death guards; damage and automatic attacks suppressed after entry; terminal outcome precedence; completion UI and duplicate restart requests causing only one load. Author tests; the user normally executes Unity tests. After both increments are integrated, also check the full route and replay in a Windows build. This document claims no test or build success.
+
 ## Early build and acceptance
 
 Build Windows from the first small greybox. Check correct startup scene, input/fire, HUD/rewards, NavMesh/enemies, death/restart, quitting and absence of leaked Editor dependencies. Add key/finale checks when implemented; do not mark unavailable checks passed. Prefer a clean extracted folder and another computer where available.

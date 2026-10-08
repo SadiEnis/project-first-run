@@ -233,6 +233,22 @@ Oyuncu odaya girince devin silueti/sesi/hareketi görülür. Finale geçiş tek 
 
 Gerçek fizik tabanlı oda yıkımı veya dev için savaş AI'ı gerekmez. FPS sunum güvenli temel seçenektir; dışarı çekilen kamera ancak basit model ve sekansla kolayca yapılabiliyorsa eklenir. Bu son, normal Defeat/restart tetiklemez. Aynı karede ölüm/final tetiklenmesi ve tekrar trigger durumları için tek otorite gerekir; başlamış terminal sonuç diğer olayla değiştirilmez.
 
+### Altıncı uygulama dilimi: final kapısı ve demo sonu
+
+Durum: uygulama öncesi sözleşme. Anahtar pususu ve ayrı dönüş yolu kullanıcı tarafından kabul edildi; bu dilimin kodu ve sahne bağlantıları henüz eklenmedi. Aynı demo branch'inde, kayıtlı sahne korunarak ilerlenir.
+
+- **Kapı koşulu:** Mevcut geçici final bariyeri, yaşayan oyuncu için `anahtar alındı VE iki pusu grubu tamamlandı` olduğunda açılır. Büyük arenadaki veya opsiyonel odadaki bütün düşmanların ölmesi gerekmez. Anahtar harcanmaz. Kapının açılması kendi başına finali başlatmaz.
+- **Başlangıç:** Kapının ardındaki oda içi hacme oyuncu girince koşullar yeniden kontrol edilir ve final yalnız bir kez başlar. Düşman/mermi collider'ları, tekrar giriş, ölü oyuncu, açık ödül ekranı veya pause finali başlatamaz. Oyuncu kapı eşiğinde sıkıştırılmaz; ilk sürümde arkasındaki kapıyı tekrar kapatmak gerekmez.
+- **Sonuç sahipliği:** Akış `Playing → Ending → Completed` veya `Playing → Dead` olur. Başlamış terminal akış diğerine çevrilmez. Final kabulü anında oyuncu ölmüşse ölüm önceliklidir; Ending başladıktan sonra yeni hasar oyuncuyu öldüremez. DemoOpeningController'ın ölüm/retry sunumu final ekranıyla yarışmamalıdır.
+- **Kontrol ve mücadele:** Ending başladığında hareket, bakış, ateş, yeniden doldurma, etkileşim ve otomatik yetenekler durur; mevcut mermi ve süreli etkiler oyuncuya hasar veremez. Yalnız input kapatılması yeterli kabul edilmez. Oyun HUD'ı gizlenir. Kontrol kilitleri mevcut sahiplik modeline uyar; başka bir sistemin kilidini yanlışlıkla kaldırmaz. Eksik zorunlu referans başlangıçta anlaşılır hata verir, oyuncu yarım sekans içinde kilitlenmez.
+- **İlk sunum:** FPS kamerası temel alınır; yeni model/paket indirilmez ve Cinemachine zorunlu tutulmaz. Sahneye düzenlenebilir basit dev silueti ve sunum noktaları yerleştirilir. Kısa görünüş/hareket, yere vuruş, sınırlı kamera tepkisi ve toz/yıkıntı hissinden sonra ekran kararır. Gerçek yıkım fiziği, boss AI'ı, boss can barı veya boss ödülü yoktur. Sunum süreleri Inspector'dan ayarlanır; alt/üst sinema kuşağı eklenmez.
+- **Bitiş ve tekrar:** Kararma sonunda demo tamamlandı yazısı, Tekrar Oyna ve Çıkış sunulur; imleç serbesttir. Tekrar Oyna aynı sahneyi yeni run olarak bir kez yükler; can, XP, envanter, anahtar, gruplar ve kapılar başlangıç durumuna döner. Çıkış player build'de uygulamayı kapatır. Yeniden yüklemede zaman ölçeği ve geçici kilitler temiz başlangıcı engellemez.
+- **Kapsam sınırı:** Açılış sinematiği, arena boyutları, balkon ateş avantajı, mühimmat ikmali ve ödül dengesi bu dilimde değiştirilmez. Kullanıcının elle yaptığı yerleşim korunur; bütün sahne yeniden üretilmez. Geometri değişirse navigasyon yeniden bake edilir.
+
+Uygulama sırası: (1) kapı koşulu, tek seferlik final başlangıcı ve ölüm/final ayrımı; (2) basit FPS bitiş sunumu, tamamlanma ekranı ve yeniden oynama. Bunlar anlamlı ara kayıt noktalarıdır; her küçük değişiklik ayrı commit değildir.
+
+Test sözleşmesi: anahtarsız ve yalnız anahtarla kapının kapalı kalması; iki grup sonrası açılması; başka odalardaki yaşayan düşmanların engel olmaması; yalnız oyuncuyla ve bir kez tetikleme; pause/ödül/ölüm engelleri; başlangıçtan sonraki hasar ve otomatik saldırıların bastırılması; terminal durum önceliği; tamamlanma ekranı ve tekrarlı restart isteğinin tek yükleme yapması. Testler yazılır, olağan Unity çalıştırmasını kullanıcı yapar. İki uygulama dilimi bağlandıktan sonra Windows build'de baştan sona rota ve yeniden oynama ayrıca kontrol edilir; bu belge test veya build başarısı iddia etmez.
+
 ## Erken build ve kabul
 
 İlk küçük greybox'ta Windows build al: doğru sahnede açılış, giriş/ateş, HUD, ödül UI, NavMesh/düşman, ölüm/restart, çıkış ve Editor bağımlılıklarının dışarı sızmaması kontrol edilir. O aşamada henüz olmayan final/anahtar adımları sonraki build kontrolüne eklenir; yapılmayan kontroller geçti sayılmaz. Mümkünse temiz klasörden ve başka bilgisayardan çalıştırılır.

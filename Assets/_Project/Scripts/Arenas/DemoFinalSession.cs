@@ -6,6 +6,14 @@ namespace ProjectFirstRun.Arenas
     public sealed class DemoFinalSession
     {
         public DemoFinalPhase Phase { get; private set; } = DemoFinalPhase.Playing;
+        public bool ReplayRequested { get; private set; }
+        public bool TryRequestReplay()
+        {
+            if (Phase != DemoFinalPhase.Completed || ReplayRequested) return false;
+            ReplayRequested = true;
+            return true;
+        }
+        public void CancelFailedReplay() => ReplayRequested = false;
         public bool TryBegin(bool alive, bool eligible, bool allowed, bool inside)
         {
             if (Phase != DemoFinalPhase.Playing) return false;

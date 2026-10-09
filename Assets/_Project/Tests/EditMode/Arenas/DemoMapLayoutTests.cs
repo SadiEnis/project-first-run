@@ -65,6 +65,11 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             var final = _geometry.GetComponentInChildren<DemoFinalController>();
             Assert.That(final, Is.Not.Null);
             Assert.DoesNotThrow(final.ValidateConfiguration);
+            Assert.That(final.Presentation, Is.Not.Null);
+            Assert.DoesNotThrow(final.Presentation.ValidateConfiguration);
+            Assert.That(final.Presentation.GetComponentsInChildren<Collider>().Length, Is.Zero,
+                "Greybox giant and rubble are presentation only, not navigation/combat obstacles.");
+            Assert.That(final.Presentation.GetComponentsInChildren<EnemyController>().Length, Is.Zero);
             var fields = new SerializedObject(final);
             var gate = (GameObject)fields.FindProperty("_gate").objectReferenceValue;
             var volume = (BoxCollider)fields.FindProperty("_entryVolume").objectReferenceValue;

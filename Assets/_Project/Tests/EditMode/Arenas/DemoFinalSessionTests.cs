@@ -5,6 +5,21 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
 {
     public sealed class DemoFinalSessionTests
     {
+        [Test]
+        public void ReplayRequiresCompletionAndAcceptsOnlyOneRequest()
+        {
+            var session = new DemoFinalSession();
+            Assert.That(session.TryRequestReplay(), Is.False);
+            session.TryBegin(true, true, true, true);
+            Assert.That(session.TryRequestReplay(), Is.False);
+            session.TryComplete();
+            Assert.That(session.TryRequestReplay(), Is.True);
+            Assert.That(session.TryRequestReplay(), Is.False);
+            session.CancelFailedReplay();
+            Assert.That(session.TryRequestReplay(), Is.True);
+            Assert.That(new DemoFinalSession().ReplayRequested, Is.False);
+        }
+
         [TestCase(false, true, true)]
         [TestCase(true, false, true)]
         [TestCase(true, true, false)]

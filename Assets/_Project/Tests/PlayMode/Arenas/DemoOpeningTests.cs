@@ -714,6 +714,43 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_demo.Health.ApplyDamage(new DamageInfo(1, null, Vector3.zero, Vector3.zero)).WasApplied, Is.True);
         }
 
+        [UnityTest]
+        public IEnumerator FinalPresentationCompletesOnUnscaledTimeWithOneImpactAndSafeReplayState()
+        {
+            var final = FinalEntry();
+            CompleteKeyConditionForFinalTest();
+            yield return null;
+            _demo.Health.GetComponent<PlayerMotor>().Teleport(new Vector3(0, -6.9f, 112), Quaternion.Euler(0, 180, 0));
+            Physics.SyncTransforms();
+            var view = _demo.Health.GetComponentInChildren<Camera>().transform;
+            Vector3 position = view.localPosition;
+            Quaternion rotation = view.localRotation;
+            Assert.That(final.TryBegin(), Is.True);
+            Assert.That(final.Session.TryRequestReplay(), Is.False);
+            float deadline = Time.realtimeSinceStartup + 12;
+            while (final.Session.Phase == DemoFinalPhase.Ending && Time.realtimeSinceStartup < deadline)
+            {
+                Assert.That(Time.timeScale, Is.Zero);
+                yield return null;
+            }
+            Assert.That(final.Session.Phase, Is.EqualTo(DemoFinalPhase.Completed));
+            Assert.That(final.Presentation.ImpactCount, Is.EqualTo(1));
+            Assert.That(final.Presentation.Fade, Is.EqualTo(1));
+            Assert.That(Cursor.lockState, Is.EqualTo(CursorLockMode.None));
+            Assert.That(Cursor.visible, Is.True);
+            Assert.That(_demo.Health.IsDead, Is.False);
+            Assert.That(final.TryBegin(), Is.False);
+            Assert.That(_demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero)).WasApplied, Is.False);
+            // Verify replay request ownership without unloading the runner's additive fixture.
+            Assert.That(final.Session.TryRequestReplay(), Is.True);
+            Assert.That(final.Session.TryRequestReplay(), Is.False);
+            final.Presentation.Tick(100);
+            Assert.That(final.Presentation.ImpactCount, Is.EqualTo(1));
+            final.enabled = false;
+            Assert.That(Vector3.Distance(view.localPosition, position), Is.LessThan(.001f));
+            Assert.That(Quaternion.Angle(view.localRotation, rotation), Is.LessThan(.01f));
+        }
+
         [UnityTearDown]
         public IEnumerator Unload()
         {

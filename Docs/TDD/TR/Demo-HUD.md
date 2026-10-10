@@ -1,5 +1,25 @@
 # Demo HUD — Yerleşim ve Davranış Sözleşmesi
 
+## Cihaza göre tuş ikonları
+
+InputPrompts; TIP, HUD reload/silah değişimi, demo sandık/anahtar yönergeleri ve ölüm/final/ödül menüsü ipuçlarını ortak yönetir. {Reload} gibi oynanış belirteçleri PlayerInputReader binding'lerini okur; action açmaz. İleride tuş atama kodu override sonrasında InputPrompts.RefreshBindings çağırmalıdır. Menü ipuçları mevcut kontrollerle eşleşir; ödülde yatay oklar da gösterilir.
+
+Assets/Resources/InputPromptSettings.asset, eklenen TMP sprite atlasına referans verir. Gamepad Style: Automatic / Xbox / PlayStation. Xbox yüz tuşları renklidir; DualShock/DualSense ayrı algılanır ama ortak PlayStation görseli kullanır. Eksik PlayStation omuz/tetik görsellerinde Xbox ikonu yerine L1/R1/L2/R2 yazılır. Tanınmayan kollarda konumsal tuş ikonları kullanılır. Steam Input Sony kolunu Xbox gibi gösterirse Inspector override kullanılabilir; klavye/fareye geçişi engellemez.
+
+Pause sırasında da son anlamlı girdi esas alınır. Küçük fare hareketi/analog kayması görünümü değiştirmez; aktif kol çıkarılınca klavyeye dönülür. Kayıtlı InputPromptLabel adaptörleri UGUI fontlarını korur, küçük satır içi Text/RawImage parçalarını runtime'da oluşturup yeniden kullanır; sahne üretmez. Ayar asset'i atlasın build'e dahil edilmesini sağlar. Geliştirme amaçlı debug panelleri kapsam dışıdır.
+
+Runtime/test derlemesi kontrol edilir; Unity test çalıştırması yapılmaz. Kullanıcı kontrolü: InputPromptsTests, DemoHudLayoutTests; TIP, reload, ödül, ölüm/finalde klavye/Xbox/PlayStation geçişi ve küçük pencerede okunabilirlik.
+
+## Sağ kenar TIP öğretimi
+
+WideCombat'ın kayıtlı DemoHUD prefab'ına girdi yakalamayan sağ kenar TIP kartı eklendi. Sağdan 0,25 saniyede girer, tam görünürken 1,5 saniye bekler, 0,25 saniyede sağa çıkar. HudTipView bileşeninde giriş/bekleme/çıkış süreleri, sağ boşluk ve klavye/gamepad metinleri Inspector'dan ayarlanır. Kart kayıtlıdır; satır içi ikon/metin parçaları runtime'da oluşturulup yeniden kullanılır. Sahne üretimi veya DOTween gerekmez.
+
+HUD hazır olunca hareket/bakış ve ateş/reload mesajları sırayla gösterilir. İlk ability için sandık açılmasını değil gerçek build edinimini izler; otomatik yetenek/cooldown açıklaması ve ardından upgrade keşif mesajı kuyruğa girer. Koridor atlanırsa başka yerde edinilen ilk ability de öğretimi başlatabilir. Mevcut tuşlarla eşleşir: WASD/fare veya analoglar; sol tık/RT-R2 ateş, R/X-Square reload. Kullanılan girdiye göre mesaj türü güncellenir.
+
+Aynı anda tek kart görünür. Ödül seçimi veya pause kartı gizler, süre ve kuyruğu korur. Ölüm/final bekleyen gösterimi iptal eder. Tamamı gösterilmiş mesajlar sadece mevcut uygulama/Play oturumunda hatırlanır; sahne yeniden yüklenerek retry yapılınca tekrarlanmaz. Yarım kalan mesaj yeniden öğretilebilir. Uygulama açılışında veya domain reload kapalı olsa dahi Play başlangıcında oturum temizlenir. Kalıcı kayıt/meta sistemi eklenmez. UI kontrolleri engellemez, oyun verisini değiştirmez.
+
+DemoHudLayoutTests'e giriş/bekleme/çıkış, sıra/tekrar önleme, pause/retry ve kayıtlı kart süre kontrolleri eklendi. Runtime ve EditMode test assembly'leri derleniyor; Unity testleri ve görsel/ekran oranı kontrolünü kullanıcı yapar.
+
 ## Durum ve kapsam
 
 Tasarım onayına dayalı uygulama planı; temel HUD oynanışta kabul edildi; item ikonları, radial karartı, eğimli can ve silah hareketi eklendi, yeni görsel kabul bekleniyor. Kullanıcının çizimi esas alınır: üstte tam genişlikte XP, sol üst yetenekler, sağ üst güçlendirmeler ve altında anahtar; sol altta silah, mermi ve can. İlk entegrasyon WideCombat üzerindedir. Harita geometrisi, düşman yoğunluğu ve oyun dengesi HUD çalışmasıyla değişmez.
@@ -20,7 +40,7 @@ Kayıtlı, Inspector'dan düzenlenebilir Canvas prefab'ı kullanılır. Yerleşi
 
 ## Kapasite ve item'lar
 
-Kaynak PlayerBuildCapacity ve oyuncunun mevcut run envanteridir; HUD kapasite açmaz veya item kazandırmaz. Mevcut demo başlangıcı 2 silah, 3 yetenek, 5 güçlendirme kullanır; modelin üst sınırları 2/5/8'dir. Bunlar UI'da sabit slot sayısına çevrilmez. Gelecekte meta tarafından belirlenen run kapasitesi aynı sözleşmeden okunur.
+Kaynak PlayerBuildCapacity ve oyuncunun mevcut run envanteridir; HUD kapasite açmaz veya item kazandırmaz. Demo başlangıcı modelin üst sınırlarını kullanır: 2 silah, 5 yetenek, 8 güçlendirme. DemoOpeningController bu kapasiteyi yalnızca demo için verir; normal başlangıç varsayılanları değişmez. Bunlar UI'da sabit slot sayısına çevrilmez. Gelecekte meta tarafından belirlenen run kapasitesi aynı sözleşmeden okunur.
 
 Aktif ama boş slot görünür; henüz açılmamış kapasite için slot gösterilmez. Item alındığında boş slot dolar; level-up aynı slotun seviye göstergesini değiştirir, yeni slot oluşturmaz. Item sırası kararlı kalır. Yeni run'da önceki item, anahtar ve animasyon durumu temizlenir.
 

@@ -1,5 +1,25 @@
 # Demo HUD — Layout and Behaviour Contract
 
+## Device-aware input icons
+
+InputPrompts serves TIP, HUD reload/switch, demo chest/key instructions and death/final/reward menu hints. Gameplay tokens such as {Reload} read PlayerInputReader bindings without enabling actions. Future rebinding code must call InputPrompts.RefreshBindings after overrides. Menu hints match the current menu controls; reward navigation includes horizontal arrows.
+
+Assets/Resources/InputPromptSettings.asset references the imported TMP sprite atlas and exposes Gamepad Style: Automatic / Xbox / PlayStation. Xbox face buttons are coloured; DualShock and DualSense are identified separately but share PlayStation artwork. Missing PlayStation shoulder/trigger art uses L1/R1/L2/R2 text, never Xbox icons. Unknown pads use positional face-button icons. Steam Input may disguise a Sony controller as Xbox; the Inspector override handles that case without overriding keyboard/mouse switching.
+
+Last meaningful input selects the family even while paused. Small mouse movement and stick drift do not switch it; removing the active pad falls back to keyboard. Saved InputPromptLabel adapters retain UGUI fonts and pool small inline Text/RawImage fragments at runtime; they do not regenerate scenes. The settings asset explicitly retains the atlas in builds. Development-only debug panels are outside this conversion.
+
+Runtime/test compilation is checked, not Unity execution. User-run checks: InputPromptsTests, DemoHudLayoutTests; keyboard/Xbox/PlayStation changes in TIP, reload, reward, death/final menus; small-window readability.
+
+## Right-edge TIP onboarding
+
+WideCombat's saved DemoHUD prefab now includes a non-interactive TIP card at the right edge. It slides in from the right over 0.25 seconds, holds fully visible for 1.5 seconds, then exits right over 0.25 seconds. HudTipView exposes entry/hold/exit duration, right margin and keyboard/gamepad message text in the Inspector. The card is saved; inline icon/text fragments are pooled at runtime. No scene regeneration or DOTween is needed.
+
+After HUD readiness, show movement/look and fire/reload hints in order. Observe actual build ownership for the first acquired ability (not chest opening); queue the automatic-ability/cooldown explanation, followed by the upgrade discovery hint. Skipping the corridor does not break teaching: any first acquired ability can trigger it. Match existing bindings: WASD/mouse or sticks; left click/RT-R2 fires, R/X-Square reloads. Active input updates the message variant.
+
+Only one card displays at a time. Reward modal or pause hides/freezes the current card and preserves its queue. Death/finale cancels pending playback. Completed tips are remembered only for this application/play session, avoiding repetition across scene-reload retries; interrupted tips can reappear. Session state resets on application startup or entering Play Mode, including disabled-domain-reload setups. No persistent save or meta progression is added. The UI does not block controls or mutate gameplay.
+
+DemoHudLayoutTests adds playback/hold/exit, FIFO/deduplication, pause/retry and serialized-card timing checks. Runtime and EditMode test assemblies compile; Unity tests and visual/aspect-ratio acceptance remain user-run.
+
 ## Status and scope
 
 Implementation plan based on the approved sketch; the basic HUD was accepted in gameplay; inventory, radial shading, slanted health and weapon motion are now implemented, pending new visual acceptance. Full-width XP at the top, abilities top-left, upgrades top-right with the key underneath, weapon/ammunition/health bottom-left. First integration targets WideCombat. Geometry, encounter density and game balance remain unchanged by HUD work.
@@ -20,7 +40,7 @@ Use a saved, Inspector-editable Canvas prefab. Do not rebuild the scene at runti
 
 ## Capacity and inventory
 
-Read PlayerBuildCapacity and current run inventory; presentation must not grant capacity/items. The current demo starts with 2 weapon, 3 ability and 5 upgrade slots; model maxima are 2/5/8. Do not hardcode these counts into the view. Future meta-derived run capacity uses the same contract.
+Read PlayerBuildCapacity and current run inventory; presentation must not grant capacity/items. The demo starts with the model maxima: 2 weapon, 5 ability and 8 upgrade slots. DemoOpeningController grants this demo-only capacity; normal starting defaults remain unchanged. Do not hardcode these counts into the view. Future meta-derived run capacity uses the same contract.
 
 Show active empty slots, not locked capacity. Acquisition fills a slot; level-up updates its level in place. Keep inventory order stable. Restart clears previous items, key and animation state.
 

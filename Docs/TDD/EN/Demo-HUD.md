@@ -2,9 +2,9 @@
 
 ## Status and scope
 
-Implementation plan based on the approved sketch; HUD is not implemented yet. Full-width XP at the top, abilities top-left, upgrades top-right with the key underneath, weapon/ammunition/health bottom-left. First integration targets WideCombat. Geometry, encounter density and game balance remain unchanged.
+Implementation plan based on the approved sketch; the basic HUD was accepted in gameplay; inventory, radial shading, slanted health and weapon motion are now implemented, pending new visual acceptance. Full-width XP at the top, abilities top-left, upgrades top-right with the key underneath, weapon/ammunition/health bottom-left. First integration targets WideCombat. Geometry, encounter density and game balance remain unchanged by HUD work.
 
-This increment is documentation only. Meta progression, HUD settings, final icon artwork and automatic rollout to other scenes are out of scope. The free DOTween version is an option for the animation increment; Pro is not required. No package is installed in this increment.
+The first checkpoint was documentation; the basic implementation slice is now added below. Meta progression, HUD settings, final icon artwork and automatic rollout to other scenes are out of scope. The free DOTween version is an option for the animation increment; Pro is not required. No package has been installed.
 
 ## Layout and authoring
 
@@ -72,4 +72,25 @@ Planned coverage: zero/default/max capacity; acquire/level-up slots; multi-level
 
 ## Delivery
 
-Documentation only. No scene, gameplay code or package changes; no Unity tests run.
+The saved Assets/_Project/Prefabs/UI/DemoHUD.prefab Canvas is connected in WideCombat. It displays XP/level, current/maximum health, active weapon name/level, magazine/reserve and textual reload/empty-ammo state. Ability/upgrade slots reflect run capacity and fill in acquisition order with symbolic icons and levels. An owned key label appears below upgrades. Reload/cooldown shading and weapon-card motion are now connected.
+
+DemoHudController validates scene references and resolves player components once. LateUpdate reads basic state; DemoHudView caches values to avoid rebuilding unchanged labels/bars. No gameplay mutation, independent timer or event subscriptions. HUD stays hidden before readiness, during reward modal, death and finale. Only the replaced debug information/crosshair is suppressed when a valid Canvas HUD is bound. Objective/error/restart/quit functionality stays intact; the original Opening scene retains legacy presentation with its null HUD reference.
+
+EditMode DemoHudLayoutTests cover prefab references, zero/default/maximum capacity, visibility states and scene/prefab binding. PlayMode DemoHudPresentationTests cover health/XP/weapon, reload/empty-ammo text and hide/resume. Tests were written but not run. Full-run/restart/finale and aspect-ratio acceptance require gameplay verification. Static local-reference and whitespace checks do not establish Unity import/compilation or visual correctness.
+
+Open the updated WideCombat scene from disk and enter Play Mode. No scene-generation menu or navigation bake is required. Edit DemoHUD in Prefab Mode; Demo HUD binding stores scene dependencies. Space at the bottom is reserved for the existing objective message.
+
+## Icon and motion increment
+
+Verification: runtime and both test assemblies compiled with the installed Unity Roslyn compiler against local Unity references. No compile errors; the existing PlayerChestInteractorTests.TearDown hiding warning remains unrelated. Saved prefab local references and parent links were checked. This is compilation/static verification, not Unity test execution or visual acceptance.
+
+- DemoHudIcons is an Inspector-editable stable-ID catalog. Released weapons, abilities and upgrades have distinct code-native line glyphs; these are prototype symbols, not final artwork. Assign a Sprite in an entry to override its glyph. Missing entries show a question mark plus level rather than looking empty.
+- HudSlantedImage draws both the health track and fill with a right-hand diagonal. Anchor width follows actual health; the leading edge retains its slope (narrow fills taper safely to zero). XP remains rectangular.
+- HudRadialShade covers the rectangular icon/card and clears clockwise from twelve o'clock. Text levels remain readable above the shade. Full remaining = black translucent overlay; zero remaining = clear.
+- AbilityRuntimeState.CommittedCooldownDuration and WeaponRuntimeState.CommittedReloadDuration snapshot successful operations. Reconfiguration mid-wait does not change their denominator or the timer itself.
+- Standard abilities use the committed cast wait. Shuriken is clear while orbiting and shades its real between-orbit cooldown. Drone displays the soonest next drone's remaining/committed shot interval; one ready drone clears it. It does not imply all drones are ready or a target exists. No invented passive cooldown.
+- HudWeaponCarousel uses two authored cards and a tunable 0.3-second smoothstep arc without DOTween. The incoming card follows the upper clockwise arc, the outgoing card the lower arc. Each card retains its own icon, level and reload/empty-ammo state. Screen clipping hides the off-screen position; captions stay upright. Health and ammo do not move.
+- Rapid selection changes retarget from current angles toward the latest selected weapon, clockwise, without queuing. Only acquired/observed cards are shown. Hidden HUD motion snaps to the latest displayed selection; a fresh run instantiates fresh state. Time.deltaTime freezes decorative movement during pause; actual timers are only read.
+- No regeneration or navigation bake required. WideCombat's explicit key reference is added to Demo HUD binding. Original Opening, scene geometry, balance and user encounter edits are untouched.
+
+Targeted coverage was added to DemoHudLayoutTests and DemoHudPresentationTests for timer snapshots, radial direction, arc direction/retarget, catalog coverage, item acquisition/level/key, reload fraction and hidden-motion cleanup. Unity test execution remains with the user. Check partial manual reload, automatic empty reload, no-ammo state, ability target waits, rapid Q, reward pause, key pickup, finale and restart in gameplay.

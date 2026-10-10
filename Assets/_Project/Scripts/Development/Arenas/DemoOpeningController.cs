@@ -9,7 +9,6 @@ using ProjectFirstRun.Progression;
 using ProjectFirstRun.UI.Rewards;
 using ProjectFirstRun.Weapons;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace ProjectFirstRun.Development.Arenas
@@ -32,6 +31,7 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private DemoFinalController _final;
         [SerializeField] private ProjectFirstRun.UI.Hud.DemoHudController _hud;
         private bool _restarting;
+        private readonly DemoMenuInput _deathMenu = new();
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
         public ChestController Reward { get; private set; }
@@ -88,9 +88,12 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void Update()
         {
-            // Reward UI retains its own input/cursor authority. Retry never interrupts a live run.
-            if ((_final == null || !_final.IsEnding) && _health.IsDead && Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
-                Restart();
+            // Match the visible death screen; never compete with reward UI or the finale.
+            bool visible = IsReady && !_selection.IsOpen && (_final == null || !_final.IsEnding) &&
+                _health.IsDead && !_restarting;
+            int choice = _deathMenu.Poll(visible);
+            if (choice == 0) Restart();
+            else if (choice == 1) Application.Quit();
         }
 
         public void Restart()
@@ -136,10 +139,16 @@ namespace ProjectFirstRun.Development.Arenas
                 if (!canvasHud) GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 10, 20, 20), "+");
                 return;
             }
-            GUI.Box(new Rect(Screen.width / 2f - 170, Screen.height / 2f - 65, 340, 145), "You died — restart with a fresh run");
-            if (GUI.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f - 25, 290, 35), "Retry (Enter)")) Restart();
-            if (GUI.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), "Quit")) Application.Quit();
+            GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 65, 560, 175), "You died — restart with a fresh run");
+            bool wasEnabled = GUI.enabled;
+            GUI.enabled = wasEnabled && !_restarting;
+            if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f - 25, 290, 35), 0, "Retry")) Restart();
+            if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), 1, "Quit")) Application.Quit();
+            GUI.enabled = wasEnabled;
+            GUI.Label(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 70, 540, 30), DemoMenuInput.Hint);
         }
+
+        private void OnDisable() => _deathMenu.Tick(false, 0, false);
 
         private void OnDestroy()
         {

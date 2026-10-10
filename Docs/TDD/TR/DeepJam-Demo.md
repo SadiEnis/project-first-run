@@ -1,5 +1,9 @@
 # DeepJam demo — kapsam ve sahne tasarımı
 
+## Ölüm/final gamepad menü kontrolü
+
+Ölüm ve tamamlanma menüleri ortak DemoMenuInput kullanır: D-pad/sol analog veya klavye okları seçim; alt yüz tuşu (A/Cross), Enter veya Space onay. Başlangıç seçimi vurgulu Retry/Play again. Fare hover/tıklama korunur. Menü açılışında yön/onay/sol fare girdileri nötre dönmeden etkinleşmez; basılı kalan tuş yanlışlıkla retry/quit yapmaz. Analog/tuş başına tek seçim adımı; eşik titreşimine tolerans vardır, zamanlı tekrar yoktur. Giriş gameplay action map ve timeScale'den bağımsızdır. Gizli menü, ödül ekranı, final animasyonu sırasında işlem yapılmaz; replay yüklenirken seçenekler kapalıdır. Replay hatasında tekrar deneme menüsü kullanılabilir. Gizlenme/devre dışı kalmada seçim durumu sıfırlanır. DemoMenuInputTests bırakma güvenliği, analog tekrar/eşik davranışı, başlangıç seçimi ve timeScale sıfırken sanal gamepad/klavye girişini kapsar. Testler yazıldı, çalıştırılmadı; iki ekran için kullanıcı kabulü beklenir.
+
 ## Açılış öğretimi ve oynanış geri bildirimi — 10.10.2026
 
 Güncel kural, aşağıdaki tarihsel açılış ödül notlarının yerini alır. Koridordaki dört Chaser artık demoya özel ED_DemoOpeningChaser tanımını kullanır: savaş değerleri aynı, rastgele sandık profili yok, normaldeki 25 yerine düşman başına 10 XP (toplam 40). Tek sandık ödülleri dördü öldükten sonra çıkan mevcut garantili Ability Chest'tir. Azaltılmış toplam XP ilk level için gereken 100'ün altında kalır; erken level-up sandığının ilk ability tanıtımının önüne geçmesi engellenir. Diğer düşmanlar, sandık tabloları ve XP eğrileri değişmez. Opening ve WideCombat ortak EW_DemoOpening tanımını kullanır; oluşturma aracı da özel düşman tanımına bağlanır. Sahneyi yeniden üretme.
@@ -12,7 +16,7 @@ Minimum savaş turunda yalnızca anahtar pususu temizlenerek finale ulaşıldı.
 
 Demo kapasitesi şimdilik 2 silah / 3 yetenek / 5 güçlendirme. Model üst sınırları 2 / 5 / 8; bu, uygulanmış bir meta açılım sistemi anlamına gelmez. İçerik gösterimi için maksimum slotları açmak bir öneridir, bu dilimde uygulanmadı. Daha çok farklı item edinmek seviye artışlarını da daha fazla item'a dağıtır.
 
-Ayrı giriş hatası: finalde Replay/Quit gamepad ile kullanılamıyor. Mevcut final menüsü OnGUI düğmeleri kullanıyor; açık gamepad seçim/onay işleme kodu yok. Teslim öncesi gamepad erişilebilirlik düzeltmesi olarak takip edilecek, ortam cilası sayılmayacak. Bu dilimde değiştirilmedi.
+Bildirilen giriş hatası: final ve ölüm menülerinde gamepad seçim/onay yoktu. Yukarıdaki ortak menü-giriş dilimi iki ekranı da kapsıyor; oynanış kabulü bekleniyor.
 
 Doğrulama: DemoOpeningLayoutTests'e asset/sahne regresyon kontrolleri, DemoOpeningTests'e koridordaki tüm pickup'lar toplanınca toplam 40 XP, level-up/rastgele sandık olmaması ve yalnızca tek garanti ödül kontrolleri eklendi. Unity testleri ve oynanış kontrolünü kullanıcı yapar.
 

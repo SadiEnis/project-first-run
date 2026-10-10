@@ -1,5 +1,9 @@
 # DeepJam demo — scope and scene design
 
+## Death/finale gamepad navigation
+
+Death and completion menus now share DemoMenuInput: D-pad/left stick or keyboard arrows select; south button (A/Cross), Enter or Space confirms. Retry/Play again is initially selected and highlighted. Pointer hover/click remains supported. Opening requires all navigation/confirm/left-mouse inputs to return to neutral before activation; held input cannot accidentally retry/quit. One selection step per analog deflection/button press, with hysteresis and no timed repeat. Input runs independently of gameplay action maps and time scale. Hidden/reward/ending-animation menus do not act; replay-in-progress disables choices. Replay errors still permit menu retry. Shared state resets on hiding/disabling. DemoMenuInputTests cover release gating, analog repeat/hysteresis, fresh selection and synthetic gamepad/keyboard polling at timeScale zero. Tests authored, not executed; both controller flows need user acceptance.
+
 ## Opening onboarding and gameplay feedback — 10.10.2026
 
 Current policy supersedes the historical opening reward notes below. The four corridor Chasers use the demo-only ED_DemoOpeningChaser definition: unchanged combat stats, no random chest profile and 10 XP each (40 total, instead of the normal 25 each). Their only chest reward is the existing guaranteed Ability Chest after all four die. The reduced XP stays below the first level threshold of 100, preventing an early level-up chest from introducing abilities before this reward. Other enemies, drop tables, XP curves and scenes outside the two demo variants are unchanged. Both Opening and WideCombat share EW_DemoOpening; the creation tool also references the dedicated definition. Do not regenerate either scene.
@@ -12,7 +16,7 @@ A minimal-combat run reached the finale after fighting only the key ambush. The 
 
 Current demo capacity remains 2 weapons / 3 abilities / 5 upgrades. Model maxima are 2 / 5 / 8, not evidence of an implemented meta unlock progression. Exposing maximum slots for a content showcase is a proposal, not applied in this increment; more distinct items also spreads upgrades across more items.
 
-Known separate input issue: finale Replay/Quit buttons do not work with gamepad. The current ending menu uses OnGUI buttons with no explicit gamepad selection/submit handling. Track as a pre-delivery controller-accessibility fix, not environment polish; no change in this increment.
+Reported input issue: finale and death menus lacked gamepad selection/submit. The shared menu-input increment above now addresses both; gameplay acceptance is pending.
 
 Verification: add asset/scene regression checks to DemoOpeningLayoutTests and extend DemoOpeningTests to assert 40 XP after collecting all corridor pickups, no level-up/random chests and exactly one guaranteed reward. The user runs Unity tests and gameplay checks.
 

@@ -28,6 +28,7 @@ namespace ProjectFirstRun.Development.Arenas
         private PlayerAbilityController _abilities;
         private CharacterController _body;
         private bool _locked;
+        private readonly DemoMenuInput _completionMenu = new();
         private float _previousTimeScale;
         private CursorLockMode _previousCursorLock;
         private bool _previousCursorVisible;
@@ -65,6 +66,9 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void Update()
         {
+            int choice = _completionMenu.Poll(IsEnding && Session.Phase == DemoFinalPhase.Completed && !Session.ReplayRequested);
+            if (choice == 0) Replay();
+            else if (choice == 1) Application.Quit();
             if (LastError != null || _health == null || _body == null) return;
             if (_health.IsDead) { Session.TryDie(); return; }
             if (Session.Phase != DemoFinalPhase.Playing) return;
@@ -137,6 +141,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void OnDisable()
         {
+            _completionMenu.Tick(false, 0, false);
             if (!_locked) return;
             _locked = false;
             if (_presentation != null) _presentation.RestoreView();
@@ -158,14 +163,15 @@ namespace ProjectFirstRun.Development.Arenas
             if (LastError != null) GUI.Box(new Rect(20, 250, 650, 70), "Final error: " + LastError);
             if (IsEnding && Session.Phase == DemoFinalPhase.Completed)
             {
-                GUI.Box(new Rect(Screen.width / 2f - 240, Screen.height / 2f - 100, 480, 210),
+                GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 100, 560, 235),
                     "PROJECT FIRST RUN — DEMO COMPLETE");
                 GUI.Label(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 65, 400, 40), "This was only the beginning. Thanks for playing.");
                 bool wasEnabled = GUI.enabled;
                 GUI.enabled = wasEnabled && !Session.ReplayRequested;
-                if (GUI.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 5, 380, 35), "Play again")) Replay();
-                if (GUI.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f + 40, 380, 35), "Quit")) Application.Quit();
+                if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 5, 380, 35), 0, "Play again")) Replay();
+                if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f + 40, 380, 35), 1, "Quit")) Application.Quit();
                 GUI.enabled = wasEnabled;
+                GUI.Label(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 90, 540, 30), DemoMenuInput.Hint);
             }
             GUI.depth = oldDepth;
         }

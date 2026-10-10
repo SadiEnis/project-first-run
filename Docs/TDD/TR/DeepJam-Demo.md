@@ -1,5 +1,21 @@
 # DeepJam demo — kapsam ve sahne tasarımı
 
+## Açılış öğretimi ve oynanış geri bildirimi — 10.10.2026
+
+Güncel kural, aşağıdaki tarihsel açılış ödül notlarının yerini alır. Koridordaki dört Chaser artık demoya özel ED_DemoOpeningChaser tanımını kullanır: savaş değerleri aynı, rastgele sandık profili yok, normaldeki 25 yerine düşman başına 10 XP (toplam 40). Tek sandık ödülleri dördü öldükten sonra çıkan mevcut garantili Ability Chest'tir. Azaltılmış toplam XP ilk level için gereken 100'ün altında kalır; erken level-up sandığının ilk ability tanıtımının önüne geçmesi engellenir. Diğer düşmanlar, sandık tabloları ve XP eğrileri değişmez. Opening ve WideCombat ortak EW_DemoOpening tanımını kullanır; oluşturma aracı da özel düşman tanımına bağlanır. Sahneyi yeniden üretme.
+
+Planlanan öğretim sunumu: koridorda başlangıç silahını açıklama; garantili ödülde ilk ability'yi edinme; ödül gerçekten seçildikten sonra ability'nin otomatik kullanımını açıklama; ardından keşfedilecek upgrade'lerden kısa bir mesajla söz etme. Öğretim mesajı arayüzü/zamanlaması ve cihaza özel tuş gösterimleri bu veri değişikliğinde uygulanmadı. Koridoru savaşmadan atlamak hâlâ serbest; yeni zorunlu savaş kapısı eklenmedi.
+
+Kullanıcının tam turu 2 dakika 50 saniye sürdü; bitiş level 6, 67/350 XP. 21 sandık açıldı: 1 weapon, 9 ability, 2 upgrade, 4 green, 5 purple. Son build: Minigun L1, Rocket Launcher L4, Sniper Bomb L3, Lightning L8, Fireball L1; üç L1 ve bir L2 olmak üzere dört upgrade. Minigun 74. saniyede tükendi; finalde sekiz roket kaldı. İçerik gösteren sandık bolluğu demo için geçici kabul, ana oyunun nihai ekonomisi için onay değildir. Tek run gözlemidir; gerçek olasılık ölçümü değildir. Sandık sayısında garantili ödüller de bulunduğundan sadece level-up çıkarılarak düşman drop sayısı kesinleştirilemez.
+
+Minimum savaş turunda yalnızca anahtar pususu temizlenerek finale ulaşıldı. Kullanıcı bu serbestliği ve yerel zorunlu pusuyu kabul ediyor. Balkondan en fazla yaklaşık 6–7 düşmana erişilmesi artık acil müdahale gerektirmiyor. Yan oda zorluğu, anahtar odasının sahnelenmesi ve parkur çeşitliliği ses/görsel çalışmasından sonraya bırakıldı; şimdi düşman sayısı artırılmayacak.
+
+Demo kapasitesi şimdilik 2 silah / 3 yetenek / 5 güçlendirme. Model üst sınırları 2 / 5 / 8; bu, uygulanmış bir meta açılım sistemi anlamına gelmez. İçerik gösterimi için maksimum slotları açmak bir öneridir, bu dilimde uygulanmadı. Daha çok farklı item edinmek seviye artışlarını da daha fazla item'a dağıtır.
+
+Ayrı giriş hatası: finalde Replay/Quit gamepad ile kullanılamıyor. Mevcut final menüsü OnGUI düğmeleri kullanıyor; açık gamepad seçim/onay işleme kodu yok. Teslim öncesi gamepad erişilebilirlik düzeltmesi olarak takip edilecek, ortam cilası sayılmayacak. Bu dilimde değiştirilmedi.
+
+Doğrulama: DemoOpeningLayoutTests'e asset/sahne regresyon kontrolleri, DemoOpeningTests'e koridordaki tüm pickup'lar toplanınca toplam 40 XP, level-up/rastgele sandık olmaması ve yalnızca tek garanti ödül kontrolleri eklendi. Unity testleri ve oynanış kontrolünü kullanıcı yapar.
+
 ## Durum ve çalışma sırası — 04.10.2026
 
 Git: `feature/deepjam-demo`. İlk açılış bölümü `12a2dd0` ile kaydedildi; kullanıcı sahnedeki çatışma/ödül akışını ve Windows build açılışını doğruladı. Tam standalone oynanış kabulü ve otomatik test sonuçları ayrıca bekleniyor. Başvuru hedefi 11 Ekim; 10 Ekim teslimi önerilen tampon hedeftir. Süre hedefi yaklaşık 8–12 dakikadır, kesin kabul şartı değildir.

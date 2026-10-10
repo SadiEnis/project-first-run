@@ -1,5 +1,21 @@
 # DeepJam demo — scope and scene design
 
+## Opening onboarding and gameplay feedback — 10.10.2026
+
+Current policy supersedes the historical opening reward notes below. The four corridor Chasers use the demo-only ED_DemoOpeningChaser definition: unchanged combat stats, no random chest profile and 10 XP each (40 total, instead of the normal 25 each). Their only chest reward is the existing guaranteed Ability Chest after all four die. The reduced XP stays below the first level threshold of 100, preventing an early level-up chest from introducing abilities before this reward. Other enemies, drop tables, XP curves and scenes outside the two demo variants are unchanged. Both Opening and WideCombat share EW_DemoOpening; the creation tool also references the dedicated definition. Do not regenerate either scene.
+
+Planned onboarding presentation: starting weapon explanation during the corridor; acquire the first ability at the guaranteed reward; explain automatic ability use after the reward is actually accepted; then briefly tease discoverable upgrades. Tutorial message UI/timing and device-specific prompts are not implemented by this data change. Skipping the corridor still remains allowed; there is no new mandatory combat gate.
+
+User acceptance feedback: a full run took 2m50s, ending at level 6 with 67/350 XP; 21 chests were opened (1 weapon, 9 ability, 2 upgrade, 4 green, 5 purple). Final build: Minigun L1, Rocket Launcher L4, Sniper Bomb L3, Lightning L8, Fireball L1, four upgrades (three L1, one L2). Minigun ran out at 74s; eight rockets remained at the end. Content-rich loot is provisionally accepted for the demo, not approved as final-game economy. These are observations from one run, not measured probabilities. Chest counts include guaranteed rewards as well as level-up and enemy sources.
+
+A minimal-combat run reached the finale after fighting only the key ambush. The user accepts this freedom and the local mandatory ambush. The balcony exposes at most roughly 6–7 enemies and no longer needs an immediate anti-sniping adjustment. Optional-room challenge, key-room staging and parkour extensions are deferred until after visual/audio work; do not increase enemy counts now.
+
+Current demo capacity remains 2 weapons / 3 abilities / 5 upgrades. Model maxima are 2 / 5 / 8, not evidence of an implemented meta unlock progression. Exposing maximum slots for a content showcase is a proposal, not applied in this increment; more distinct items also spreads upgrades across more items.
+
+Known separate input issue: finale Replay/Quit buttons do not work with gamepad. The current ending menu uses OnGUI buttons with no explicit gamepad selection/submit handling. Track as a pre-delivery controller-accessibility fix, not environment polish; no change in this increment.
+
+Verification: add asset/scene regression checks to DemoOpeningLayoutTests and extend DemoOpeningTests to assert 40 XP after collecting all corridor pickups, no level-up/random chests and exactly one guaranteed reward. The user runs Unity tests and gameplay checks.
+
 ## Status and order — 2026-10-04
 
 Git: `feature/deepjam-demo`. The opening slice was committed as `12a2dd0`; the user verified its combat/reward flow and Windows build startup. Full standalone gameplay acceptance and automated test results remain separate. Application deadline is October 11; October 10 is the proposed buffered delivery target. Aim for roughly 8–12 minutes, not a fixed acceptance requirement.

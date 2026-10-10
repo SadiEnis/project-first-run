@@ -69,6 +69,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             for (int i = 0; i < 60 && !_demo.Encounter.Enemies.Any(x => x.Perception.HasSight); i++) yield return null;
             Assert.That(_demo.Encounter.Enemies.Any(x => x.Perception.HasSight), Is.True,
                 "An activated enemy facing the exposed player should detect them.");
+            foreach (var enemy in _demo.Encounter.Enemies)
+            {
+                Assert.That(enemy.Definition.ExperienceReward, Is.EqualTo(10));
+                Assert.That(enemy.Definition.ChestDropProfile, Is.Null);
+            }
             foreach (var enemy in _demo.Encounter.Enemies.ToArray())
                 enemy.Health.ApplyDamage(new DamageInfo(10000, _demo.Health.gameObject, enemy.transform.position, Vector3.forward));
             yield return null;
@@ -80,6 +85,18 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             yield return null;
             Assert.That(_demo.Reward, Is.SameAs(reward), "Re-entry must not create another guaranteed reward.");
             Assert.That(_demo.RewardClaimed, Is.False, "Spawning a chest is not claiming its reward.");
+            var collector = _demo.Health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceCollector>();
+            var pickups = _scene.GetRootGameObjects()
+                .SelectMany(x => x.GetComponentsInChildren<ProjectFirstRun.Progression.ExperiencePickup>(true)).ToArray();
+            foreach (var pickup in pickups)
+                if (!pickup.IsCollected)
+                    Assert.That(pickup.TryCollect(collector), Is.True);
+            var experience = _demo.Health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceController>();
+            Assert.That(experience.TotalExperience, Is.EqualTo(40));
+            Assert.That(experience.Level, Is.EqualTo(1), "Collecting all corridor XP must not spawn a level-up chest.");
+            var chests = _scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<ChestController>(true)).ToArray();
+            Assert.That(chests.Length, Is.EqualTo(1), "Only the guaranteed ability chest should exist after corridor combat.");
+            Assert.That(chests[0], Is.SameAs(reward));
         }
 
         [UnityTest]

@@ -15,6 +15,36 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
 {
     public sealed class DemoOpeningLayoutTests
     {
+        [TestCase("Assets/_Project/Scenes/Demo/DeepJam_Opening.unity")]
+        [TestCase("Assets/_Project/Scenes/Demo/DeepJam_WideCombat.unity")]
+        public void OpeningUsesIsolatedTrainingEnemiesAndGuaranteedAbilityReward(string path)
+        {
+            var existing = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+            bool opened = !existing.IsValid() || !existing.isLoaded;
+            var scene = opened ? EditorSceneManager.OpenScene(path, OpenSceneMode.Additive) : existing;
+            try
+            {
+                var demo = scene.GetRootGameObjects()
+                    .SelectMany(x => x.GetComponentsInChildren<DemoOpeningController>(true)).Single();
+                var wave = new SerializedObject(new SerializedObject(demo.Encounter)
+                    .FindProperty("_group").objectReferenceValue);
+                var entries = wave.FindProperty("_entries");
+                Assert.That(entries.arraySize, Is.EqualTo(1));
+                var entry = entries.GetArrayElementAtIndex(0);
+                Assert.That(entry.FindPropertyRelative("_count").intValue, Is.EqualTo(4));
+                var definition = (EnemyDefinition)entry.FindPropertyRelative("_enemyDefinition").objectReferenceValue;
+                Assert.That(definition.StableId, Is.EqualTo("enemy.demo-opening-chaser"));
+                Assert.That(definition.ExperienceReward, Is.EqualTo(10), "Four training enemies give 40 XP, below the first level threshold.");
+                Assert.That(definition.ChestDropProfile, Is.Null);
+                var normal = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserChestDropTest.asset");
+                Assert.That(normal.ExperienceReward, Is.EqualTo(25), "Other encounters keep their rewards.");
+                Assert.That(normal.ChestDropProfile, Is.Not.Null);
+                var reward = new SerializedObject(new SerializedObject(demo).FindProperty("_firstReward").objectReferenceValue);
+                Assert.That(reward.FindProperty("_stableId").stringValue, Is.EqualTo("chest.common.ability"));
+            }
+            finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+        }
+
         [Test]
         public void SavedOpeningHasRuntimeWiringAndNoContentControlPanel()
         {

@@ -16,5 +16,5 @@ MonoBehaviour:
   _displayName: "Demo opening \u2014 four Chasers"
   _entries:
   - _enemyPrefab: {fileID: 7314378341817879031, guid: aaa40dfc80ad5094eb66d50f88222d35, type: 3}
-    _enemyDefinition: {fileID: 11400000, guid: 3d55d39ffb484fcd8f5d9d84c8415989, type: 2}
+    _enemyDefinition: {fileID: 11400000, guid: 62beacf4535e467ea0465c103d818f22, type: 2}
     _count: 4

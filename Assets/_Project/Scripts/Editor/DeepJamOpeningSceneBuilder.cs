@@ -97,7 +97,7 @@ namespace ProjectFirstRun.Editor
             var entries = waveProperties.FindProperty("_entries"); entries.arraySize = 1;
             var entry = entries.GetArrayElementAtIndex(0);
             entry.FindPropertyRelative("_enemyDefinition").objectReferenceValue =
-                Load<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserChestDropTest.asset");
+                Load<EnemyDefinition>("Assets/_Project/Scenes/Demo/ED_DemoOpeningChaser.asset");
             entry.FindPropertyRelative("_count").intValue = 4;
             waveProperties.ApplyModifiedPropertiesWithoutUndo();
             wave.Validate();

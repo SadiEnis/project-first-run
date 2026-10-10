@@ -6,7 +6,7 @@ using ProjectFirstRun.Stats;
 using UnityEngine;
 namespace ProjectFirstRun.Abilities.Drone
 {
-    public sealed class DroneRuntime : IAbilityExecutor, IContinuousAbilityRuntime, IMapEnemyRegistryBinding
+    public sealed class DroneRuntime : IAbilityExecutor, IContinuousAbilityRuntime, IMapEnemyRegistryBinding, IAbilityCooldownPresentation
     {
         private EnemyRegistry _registry;
         private readonly GameObject _source;
@@ -15,6 +15,15 @@ namespace ProjectFirstRun.Abilities.Drone
         private readonly int _worldMask, _hitMask;
         private readonly DroneView[] _views = new DroneView[2];
         private readonly float[] _remaining = new float[2];
+        private readonly float[] _durations = new float[2];
+        public float CooldownFraction
+        {
+            get
+            {
+                int next = _config.Count > 1 && _remaining[1] < _remaining[0] ? 1 : 0;
+                return _durations[next] > 0 ? Mathf.Clamp01(_remaining[next] / _durations[next]) : 0;
+            }
+        }
         private DroneConfig _config;
         public DroneRuntime(DroneDefinition definition, EnemyRegistry registry, GameObject source, PlayerStatCollection stats)
         {
@@ -32,7 +41,7 @@ namespace ProjectFirstRun.Abilities.Drone
         }
         internal void ApplyConfiguration(DroneConfig config)
         {
-            if (config.Count > _config.Count) _remaining[1] = .5f / config.Rate;
+            if (config.Count > _config.Count) _durations[1] = _remaining[1] = .5f / config.Rate;
             _config = config;
         }
         private void ClearViews()
@@ -122,6 +131,7 @@ namespace ProjectFirstRun.Abilities.Drone
                 float rate = _config.Rate * (enemy.Definition.Rank == EnemyRank.Boss ? _config.BossMultiplier : 1);
                 Fire(i, desired, direction.normalized);
                 _remaining[i] = 1 / rate;
+                _durations[i] = _remaining[i];
             }
         }
         private void Fire(int index, Vector3 origin, Vector3 direction)

@@ -5,6 +5,7 @@ namespace ProjectFirstRun.Abilities
     public sealed class AbilityRuntimeState
     {
         private float _cooldown;
+        public float CommittedCooldownDuration { get; private set; }
 
         public void ApplyConfiguration(in AbilityRuntimeConfig config)
         {
@@ -72,6 +73,7 @@ namespace ProjectFirstRun.Abilities
 
             CooldownRemaining =
                 _cooldown * multiplier;
+            CommittedCooldownDuration = CooldownRemaining;
 
             return AbilityCastResult.Performed;
         }

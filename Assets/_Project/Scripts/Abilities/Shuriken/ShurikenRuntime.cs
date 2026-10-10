@@ -7,7 +7,7 @@ using ProjectFirstRun.Stats;
 using UnityEngine;
 namespace ProjectFirstRun.Abilities.Shuriken
 {
-    public sealed class ShurikenRuntime : IAbilityExecutor, IContinuousAbilityRuntime, IMapEnemyRegistryBinding
+    public sealed class ShurikenRuntime : IAbilityExecutor, IContinuousAbilityRuntime, IMapEnemyRegistryBinding, IAbilityCooldownPresentation
     {
         private EnemyRegistry _registry;
         private readonly GameObject _source;
@@ -23,6 +23,9 @@ namespace ProjectFirstRun.Abilities.Shuriken
             { new HashSet<(EnemyController, int)>(), new HashSet<(EnemyController, int)>() };
         public bool IsOrbiting => _running;
         public float CooldownRemaining => _cooldown;
+        private float _cooldownDuration;
+        public float CooldownFraction => !_running && _cooldownDuration > 0
+            ? Mathf.Clamp01(_cooldown / _cooldownDuration) : 0;
         public ShurikenRuntime(ShurikenDefinition definition, EnemyRegistry registry, GameObject source, PlayerStatCollection stats)
         {
             _definition = definition != null ? definition : throw new ArgumentNullException(nameof(definition));
@@ -43,7 +46,7 @@ namespace ProjectFirstRun.Abilities.Shuriken
             enemy.isActiveAndEnabled && !enemy.IsDead && !enemy.Health.IsDead;
         public void CancelOrbit()
         {
-            if (_running) _cooldown = _active.Cooldown * AbilityCooldownScaling.Multiplier(_stats);
+            if (_running) _cooldownDuration = _cooldown = _active.Cooldown * AbilityCooldownScaling.Multiplier(_stats);
             _running = false;
             foreach (var set in _hits) set.Clear();
             if (_view != null)

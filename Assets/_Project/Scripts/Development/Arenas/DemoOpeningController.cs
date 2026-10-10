@@ -30,6 +30,7 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private EncounterChestReward _optionalReward;
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
         [SerializeField] private DemoFinalController _final;
+        [SerializeField] private ProjectFirstRun.UI.Hud.DemoHudController _hud;
         private bool _restarting;
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
@@ -108,10 +109,14 @@ namespace ProjectFirstRun.Development.Arenas
         private void OnGUI()
         {
             if (!IsReady || _selection.IsOpen || (_final != null && _final.IsEnding)) return;
-            GUI.Box(new Rect(16, 16, 390, 110), "DEMO — DUNGEON GREYBOX");
-            GUI.Label(new Rect(28, 42, 365, 24), $"Health {_health.CurrentHealth:0}/{_health.MaximumHealth:0}   Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
-            GUI.Label(new Rect(28, 66, 365, 24), $"Level {_experience.Level}   XP {_experience.CurrentExperience}/{_experience.RequiredExperience}");
-            GUI.Label(new Rect(28, 90, 365, 24), _weapon.IsReloading ? "Reloading..." : "WASD move · Space jump · R reload · Q switch");
+            bool canvasHud = _hud != null && _hud.ReplacesDebugHud;
+            if (!canvasHud)
+            {
+                GUI.Box(new Rect(16, 16, 390, 110), "DEMO — DUNGEON GREYBOX");
+                GUI.Label(new Rect(28, 42, 365, 24), $"Health {_health.CurrentHealth:0}/{_health.MaximumHealth:0}   Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
+                GUI.Label(new Rect(28, 66, 365, 24), $"Level {_experience.Level}   XP {_experience.CurrentExperience}/{_experience.RequiredExperience}");
+                GUI.Label(new Rect(28, 90, 365, 24), _weapon.IsReloading ? "Reloading..." : "WASD move · Space jump · R reload · Q switch");
+            }
             string objective = _rewardClaimed ? "Continue through the next room. Explore the overlook and both arena stairs." :
                 Reward != null ? "Collect your reward in the room beyond the corridor (E)." :
                 "Enter the corridor and defeat its four enemies for a guaranteed reward.";
@@ -128,7 +133,7 @@ namespace ProjectFirstRun.Development.Arenas
                 GUI.Box(new Rect(16, 138, Mathf.Min(800, Screen.width - 32), 64), preparationError);
             if (!_health.IsDead)
             {
-                GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 10, 20, 20), "+");
+                if (!canvasHud) GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 10, 20, 20), "+");
                 return;
             }
             GUI.Box(new Rect(Screen.width / 2f - 170, Screen.height / 2f - 65, 340, 145), "You died — restart with a fresh run");

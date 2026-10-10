@@ -18,6 +18,10 @@ namespace ProjectFirstRun.Abilities
         public bool IsReady =>
             State.IsReady;
         public bool IsContinuous => _executor is IContinuousAbilityRuntime;
+        public float CooldownFraction => _executor is IAbilityCooldownPresentation presentation
+            ? Mathf.Clamp01(presentation.CooldownFraction)
+            : IsContinuous || State.CommittedCooldownDuration <= 0 ? 0
+            : Mathf.Clamp01(State.CooldownRemaining / State.CommittedCooldownDuration);
         public void TickContinuous(float deltaTime, Vector3 origin, bool controlEnabled)
         {
             if (_executor is IContinuousAbilityRuntime continuous)

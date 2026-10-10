@@ -16,6 +16,73 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
         public const string PrefabPath = "Assets/_Project/Prefabs/UI/DemoHUD.prefab";
 
         [Test]
+        public void InputPromptAdaptersAreSavedOnHudAndRewardPrefab()
+        {
+            var hud = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            Assert.That(hud.GetComponentsInChildren<InputPromptLabel>(true).Length, Is.EqualTo(2));
+            var reward = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Prefabs/UI/RewardSelectionUI.prefab");
+            Assert.That(reward.GetComponentsInChildren<InputPromptLabel>(true).Length, Is.EqualTo(1));
+            Assert.That(AssetDatabase.LoadAssetAtPath<InputPromptSettings>("Assets/Resources/InputPromptSettings.asset"), Is.Not.Null);
+        }
+
+        [Test]
+        public void TipsHoldForOneAndAHalfSecondsThenExitRightInFifoOrder()
+        {
+            var seen = new System.Collections.Generic.HashSet<string>();
+            var tips = new HudTipPlayback(seen);
+            tips.Enqueue("ability"); tips.Enqueue("ability"); tips.Enqueue("upgrade");
+            tips.Tick(0, .25f, 1.5f, .25f);
+            Assert.That(tips.Current, Is.EqualTo("ability"));
+            Assert.That(tips.Amount(.25f, 1.5f, .25f), Is.Zero);
+            tips.Tick(.25f, .25f, 1.5f, .25f);
+            Assert.That(tips.Amount(.25f, 1.5f, .25f), Is.EqualTo(1));
+            tips.Tick(1.5f, .25f, 1.5f, .25f);
+            Assert.That(tips.Amount(.25f, 1.5f, .25f), Is.EqualTo(1));
+            tips.Tick(.125f, .25f, 1.5f, .25f);
+            Assert.That(tips.Amount(.25f, 1.5f, .25f), Is.EqualTo(.5f).Within(.001));
+            tips.Tick(.125f, .25f, 1.5f, .25f);
+            Assert.That(seen.Contains("ability"), Is.True);
+            tips.Tick(0, .25f, 1.5f, .25f);
+            Assert.That(tips.Current, Is.EqualTo("upgrade"), "Duplicate tips must not enter the queue.");
+        }
+
+        [Test]
+        public void TipPausePreservesTimeAndRestartSkipsOnlyCompletedMessages()
+        {
+            var seen = new System.Collections.Generic.HashSet<string>();
+            var tips = new HudTipPlayback(seen);
+            tips.Enqueue("move"); tips.Enqueue("weapon");
+            tips.Tick(2, .25f, 1.5f, .25f);
+            tips.Tick(.1f, .25f, 1.5f, .25f);
+            float elapsed = tips.Elapsed;
+            tips.Tick(0, .25f, 1.5f, .25f);
+            Assert.That(tips.Elapsed, Is.EqualTo(elapsed));
+            tips.Clear();
+            Assert.That(tips.Current, Is.Null);
+            var retry = new HudTipPlayback(seen);
+            retry.Enqueue("move"); retry.Enqueue("weapon");
+            retry.Tick(0, .25f, 1.5f, .25f);
+            Assert.That(retry.Current, Is.EqualTo("weapon"), "Interrupted messages may be taught on the retry.");
+        }
+
+        [Test]
+        public void SavedTipCardHasEditableTimingsAndDoesNotInterceptGameplay()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            var tips = prefab.GetComponent<HudTipView>();
+            Assert.That(tips, Is.Not.Null);
+            Assert.DoesNotThrow(tips.ValidateConfiguration);
+            var data = new SerializedObject(tips);
+            Assert.That(data.FindProperty("_holdSeconds").floatValue, Is.EqualTo(1.5f));
+            Assert.That(data.FindProperty("_enterSeconds").floatValue, Is.EqualTo(.25f));
+            Assert.That(data.FindProperty("_exitSeconds").floatValue, Is.EqualTo(.25f));
+            var card = (RectTransform)data.FindProperty("_card").objectReferenceValue;
+            Assert.That(card.anchorMin.x, Is.EqualTo(1));
+            Assert.That(card.pivot.x, Is.EqualTo(1));
+            Assert.That(card.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
+        }
+
+        [Test]
         public void CommittedTimersKeepTheirDenominatorWhenConfigurationChanges()
         {
             var ability = new ProjectFirstRun.Abilities.AbilityRuntimeState(

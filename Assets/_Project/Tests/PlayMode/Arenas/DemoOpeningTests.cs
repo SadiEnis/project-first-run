@@ -48,6 +48,10 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         [UnityTest]
         public IEnumerator StartIsSafeAndEnteringCorridorActivatesThePreparedEnemies()
         {
+            var capacity = _demo.Health.GetComponent<ProjectFirstRun.Builds.PlayerBuildController>().Build.Capacity;
+            Assert.That(capacity.WeaponSlots, Is.EqualTo(ProjectFirstRun.Builds.PlayerBuildCapacity.MaximumWeaponSlots));
+            Assert.That(capacity.AbilitySlots, Is.EqualTo(ProjectFirstRun.Builds.PlayerBuildCapacity.MaximumAbilitySlots));
+            Assert.That(capacity.UpgradeSlots, Is.EqualTo(ProjectFirstRun.Builds.PlayerBuildCapacity.MaximumUpgradeSlots));
             Assert.That(_demo.Encounter.Status, Is.EqualTo(ArenaSessionStatus.Ready));
             Assert.That(_demo.Encounter.Enemies.Count, Is.EqualTo(4));
             Assert.That(_demo.Reward, Is.Null);

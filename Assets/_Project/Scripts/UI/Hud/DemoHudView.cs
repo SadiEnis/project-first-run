@@ -23,6 +23,8 @@ namespace ProjectFirstRun.UI.Hud
         [SerializeField] private HudItemCard[] _upgradeCards;
         [SerializeField] private GameObject _key;
         [SerializeField] private HudWeaponCarousel _carousel;
+        [SerializeField] private HudTipView _tips;
+        public HudTipView Tips => _tips;
         private float _health = float.NaN, _maximumHealth = float.NaN;
         private long _xp = -1, _required = -1;
         private int _level = -1, _magazine = -1, _reserve = -1, _weaponLevel = -1;
@@ -51,6 +53,8 @@ namespace ProjectFirstRun.UI.Hud
                 throw new InvalidOperationException("Assign HUD icon, card, key and carousel references.");
             foreach (var card in _abilityCards) if (card == null) throw new InvalidOperationException("Missing ability card.");
             foreach (var card in _upgradeCards) if (card == null) throw new InvalidOperationException("Missing upgrade card.");
+            if (_tips == null) throw new InvalidOperationException("Assign TIP presentation.");
+            _tips.ValidateConfiguration();
         }
 
         private static void ValidateSlots(GameObject[] slots, int maximum)
@@ -122,7 +126,7 @@ namespace ProjectFirstRun.UI.Hud
             _weaponText.text = $"{name}\nLV {level}";
             _ammoText.text = $"{magazine} / {reserve}";
             _statusText.text = reloading ? "RELOADING" :
-                magazine == 0 && reserve == 0 ? "NO AMMO" : "R  RELOAD     Q  SWITCH";
+                magazine == 0 && reserve == 0 ? "NO AMMO" : "{Reload} RELOAD     {SwitchWeapon} SWITCH";
         }
 
         private static void SetBar(Image image, float ratio)

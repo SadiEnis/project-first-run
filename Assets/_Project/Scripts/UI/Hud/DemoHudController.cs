@@ -23,6 +23,7 @@ namespace ProjectFirstRun.UI.Hud
         private PlayerExperienceController _experience;
         private PlayerWeaponController _weapon;
         private bool _bound;
+        private bool _openingTipsQueued, _abilityTipsQueued;
         public bool ReplacesDebugHud => isActiveAndEnabled && _bound && _view != null && _view.isActiveAndEnabled;
 
         public void ValidateConfiguration()
@@ -63,6 +64,23 @@ namespace ProjectFirstRun.UI.Hud
             bool ready = _demo.IsReady && _build.IsInitialized && _experience.IsInitialized && _weapon.IsInitialized;
             bool visible = ShouldShow(ready, _health.IsDead, _selection.IsOpen, _final.IsEnding);
             _view.SetVisible(visible);
+            if (ready && !_health.IsDead && !_final.IsEnding)
+            {
+                if (!_openingTipsQueued)
+                {
+                    _view.Tips.Enqueue("move");
+                    _view.Tips.Enqueue("weapon");
+                    _openingTipsQueued = true;
+                }
+                // Actual inventory acquisition, not opening a chest or displaying its choices.
+                if (!_abilityTipsQueued && _build.Build.Abilities.Count > 0)
+                {
+                    _view.Tips.Enqueue("ability");
+                    _view.Tips.Enqueue("upgrade");
+                    _abilityTipsQueued = true;
+                }
+            }
+            _view.Tips.Refresh(visible, _health.IsDead || _final.IsEnding);
             if (!visible) return;
             var capacity = _build.Build.Capacity;
             _view.SetCapacity(capacity.AbilitySlots, capacity.UpgradeSlots);

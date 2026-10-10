@@ -7,6 +7,7 @@ namespace ProjectFirstRun.Input
     public sealed class PlayerInputReader : MonoBehaviour
     {
         private ProjectFirstRunInputActions _inputActions;
+        public InputAction FindGameplayAction(string name) => _inputActions?.asset.FindAction("Gameplay/" + name);
         private bool _jumpPending;
         private int _jumpFrame = -1;
         private int _interactionConsumedFrame = -1;

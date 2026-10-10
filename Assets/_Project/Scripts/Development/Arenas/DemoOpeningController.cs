@@ -59,7 +59,7 @@ namespace ProjectFirstRun.Development.Arenas
             // Unlike the Editor-only weapon-switching fixture, this also executes in a player build.
             if (!_loadout.IsInitialized)
                 _loadout.Initialize(new PlayerBuildCapacity(PlayerBuildCapacity.MaximumWeaponSlots,
-                    PlayerBuildCapacity.DefaultAbilitySlots, PlayerBuildCapacity.DefaultUpgradeSlots));
+                    PlayerBuildCapacity.MaximumAbilitySlots, PlayerBuildCapacity.MaximumUpgradeSlots));
             _encounter.Victory += HandleVictory;
         }
 
@@ -118,19 +118,19 @@ namespace ProjectFirstRun.Development.Arenas
                 GUI.Box(new Rect(16, 16, 390, 110), "DEMO — DUNGEON GREYBOX");
                 GUI.Label(new Rect(28, 42, 365, 24), $"Health {_health.CurrentHealth:0}/{_health.MaximumHealth:0}   Ammo {_weapon.MagazineAmmo}/{_weapon.ReserveAmmo}");
                 GUI.Label(new Rect(28, 66, 365, 24), $"Level {_experience.Level}   XP {_experience.CurrentExperience}/{_experience.RequiredExperience}");
-                GUI.Label(new Rect(28, 90, 365, 24), _weapon.IsReloading ? "Reloading..." : "WASD move · Space jump · R reload · Q switch");
+                ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(28, 90, 365, 24), _weapon.IsReloading ? "Reloading..." : "{Move} Move  {Jump} Jump  {Reload} Reload  {SwitchWeapon} Switch");
             }
             string objective = _rewardClaimed ? "Continue through the next room. Explore the overlook and both arena stairs." :
-                Reward != null ? "Collect your reward in the room beyond the corridor (E)." :
+                Reward != null ? "Collect your reward beyond the corridor: {Interact}" :
                 "Enter the corridor and defeat its four enemies for a guaranteed reward.";
             if (_health.transform.position.z > 53)
                 objective = "Green side room: bonus chest. Right stairs and jumping route lead to the key.";
             if (_health.transform.position.x > 21 && _health.transform.position.z > 90)
-                objective = "Cross the platforms, enter the room and take the key: E / RB-R1.";
+                objective = "Cross the platforms, enter the room and take the key: {Interact}";
             if (_keyAmbush != null && _keyAmbush.Session.HasKey)
                 objective = _keyAmbush.CanEnterFinal ? "Key secured. Return to the arena and enter the final gate." :
                     "Clear both ambush groups to open the separate return exit.";
-            GUI.Box(new Rect(16, Screen.height - 54, Mathf.Min(660, Screen.width - 32), 38), objective);
+            ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(16, Screen.height - 54, Mathf.Min(660, Screen.width - 32), 38), objective, true);
             string preparationError = GetRoomError();
             if (preparationError != null)
                 GUI.Box(new Rect(16, 138, Mathf.Min(800, Screen.width - 32), 64), preparationError);
@@ -145,7 +145,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f - 25, 290, 35), 0, "Retry")) Restart();
             if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), 1, "Quit")) Application.Quit();
             GUI.enabled = wasEnabled;
-            GUI.Label(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 70, 540, 30), DemoMenuInput.Hint);
+            ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 70, 540, 30), DemoMenuInput.Hint);
         }
 
         private void OnDisable() => _deathMenu.Tick(false, 0, false);

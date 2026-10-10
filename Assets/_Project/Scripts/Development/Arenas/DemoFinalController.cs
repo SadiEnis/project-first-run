@@ -171,7 +171,7 @@ namespace ProjectFirstRun.Development.Arenas
                 if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 5, 380, 35), 0, "Play again")) Replay();
                 if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f + 40, 380, 35), 1, "Quit")) Application.Quit();
                 GUI.enabled = wasEnabled;
-                GUI.Label(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 90, 540, 30), DemoMenuInput.Hint);
+                ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 90, 540, 30), DemoMenuInput.Hint);
             }
             GUI.depth = oldDepth;
         }

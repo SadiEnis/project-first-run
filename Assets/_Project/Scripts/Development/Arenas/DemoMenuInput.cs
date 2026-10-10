@@ -74,6 +74,6 @@ namespace ProjectFirstRun.Development.Arenas
             return clicked;
         }
 
-        public const string Hint = "D-pad / Left stick / Up-Down: select    A / Cross / Enter: confirm";
+        public const string Hint = ProjectFirstRun.UI.Hud.InputPrompts.MenuHint;
     }
 }

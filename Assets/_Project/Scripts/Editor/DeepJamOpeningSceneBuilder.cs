@@ -30,6 +30,8 @@ namespace ProjectFirstRun.Editor
     {
         public const string Folder = "Assets/_Project/Scenes/Demo";
         public const string ScenePath = Folder + "/DeepJam_Opening.unity";
+        public const string WideScenePath = Folder + "/DeepJam_WideCombat.unity";
+        public const string WideNavigationPath = Folder + "/WideCombatNavigation.asset";
         public const string WavePath = Folder + "/EW_DemoOpening.asset";
         public const string PerceptionPath = Folder + "/EP_Demo.asset";
 
@@ -146,16 +148,28 @@ namespace ProjectFirstRun.Editor
                 throw new InvalidOperationException("Stop Play Mode before baking navigation.");
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             var scene = SceneManager.GetActiveScene();
-            if (scene.path != ScenePath) scene = EditorSceneManager.OpenScene(ScenePath);
+            if (scene.path != ScenePath && scene.path != WideScenePath) scene = EditorSceneManager.OpenScene(ScenePath);
             var surface = Find<NavMeshSurface>(scene).Single();
+            if (scene.path == WideScenePath)
+            {
+                // The alternate layout must never overwrite the accepted demo's NavMesh.
+                surface.RemoveData();
+                surface.navMeshData = AssetDatabase.LoadAssetAtPath<NavMeshData>(WideNavigationPath);
+                surface.AddData();
+            }
             string path = AssetDatabase.GetAssetPath(surface.navMeshData);
-            if (string.IsNullOrEmpty(path) || !path.StartsWith(Folder + "/", StringComparison.Ordinal))
+            if (scene.path != WideScenePath && (string.IsNullOrEmpty(path) || !path.StartsWith(Folder + "/", StringComparison.Ordinal)))
                 throw new InvalidOperationException("Demo navigation must use its own saved asset.");
             var saved = surface.navMeshData;
             surface.BuildNavMesh();
             var generated = surface.navMeshData;
             if (generated == null) throw new InvalidOperationException("Demo NavMesh bake failed.");
-            if (generated != saved)
+            if (saved == null)
+            {
+                AssetDatabase.CreateAsset(generated, WideNavigationPath);
+                saved = generated;
+            }
+            else if (generated != saved)
             {
                 surface.RemoveData();
                 EditorUtility.CopySerialized(generated, saved);
@@ -169,6 +183,14 @@ namespace ProjectFirstRun.Editor
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
             Debug.Log("Demo navigation rebaked. Saved geometry and gameplay wiring were not regenerated.");
+        }
+
+        [MenuItem("Project First Run/Demo/Open Wide Combat Greybox")]
+        public static void OpenWideCombat()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Stop Play Mode first.");
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorSceneManager.OpenScene(WideScenePath);
         }
 
         [MenuItem("Project First Run/Demo/Build Windows Opening")]

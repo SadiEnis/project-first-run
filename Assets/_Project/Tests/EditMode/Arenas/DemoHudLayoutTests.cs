@@ -82,6 +82,23 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.That(card.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void OpeningChestDismissesQueuedOrVisibleHintWithoutDroppingAbilityTip(bool alreadyVisible)
+        {
+            var seen = new System.Collections.Generic.HashSet<string>();
+            var tips = new HudTipPlayback(seen);
+            tips.Enqueue("chest");
+            if (alreadyVisible) tips.Tick(.1f, .25f, 1.5f, .25f);
+            tips.Enqueue("ability");
+            tips.Dismiss("chest");
+            tips.Enqueue("chest");
+            tips.Tick(0, .25f, 1.5f, .25f);
+            Assert.That(tips.Current, Is.EqualTo("ability"));
+            Assert.That(tips.Elapsed, Is.Zero);
+            Assert.That(seen.Contains("chest"), Is.True);
+        }
+
         [Test]
         public void CommittedTimersKeepTheirDenominatorWhenConfigurationChanges()
         {

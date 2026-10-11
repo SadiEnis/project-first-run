@@ -47,6 +47,18 @@ namespace ProjectFirstRun.UI.Hud
         {
             _pending.Clear(); _queued.Clear(); Current = null; Elapsed = 0;
         }
+        public void Dismiss(string id)
+        {
+            _completed.Add(id);
+            _queued.Remove(id);
+            int count = _pending.Count;
+            for (int i = 0; i < count; i++)
+            {
+                string pending = _pending.Dequeue();
+                if (pending != id) _pending.Enqueue(pending);
+            }
+            if (Current == id) { Current = null; Elapsed = 0; }
+        }
     }
 
     public sealed class HudTipView : MonoBehaviour
@@ -83,7 +95,7 @@ namespace ProjectFirstRun.UI.Hud
             if (!float.IsFinite(_enterSeconds) || _enterSeconds <= 0 || !float.IsFinite(_exitSeconds) || _exitSeconds <= 0 ||
                 !float.IsFinite(_holdSeconds) || _holdSeconds < 0 || !float.IsFinite(_rightMargin) || _rightMargin < 0)
                 throw new InvalidOperationException("TIP durations and margin must be finite and valid.");
-            foreach (string id in new[] { "move", "weapon", "ability", "upgrade" })
+            foreach (string id in new[] { "move", "weapon", "chest", "ability", "upgrade" })
                 if (Find(id) == null) throw new InvalidOperationException("Missing TIP message: " + id);
         }
         private Message Find(string id)
@@ -97,6 +109,11 @@ namespace ProjectFirstRun.UI.Hud
             if (Find(id) == null) return;
             _playback ??= new HudTipPlayback(SeenThisSession);
             _playback.Enqueue(id);
+        }
+        public void Dismiss(string id)
+        {
+            _playback ??= new HudTipPlayback(SeenThisSession);
+            _playback.Dismiss(id);
         }
         public void Refresh(bool visible, bool terminal)
         {

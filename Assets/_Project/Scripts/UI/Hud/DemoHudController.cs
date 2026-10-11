@@ -73,6 +73,13 @@ namespace ProjectFirstRun.UI.Hud
                     _view.Tips.Enqueue("weapon");
                     _openingTipsQueued = true;
                 }
+                var firstChest = _demo.Reward;
+                if (_demo.RewardClaimed || (firstChest != null && firstChest.Status != Chests.ChestStatus.Available))
+                    _view.Tips.Dismiss("chest");
+                else if (visible && firstChest != null &&
+                         Vector3.SqrMagnitude(_health.transform.position - firstChest.transform.position) <= 36f)
+                    _view.Tips.Enqueue("chest");
+
                 // Actual inventory acquisition, not opening a chest or displaying its choices.
                 if (!_abilityTipsQueued && _build.Build.Abilities.Count > 0)
                 {

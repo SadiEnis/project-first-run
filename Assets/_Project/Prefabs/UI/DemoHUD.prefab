@@ -9027,6 +9027,9 @@ MonoBehaviour:
   - Id: weapon
     KeyboardText: "{Fire} Fire\n{Reload} Reload"
     GamepadText: "{Fire} Fire\n{Reload} Reload"
+  - Id: chest
+    KeyboardText: "{Interact} Open chest"
+    GamepadText: "{Interact} Open chest"
   - Id: ability
     KeyboardText: "Abilities attack automatically.\nWatch their cooldown icons."
     GamepadText: "Abilities attack automatically.\nWatch their cooldown icons."

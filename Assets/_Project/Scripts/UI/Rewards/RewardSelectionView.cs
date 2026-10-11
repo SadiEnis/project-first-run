@@ -180,6 +180,9 @@ namespace ProjectFirstRun.UI.Rewards
                 string.Format(
                     RemainingSelectionsLabelFormat,
                     selectionsRemaining);
+            // Disabling the selected button can clear EventSystem focus. Restore it
+            // to an available reward so keyboard/gamepad navigation can continue.
+            SelectFirstChoice();
         }
 
         public void Hide()
@@ -265,14 +268,14 @@ namespace ProjectFirstRun.UI.Rewards
                 return;
             }
 
-            Button firstButton =
-                _choiceViews[0].Button;
-
-            if (firstButton != null &&
-                firstButton.isActiveAndEnabled)
+            foreach (RewardChoiceView choice in _choiceViews)
             {
-                EventSystem.current.SetSelectedGameObject(
-                    firstButton.gameObject);
+                Button button = choice != null ? choice.Button : null;
+                if (button == null || !button.isActiveAndEnabled || !button.IsInteractable())
+                    continue;
+
+                EventSystem.current.SetSelectedGameObject(button.gameObject);
+                return;
             }
         }
 

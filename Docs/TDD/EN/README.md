@@ -68,3 +68,4 @@ Project First Run is the current development codename. The final commercial titl
 62. [DeepJam Demo Scope and Scene Design](DeepJam-Demo.md)
 63. [Enemy Perception and Pursuit Memory](Enemy-Perception.md)
 64. [Demo HUD — Layout and Behaviour](Demo-HUD.md)
+65. [Weapon Audio](Weapon-Audio.md)

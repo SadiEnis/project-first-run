@@ -9,6 +9,18 @@ namespace ProjectFirstRun.Weapons
         menuName = "Project First Run/Items/Weapon Definition")]
     public sealed class WeaponDefinition : ItemDefinition
     {
+        [Header("Audio (optional presentation)")]
+        [SerializeField] private AudioClip[] _fireSounds = Array.Empty<AudioClip>();
+        [SerializeField] private AudioClip _reloadStartSound;
+        [SerializeField] private AudioClip _reloadEndSound;
+        [SerializeField, Range(0, 1)] private float _fireVolume = .35f;
+        [SerializeField, Range(0, 1)] private float _reloadVolume = .4f;
+        public AudioClip[] FireSounds => _fireSounds;
+        public AudioClip ReloadStartSound => _reloadStartSound;
+        public AudioClip ReloadEndSound => _reloadEndSound;
+        public float FireVolume => _fireVolume;
+        public float ReloadVolume => _reloadVolume;
+
         [Header("Delivery")]
         [SerializeField] private WeaponDeliveryMode _deliveryMode;
         [SerializeField] private RocketProjectile _rocketPrefab;

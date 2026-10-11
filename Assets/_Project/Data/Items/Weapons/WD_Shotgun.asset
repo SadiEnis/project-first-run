@@ -11,6 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
   m_Name: WD_Shotgun
+  _fireSounds:
+  - {fileID: 8300000, guid: a42a25bfe713e63498febabb408fceea, type: 3}
+  - {fileID: 8300000, guid: b322a4e6a9f59b04a82a3336dde02871, type: 3}
+  - {fileID: 8300000, guid: ae2d2db46850b7c47ab85240cdc448f9, type: 3}
+  _reloadStartSound: {fileID: 8300000, guid: b36593ecec3d81d4a959516b91c8f25e, type: 3}
+  _reloadEndSound: {fileID: 8300000, guid: a9ba81f40042d9a459cc55ed3001caa1, type: 3}
+  _fireVolume: 0.5
+  _reloadVolume: 0.4
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
   _stableId: weapon.shotgun
   _displayName: Shotgun

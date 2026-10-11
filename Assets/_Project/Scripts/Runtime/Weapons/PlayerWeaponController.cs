@@ -29,6 +29,7 @@ namespace ProjectFirstRun.Weapons
         private PlayerWeaponRuntimeEntry _activeEntry;
         private HitscanVolleyResolver _shotResolver;
         private PlayerLook _look;
+        private WeaponAudioPlayback _audio;
         private readonly PreparedAutomaticFire _preparedFire = new PreparedAutomaticFire();
         private readonly System.Random _criticalRandom = new System.Random();
         public float PreparationElapsed => _preparedFire.PreparationElapsed;
@@ -87,6 +88,7 @@ namespace ProjectFirstRun.Weapons
 
         private void Awake()
         {
+            _audio = new WeaponAudioPlayback(transform);
             _look = GetComponent<PlayerLook>();
             _inputReader =
                 GetComponent<PlayerInputReader>();
@@ -122,6 +124,7 @@ namespace ProjectFirstRun.Weapons
 
         private void Update()
         {
+            _audio?.SetPaused(Time.timeScale <= 0f || !IsWeaponControlEnabled);
             if (!IsInitialized ||
                 !IsWeaponControlEnabled || Time.timeScale <= 0f)
             {
@@ -191,6 +194,7 @@ namespace ProjectFirstRun.Weapons
 
             _preparedFire.Reset();
             LastShotWasCritical = false;
+            _audio?.Stop();
             _activeEntry =
                 entry;
 
@@ -211,6 +215,7 @@ namespace ProjectFirstRun.Weapons
             }
 
             _runtimeState.Reset();
+            _audio?.Stop();
             _preparedFire.Reset();
             LastShotWasCritical = false;
 
@@ -225,7 +230,11 @@ namespace ProjectFirstRun.Weapons
             if (!isEnabled) _preparedFire.Reset();
         }
 
-        private void OnDisable() => _preparedFire.Reset();
+        private void OnDisable()
+        {
+            _preparedFire.Reset();
+            _audio?.Stop();
+        }
 
         private void UpdateRuntimeState(
             float deltaTime)
@@ -241,6 +250,7 @@ namespace ProjectFirstRun.Weapons
 
             PublishAmmoChanged();
 
+            _audio?.Reload(_activeDefinition, true);
             ReloadCompleted?.Invoke();
         }
 
@@ -271,6 +281,7 @@ namespace ProjectFirstRun.Weapons
                 WeaponReloadResult.Started)
             {
                 _preparedFire.Reset();
+                _audio?.Reload(_activeDefinition, false);
                 ReloadStarted?.Invoke();
             }
         }
@@ -384,6 +395,7 @@ namespace ProjectFirstRun.Weapons
                     entry.Shot, critical);
 
             LastShotWasCritical = critical;
+            _audio?.Fire(entry.Definition);
             if (profile.RecoilDegrees > 0) _look.ApplyRecoil(profile.Recoil);
             PublishAmmoChanged();
 

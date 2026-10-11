@@ -64,6 +64,7 @@ namespace ProjectFirstRun.UI.Hud
             bool ready = _demo.IsReady && _build.IsInitialized && _experience.IsInitialized && _weapon.IsInitialized;
             bool visible = ShouldShow(ready, _health.IsDead, _selection.IsOpen, _final.IsEnding);
             _view.SetVisible(visible);
+            _view.SetCrosshair(_weapon, visible && _weapon.IsWeaponControlEnabled && Time.timeScale > 0);
             if (ready && !_health.IsDead && !_final.IsEnding)
             {
                 if (!_openingTipsQueued)

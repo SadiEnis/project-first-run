@@ -1,5 +1,20 @@
 # Demo HUD — Yerleşim ve Davranış Sözleşmesi
 
+## Silaha özgü nişangah (11.10.2026)
+
+Kullanıcı nişangahları silahlara uygun bulup ilk demo sunumu olarak kabul etti. Bu kabul bütün otomatik testlerin veya manuel regresyon listesinin tamamlandığı anlamına gelmez; Unity test sonucu henüz bildirilmedi.
+
+DemoHUD prefabındaki eski artı yazısı kayıtlı HudCrosshair grafiğiyle değiştirildi; sahne yeniden üretilmez. DemoHudController mevcut oyuncunun silahını bağlar. Sunum salt okunurdur; hasar, saçılma, hareket, geri tepme ve atış temposu değişmez.
+
+- Shotgun: merkez noktası ve gerçek saçılma konisinin sınırında kesikli çember. Minigun: merkez ve 1 derece koninin sınırından dışarı uzanan dört kısa çizgi. Yarıçap = tan(yarı açı) × kamera projection.m11 × piksel yüksekliği / (2 × Canvas ölçeği); güncel seviye/kamera/çözünürlük okunur. Çember tüm saçmaların kenara gideceği anlamına gelmez. Yakın namlu engelleri isabeti değiştirebilir.
+- Minigun dışındaki mavi yay, gerçek PreparationElapsed/PreparationDuration oranını gösterir; ateş basılı tutulunca dolar, bırakınca sıfırlanır. Dolu yay saçılma artışı değildir.
+- Plasma: nokta ve iki kısa kanat. Roket: nokta ve dört köşe braketi. Bunlar yön referansıdır; patlama yarıçapı, otomatik kilitlenme veya hedef öngörüsü değildir. Mermi uçuş süresi korunur.
+- Kamera geri tepmesi nişan yönünü zaten taşır; nişangah kamera viewport merkezinde kalır. Mevcut oyunda hareket/seri atış ek saçılma yaratmadığından yapay genişleyip daralma yok. Başarılı ateşte kısa parlama vardır.
+- Reload veya boş şarjörde işaret amber renkte soluklaşır. Yalnız silah DamageApplied olayı gerçekten hasar verdiyse 0,18 sn isabet çarpısı; öldürücü hasarda kırmızı-turuncu işaret. Aynı yaylımın sonraki ölümcül olmayan hedefi öldürme rengini bastırmaz. Roket alan hasarı ve plasma yanması dahil bu silah kanalından bildirilen hasar işaret verir; otomatik yetenekler bu kanala bağlı değildir. Duvar/boşa atış/reddedilen hasar işaret vermez.
+- Ödül, ölüm, final, pause ve silah kontrol kilidinde gizlenir; eski geri bildirim temizlenir. Silah değişiminde görünüm doğrudan güncellenir; yanlış koni gösterecek yumuşak boyut geçişi yok. Disable'da olay abonelikleri çözülür. Grafik input raycast almaz; koyu kenar çizgisi açık/koyu zeminde okunabilirlik sağlar.
+
+CrosshairTests: dört stil, FOV/çözünürlük/Canvas ölçeği hesabı, prefab referansı, reddedilen/gizli hasar ve aynı yaylımda ölüm önceliği. Runtime ve EditMode statik derleme yapıldı; Unity testleri ve görsel oynanış kabulü kullanıcıya bırakıldı. Manuel: dört silah, shotgun farklı FOV, minigun hazırlık/bırakma, duvar ve düşman isabeti, reload/boş şarjör, Q, ödül/ölüm/final/restart. Renk, kalınlık ve isabet süresi prefab Crosshair bileşeninde ayarlanabilir.
+
 ## Cihaza göre tuş ikonları
 
 InputPrompts; TIP, HUD reload/silah değişimi, demo sandık/anahtar yönergeleri ve ölüm/final/ödül menüsü ipuçlarını ortak yönetir. {Reload} gibi oynanış belirteçleri PlayerInputReader binding'lerini okur; action açmaz. İleride tuş atama kodu override sonrasında InputPrompts.RefreshBindings çağırmalıdır. Menü ipuçları mevcut kontrollerle eşleşir; ödülde yatay oklar da gösterilir.

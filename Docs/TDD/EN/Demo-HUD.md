@@ -1,5 +1,20 @@
 # Demo HUD — Layout and Behaviour Contract
 
+## Weapon-specific crosshair (2026-10-11)
+
+The user accepted the weapon-specific crosshairs as initial demo presentation. This does not claim completion of all automated tests or the manual regression checklist; Unity test results have not been reported.
+
+The saved DemoHUD plus-sign Text is replaced by HudCrosshair; no scene regeneration. DemoHudController binds the existing weapon. Presentation does not change damage, spread, recoil, movement or cadence.
+
+- Shotgun: centre dot and segmented actual spread boundary. Minigun: dot and four ticks extending out from its cone boundary. Radius = tan(half-angle) × camera projection.m11 × pixel height / (2 × Canvas scale), reading the current level/camera/resolution. Pellets fill the cone rather than following its rim; nearby muzzle obstructions can still intercept a shot.
+- Minigun's outer blue arc follows actual PreparationElapsed/PreparationDuration, fills while held and resets on release. It is not spread growth.
+- Plasma: dot with small wings. Rocket: dot with corner brackets. These indicate direction, not explosion radius, target lock or prediction. Projectile travel time remains unchanged.
+- Recoil already moves camera aim; the reticle stays at the weapon camera viewport centre. No artificial movement/automatic-fire bloom because gameplay does not apply it. Successful shots briefly brighten the reticle.
+- Reload/empty magazine uses subdued amber. Applied weapon damage shows a .18-second X, orange-red on lethal damage. Later nonlethal targets in the same volley do not overwrite a kill cue. Rocket area damage and plasma burn callbacks also qualify; automatic abilities do not use this weapon channel. Walls, misses and rejected damage do not trigger hit markers.
+- Hide and clear feedback on reward/death/ending/pause/control block. Switching immediately follows actual data rather than interpolating an inaccurate spread boundary. Disable unsubscribes events. Non-raycastable geometry has dark outlines for contrast. Colour, line width and hit duration are adjustable on the prefab component.
+
+CrosshairTests covers four styles, FOV/resolution/Canvas projection, saved wiring, hidden/rejected hits and kill priority. Runtime and EditMode statically compiled; Unity tests and visual acceptance are left to the user. Manual checks: all weapons, shotgun FOV changes, minigun preparation/release, walls versus enemies, reload/empty ammo, Q, reward/death/ending/restart.
+
 ## Device-aware input icons
 
 InputPrompts serves TIP, HUD reload/switch, demo chest/key instructions and death/final/reward menu hints. Gameplay tokens such as {Reload} read PlayerInputReader bindings without enabling actions. Future rebinding code must call InputPrompts.RefreshBindings after overrides. Menu hints match the current menu controls; reward navigation includes horizontal arrows.

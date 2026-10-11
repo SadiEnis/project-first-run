@@ -180,6 +180,7 @@ MonoBehaviour:
   _key: {fileID: 200260}
   _carousel: {fileID: 200259}
   _tips: {fileID: 300030}
+  _crosshair: {fileID: 100220}
 --- !u!1 &100005
 GameObject:
   m_ObjectHideFlags: 0
@@ -4344,9 +4345,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 100217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d793a491e514616a86ee7196c43c412, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.UI.Hud.HudCrosshair
   m_Material: {fileID: 0}
   m_Color: {r: 0.9, g: 0.9, b: 0.85, a: 1}
   m_RaycastTarget: 0
@@ -4354,20 +4355,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 22
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 10
-    m_MaxSize: 40
-    m_Alignment: 4
-    m_AlignByGeometry: 0
-    m_RichText: 0
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: "+"
+  _readyColor: {r: 0.92, g: 0.96, b: 1, a: 0.9}
+  _unavailableColor: {r: 1, g: 0.65, b: 0.25, a: 0.65}
+  _killColor: {r: 1, g: 0.32, b: 0.22, a: 1}
+  _hitDuration: 0.18
+  _lineWidth: 1.5
 --- !u!1 &200000
 GameObject:
   m_ObjectHideFlags: 0

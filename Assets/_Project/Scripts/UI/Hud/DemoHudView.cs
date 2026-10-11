@@ -24,6 +24,9 @@ namespace ProjectFirstRun.UI.Hud
         [SerializeField] private GameObject _key;
         [SerializeField] private HudWeaponCarousel _carousel;
         [SerializeField] private HudTipView _tips;
+        [SerializeField] private HudCrosshair _crosshair;
+        public void SetCrosshair(Weapons.PlayerWeaponController weapon, bool visible)
+            => _crosshair.Present(weapon, visible);
         public HudTipView Tips => _tips;
         private float _health = float.NaN, _maximumHealth = float.NaN;
         private long _xp = -1, _required = -1;
@@ -55,6 +58,7 @@ namespace ProjectFirstRun.UI.Hud
             foreach (var card in _upgradeCards) if (card == null) throw new InvalidOperationException("Missing upgrade card.");
             if (_tips == null) throw new InvalidOperationException("Assign TIP presentation.");
             _tips.ValidateConfiguration();
+            if (_crosshair == null) throw new InvalidOperationException("Assign weapon crosshair presentation.");
         }
 
         private static void ValidateSlots(GameObject[] slots, int maximum)
@@ -71,6 +75,7 @@ namespace ProjectFirstRun.UI.Hud
 
         public void SetVisible(bool visible)
         {
+            if (!visible && _crosshair != null) _crosshair.Hide();
             if (_visibility == null) return;
             if (!visible && IsVisible && _carousel != null) _carousel.Snap();
             _visibility.alpha = visible ? 1 : 0;

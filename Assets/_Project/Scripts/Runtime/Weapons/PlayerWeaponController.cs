@@ -60,6 +60,7 @@ namespace ProjectFirstRun.Weapons
 
         public WeaponDefinition ActiveDefinition =>
             _activeDefinition;
+        public Camera AimCamera => _aimCamera;
 
         public int MagazineAmmo =>
             IsInitialized

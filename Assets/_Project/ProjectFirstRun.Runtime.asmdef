@@ -5,6 +5,7 @@
         "Unity.InputSystem",
         "UnityEngine.UI",
         "Unity.TextMeshPro",
+        "Unity.Cinemachine",
         "Unity.AI.Navigation"
     ],
     "includePlatforms": [],

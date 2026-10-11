@@ -30,6 +30,8 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
         [SerializeField] private DemoFinalController _final;
         [SerializeField] private ProjectFirstRun.UI.Hud.DemoHudController _hud;
+        [SerializeField] private DemoEntryController _entry;
+        public bool IsEntryBlocking => _entry != null && _entry.IsBlocking;
         private bool _restarting;
         private readonly DemoMenuInput _deathMenu = new();
         private bool _rewardClaimed;
@@ -100,6 +102,7 @@ namespace ProjectFirstRun.Development.Arenas
         {
             if (_restarting || !_health.IsDead || (_final != null && _final.IsEnding)) return;
             _restarting = true;
+            DemoEntryController.SkipMenuOnNextLoad(gameObject.scene.path);
             Time.timeScale = 1;
 #if UNITY_EDITOR
             UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
@@ -111,7 +114,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void OnGUI()
         {
-            if (!IsReady || _selection.IsOpen || (_final != null && _final.IsEnding)) return;
+            if (!IsReady || IsEntryBlocking || _selection.IsOpen || (_final != null && _final.IsEnding)) return;
             bool canvasHud = _hud != null && _hud.ReplacesDebugHud;
             if (!canvasHud)
             {

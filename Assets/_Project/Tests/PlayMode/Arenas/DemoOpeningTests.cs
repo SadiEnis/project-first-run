@@ -40,6 +40,9 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             _scene = SceneManager.GetSceneByPath(Path);
             SceneManager.SetActiveScene(_scene);
             _demo = _scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<DemoOpeningController>()).Single();
+            // These tests exercise gameplay; entry ownership/transition has its own suite.
+            var entry = _demo.GetComponent<DemoEntryController>();
+            if (entry != null) entry.enabled = false;
             for (int i = 0; i < 300 && (!_demo.IsReady || !_demo.Encounter.IsReadyForPassage); i++) yield return null;
             Assert.That(_demo.IsReady, Is.True);
             Assert.That(_demo.Encounter.IsReadyForPassage, Is.True, _demo.Encounter.LastError?.ToString());

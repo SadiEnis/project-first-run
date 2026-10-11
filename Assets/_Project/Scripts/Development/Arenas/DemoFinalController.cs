@@ -122,6 +122,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (!IsEnding || !Session.TryRequestReplay()) return;
             try
             {
+                DemoEntryController.SkipMenuOnNextLoad(gameObject.scene.path);
                 Time.timeScale = 1;
 #if UNITY_EDITOR
                 var operation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
@@ -133,6 +134,7 @@ namespace ProjectFirstRun.Development.Arenas
             }
             catch (Exception error)
             {
+                DemoEntryController.CancelSkip();
                 Time.timeScale = 0;
                 Session.CancelFailedReplay();
                 LastError = "Replay failed: " + error.Message;

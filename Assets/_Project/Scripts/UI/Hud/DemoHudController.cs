@@ -61,7 +61,7 @@ namespace ProjectFirstRun.UI.Hud
         private void LateUpdate()
         {
             if (!_bound || _view == null) return;
-            bool ready = _demo.IsReady && _build.IsInitialized && _experience.IsInitialized && _weapon.IsInitialized;
+            bool ready = _demo.IsReady && !_demo.IsEntryBlocking && _build.IsInitialized && _experience.IsInitialized && _weapon.IsInitialized;
             bool visible = ShouldShow(ready, _health.IsDead, _selection.IsOpen, _final.IsEnding);
             _view.SetVisible(visible);
             _view.SetCrosshair(_weapon, visible && _weapon.IsWeaponControlEnabled && Time.timeScale > 0);

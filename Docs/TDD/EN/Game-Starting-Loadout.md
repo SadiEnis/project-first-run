@@ -2,7 +2,19 @@
 
 ## Status and purpose
 
-Pre-implementation plan. The existing demo scene is the main development space that will evolve into the actual game; do not create separate demo/test/normal-game architectures. Preserve the submitted version through its Git tag. Keep the content arena as a focused content-testing aid.
+### Implementation status
+
+The user confirmed settings affect gameplay and the initial tests passed. A subsequent report identified fixed 2/5/8 pause slots; corrected to use runtime build capacity. Weapon/ability rows and each upgrade row (up to four columns) center independently: 1/3/5 displays 1, 3, 4+1; 2/5/8 retains 2, 5, 4+4. Preserved the user's current 1/3/5 asset choice. Scene tests now validate settings agreement and supported bounds rather than pinning editable values to Minigun/2/5/8. Static compilation of the pause fix passed; the user manually confirmed capacity-aware display and centering. A separate Unity rerun result after this final fix has not been recorded.
+
+Implemented, with gameplay settings acceptance reported by the user. `SO_GameStartingLoadout` was initially created with the shared Minigun reference and 2/5/8 capacity; the user's latest 1/3/5 selection is preserved. Only player prefab startup overrides changed in both scenes; geometry is untouched. Both scenes enable `_requireSettings`: removing the asset cannot fall back to legacy defaults, including through automatic Start. Legacy fixtures retain their own paths without requiring settings.
+
+`InitializeConfigured()` validates settings and uses the existing initialization path, preserving `Initialized`. Running capacity and starting weapon snapshots are unaffected by later asset edits. The editor builder assigns the same asset for future scenes; it was not executed in this increment.
+
+Extended existing initializer EditMode tests for valid/invalid settings, required settings absence, single notification, repeated initialization, runtime snapshots and legacy conflicts. Demo layout tests verify both scenes' asset/capacity wiring. A PlayMode integration test covers configured automatic Start and reenabling. Runtime, EditMode and PlayMode sources compiled statically; the assistant did not run Unity tests or a build; the user reported the initial Unity tests passing. The existing `PlayerChestInteractorTests.TearDown` warning was left outside scope.
+
+Manual acceptance: outside Play Mode, select a valid weapon/capacity on `Assets/_Project/Data/Builds/SO_GameStartingLoadout.asset`, start a new run and verify HUD/weapon, acquire the first chest ability and restart. The post-test configuration is the user's choice; do not automatically revert the current 1/3/5 selection. Asset edits persist.
+
+Design decision: The existing demo scene is the main development space that will evolve into the actual game; do not create separate demo/test/normal-game architectures. Preserve the submitted version through its Git tag. Keep the content arena as a focused content-testing aid.
 
 Unify starting weapon and slot capacity under one Inspector-editable data source without regenerating scenes or changing current gameplay.
 

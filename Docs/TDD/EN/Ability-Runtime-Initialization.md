@@ -2,7 +2,18 @@
 
 ## Status and purpose
 
-2026-10-25: Pre-implementation technical plan. This document does not claim implementation or test completion.
+2026-10-25: Implementation complete. The user confirmed PlayMode success, first-chest ability acquisition and restart reset, then reported green tests after the EditMode corrections. No new build validation was performed in this increment. The plan and scope below are retained.
+
+### Implementation note
+
+User validation: acquiring an ability from the first chest and resetting the run on restart succeeded; the user reported PlayMode tests passing. Five reported EditMode failures led to corrections of two legacy test assumptions: the WideCombat left wave now contains 10 Chasers + 5 Chargers, and the reward selection test explicitly registers and cleans up the EditMode EventSystem lifecycle. These corrections do not change gameplay or scenes. The user confirmed the focused EditMode rerun also passed.
+
+- `PlayerAbilityRuntimeInstaller` registers eight factories using `PlayerStartingLoadoutInitializer.Initialized` or its already-completed `IsInitialized` state. It does not select starting capacity.
+- Both demos, playable map fixture and content arena now use the production component directly. Geometry was not changed. Both editor builders produce the same component.
+- `Test_Waves` retains the legacy adapter. It owns shared installation scheduling and the optional Fireball grant; no Fireball asset is required when the grant is disabled. `CommonChestContentTests` consequently retains its legacy fixture contract.
+- Disabling a waiting component unsubscribes readiness notifications; reenabling checks current readiness. Repeated explicit `Install()` calls fail, while lifecycle calls do not repeat completed installation.
+- Added four EditMode scene wiring cases and seven PlayMode installation tests; extended the legacy Fireball test to verify no duplicate grant after reenabling.
+- Runtime/EditMode/PlayMode sources compiled statically using Unity's existing compiler references. This is not execution of Unity tests or build acceptance. PlayMode compilation reported the existing `PlayerChestInteractorTests.TearDown` hiding warning, left unchanged outside this scope.
 
 Separate initialization of the eight existing abilities from demo/test code and make startup ordering explicit. Preserve gameplay, balance, capacity and content choices.
 

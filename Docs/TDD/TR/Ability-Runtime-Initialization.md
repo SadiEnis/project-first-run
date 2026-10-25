@@ -2,7 +2,18 @@
 
 ## Durum ve amaç
 
-2026-10-25: Uygulama öncesi teknik plan. Bu doküman uygulamanın veya testlerin tamamlandığını ifade etmez.
+2026-10-25: Uygulama tamamlandı. Kullanıcı PlayMode başarısını, ilk sandıktan yetenek edinimini ve restart sıfırlamasını doğruladı; EditMode düzeltmelerinden sonra testlerin yeşil olduğunu bildirdi. Yeni build doğrulaması bu adımda yapılmadı. Aşağıdaki plan ve sınırlar korunuyor.
+
+### Uygulama notu
+
+Kullanıcı doğrulaması: İlk sandıktan yetenek edinimi ve restart sonrası run sıfırlanması başarılı; kullanıcı PlayMode testlerini başarılı bildirdi. EditMode'da raporlanan beş başarısız vaka için iki eski test varsayımı düzeltildi: WideCombat sol dalga artık 10 Chaser + 5 Charger içeriyor; sandık seçim testi EditMode EventSystem yaşam döngüsünü açıkça kurup temizliyor. Oynanış/sahne bu düzeltmeler için değiştirilmedi. Kullanıcı ilgili EditMode tekrarının da başarılı olduğunu doğruladı.
+
+- `PlayerAbilityRuntimeInstaller` sekiz fabrikayı kurar; `PlayerStartingLoadoutInitializer.Initialized` bildirimini veya önceden tamamlanmış `IsInitialized` durumunu kullanır. Başlangıç kapasitesini seçmez.
+- İki demo, playable map fixture ve content arena doğrudan yeni bileşene taşındı. Sahne geometrisi değiştirilmedi. İki editor builder aynı bileşeni üretir.
+- `Test_Waves` eski adaptörü kullanmaya devam eder. Adaptör ortak kurulum bileşenini yönetir ve isteğe bağlı Fireball ödülünü verir; ücretsiz ödül kapalıyken Fireball asset bağımlılığı yoktur. `CommonChestContentTests` bu nedenle eski fixture sözleşmesini korur.
+- Hazır olmadan disable edilen bileşen bildirimden ayrılır; yeniden etkinleştirilince hazır durumu kontrol eder. Açık `Install()` tekrar çağrısı hata verir, yaşam döngüsü çağrıları tamamlanmış kurulumu tekrarlamaz.
+- Dört EditMode sahne bağlantısı vakası ve yedi PlayMode kurulum testi eklendi; eski Fireball başlangıç testi yeniden etkinleştirmede çift ödül verilmediğini de kontrol ediyor.
+- Unity'nin mevcut derleyici referanslarıyla Runtime/EditMode/PlayMode kaynakları statik olarak derlendi. Bu, Unity testlerinin çalıştırılması veya build kabulü değildir. PlayMode derlemesinde mevcut `PlayerChestInteractorTests.TearDown` gizleme uyarısı görüldü; bu kapsamda değiştirilmedi.
 
 Sekiz mevcut yeteneğin kurulumunu demo/test kodundan ayırmak ve başlangıç sırasını açık hâle getirmek. Oynanış, denge, kapasite ve içerik seçimleri korunur.
 

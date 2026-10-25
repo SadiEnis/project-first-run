@@ -243,13 +243,6 @@ namespace ProjectFirstRun.Development.Arenas
                 if (GUI.Button(new Rect(40, 230, 300, 30), "Restart run")) RestartFailedRun();
                 return;
             }
-            if (_health == null || _health.IsDead || Time.timeScale <= 0) return;
-            string prompt = CanCollect() ? "Take key: {Interact}" :
-                Session.Phase == KeyAmbushPhase.Intermission ? "Next group incoming..." :
-                Session.RequestedGroup >= 0 ? "Ambush forming behind the rear screen. Keep clear of the spawn pockets." :
-                CanEnterFinal ? "Ambush cleared. Use the separate downward exit. Finale coming next." :
-                Session.HasKey ? "Key secured. Clear both ambush groups." : null;
-            if (prompt != null) ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 300, 135, 600, 35), prompt, true);
         }
     }
 }

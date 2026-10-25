@@ -6,6 +6,7 @@ using ProjectFirstRun.Combat;
 using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Input;
 using ProjectFirstRun.Weapons;
+using ProjectFirstRun.UI.Hud;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -105,6 +106,32 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_demo.IsEntryBlocking, Is.False);
         }
 
+        [UnityTest]
+        public IEnumerator PauseEastButtonResumesOnlyAfterRelease()
+        {
+            _entry.enabled = false;
+            yield return null;
+            var pause = _scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<DemoPauseController>()).Single();
+            try
+            {
+                Press(Gamepad.current.buttonEast);
+                yield return null;
+                Assert.That(pause.IsPaused, Is.False, "B/Circle must not open pause during gameplay.");
+                Release(Gamepad.current.buttonEast);
+                pause.Open();
+                yield return null;
+                Press(Gamepad.current.buttonEast);
+                yield return new WaitForSecondsRealtime(.4f);
+                Assert.That(pause.IsPaused, Is.True, "Gameplay stays locked until the cancel button is released.");
+                Release(Gamepad.current.buttonEast);
+                float deadline = Time.realtimeSinceStartup + 2;
+                while (pause.IsPaused && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.That(pause.IsPaused, Is.False);
+                Assert.That(Time.timeScale, Is.EqualTo(1));
+            }
+            finally { pause.enabled = false; }
+        }
+
         [UnityTearDown]
         public IEnumerator Unload()
         {
@@ -114,6 +141,54 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             DemoEntryController.CancelSkip();
             Time.timeScale = _oldTime; Cursor.lockState = _oldLock; Cursor.visible = _oldCursor;
             base.TearDown();
+        }
+
+        [UnityTest]
+        public IEnumerator PauseWithEscapeAndGamepadMenuRestoresTimeAudioAndOtherInputOwners()
+        {
+            var pause = _scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<DemoPauseController>()).Single();
+            pause.Open();
+            Assert.That(pause.IsPaused, Is.False, "Entry owns the screen.");
+            _entry.enabled = false;
+            yield return null;
+            bool oldAudio = AudioListener.pause;
+            var input = _demo.Health.GetComponent<PlayerInputReader>();
+            object owner = new object();
+            try
+            {
+                Press(Keyboard.current.escapeKey);
+                yield return null;
+                Assert.That(pause.IsPaused, Is.True);
+                Assert.That(Time.timeScale, Is.Zero);
+                Assert.That(AudioListener.pause, Is.True);
+                Assert.That(input.IsGameplayInputEnabled, Is.False);
+                Release(Keyboard.current.escapeKey);
+                yield return null;
+                input.SetGameplayBlocked(owner, true);
+                pause.Resume();
+                float deadline = Time.realtimeSinceStartup + 2;
+                while (pause.IsPaused && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.That(pause.IsPaused, Is.False);
+                Assert.That(Time.timeScale, Is.EqualTo(1));
+                Assert.That(AudioListener.pause, Is.EqualTo(oldAudio));
+                Assert.That(input.IsGameplayInputEnabled, Is.False, "Keep the other owner's lock.");
+                input.SetGameplayBlocked(owner, false);
+                Press(Gamepad.current.startButton);
+                yield return null;
+                Assert.That(pause.IsPaused, Is.True);
+                Release(Gamepad.current.startButton);
+                yield return null;
+                pause.enabled = false;
+                Assert.That(Time.timeScale, Is.EqualTo(1));
+                Assert.That(input.IsGameplayInputEnabled, Is.True);
+                Assert.That(AudioListener.pause, Is.EqualTo(oldAudio));
+            }
+            finally
+            {
+                pause.enabled = false;
+                input.SetGameplayBlocked(owner, false);
+                AudioListener.pause = oldAudio;
+            }
         }
     }
 }

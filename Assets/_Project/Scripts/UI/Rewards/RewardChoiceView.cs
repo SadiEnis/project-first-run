@@ -1,13 +1,14 @@
 using System;
 using ProjectFirstRun.Items;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ProjectFirstRun.UI.Rewards
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Button))]
-    public sealed class RewardChoiceView : MonoBehaviour
+    public sealed class RewardChoiceView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField]
         private Button _button;
@@ -25,6 +26,25 @@ namespace ProjectFirstRun.UI.Rewards
         private Text _stateText;
 
         private bool _isListening;
+        private bool _hovered, _colorsCaptured;
+        private ColorBlock _originalColors;
+
+        public void OnPointerEnter(PointerEventData data) => _hovered = true;
+        public void OnPointerExit(PointerEventData data) => _hovered = false;
+
+        public void SetPointerFeedback(bool pointerMode)
+        {
+            if (_button == null) return;
+            if (!_colorsCaptured) { _originalColors = _button.colors; _colorsCaptured = true; }
+            var colors = _originalColors;
+            colors.highlightedColor = pointerMode ? _originalColors.highlightedColor : _originalColors.normalColor;
+            // Unity retains selection after a mouse click. Do not show that old focus
+            // alongside the hovered card, but still highlight a hovered selected button.
+            colors.selectedColor = pointerMode
+                ? (_hovered ? _originalColors.highlightedColor : _originalColors.normalColor)
+                : _originalColors.selectedColor;
+            if (_button.colors != colors) _button.colors = colors;
+        }
 
         public ItemDefinition Definition { get; private set; }
         public Button Button => _button;
@@ -48,6 +68,7 @@ namespace ProjectFirstRun.UI.Rewards
 
         private void OnDisable()
         {
+            _hovered = false;
             StopListening();
         }
 

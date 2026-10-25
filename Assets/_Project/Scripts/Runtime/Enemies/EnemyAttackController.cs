@@ -20,6 +20,7 @@ namespace ProjectFirstRun.Enemies
         private EnemyMotor _motor;
         public EnemyChargeState ChargeState => _chargeState;
         private EnemyRangedState _rangedState;
+        private Material _rangedProjectileMaterial;
         public EnemyRangedState RangedState => _rangedState;
 
         private bool _isInitialized;
@@ -222,6 +223,7 @@ namespace ProjectFirstRun.Enemies
                 definition.CreateAttackConfig();
 
             definition.ValidateBehavior();
+            _rangedProjectileMaterial = definition.RangedProjectileMaterial;
             _chargeState = definition.Behavior == EnemyBehavior.Charger
                 ? new EnemyChargeState(definition.CreateChargeConfig()) : null;
             _rangedState = definition.Behavior == EnemyBehavior.Ranger
@@ -371,7 +373,9 @@ namespace ProjectFirstRun.Enemies
             projectile.Initialize(direction, _attackState.Damage, _rangedState.Config.ProjectileSpeed,
                 _rangedState.Config.ProjectileLifetime, _rangedState.Config.ProjectileRadius, gameObject);
             Renderer renderer = projectileObject.GetComponent<Renderer>();
-            if (renderer != null) renderer.material.color = new Color(0.2f, 0.65f, 1f);
+            // A saved URP material is a build dependency; primitive defaults are not pipeline-safe.
+            if (renderer != null && _rangedProjectileMaterial != null)
+                renderer.sharedMaterial = _rangedProjectileMaterial;
         }
 
         private void TickCharge(float deltaTime)

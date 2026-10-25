@@ -47,6 +47,21 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
         }
 
         [Test]
+        public void ChoiceSelectionUsesDistinctGoldTintWithoutDoubleDarkening()
+        {
+            foreach (var choice in LoadPrefab().GetComponentsInChildren<RewardChoiceView>(true))
+            {
+                var button = choice.Button;
+                Assert.That(button.transition, Is.EqualTo(Selectable.Transition.ColorTint));
+                Assert.That(button.targetGraphic.color, Is.EqualTo(Color.white));
+                Assert.That(button.colors.selectedColor.r, Is.GreaterThan(button.colors.normalColor.r + .3f));
+                Assert.That(button.colors.selectedColor.g, Is.GreaterThan(button.colors.selectedColor.b));
+                Assert.That(button.colors.highlightedColor.r, Is.GreaterThan(button.colors.normalColor.r));
+                Assert.That(button.colors.disabledColor.a, Is.LessThan(button.colors.selectedColor.a));
+            }
+        }
+
+        [Test]
         public void Prefab_ContainsSixReusableChoiceViews()
         {
             GameObject prefab =

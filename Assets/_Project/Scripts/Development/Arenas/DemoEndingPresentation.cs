@@ -82,7 +82,8 @@ namespace ProjectFirstRun.Development.Arenas
             if (_timeline.HasImpacted)
                 for (int i = 0; i < _rubble.Length; i++)
                 {
-                    float fall = Mathf.Clamp01(afterImpact / (_aftermathSeconds + .2f * i));
+                    // Keep three speed groups: adding debris must not push its fall beyond the fade.
+                    float fall = Mathf.Clamp01(afterImpact / (_aftermathSeconds + .2f * (i % 3)));
                     _rubble[i].position = _rubblePositions[i] + Vector3.down * (fall * fall * 5.5f);
                     _rubble[i].rotation = _rubbleRotations[i] * Quaternion.Euler(fall * 60, fall * 25 * (i % 2 == 0 ? 1 : -1), 0);
                 }

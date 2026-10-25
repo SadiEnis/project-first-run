@@ -42,6 +42,8 @@ namespace ProjectFirstRun.Enemies
         }
 
         [Header("Ranger")]
+        [SerializeField] private Material _rangedProjectileMaterial;
+        public Material RangedProjectileMaterial => _rangedProjectileMaterial;
         [SerializeField, Min(0.01f)] private float _rangedPreferredMin = 5f;
         [SerializeField, Min(0.01f)] private float _rangedPreferredMax = 9f;
         [SerializeField, Min(0.01f)] private float _rangedFireRange = 12f;

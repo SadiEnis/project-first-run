@@ -49,6 +49,29 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
         }
 
         [Test]
+        public void ChoiceFeedbackShowsOnlyTheActiveInputMode()
+        {
+            var choice = CreateChoiceView("Feedback");
+            var original = choice.Button.colors;
+            original.normalColor = Color.black;
+            original.highlightedColor = Color.yellow;
+            original.selectedColor = Color.cyan;
+            choice.Button.colors = original;
+            choice.OnPointerEnter(null);
+            choice.SetPointerFeedback(false);
+            Assert.That(choice.Button.colors.highlightedColor, Is.EqualTo(Color.black));
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.cyan));
+            choice.SetPointerFeedback(true);
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.yellow));
+            choice.OnPointerExit(null);
+            choice.SetPointerFeedback(true);
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.black));
+            Assert.That(choice.Button.colors.highlightedColor, Is.EqualTo(Color.yellow));
+            choice.SetPointerFeedback(false);
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.cyan));
+        }
+
+        [Test]
         public void ItemDefinition_OnValidateTrimsGameplayEffect()
         {
             WeaponDefinition definition =

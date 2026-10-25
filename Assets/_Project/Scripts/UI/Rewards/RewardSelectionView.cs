@@ -3,6 +3,7 @@ using ProjectFirstRun.Items;
 using ProjectFirstRun.Rewards;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace ProjectFirstRun.UI.Rewards
@@ -30,6 +31,25 @@ namespace ProjectFirstRun.UI.Rewards
         private RewardChoiceView[] _choiceViews;
 
         private bool _isListening;
+        private bool _pointerFeedback;
+
+        private void LateUpdate()
+        {
+            if (!IsVisible || _choiceViews == null) return;
+            var mouse = Mouse.current;
+            var keyboard = Keyboard.current;
+            var pad = Gamepad.current;
+            if (mouse != null && (mouse.delta.ReadValue().sqrMagnitude > .01f || mouse.leftButton.wasPressedThisFrame))
+                _pointerFeedback = true;
+            if ((keyboard != null && (keyboard.upArrowKey.isPressed || keyboard.downArrowKey.isPressed ||
+                    keyboard.leftArrowKey.isPressed || keyboard.rightArrowKey.isPressed ||
+                    keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)) ||
+                (pad != null && (pad.dpad.ReadValue().sqrMagnitude > .1f ||
+                    pad.leftStick.ReadValue().sqrMagnitude > .36f || pad.buttonSouth.wasPressedThisFrame)))
+                _pointerFeedback = false;
+            foreach (var choice in _choiceViews)
+                if (choice != null) choice.SetPointerFeedback(_pointerFeedback);
+        }
 
         public bool IsVisible =>
             _modalRoot != null &&
@@ -145,6 +165,8 @@ namespace ProjectFirstRun.UI.Rewards
             _feedbackText.text = string.Empty;
             _modalRoot.SetActive(true);
 
+            _pointerFeedback = false;
+            foreach (var choice in _choiceViews) choice.SetPointerFeedback(false);
             SelectFirstChoice();
         }
 

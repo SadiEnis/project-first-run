@@ -67,6 +67,8 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.DoesNotThrow(final.ValidateConfiguration);
             Assert.That(final.Presentation, Is.Not.Null);
             Assert.DoesNotThrow(final.Presentation.ValidateConfiguration);
+            var rubble = new SerializedObject(final.Presentation).FindProperty("_rubble");
+            Assert.That(rubble.arraySize, Is.EqualTo(15), "The final collapse includes twelve additional authored fragments.");
             Assert.That(final.Presentation.GetComponentsInChildren<Collider>().Length, Is.Zero,
                 "Greybox giant and rubble are presentation only, not navigation/combat obstacles.");
             Assert.That(final.Presentation.GetComponentsInChildren<EnemyController>().Length, Is.Zero);

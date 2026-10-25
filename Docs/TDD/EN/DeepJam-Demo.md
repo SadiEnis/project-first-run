@@ -1,5 +1,9 @@
 # DeepJam demo — scope and scene design
 
+## Pause menu (2026-10-11)
+
+Both demo scenes contain an editable Demo Pause Canvas. Esc or gamepad Start (PlayStation Options / Xbox Menu) toggles pause. Resume, Restart and Quit reuse entry button styling/hover feedback; the panel slides from/to the left over .25s on unscaled time. The right side shows acquired weapons, abilities and upgrades with HUD catalog icons and levels; inventory icon children are populated from the current run when opened. Build overview clones the actual HUD cards: two centered 100px weapon cards, five centered 48px ability cards, then eight 48px upgrade cards in two centered rows of four. Empty slots stay visible with the HUD dash. World time/audio pause, cursor is released and owner-based input/motor/weapon/ability/damage locks prevent gameplay. Resume waits for activation/fire release; disable/unload restores prior state and unrelated input owners remain blocked. Entry, reward selection, death and finale block pause opening. Restart resets the run and skips entry; Quit exits the application (stops Play in Editor). Saved references and pause/input cleanup regression tests added; Unity execution and Windows acceptance remain manual.
+
 ## Entry menu and FPS camera handoff (2026-10-11)
 
 Saved DemoEntryController wiring added to DeepJam_Opening and DeepJam_WideCombat. Geometry/NavMesh remain unchanged; no scene regeneration. The starting room stays behind a left-side Project First Run title and Start/Settings buttons. Settings is intentionally clickable with no action, as requested; no settings persistence or audio/sensitivity changes.

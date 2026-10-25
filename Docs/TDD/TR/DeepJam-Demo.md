@@ -1,5 +1,9 @@
 # DeepJam demo — kapsam ve sahne tasarımı
 
+## Durdurma menüsü (11.10.2026)
+
+İki demo sahnesinde düzenlenebilir Demo Pause Canvas bulunur. Esc veya gamepad Start (PlayStation Options / Xbox Menu) durdurmayı açar/kapatır. Resume, Restart, Quit giriş butonlarının stilini ve hover davranışını kullanır; panel ölçeklenmemiş zamanda 0,25 sn ile soldan girip çıkar. Sağda o run'da edinilmiş silah/yetenek/güçlendirmeler HUD ikon kataloğu ve seviyeleriyle gösterilir; envanter ikonlarının alt nesneleri açılışta mevcut build'den doldurulur. Build özeti gerçek HUD kartlarını kullanır: ortalanmış iki 100px silah kartı, beş 48px yetenek kartı ve 4+4 ortalanmış iki sırada sekiz 48px güçlendirme kartı. Boş slotlar HUD çizgisiyle görünür kalır. Dünya zamanı/ses durur, imleç açılır; input/motor/silah/yetenek/hasar sahip bazlı kilitlenir. Devam etmede onay/ateş bırakılması beklenir; disable/unload önceki durumu geri yükler, başka girdi sahibinin kilidi korunur. Giriş, sandık seçimi, ölüm ve final sırasında durdurma açılmaz. Restart run'ı sıfırlar ve girişi atlar; Quit uygulamayı kapatır (Editor'de Play'i durdurur). Sahne bağlantıları ve durdurma/girdi temizliği için regresyon testleri eklendi; Unity çalıştırması ve Windows kabulü manuel yapılacak.
+
 ## Giriş menüsü ve FPS kamera devri (11.10.2026)
 
 DeepJam_Opening ve DeepJam_WideCombat sahnelerine kayıtlı DemoEntryController eklendi. Mevcut geometri/NavMesh değiştirilmedi, sahne yeniden üretilmedi. İlk açılışta sahnenin başlangıç odası arka planda kalır; solda Project First Run başlığı, Start ve Settings bulunur. Settings kullanıcı kararıyla tıklanabilir ama hiçbir işlem yapmayan yer tutucudur; ayar kaydı/ses hassasiyet değişikliği yoktur.

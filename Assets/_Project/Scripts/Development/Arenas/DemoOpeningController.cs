@@ -47,6 +47,7 @@ namespace ProjectFirstRun.Development.Arenas
                 _encounter == null || _chests == null || _firstReward == null ||
                 _rewardPoint == null || _selection == null)
                 throw new InvalidOperationException("Assign all demo opening scene references.");
+            _loadout.ValidateConfiguredSettings();
             _firstReward.Validate();
             foreach (var room in _roomEncounters)
                 if (room == null) throw new InvalidOperationException("Missing demo room encounter reference.");
@@ -58,10 +59,9 @@ namespace ProjectFirstRun.Development.Arenas
         private void Awake()
         {
             ValidateConfiguration();
-            // Unlike the Editor-only weapon-switching fixture, this also executes in a player build.
+            // The scene's shared settings own weapon and capacity, in Editor and player builds.
             if (!_loadout.IsInitialized)
-                _loadout.Initialize(new PlayerBuildCapacity(PlayerBuildCapacity.MaximumWeaponSlots,
-                    PlayerBuildCapacity.MaximumAbilitySlots, PlayerBuildCapacity.MaximumUpgradeSlots));
+                _loadout.InitializeConfigured();
             _encounter.Victory += HandleVictory;
         }
 

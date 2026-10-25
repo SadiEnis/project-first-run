@@ -1,6 +1,8 @@
 using System.Linq;
 using NUnit.Framework;
 using ProjectFirstRun.Arenas;
+using ProjectFirstRun.Builds;
+using ProjectFirstRun.Weapons;
 using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Development.Weapons;
 using ProjectFirstRun.Editor;
@@ -26,6 +28,19 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             {
                 var demo = scene.GetRootGameObjects()
                     .SelectMany(x => x.GetComponentsInChildren<DemoOpeningController>(true)).Single();
+                var loadout = (PlayerStartingLoadoutInitializer)new SerializedObject(demo)
+                    .FindProperty("_loadout").objectReferenceValue;
+                var settings = AssetDatabase.LoadAssetAtPath<PlayerStartingLoadoutSettings>(
+                    DeepJamOpeningSceneBuilder.StartingLoadoutPath);
+                Assert.That(settings, Is.Not.Null);
+                Assert.That(loadout.Settings, Is.SameAs(settings));
+                Assert.That(new SerializedObject(loadout).FindProperty("_requireSettings").boolValue, Is.True);
+                Assert.DoesNotThrow(loadout.ValidateConfiguredSettings);
+                Assert.That(loadout.StartingWeapon, Is.SameAs(settings.StartingWeapon));
+                var capacity = settings.CreateCapacity();
+                Assert.That(capacity.WeaponSlots, Is.InRange(1, PlayerBuildCapacity.MaximumWeaponSlots));
+                Assert.That(capacity.AbilitySlots, Is.InRange(1, PlayerBuildCapacity.MaximumAbilitySlots));
+                Assert.That(capacity.UpgradeSlots, Is.InRange(1, PlayerBuildCapacity.MaximumUpgradeSlots));
                 var wave = new SerializedObject(new SerializedObject(demo.Encounter)
                     .FindProperty("_group").objectReferenceValue);
                 var entries = wave.FindProperty("_entries");

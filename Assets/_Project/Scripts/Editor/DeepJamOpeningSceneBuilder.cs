@@ -34,6 +34,7 @@ namespace ProjectFirstRun.Editor
         public const string WideNavigationPath = Folder + "/WideCombatNavigation.asset";
         public const string WavePath = Folder + "/EW_DemoOpening.asset";
         public const string PerceptionPath = Folder + "/EP_Demo.asset";
+        public const string StartingLoadoutPath = "Assets/_Project/Data/Builds/SO_GameStartingLoadout.asset";
 
         [MenuItem("Project First Run/Demo/Create Opening Greybox")]
         public static void Create()
@@ -64,6 +65,12 @@ namespace ProjectFirstRun.Editor
             PrefabUtility.RecordPrefabInstancePropertyModifications(player.transform);
             var switchingFixture = player.GetComponent<WeaponSwitchingDevelopmentBootstrap>();
             if (switchingFixture != null) Object.DestroyImmediate(switchingFixture);
+            var loadout = player.GetComponent<PlayerStartingLoadoutInitializer>();
+            Set(loadout, "_settings", Load<PlayerStartingLoadoutSettings>(StartingLoadoutPath));
+            var loadoutData = new SerializedObject(loadout);
+            loadoutData.FindProperty("_requireSettings").boolValue = true;
+            loadoutData.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.RecordPrefabInstancePropertyModifications(loadout);
             foreach (var debug in player.GetComponentsInChildren<MonoBehaviour>(true)
                          .Where(x => x != null && x.GetType().Name.Contains("Debug")).ToArray())
                 Object.DestroyImmediate(debug);

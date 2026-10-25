@@ -53,23 +53,32 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.That(DemoEntryController.Ease(2), Is.EqualTo(1));
         }
 
-        [Test]
-        public void PauseBuildRowsAreCenteredAsTwoFiveAndFourPlusFour()
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Weapon, 1)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Weapon, 2)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Ability, 1)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Ability, 3)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Ability, 5)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Upgrade, 1)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Upgrade, 4)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Upgrade, 5)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Upgrade, 6)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Upgrade, 7)]
+        [TestCase(ProjectFirstRun.Items.ItemCategory.Upgrade, 8)]
+        public void PauseBuildRowsCenterEachActualRow(ProjectFirstRun.Items.ItemCategory category, int slots)
         {
-            var weapon = ProjectFirstRun.Items.ItemCategory.Weapon;
-            var ability = ProjectFirstRun.Items.ItemCategory.Ability;
-            var upgrade = ProjectFirstRun.Items.ItemCategory.Upgrade;
-            Assert.That(DemoPauseController.BuildSlotPosition(weapon, 0).x + DemoPauseController.BuildSlotPosition(weapon, 1).x, Is.Zero);
-            Assert.That(DemoPauseController.BuildSlotPosition(ability, 2).x, Is.Zero);
-            for (int i = 0; i < 5; i++)
-                Assert.That(DemoPauseController.BuildSlotPosition(ability, i).x, Is.EqualTo(-DemoPauseController.BuildSlotPosition(ability, 4 - i).x));
-            for (int i = 0; i < 4; i++)
+            int columns = category == ProjectFirstRun.Items.ItemCategory.Upgrade ? 4 : slots;
+            for (int start = 0; start < slots; start += columns)
             {
-                var top = DemoPauseController.BuildSlotPosition(upgrade, i);
-                var bottom = DemoPauseController.BuildSlotPosition(upgrade, i + 4);
-                Assert.That(top.x, Is.EqualTo(-DemoPauseController.BuildSlotPosition(upgrade, 3 - i).x));
-                Assert.That(bottom.x, Is.EqualTo(top.x));
-                Assert.That(bottom.y, Is.LessThan(top.y));
+                int count = System.Math.Min(columns, slots - start);
+                for (int i = 0; i < count; i++)
+                {
+                    var left = DemoPauseController.BuildSlotPosition(category, start + i, slots);
+                    var right = DemoPauseController.BuildSlotPosition(category, start + count - 1 - i, slots);
+                    Assert.That(left.x, Is.EqualTo(-right.x));
+                    Assert.That(left.y, Is.EqualTo(right.y));
+                    if (start > 0)
+                        Assert.That(left.y, Is.LessThan(DemoPauseController.BuildSlotPosition(category, 0, slots).y));
+                }
             }
         }
 

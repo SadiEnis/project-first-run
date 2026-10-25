@@ -216,18 +216,24 @@ namespace ProjectFirstRun.UI.Hud
         {
             foreach (Transform child in _buildRoot) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
             var build = _build.Build;
-            AddCards(build.Weapons, ItemCategory.Weapon, build, 2);
-            AddCards(build.Abilities, ItemCategory.Ability, build, 5);
-            AddCards(build.Upgrades, ItemCategory.Upgrade, build, 8);
+            AddCards(build.Weapons, ItemCategory.Weapon, build, build.Capacity.WeaponSlots);
+            AddCards(build.Abilities, ItemCategory.Ability, build, build.Capacity.AbilitySlots);
+            AddCards(build.Upgrades, ItemCategory.Upgrade, build, build.Capacity.UpgradeSlots);
         }
 
-        public static Vector2 BuildSlotPosition(ItemCategory category, int index)
+        public static Vector2 BuildSlotPosition(ItemCategory category, int index, int slots)
         {
+            if (slots <= 0) throw new ArgumentOutOfRangeException(nameof(slots));
+            if (index < 0 || index >= slots) throw new ArgumentOutOfRangeException(nameof(index));
             if (category == ItemCategory.Weapon)
-                return new Vector2((index - .5f) * 116, 115);
+                return new Vector2((index - (slots - 1) * .5f) * 116, 115);
             if (category == ItemCategory.Ability)
-                return new Vector2((index - 2) * 60, 0);
-            return new Vector2((index % 4 - 1.5f) * 60, -80 - index / 4 * 60);
+                return new Vector2((index - (slots - 1) * .5f) * 60, 0);
+            if (category != ItemCategory.Upgrade) throw new ArgumentOutOfRangeException(nameof(category));
+            const int columns = 4;
+            int row = index / columns;
+            int rowCount = Math.Min(columns, slots - row * columns);
+            return new Vector2((index % columns - (rowCount - 1) * .5f) * 60, -80 - row * 60);
         }
 
         private void AddCards(IReadOnlyList<string> ids, ItemCategory category, PlayerBuild build, int slots)
@@ -242,7 +248,7 @@ namespace ProjectFirstRun.UI.Hud
                 rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
                 rect.localScale = Vector3.one;
                 rect.localRotation = Quaternion.identity;
-                rect.anchoredPosition = BuildSlotPosition(category, i);
+                rect.anchoredPosition = BuildSlotPosition(category, i, slots);
                 rect.sizeDelta = Vector2.one * (weapon ? 100 : 48);
                 card.gameObject.SetActive(true);
                 string id = i < ids.Count ? ids[i] : null;

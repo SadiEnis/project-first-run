@@ -160,6 +160,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 yield return null;
                 Assert.That(pause.IsPaused, Is.True);
                 Assert.That(Time.timeScale, Is.Zero);
+                AssertPauseBuildMatchesCapacity(pause);
                 Assert.That(AudioListener.pause, Is.True);
                 Assert.That(input.IsGameplayInputEnabled, Is.False);
                 Release(Keyboard.current.escapeKey);
@@ -178,6 +179,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 Assert.That(pause.IsPaused, Is.True);
                 Release(Gamepad.current.startButton);
                 yield return null;
+                AssertPauseBuildMatchesCapacity(pause);
                 pause.enabled = false;
                 Assert.That(Time.timeScale, Is.EqualTo(1));
                 Assert.That(input.IsGameplayInputEnabled, Is.True);
@@ -188,6 +190,23 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
                 pause.enabled = false;
                 input.SetGameplayBlocked(owner, false);
                 AudioListener.pause = oldAudio;
+            }
+        }
+        private void AssertPauseBuildMatchesCapacity(DemoPauseController pause)
+        {
+            var capacity = _demo.Health.GetComponent<ProjectFirstRun.Builds.PlayerBuildController>().Build.Capacity;
+            var root = (RectTransform)new UnityEditor.SerializedObject(pause)
+                .FindProperty("_buildRoot").objectReferenceValue;
+            var cards = root.GetComponentsInChildren<HudItemCard>();
+            Assert.That(cards.Length, Is.EqualTo(capacity.WeaponSlots + capacity.AbilitySlots + capacity.UpgradeSlots));
+            foreach (var category in new[] { ProjectFirstRun.Items.ItemCategory.Weapon,
+                ProjectFirstRun.Items.ItemCategory.Ability, ProjectFirstRun.Items.ItemCategory.Upgrade })
+            {
+                var group = cards.Where(card => card.name.StartsWith(category + " slot ")).ToArray();
+                Assert.That(group.Length, Is.EqualTo(capacity.GetCapacity(category)), category.ToString());
+                foreach (var row in group.Select(card => (RectTransform)card.transform).GroupBy(rect => rect.anchoredPosition.y))
+                    Assert.That(row.Sum(rect => rect.anchoredPosition.x), Is.EqualTo(0).Within(.001f),
+                        category + " row must be centered independently.");
             }
         }
     }

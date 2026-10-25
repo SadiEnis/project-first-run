@@ -745,9 +745,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3735477217416442066, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
-      propertyPath: _startingWeapon
+      propertyPath: _settings
       value: 
-      objectReference: {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
+      objectReference: {fileID: 11400000, guid: bd1eccd53357482ea1dd42d50e82db48, type: 2}
+    - target: {fileID: 3735477217416442066, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      propertyPath: _requireSettings
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       propertyPath: m_Name
       value: Player (demo)

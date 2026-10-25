@@ -2606,11 +2606,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1671489923}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24c037a31ffd4059a2eb1193e67730b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 720d25d71d684c30b1a74b1dd27dd760, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Development.Abilities.FireballDevelopmentBootstrap
-  _fireballDefinition: {fileID: 11400000, guid: d8030a403a11f6c4684ddb91f6b829ec, type: 2}
-  _grantStartingAbility: 0
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Abilities.PlayerAbilityRuntimeInstaller
   _playerAbilityAcquisitionController: {fileID: 872807820}
   _playerStatsController: {fileID: 872807821}
   _damageSource: {fileID: 872807817}

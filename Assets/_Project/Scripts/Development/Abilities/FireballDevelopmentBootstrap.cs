@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using ProjectFirstRun.Abilities;
 using ProjectFirstRun.Abilities.Fireball;
 using ProjectFirstRun.Enemies;
@@ -8,161 +7,85 @@ using UnityEngine;
 
 namespace ProjectFirstRun.Development.Abilities
 {
+    /// <summary>Legacy fixture adapter: optional Fireball grant, shared runtime installation.</summary>
     [DisallowMultipleComponent]
-    public sealed class FireballDevelopmentBootstrap :
-        MonoBehaviour
+    public sealed class FireballDevelopmentBootstrap : MonoBehaviour
     {
-        [Header("Content")]
-        [SerializeField]
-        private FireballDefinition _fireballDefinition;
+        [SerializeField] private FireballDefinition _fireballDefinition;
+        [SerializeField] private bool _grantStartingAbility = true;
+        [SerializeField] private PlayerAbilityAcquisitionController _playerAbilityAcquisitionController;
+        [SerializeField] private PlayerStatsController _playerStatsController;
+        [SerializeField] private GameObject _damageSource;
+        [SerializeField] private EnemyRegistry _enemyRegistry;
+        private PlayerAbilityRuntimeInstaller _installer;
+        private bool _started;
+        public bool IsInstalled { get; private set; }
 
-        [SerializeField]
-        private bool _grantStartingAbility = true;
-
-        [Header("Player")]
-        [SerializeField]
-        private PlayerAbilityAcquisitionController
-            _playerAbilityAcquisitionController;
-
-        [SerializeField]
-        private PlayerStatsController _playerStatsController;
-
-        [SerializeField]
-        private GameObject _damageSource;
-
-        [Header("World")]
-        [SerializeField]
-        private EnemyRegistry _enemyRegistry;
-
-        public bool IsInstalled
+        private void Start()
         {
-            get;
-            private set;
+            _started = true;
+            Begin();
         }
 
-        private IEnumerator Start()
+        private void OnEnable()
         {
-            /*
-             * PlayerStartingLoadoutInitializer initializes
-             * PlayerBuild during its Start.
-             *
-             * Development Fireball installation happens one
-             * frame later so we do not depend on Start order.
-             */
-            yield return null;
+            if (_started && !IsInstalled) Begin();
+        }
 
-            Install();
+        private void OnDisable()
+        {
+            if (_installer != null) _installer.CancelPendingInstallation();
+        }
+
+        private void OnDestroy()
+        {
+            if (_installer != null)
+            {
+                _installer.Installed -= CompleteInstallation;
+                _installer.CancelPendingInstallation();
+            }
+        }
+
+        private void Begin()
+        {
+            if (IsInstalled) return;
+            EnsureInstaller();
+            _installer.Begin();
         }
 
         public void Install()
         {
             if (IsInstalled)
-            {
-                throw new InvalidOperationException(
-                    "Development Fireball has already been installed.");
-            }
-
-            ValidateDependencies();
-
-            if (!_playerStatsController.IsInitialized)
-            {
-                throw new InvalidOperationException(
-                    "PlayerStatsController must be initialized " +
-                    "before installing the development Fireball.");
-            }
-
-            if (_playerAbilityAcquisitionController.IsInitialized)
-            {
-                throw new InvalidOperationException(
-                    "PlayerAbilityAcquisitionController has already " +
-                    "been initialized by another composition source.");
-            }
-
-            FireballAbilityRuntimeFactory fireballFactory =
-                new FireballAbilityRuntimeFactory(
-                    _enemyRegistry,
-                    _damageSource,
-                    _playerStatsController.Stats);
-
-            AbilityRuntimeFactoryRegistry factoryRegistry =
-                new AbilityRuntimeFactoryRegistry();
-
-            factoryRegistry.Register(
-                fireballFactory);
-            // This legacy bootstrap owns the development ability registry for saved fixtures.
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.ForceWave.ForceWaveRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.Drone.DroneRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.AcidBottle.AcidBottleRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.Lightning.LightningRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.Shuriken.ShurikenRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.EnchantedStaff.EnchantedRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-            factoryRegistry.Register(new ProjectFirstRun.Abilities.SniperBomb.SniperRuntimeFactory(
-                _enemyRegistry, _damageSource, _playerStatsController.Stats));
-
-            _playerAbilityAcquisitionController.Initialize(
-                factoryRegistry);
-
-            if (_grantStartingAbility)
-            {
-                AbilityAcquireResult acquireResult =
-                    _playerAbilityAcquisitionController.TryAcquire(
-                        _fireballDefinition);
-
-                if (acquireResult != AbilityAcquireResult.Acquired)
-                {
-                    throw new InvalidOperationException(
-                        $"Development Fireball could not be acquired. " +
-                        $"Result: {acquireResult}.");
-                }
-            }
-
-            IsInstalled = true;
+                throw new InvalidOperationException("Development Fireball has already been installed.");
+            EnsureInstaller();
+            _installer.Install();
         }
 
-        private void ValidateDependencies()
+        private void EnsureInstaller()
         {
-            if (_fireballDefinition == null)
-            {
-                throw new InvalidOperationException(
-                    "Fireball definition is required.");
-            }
+            if (_grantStartingAbility &&
+                (_fireballDefinition == null || _fireballDefinition.ProjectilePrefab == null))
+                throw new InvalidOperationException("Starting Fireball requires a definition and projectile prefab.");
+            if (_installer != null) return;
+            if (GetComponent<PlayerAbilityRuntimeInstaller>() != null)
+                throw new InvalidOperationException("Do not combine the legacy adapter with another ability installer.");
+            _installer = gameObject.AddComponent<PlayerAbilityRuntimeInstaller>();
+            // The adapter owns scheduling; the helper must not start independently.
+            _installer.enabled = false;
+            _installer.Configure(_playerAbilityAcquisitionController, _playerStatsController,
+                _damageSource, _enemyRegistry);
+            _installer.Installed += CompleteInstallation;
+        }
 
-            if (_fireballDefinition.ProjectilePrefab == null)
+        private void CompleteInstallation()
+        {
+            if (_grantStartingAbility)
             {
-                throw new InvalidOperationException(
-                    "Fireball definition requires a projectile prefab.");
+                var result = _playerAbilityAcquisitionController.TryAcquire(_fireballDefinition);
+                if (result != AbilityAcquireResult.Acquired)
+                    throw new InvalidOperationException($"Development Fireball could not be acquired: {result}.");
             }
-
-            if (_playerAbilityAcquisitionController == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(PlayerAbilityAcquisitionController)} " +
-                    "is required.");
-            }
-
-            if (_playerStatsController == null)
-            {
-                throw new InvalidOperationException(
-                    "PlayerStatsController is required.");
-            }
-
-            if (_damageSource == null)
-            {
-                throw new InvalidOperationException(
-                    "Damage source is required.");
-            }
-
-            if (_enemyRegistry == null)
-            {
-                throw new InvalidOperationException(
-                    "EnemyRegistry is required.");
-            }
+            IsInstalled = true;
         }
     }
 }

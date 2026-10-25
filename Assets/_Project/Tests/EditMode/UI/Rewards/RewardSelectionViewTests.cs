@@ -409,6 +409,10 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
         {
             EventSystem previous = EventSystem.current;
             EventSystem events = CreateGameObject("Reward EventSystem", typeof(EventSystem)).GetComponent<EventSystem>();
+            // EventSystem does not execute its lifecycle automatically in EditMode.
+            // Register through its lifecycle before assigning current, rather than suppressing its error.
+            typeof(EventSystem).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(events, null);
             EventSystem.current = events;
             try
             {
@@ -439,7 +443,13 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
                 Assert.That(selected, Is.SameAs(items[lastRemaining]));
                 Assert.That(choices[claimedIndex].Button.interactable, Is.False);
             }
-            finally { EventSystem.current = previous; }
+            finally
+            {
+                typeof(EventSystem).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(events, null);
+                // Assigning null is also invalid in this uGUI version; unregistering restores an empty list.
+                if (previous != null) EventSystem.current = previous;
+            }
         }
 
         private RewardSelectionView CreateSelectionView(

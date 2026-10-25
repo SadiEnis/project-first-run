@@ -23,6 +23,8 @@ namespace ProjectFirstRun.Builds
 
         private bool _isInitialized;
 
+        public event Action Initialized;
+
         public bool IsInitialized =>
             _isInitialized;
 
@@ -108,6 +110,7 @@ namespace ProjectFirstRun.Builds
             }
 
             _isInitialized = true;
+            Initialized?.Invoke();
         }
 
         private void EnsureReferences()

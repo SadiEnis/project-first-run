@@ -67,7 +67,7 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
         }
 
         [TestCase("Encounter - SecondRoom", "EW_WideSecondRoom", 6, 4, 2, 0)]
-        [TestCase("Encounter - ArenaLeft", "EW_WideArenaLeft", 15, 15, 0, 0)]
+        [TestCase("Encounter - ArenaLeft", "EW_WideArenaLeft", 15, 10, 0, 5)]
         [TestCase("Encounter - ArenaRight", "EW_WideArenaRight", 9, 0, 6, 3)]
         public void WideDensityIsIsolatedAndHasDistinctSpawnPoints(string name, string asset,
             int total, int chasers, int rangers, int chargers)
@@ -95,14 +95,15 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
         }
 
         [Test]
-        public void FrontFloorHasSixAssignedChasersBetweenTheStairs()
+        public void FrontFloorHasSixAssignedEnemySpawnsBetweenTheStairs()
         {
             var group = Named(_wide, "Encounter - ArenaLeft").GetComponent<PreparedRegionEncounter>();
             var serialized = new SerializedObject(group);
             var wave = (EnemyWaveDefinition)serialized.FindProperty("_group").objectReferenceValue;
-            Assert.That(wave.EntryCount, Is.EqualTo(1));
-            Assert.That(wave.Entries[0].EnemyDefinition.name, Is.EqualTo("ED_ChaserChestDropTest"));
             var points = serialized.FindProperty("_spawnPoints");
+            // The authored wave mixes Chasers and Chargers; these positions are not Chaser-only.
+            Assert.That(wave.TotalEnemyCount, Is.EqualTo(points.arraySize),
+                "Every assigned position must be used by the encounter.");
             var front = Enumerable.Range(0, points.arraySize)
                 .Select(i => (Transform)points.GetArrayElementAtIndex(i).objectReferenceValue)
                 .Where(x => x.name.StartsWith("Front floor spawn ")).ToArray();

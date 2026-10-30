@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ProjectFirstRun.Abilities;
 using ProjectFirstRun.Builds;
 using ProjectFirstRun.Development.Arenas;
-using ProjectFirstRun.Input;
 using ProjectFirstRun.Items;
-using ProjectFirstRun.Player;
 using ProjectFirstRun.UI.Rewards;
-using ProjectFirstRun.Weapons;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -21,6 +17,8 @@ namespace ProjectFirstRun.UI.Hud
     {
         [SerializeField] private DemoOpeningController _demo;
         [SerializeField] private RunRestartController _restart;
+        [SerializeField] private GameFlowController _flow;
+        private GameFlowPolicy.Token _flowToken;
         [SerializeField] private DemoFinalController _final;
         [SerializeField] private RewardSelectionController _selection;
         [SerializeField] private CanvasGroup _group;
@@ -32,24 +30,20 @@ namespace ProjectFirstRun.UI.Hud
         [SerializeField] private HudItemCard _weaponCardTemplate;
         [SerializeField] private HudItemCard _itemCardTemplate;
         [SerializeField, Min(.05f)] private float _slideSeconds = .25f;
-        private PlayerInputReader _input;
-        private PlayerMotor _motor;
-        private PlayerWeaponController _weapon;
-        private PlayerAbilityController _abilities;
         private PlayerBuildController _build;
         private EventSystem _events;
-        private bool _oldNavigation, _oldAudio, _oldCursor;
-        private CursorLockMode _oldLock;
-        private float _oldTime, _amount;
+        private bool _oldNavigation;
+        private float _amount;
         private bool _closing, _armed, _axisHeld, _submitHeld, _pointer, _restarting;
         private int _selected;
         private Vector2 _shown;
         public bool IsPaused { get; private set; }
         public bool CanRestart => IsPaused && _armed && !_closing && !_restarting;
+        public bool IsClosing => _closing;
 
         public void ValidateConfiguration()
         {
-            if (_demo == null || _restart == null || _final == null || _selection == null || _group == null ||
+            if (_demo == null || _flow == null || _restart == null || _final == null || _selection == null || _group == null ||
                 _panel == null || _buildRoot == null || _icons == null || _status == null ||
                 _weaponCardTemplate == null || _itemCardTemplate == null ||
                 _buttons == null || _buttons.Length != 3 || !float.IsFinite(_slideSeconds) || _slideSeconds <= 0)
@@ -62,10 +56,6 @@ namespace ProjectFirstRun.UI.Hud
         {
             ValidateConfiguration();
             var player = _demo.Health;
-            _input = player.GetComponent<PlayerInputReader>();
-            _motor = player.GetComponent<PlayerMotor>();
-            _weapon = player.GetComponent<PlayerWeaponController>();
-            _abilities = player.GetComponent<PlayerAbilityController>();
             _build = player.GetComponent<PlayerBuildController>();
             _shown = _panel.anchoredPosition;
             _buttons[0].onClick.AddListener(Resume);
@@ -129,21 +119,14 @@ namespace ProjectFirstRun.UI.Hud
             Present();
             if (_closing && _amount == 0 && !Held()) Release();
         }
-        private void LateUpdate()
-        {
-            if (IsPaused) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
-        }
         public void Open()
         {
             if (IsPaused || !CanOpen(_demo.IsReady, _demo.IsEntryBlocking, _demo.Health.IsDead,
                 _selection.IsOpen, _final.IsEnding, Time.timeScale)) return;
-            _oldTime = Time.timeScale; _oldAudio = AudioListener.pause;
-            _oldLock = Cursor.lockState; _oldCursor = Cursor.visible;
+            if (!_flow.TryAcquire(this, GameFlowRequest.Pause, out _flowToken)) return;
             IsPaused = true; _closing = _armed = _axisHeld = _submitHeld = _restarting = false;
             _amount = 0;
             _selected = 0; _pointer = false; _status.text = "";
-            SetLocks(true);
-            Time.timeScale = 0; AudioListener.pause = true;
             RefreshBuild();
             Present();
         }
@@ -165,25 +148,12 @@ namespace ProjectFirstRun.UI.Hud
             Application.Quit();
 #endif
         }
-        private void SetLocks(bool value)
-        {
-            if (_input != null) _input.SetGameplayBlocked(this, value);
-            if (_motor != null) _motor.SetSuspended(this, value);
-            if (_weapon != null) _weapon.SetWeaponBlocked(this, value);
-            if (_abilities != null) _abilities.SetAbilityBlocked(this, value);
-            if (_demo != null && _demo.Health != null) _demo.Health.SetDamageBlocked(this, value);
-        }
         private void Release()
         {
             if (!IsPaused) return;
             IsPaused = false; _amount = 0; _closing = false;
-            SetLocks(false);
-            if (!_restarting)
-            {
-                if (Time.timeScale == 0) Time.timeScale = _oldTime;
-                AudioListener.pause = _oldAudio;
-                Cursor.lockState = _oldLock; Cursor.visible = _oldCursor;
-            }
+            if (_flow != null) _flow.Release(ref _flowToken);
+            else _flowToken?.Dispose();
             if (_events != null) { _events.sendNavigationEvents = _oldNavigation; _events = null; }
             Present();
         }

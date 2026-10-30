@@ -137,6 +137,12 @@ namespace ProjectFirstRun.Editor
             rewardPoint.position = new Vector3(0, .02f - bottom, 38);
             var demo = services.AddComponent<DemoOpeningController>();
             var restart = services.AddComponent<RunRestartController>();
+            var access = services.AddComponent<GameplayAccessController>();
+            Set(access, "_health", player.GetComponent<HealthComponent>());
+            var flow = services.AddComponent<GameFlowController>();
+            Set(flow, "_demo", demo); Set(flow, "_access", access);
+            Set(restart, "_flow", flow); Set(selection, "_flow", flow);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(selection);
             Set(restart, "_demo", demo); Set(restart, "_selection", selection);
             Set(demo, "_restart", restart);
             Set(demo, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());

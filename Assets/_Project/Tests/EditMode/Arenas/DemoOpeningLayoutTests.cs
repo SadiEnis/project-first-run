@@ -31,6 +31,14 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 var restart = scene.GetRootGameObjects().SelectMany(x =>
                     x.GetComponentsInChildren<ProjectFirstRun.Flow.RunRestartController>(true)).Single();
                 Assert.DoesNotThrow(restart.ValidateConfiguration);
+                var flow = scene.GetRootGameObjects().SelectMany(x =>
+                    x.GetComponentsInChildren<ProjectFirstRun.Flow.GameFlowController>(true)).Single();
+                Assert.DoesNotThrow(flow.ValidateConfiguration);
+                foreach (var component in scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<MonoBehaviour>(true))
+                    .Where(x => x is DemoEntryController || x is DemoFinalController ||
+                        x is ProjectFirstRun.UI.Hud.DemoPauseController || x is ProjectFirstRun.UI.Rewards.RewardSelectionController ||
+                        x is ProjectFirstRun.Flow.RunRestartController))
+                    Assert.That(new SerializedObject(component).FindProperty("_flow").objectReferenceValue, Is.SameAs(flow));
                 var restartData = new SerializedObject(restart);
                 Assert.That(restartData.FindProperty("_demo").objectReferenceValue, Is.SameAs(demo));
                 foreach (var component in new Object[] { demo,

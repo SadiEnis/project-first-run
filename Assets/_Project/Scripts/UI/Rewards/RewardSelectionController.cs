@@ -2,6 +2,8 @@ using System;
 using ProjectFirstRun.Items;
 using ProjectFirstRun.Player;
 using ProjectFirstRun.Rewards.Claims;
+using ProjectFirstRun.Flow;
+using ProjectFirstRun.Combat;
 using UnityEngine;
 
 namespace ProjectFirstRun.UI.Rewards
@@ -31,6 +33,9 @@ namespace ProjectFirstRun.UI.Rewards
         private PlayerDeathController _playerDeathController;
 
         private RewardClaimSession _activeSession;
+        // Optional only for legacy test scenes. Both game scenes explicitly bind shared flow.
+        [SerializeField] private GameFlowController _flow;
+        private GameFlowPolicy.Token _flowToken;
         private float _previousTimeScale;
         private bool _previousControlEnabled;
         private bool _hasCapturedModalState;
@@ -138,10 +143,11 @@ namespace ProjectFirstRun.UI.Rewards
 
             try
             {
-                Time.timeScale = 0f;
-
-                _playerController.SetControlEnabled(
-                    false);
+                if (_flow == null)
+                {
+                    Time.timeScale = 0f;
+                    _playerController.SetControlEnabled(false);
+                }
 
                 _view.Show(
                     session.Offer,
@@ -247,6 +253,12 @@ namespace ProjectFirstRun.UI.Rewards
 
         private void CaptureModalState()
         {
+            if (_flow != null)
+            {
+                if (!_flow.TryAcquire(this, GameFlowRequest.Reward, out _flowToken))
+                    throw new InvalidOperationException("Reward selection is not allowed by the current game flow.");
+                return;
+            }
             _previousTimeScale =
                 Time.timeScale;
 
@@ -258,6 +270,12 @@ namespace ProjectFirstRun.UI.Rewards
 
         private void RestoreModalState()
         {
+            if (_flowToken != null)
+            {
+                if (_flow != null) _flow.Release(ref _flowToken);
+                else { _flowToken.Dispose(); _flowToken = null; }
+                return;
+            }
             if (!_hasCapturedModalState)
             {
                 return;
@@ -298,6 +316,8 @@ namespace ProjectFirstRun.UI.Rewards
 
             _view.ChoiceSelected +=
                 HandleChoiceSelected;
+            if (_flow != null && _playerDeathController != null)
+                _playerDeathController.PlayerDied += HandlePlayerDied;
 
             _isListening = true;
         }
@@ -314,8 +334,14 @@ namespace ProjectFirstRun.UI.Rewards
                 _view.ChoiceSelected -=
                     HandleChoiceSelected;
             }
+            if (_playerDeathController != null) _playerDeathController.PlayerDied -= HandlePlayerDied;
 
             _isListening = false;
+        }
+
+        private void HandlePlayerDied(DamageInfo info, DamageResult result)
+        {
+            if (IsOpen) DismissWithoutClaimResult();
         }
 
         private void ValidateReferences()

@@ -81,7 +81,7 @@ namespace ProjectFirstRun.Chests.Interaction
 
             result = default;
 
-            if (!_playerController.IsControlEnabled)
+            if (!_playerController.IsControlEnabled || !_inputReader.IsGameplayInputEnabled)
             {
                 return false;
             }

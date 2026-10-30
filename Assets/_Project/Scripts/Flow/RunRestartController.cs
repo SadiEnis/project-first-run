@@ -1,12 +1,8 @@
 using System;
-using ProjectFirstRun.Abilities;
 using ProjectFirstRun.Arenas;
 using ProjectFirstRun.Development.Arenas;
-using ProjectFirstRun.Input;
-using ProjectFirstRun.Player;
 using ProjectFirstRun.UI.Hud;
 using ProjectFirstRun.UI.Rewards;
-using ProjectFirstRun.Weapons;
 using UnityEngine;
 
 namespace ProjectFirstRun.Flow
@@ -19,6 +15,9 @@ namespace ProjectFirstRun.Flow
         [SerializeField] private DemoPauseController _pause;
         [SerializeField] private DemoFinalController _final;
         [SerializeField] private RewardSelectionController _selection;
+        [SerializeField] private GameFlowController _flow;
+        [SerializeField] private DemoKeyAmbushController _ambush;
+        private GameFlowPolicy.Token _loading;
         private static string _arrivalScene;
         private IRunSceneReloader _reloader = new UnityRunSceneReloader();
         private readonly RunRestartOperation _operation = new();
@@ -30,7 +29,7 @@ namespace ProjectFirstRun.Flow
 
         public void ValidateConfiguration()
         {
-            if (_demo == null || _demo.Health == null || _selection == null)
+            if (_demo == null || _flow == null || _demo.Health == null || _selection == null)
                 throw new InvalidOperationException("Assign run restart's demo, health and reward selection references.");
         }
 
@@ -41,10 +40,7 @@ namespace ProjectFirstRun.Flow
             bool arrived = _arrivalScene == gameObject.scene.path;
             _arrivalScene = null;
             if (!arrived) { DemoEntryController.CancelSkip(); return; }
-            Time.timeScale = 1;
-            AudioListener.pause = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            _flow.Refresh();
         }
 
         public bool CanRequest(RunRestartSource source)
@@ -58,6 +54,9 @@ namespace ProjectFirstRun.Flow
                     return _demo.Health.IsDead && (_final == null || !_final.IsEnding);
                 case RunRestartSource.Completion:
                     return _final != null && _final.IsEnding && _final.Session.Phase == DemoFinalPhase.Completed && !_final.Session.ReplayRequested;
+                case RunRestartSource.FailedEncounter:
+                    return _ambush != null && _ambush.isActiveAndEnabled && _ambush.Session.Phase == KeyAmbushPhase.Failed &&
+                        !_demo.Health.IsDead && (_final == null || !_final.IsEnding);
                 default: return false;
             }
         }
@@ -65,23 +64,18 @@ namespace ProjectFirstRun.Flow
         public bool Request(RunRestartSource source)
         {
             if (!CanRequest(source)) return false;
-            float time = Time.timeScale;
-            bool audio = AudioListener.pause, cursor = Cursor.visible;
-            var cursorLock = Cursor.lockState;
-            SetLocks(true);
-            Time.timeScale = 0;
-            AudioListener.pause = true;
+            if (!_flow.TryAcquire(this, GameFlowRequest.Loading, out _loading)) return false;
             string path = gameObject.scene.path;
             _arrivalScene = path;
             DemoEntryController.SkipMenuOnNextLoad(path);
-            if (_operation.TryStart(true, path, _reloader)) return true;
+            if (_operation.TryStart(true, path, _reloader))
+            {
+                _flow.RetireForReload();
+                return true;
+            }
             _arrivalScene = null;
             DemoEntryController.CancelSkip();
-            SetLocks(false);
-            Time.timeScale = time;
-            AudioListener.pause = audio;
-            Cursor.lockState = cursorLock;
-            Cursor.visible = cursor;
+            _flow.Release(ref _loading);
             return false;
         }
 
@@ -92,18 +86,10 @@ namespace ProjectFirstRun.Flow
             _reloader = reloader ?? throw new ArgumentNullException(nameof(reloader));
         }
 
-        private void SetLocks(bool blocked)
+        private void OnDisable()
         {
-            if (_demo == null || _demo.Health == null) return;
-            var health = _demo.Health;
-            health.SetDamageBlocked(this, blocked);
-            health.GetComponent<PlayerInputReader>()?.SetGameplayBlocked(this, blocked);
-            health.GetComponent<PlayerMotor>()?.SetSuspended(this, blocked);
-            health.GetComponent<PlayerWeaponController>()?.SetWeaponBlocked(this, blocked);
-            health.GetComponent<PlayerAbilityController>()?.SetAbilityBlocked(this, blocked);
+            if (_flow != null) _flow.Release(ref _loading);
+            else _loading?.Dispose();
         }
-
-        // Only old-player locks are released. Global state belongs to the arriving scene.
-        private void OnDisable() => SetLocks(false);
     }
 }

@@ -2502,6 +2502,8 @@ GameObject:
   - component: {fileID: 1671489936}
   - component: {fileID: 4300000002}
   - component: {fileID: 4700000002}
+  - component: {fileID: 4800000002}
+  - component: {fileID: 4800000003}
   m_Layer: 0
   m_Name: Demo opening services
   m_TagString: Untagged
@@ -3272,6 +3274,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3244641809486778724, guid: 3d4f462711580e74aa4e4b745d5e1f13, type: 3}
+      propertyPath: _flow
+      value:
+      objectReference: {fileID: 4800000002}
     - target: {fileID: 3244641809486778724, guid: 3d4f462711580e74aa4e4b745d5e1f13, type: 3}
       propertyPath: _claimController
       value: 
@@ -24793,6 +24799,7 @@ MonoBehaviour:
   - {fileID: 3400000631}
   - {fileID: 3400000641}
   _pickupRange: 2
+  _restart: {fileID: 4700000002}
 --- !u!1 &3400000100
 GameObject:
   m_ObjectHideFlags: 0
@@ -29414,6 +29421,7 @@ MonoBehaviour:
   _entryVolume: {fileID: 3500000003}
   _presentation: {fileID: 3600000002}
   _restart: {fileID: 4700000002}
+  _flow: {fileID: 4800000002}
 --- !u!1 &3600000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -30610,6 +30618,7 @@ MonoBehaviour:
   _entryCamera: {fileID: 4400000102}
   _fpsCamera: {fileID: 4400000202}
   _approachSeconds: 2.4
+  _flow: {fileID: 4800000002}
 --- !u!1 &4400000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -31585,6 +31594,7 @@ MonoBehaviour:
   _icons: {fileID: 11400000, guid: 16fc8b25fb744110baaf111f00400030, type: 2}
   _slideSeconds: 0.25
   _restart: {fileID: 4700000002}
+  _flow: {fileID: 4800000002}
 --- !u!1 &4500000400
 GameObject:
   m_ObjectHideFlags: 0
@@ -33494,3 +33504,37 @@ MonoBehaviour:
   _pause: {fileID: 4500000306}
   _final: {fileID: 3500000002}
   _selection: {fileID: 2132724448}
+  _flow: {fileID: 4800000002}
+  _ambush: {fileID: 3400000002}
+--- !u!114 &4800000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf44680162341afa752158c5bd6b821, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _demo: {fileID: 1671489936}
+  _entry: {fileID: 4300000002}
+  _final: {fileID: 3500000002}
+  _pause: {fileID: 4500000306}
+  _access: {fileID: 4800000003}
+  _ambush: {fileID: 3400000002}
+--- !u!114 &4800000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfd00fb4e0c46c68e33dfc8db51f812, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _health: {fileID: 872807819}
+  _baselineTimeScale: 1

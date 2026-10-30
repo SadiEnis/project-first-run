@@ -3,7 +3,7 @@ using System;
 namespace ProjectFirstRun.Flow
 {
     public enum RunRestartState { Idle, Loading, Failed }
-    public enum RunRestartSource { Pause, Death, Completion }
+    public enum RunRestartSource { Pause, Death, Completion, FailedEncounter }
 
     public interface IRunSceneReloader
     {

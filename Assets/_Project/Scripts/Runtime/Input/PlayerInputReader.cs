@@ -120,6 +120,8 @@ namespace ProjectFirstRun.Input
 
         private void ApplyGameplayState()
         {
+            // Scene flow may register its ownership before this component's Awake.
+            if (_inputActions == null) return;
             bool isEnabled = _gameplayRequested && _gameplayBlocks.Count == 0 && isActiveAndEnabled;
             if (IsGameplayInputEnabled == isEnabled) return;
             _jumpPending = false;

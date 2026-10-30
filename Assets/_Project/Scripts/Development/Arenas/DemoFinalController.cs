@@ -16,6 +16,7 @@ namespace ProjectFirstRun.Development.Arenas
     {
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
         [SerializeField] private RunRestartController _restart;
+        [SerializeField] private GameFlowController _flow;
         [SerializeField] private HealthComponent _health;
         [SerializeField] private RewardSelectionController _selection;
         [SerializeField] private GameObject _gate;
@@ -29,11 +30,7 @@ namespace ProjectFirstRun.Development.Arenas
         private PlayerAbilityController _abilities;
         private CharacterController _body;
         private bool _locked;
-        private bool _restarting;
         private readonly DemoMenuInput _completionMenu = new();
-        private float _previousTimeScale;
-        private CursorLockMode _previousCursorLock;
-        private bool _previousCursorVisible;
         public DemoFinalSession Session { get; } = new();
         public string LastError { get; private set; }
         public bool IsEnding => isActiveAndEnabled &&
@@ -43,7 +40,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_keyAmbush == null || _restart == null || _health == null || _selection == null || _gate == null ||
+            if (_keyAmbush == null || _flow == null || _restart == null || _health == null || _selection == null || _gate == null ||
                 _entryVolume == null || !_entryVolume.isTrigger || !_entryVolume.enabled ||
                 _gate.GetComponent<Collider>() == null || _gate.GetComponent<Collider>().isTrigger ||
                 transform.IsChildOf(_gate.transform) || _presentation == null || !_presentation.isActiveAndEnabled)
@@ -84,8 +81,7 @@ namespace ProjectFirstRun.Development.Arenas
             _presentation.Tick(Time.unscaledDeltaTime);
             if (_presentation.IsComplete && Session.TryComplete())
             {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                _flow.Refresh();
             }
         }
 
@@ -103,46 +99,24 @@ namespace ProjectFirstRun.Development.Arenas
             }
             if (!Session.TryBegin(!_health.IsDead, _keyAmbush.CanEnterFinal && IsGateOpen, allowed, inside)) return false;
             _presentation.Begin(_view.transform);
-            _previousTimeScale = Time.timeScale;
-            _previousCursorLock = Cursor.lockState;
-            _previousCursorVisible = Cursor.visible;
             _locked = true;
-            _health.SetDamageBlocked(this, true);
-            _input.SetGameplayBlocked(this, true);
-            _motor.SetSuspended(this, true);
-            _weapon.SetWeaponBlocked(this, true);
-            _abilities.SetAbilityBlocked(this, true);
-            // Freeze existing projectiles/continuous effects; the presentation uses unscaled time.
-            Time.timeScale = 0;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            _flow.Refresh();
             return true;
         }
 
         public void Replay()
         {
             if (!_restart.Request(RunRestartSource.Completion)) return;
-            _restarting = true;
             Session.TryRequestReplay();
         }
 
         private void OnDisable()
         {
             _completionMenu.Tick(false, 0, false);
+            if (_flow != null) _flow.Refresh();
             if (!_locked) return;
             _locked = false;
             if (_presentation != null) _presentation.RestoreView();
-            if (_health != null) _health.SetDamageBlocked(this, false);
-            if (_input != null) _input.SetGameplayBlocked(this, false);
-            if (_motor != null) _motor.SetSuspended(this, false);
-            if (_weapon != null) _weapon.SetWeaponBlocked(this, false);
-            if (_abilities != null) _abilities.SetAbilityBlocked(this, false);
-            if (!_restarting)
-            {
-                if (Time.timeScale == 0) Time.timeScale = _previousTimeScale;
-                Cursor.lockState = _previousCursorLock;
-                Cursor.visible = _previousCursorVisible;
-            }
         }
 
         private void OnGUI()

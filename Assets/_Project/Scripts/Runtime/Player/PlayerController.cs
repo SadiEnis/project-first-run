@@ -20,6 +20,19 @@ namespace ProjectFirstRun.Player
         private PlayerInputReader _inputReader;
         private PlayerMotor _playerMotor;
         private PlayerLook _playerLook;
+        private object _cursorOwner;
+
+        public void SetCursorManaged(object owner, bool managed)
+        {
+            if (owner == null) throw new System.ArgumentNullException(nameof(owner));
+            if (managed)
+            {
+                if (_cursorOwner != null && !ReferenceEquals(_cursorOwner, owner))
+                    throw new System.InvalidOperationException("Player cursor already has an owner.");
+                _cursorOwner = owner;
+            }
+            else if (ReferenceEquals(_cursorOwner, owner)) _cursorOwner = null;
+        }
         
         public bool IsControlEnabled =>
             _controlEnabled;
@@ -68,7 +81,7 @@ namespace ProjectFirstRun.Player
 
         private void OnDisable()
         {
-            SetCursorLocked(false);
+            if (_cursorOwner == null) SetCursorLocked(false);
         }
 
         public void SetControlEnabled(bool isEnabled)
@@ -82,7 +95,7 @@ namespace ProjectFirstRun.Player
             _inputReader.SetGameplayInputEnabled(
                 _controlEnabled);
 
-            if (_lockCursorWhileControlled)
+            if (_lockCursorWhileControlled && _cursorOwner == null)
             {
                 SetCursorLocked(_controlEnabled);
             }

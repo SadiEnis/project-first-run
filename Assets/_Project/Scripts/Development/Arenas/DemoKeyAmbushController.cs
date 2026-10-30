@@ -8,7 +8,7 @@ using ProjectFirstRun.Input;
 using ProjectFirstRun.Player;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement;
+using ProjectFirstRun.Flow;
 
 namespace ProjectFirstRun.Development.Arenas
 {
@@ -16,6 +16,7 @@ namespace ProjectFirstRun.Development.Arenas
     public sealed class DemoKeyAmbushController : MonoBehaviour
     {
         [SerializeField] private HealthComponent _health;
+        [SerializeField] private RunRestartController _restart;
         [SerializeField] private Collider _key;
         [SerializeField] private GameObject _entranceGate;
         [SerializeField] private GameObject _exitGate;
@@ -39,7 +40,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_health == null || _key == null || _entranceGate == null || _exitGate == null ||
+            if (_health == null || _restart == null || _key == null || _entranceGate == null || _exitGate == null ||
                 _entranceGate == _exitGate || _entranceClearance == null || !_entranceClearance.isTrigger ||
                 _roomVolume == null || !_roomVolume.isTrigger || _firstGroup == null || _secondGroup == null ||
                 _firstGroup == _secondGroup || _rescuePoints == null || _rescuePoints.Length == 0 ||
@@ -225,14 +226,7 @@ namespace ProjectFirstRun.Development.Arenas
         public void RestartFailedRun()
         {
             if (_restarting || Session.Phase != KeyAmbushPhase.Failed) return;
-            _restarting = true;
-            Time.timeScale = 1;
-#if UNITY_EDITOR
-            UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                gameObject.scene.path, new LoadSceneParameters(LoadSceneMode.Single));
-#else
-            SceneManager.LoadSceneAsync(gameObject.scene.path, LoadSceneMode.Single);
-#endif
+            _restarting = _restart.Request(RunRestartSource.FailedEncounter);
         }
 
         private void OnGUI()
@@ -240,7 +234,12 @@ namespace ProjectFirstRun.Development.Arenas
             if (Session.Phase == KeyAmbushPhase.Failed)
             {
                 GUI.Box(new Rect(20, 180, 600, 100), "Ambush error: " + Session.Error);
+                bool wasEnabled = GUI.enabled;
+                GUI.enabled = wasEnabled && !_restarting;
                 if (GUI.Button(new Rect(40, 230, 300, 30), "Restart run")) RestartFailedRun();
+                GUI.enabled = wasEnabled;
+                if (_restart != null && _restart.LastError != null)
+                    GUI.Label(new Rect(40, 285, 500, 30), "Restart failed. Please try again.");
                 return;
             }
         }

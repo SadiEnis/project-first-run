@@ -4,6 +4,7 @@ using ProjectFirstRun.Input;
 using ProjectFirstRun.Player;
 using ProjectFirstRun.Weapons;
 using ProjectFirstRun.UI.Hud;
+using ProjectFirstRun.Flow;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,6 +18,8 @@ namespace ProjectFirstRun.Development.Arenas
     public sealed class DemoEntryController : MonoBehaviour
     {
         [SerializeField] private DemoOpeningController _demo;
+        [SerializeField] private GameFlowController _flow;
+        private GameFlowPolicy.Token _flowToken;
         [SerializeField] private DemoEntryView _view;
         [SerializeField] private CinemachineCamera _entryCamera;
         [SerializeField] private CinemachineCamera _fpsCamera;
@@ -34,10 +37,8 @@ namespace ProjectFirstRun.Development.Arenas
         private Quaternion _localRotation;
         private Renderer[] _viewRenderers;
         private bool[] _rendererStates;
-        private float _endFov, _near, _far, _elapsed, _previousTimeScale;
+        private float _endFov, _near, _far, _elapsed;
         private bool _locked, _captured, _pointerMode = true;
-        private CursorLockMode _previousCursorLock;
-        private bool _previousCursorVisible;
         private static string _skipNextScene;
         public DemoEntryPhase Phase { get; private set; }
         public bool IsBlocking => isActiveAndEnabled && Phase != DemoEntryPhase.Playing;
@@ -52,7 +53,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_demo == null || _demo.Health == null || _view == null || _entryCamera == null ||
+            if (_demo == null || _flow == null || _demo.Health == null || _view == null || _entryCamera == null ||
                 _fpsCamera == null || _entryCamera == _fpsCamera ||
                 !float.IsFinite(_approachSeconds) || _approachSeconds < .1f)
                 throw new InvalidOperationException("Assign entry Canvas, distinct Cinemachine cameras and blend duration.");
@@ -81,6 +82,7 @@ namespace ProjectFirstRun.Development.Arenas
                     _skipNextScene = null;
                     Phase = DemoEntryPhase.Playing;
                     _view.Hide();
+                    _flow.Refresh();
                     return;
                 }
                 _skipNextScene = null;
@@ -100,12 +102,9 @@ namespace ProjectFirstRun.Development.Arenas
                     _viewRenderers[i].enabled = false;
                 }
                 _captured = true;
-                _previousTimeScale = Time.timeScale;
-                _previousCursorLock = Cursor.lockState;
-                _previousCursorVisible = Cursor.visible;
+                if (!_flow.TryAcquire(this, GameFlowRequest.EntryMenu, out _flowToken))
+                    throw new InvalidOperationException("Entry flow ownership could not be acquired.");
                 _locked = true;
-                SetLocks(true);
-                Time.timeScale = 0;
                 _brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
                 _brain.IgnoreTimeScale = true;
                 _brain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, _approachSeconds);
@@ -125,20 +124,13 @@ namespace ProjectFirstRun.Development.Arenas
             }
         }
 
-        private void SetLocks(bool blocked)
-        {
-            _demo.Health.SetDamageBlocked(this, blocked);
-            _input.SetGameplayBlocked(this, blocked);
-            _motor.SetSuspended(this, blocked);
-            _weapon.SetWeaponBlocked(this, blocked);
-            _abilities.SetAbilityBlocked(this, blocked);
-        }
-
         private void OnStartClicked() { if (_menu.IsArmed) Begin(); }
         public bool Begin()
         {
             if (!IsBlocking || Phase != DemoEntryPhase.Menu || LastError != null || !_demo.IsReady) return false;
             Phase = DemoEntryPhase.Approaching;
+            if (!_flow.TryChange(_flowToken, GameFlowRequest.EntryApproach))
+            { Phase = DemoEntryPhase.Menu; return false; }
             _elapsed = 0;
             _fpsCamera.Priority = 30;
             _menu.Tick(false, 0, false);
@@ -175,8 +167,6 @@ namespace ProjectFirstRun.Development.Arenas
         private void LateUpdate()
         {
             if (!IsBlocking || !_captured || LastError != null) return;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = Phase == DemoEntryPhase.Menu;
             _brain.ManualUpdate();
             if (Phase == DemoEntryPhase.Approaching)
             {
@@ -218,11 +208,9 @@ namespace ProjectFirstRun.Development.Arenas
         private void Complete()
         {
             RestoreCamera();
-            ReleaseLocks();
             Phase = DemoEntryPhase.Playing;
+            ReleaseLocks();
             _view.Hide();
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
 
         private void ReleaseLocks()
@@ -230,17 +218,13 @@ namespace ProjectFirstRun.Development.Arenas
             if (_events != null) { _events.sendNavigationEvents = _previousNavigation; _events = null; }
             if (!_locked) return;
             _locked = false;
-            if (_demo != null && _demo.Health != null) _demo.Health.SetDamageBlocked(this, false);
-            if (_input != null) _input.SetGameplayBlocked(this, false);
-            if (_motor != null) _motor.SetSuspended(this, false);
-            if (_weapon != null) _weapon.SetWeaponBlocked(this, false);
-            if (_abilities != null) _abilities.SetAbilityBlocked(this, false);
-            if (Time.timeScale == 0) Time.timeScale = _previousTimeScale;
+            if (_flow != null) _flow.Release(ref _flowToken);
+            else _flowToken?.Dispose();
         }
 
         private void OnDisable()
         {
-            bool restoreCursor = _locked;
+            Phase = DemoEntryPhase.Playing;
             RestoreCamera();
             ReleaseLocks();
             if (_view != null)
@@ -248,7 +232,6 @@ namespace ProjectFirstRun.Development.Arenas
                 _view.Hide();
                 if (_view.StartButton != null) _view.StartButton.onClick.RemoveListener(OnStartClicked);
             }
-            if (restoreCursor) { Cursor.lockState = _previousCursorLock; Cursor.visible = _previousCursorVisible; }
             _menu.Tick(false, 0, false);
             Phase = DemoEntryPhase.Playing;
         }

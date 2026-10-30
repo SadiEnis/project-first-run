@@ -473,10 +473,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             yield return WaitForAmbush(KeyAmbushPhase.Intermission);
             Assert.That(exit.activeSelf, Is.True);
             Assert.That(ambush.CanEnterFinal, Is.False);
-            Time.timeScale = 0;
+            var flow = _demo.GetComponent<ProjectFirstRun.Flow.GameFlowController>();
+            Assert.That(flow.TryAcquire(this, ProjectFirstRun.Flow.GameFlowRequest.Pause, out var pauseToken), Is.True);
             for (int i = 0; i < 5; i++) yield return null;
             Assert.That(ambush.Session.Phase, Is.EqualTo(KeyAmbushPhase.Intermission));
-            Time.timeScale = 1;
+            flow.Release(ref pauseToken);
             yield return WaitForAmbush(KeyAmbushPhase.FightingSecond);
             Assert.That(groups[1].Enemies.Count, Is.EqualTo(3));
             foreach (var enemy in groups[1].Enemies.ToArray())

@@ -9,6 +9,11 @@ using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Flow;
 using ProjectFirstRun.Input;
 using ProjectFirstRun.UI.Hud;
+using ProjectFirstRun.UI.Rewards;
+using ProjectFirstRun.Builds;
+using ProjectFirstRun.Rewards;
+using ProjectFirstRun.Rewards.Claims;
+using ProjectFirstRun.Items;
 using ProjectFirstRun.Weapons;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -21,7 +26,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
     public sealed class RunRestartTests : InputTestFixture
     {
         private const string Path = "Assets/_Project/Scenes/Demo/DeepJam_Opening.unity";
-        private Scene _scene, _original;
+        private Scene _scene, _original, _additional;
         private DemoOpeningController _demo;
         private RunRestartController _restart;
         private float _time;
@@ -154,11 +159,104 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(final.Session.ReplayRequested, Is.True);
         }
 
+        private RewardClaimSession RewardSession() => new(new RewardOffer(new ItemDefinition[]
+        {
+            _demo.Health.GetComponent<PlayerStartingLoadoutInitializer>().StartingWeapon
+        }));
+
+        [UnityTest]
+        public IEnumerator SharedRewardRejectsEntryAndPauseAndReleasesOnlyItsOwnControl()
+        {
+            var selection = Find<RewardSelectionController>();
+            Assert.Throws<System.InvalidOperationException>(() => selection.Open(RewardSession()));
+            Assert.That(selection.IsOpen, Is.False);
+            Find<DemoEntryController>().enabled = false;
+            yield return null;
+            var pause = Find<DemoPauseController>();
+            pause.Open(); yield return null;
+            Assert.Throws<System.InvalidOperationException>(() => selection.Open(RewardSession()));
+            Assert.That(pause.IsPaused, Is.True);
+            Assert.That(Time.timeScale, Is.Zero);
+            pause.enabled = false;
+            var input = _demo.Health.GetComponent<PlayerInputReader>();
+            object otherOwner = new object();
+            input.SetGameplayBlocked(otherOwner, true);
+            selection.Open(RewardSession());
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(AudioListener.pause, Is.False, "Reward does not globally mute audio.");
+            Assert.That(Cursor.visible, Is.True);
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Player.PlayerController>().IsControlEnabled, Is.True,
+                "Modal ownership must not rewrite base control.");
+            Assert.That(input.IsGameplayInputEnabled, Is.False);
+            selection.enabled = false;
+            Assert.That(Time.timeScale, Is.EqualTo(1));
+            Assert.That(input.IsGameplayInputEnabled, Is.False);
+            input.SetGameplayBlocked(otherOwner, false);
+            Assert.That(input.IsGameplayInputEnabled, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator DeathDuringSharedRewardDismissesItWithoutEnablingControl()
+        {
+            Find<DemoEntryController>().enabled = false;
+            yield return null;
+            var selection = Find<RewardSelectionController>();
+            selection.Open(RewardSession());
+            _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
+            Assert.That(_demo.Health.IsDead, Is.True);
+            Assert.That(selection.IsOpen, Is.False);
+            Assert.That(Time.timeScale, Is.EqualTo(1), "The death screen preserves the running world.");
+            Assert.That(Cursor.visible, Is.True);
+            Assert.That(_demo.Health.GetComponent<ProjectFirstRun.Player.PlayerController>().IsControlEnabled, Is.False);
+            Assert.That(_demo.Health.GetComponent<PlayerInputReader>().IsGameplayInputEnabled, Is.False);
+            Assert.That(_demo.Health.GetComponent<PlayerWeaponController>().IsWeaponControlEnabled, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator OldSceneCleanupCannotOverwriteNewSceneEntry()
+        {
+            Find<DemoEntryController>().enabled = false;
+            yield return null;
+            Find<DemoPauseController>().Open();
+            const string widePath = "Assets/_Project/Scenes/Demo/DeepJam_WideCombat.unity";
+            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(widePath, new LoadSceneParameters(LoadSceneMode.Additive));
+            _additional = SceneManager.GetSceneByPath(widePath);
+            SceneManager.SetActiveScene(_additional);
+            var entry = _additional.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<DemoEntryController>()).Single();
+            Assert.That(entry.IsBlocking, Is.True);
+            yield return SceneManager.UnloadSceneAsync(_scene);
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(AudioListener.pause, Is.False, "Old pause must not mute the new entry.");
+            Assert.That(Cursor.visible, Is.True);
+            Assert.That(Cursor.lockState, Is.EqualTo(CursorLockMode.None));
+        }
+
+        [UnityTest]
+        public IEnumerator FailedEncounterUsesSharedReloadAndKeepsErrorScreenOnLoadFailure()
+        {
+            Find<DemoEntryController>().enabled = false;
+            yield return null;
+            var ambush = Find<DemoKeyAmbushController>();
+            ambush.Session.Fail("test failure");
+            yield return null;
+            var loader = new Loader(); Inject(loader);
+            ambush.RestartFailedRun();
+            Assert.That(loader.Calls, Is.EqualTo(1));
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(_restart.IsLoading, Is.False);
+            Assert.That(Cursor.visible, Is.True);
+            loader.Succeed = true;
+            ambush.RestartFailedRun(); ambush.RestartFailedRun();
+            Assert.That(loader.Calls, Is.EqualTo(2));
+            Assert.That(_restart.IsLoading, Is.True);
+        }
+
         [UnityTearDown]
         public IEnumerator Unload()
         {
             if (_original.IsValid() && _original.isLoaded) SceneManager.SetActiveScene(_original);
             if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_additional.IsValid() && _additional.isLoaded) yield return SceneManager.UnloadSceneAsync(_additional);
             ClearTicket(); DemoEntryController.CancelSkip();
             Time.timeScale = _time; AudioListener.pause = _audio; Cursor.visible = _cursor; Cursor.lockState = _lock;
             base.TearDown();

@@ -2,7 +2,7 @@
 
 ## Status
 
-Slice A implemented; Unity test execution and gameplay acceptance pending. The current game scene remains the main development space; the delivered demo stays preserved by its tag.
+Slice A implemented; the user accepted pause/death/finale restart gameplay and reported completing check-ins. Unity test results have not been separately reported. October 30, 2026: Slice B's implementation plan is detailed below; this documentation increment changes no runtime code or scenes. The current game scene remains the main development space; the delivered demo stays preserved by its tag.
 
 ### Slice A implementation
 
@@ -71,6 +71,58 @@ Separate implementation/check-in after A acceptance:
 - Evaluate RunSession/free-roaming map integration separately; do not introduce mandatory arena clearing.
 
 ## Validation and non-goals
+
+### Slice B — concrete responsibilities and delivery order
+
+Inspection also found cursor writes in `PlayerController.ApplyControlState/OnDisable`. `RewardSelectionController` captures/restores time and a single control boolean. `PlayerDeathController` changes base player/weapon/ability permissions from health events. Editing screen classes alone cannot complete ownership.
+
+Proposed classes under `Scripts/Flow/`; names may be simplified during implementation:
+
+| Part | Owns | Does not own |
+| --- | --- | --- |
+| `GameFlowPolicy` | Pure C# eligibility rules and effective time/audio/cursor/control requirements from active owners | Unity, loading, health changes, UI animation |
+| `GameFlowController` | Scene bindings, ownership requests, reading existing death/final state and forwarding policy output | Another health/run model, rewards or enemies |
+| `GameplayAccessController` | Applying calculated output to Unity globals and existing owner-based player locks | Transition decisions, button/camera presentation |
+| Existing `RunRestartController` | Accepted reload operation and failure boundary | Pause/reward/finale presentation |
+
+Flow: screen request → policy eligibility → scene-owned registration → effective access state → Unity application. Inspector bindings compose these parts; no additional manager above every system, global singleton or service locator is needed.
+
+**Ownership contract:** Each screen acquires its own token; repeated release is safe. Release removes only that request, never restores a stale global snapshot. Freeze/mute requests combine: any active request keeps the respective restriction. Cursor priority is explicit: Loading > terminal screen/finale > entry > reward > pause > gameplay. Priority does not authorize otherwise invalid screens. Pause and reward are mutually exclusive. Other player lock owners and death-disabled base permissions remain intact.
+
+**Initial behavior target:** Preserve presentation and gameplay.
+
+| State | World time | Audio | Cursor / player |
+| --- | --- | --- | --- |
+| Gameplay | Session baseline scale | Normal policy | Locked/hidden; input permitted only by base permissions and other owners |
+| Entry menu / approach | Frozen | No new global mute | Visible in menu, hidden during approach; player blocked |
+| Pause | Frozen | Pause mute | Visible/unlocked; player blocked |
+| Reward selection | Frozen | No new global mute | Visible/unlocked; player blocked |
+| Death | World continues as currently | Unchanged | Visible/unlocked; death system disables base controls |
+| Finale animation / results | Frozen | Preserve finale audio | Hidden/locked during animation, visible/unlocked for results; player blocked |
+| Reload | Frozen | Muted | Retain source cursor presentation; screen/player interaction blocked |
+
+Baseline time belongs to the scene session, not an old screen snapshot. Slow motion is outside scope. UI/camera transitions remain unscaled. Player locks do not block menu navigation/submit; preserve existing held-button release guards.
+
+**File changes:**
+
+- `DemoEntryController`: retain camera/view; report menu/approach/gameplay transitions, remove local time/cursor snapshots.
+- `DemoPauseController`: retain cards, animation/input; forward open/close requests. Release ownership only after closing animation and input release complete.
+- `RewardSelectionController`: retain offers/claims/multi-claim; remove direct time and `SetControlEnabled` restoration. Last claim/cancel releases once; death must not be undone by closing rewards.
+- `DemoFinalController`: retain session and presentation/Cinemachine; move global effects to shared ownership and read completion from the existing session.
+- `DemoOpeningController`: retain death menu; align visibility/restart eligibility with shared rules.
+- `PlayerController`: stop independently writing cursor while shared management is bound. `PlayerDeathController` remains the health-event/base death-control authority; UI release cannot reverse it.
+- `RunRestartController`: keep operation/loader. Acquire Loading first; startup failure releases only Loading, recomputing the prior pause/death/completion state.
+- Wire both saved scenes and relevant builders/test fixtures. Inventory other scenes/prefabs/tests using reward selection and player control before requiring the shared layer. No silent auto-created managers or hidden demo-only dependencies.
+
+**Small deliveries:**
+
+1. B1: pure policy, ownership/token contract and conflict tests; existing screens remain unchanged.
+2. B2: Unity application, scene coordination and migration of all global writers above together. A pause-only migration sharing globals with uncontrolled legacy writers is not an accepted intermediate release.
+3. User tests/gameplay acceptance, then separate check-in. No visual redesign or new mechanic.
+
+**Acceptance:** Out-of-order owner releases; repeated token release; UI release with disabled base permissions; rejected requests during entry/pause/reward/finale have no side effects; multi-claim focus; death during rewards; restart while pause closes; startup failure/retry; old-scene cleanup cannot overwrite new time/cursor; no dangling tokens after disable. Manually verify keyboard/mouse/gamepad, animations and finale audio. New run generations invalidate old tokens; explicitly test global application handoff between scenes.
+
+Other test scenes without shared management must be explicitly supported during migration or migrated in the same check-in; document any remaining fallback. At B2 completion, audit code to verify one time/audio/cursor application owner in both target scenes.
 
 A pure tests: acceptance, rejected sources, duplicate requests, loader failure/null operation, retry after failure. Integration: restart from pause/death/completion, entry bypass, fresh build/ammunition, controls blocked during loading, preservation of other owners.
 

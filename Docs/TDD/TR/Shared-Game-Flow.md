@@ -2,7 +2,7 @@
 
 ## Durum
 
-A dilimi uygulandı; Unity test çalıştırması ve oynanış kabulü bekleniyor. Ana geliştirme alanı mevcut oyun sahnesidir. Eski demo sürümü etiketinde kalır.
+A dilimi uygulandı; kullanıcı pause/ölüm/finalden restart oynanışını onayladı ve check-in aldığını bildirdi. Unity test sonuçları ayrıca bildirilmedi. 30 Ekim 2026: B diliminin aşağıdaki uygulama planı netleştirildi; bu doküman güncellemesinde runtime veya sahne değişikliği yok. Ana geliştirme alanı mevcut oyun sahnesidir. Eski demo sürümü etiketinde kalır.
 
 ### A dilimi uygulaması
 
@@ -71,6 +71,58 @@ A'nın kabulünden sonra ayrı uygulama/check-in:
 - RunSession ile serbest harita ilerlemesinin entegrasyonu ayrıca değerlendirilir; arena temizleme zorunluluğu eklenmez.
 
 ## Doğrulama ve kapsam dışı
+
+### B dilimi — somut sorumluluklar ve uygulama sırası
+
+İncelemede `PlayerController.ApplyControlState/OnDisable` içinde de cursor yazımı bulundu. `RewardSelectionController` önceki zamanı ve tek boolean kontrol değerini saklayıp geri yüklüyor. `PlayerDeathController` kontrol/silah/yetenek temel izinlerini sağlık olaylarıyla değiştiriyor. Yalnız ekran dosyalarını değiştirmek sahipliği tamamlamaz.
+
+Önerilen sınıflar `Scripts/Flow/` altında olacak; isimler uygulamada sadeleştirilebilir:
+
+| Parça | Sorumluluk | Yönetmeyeceği işler |
+| --- | --- | --- |
+| `GameFlowPolicy` | Saf C#: kaynak durumuna göre geçiş izni; etkin sahiplerden zaman/ses/imleç ve kontrol gereksinimlerini hesaplama | Unity, sahne yükleme, sağlık azaltma, UI animasyonu |
+| `GameFlowController` | Sahne bağlantıları, ekranların sahiplik talepleri, mevcut ölüm/final durumlarını okuma; policy sonucunu uygulayıcıya iletme | İkinci sağlık/run modeli, eşya dağıtma, düşman yönetme |
+| `GameplayAccessController` | Hesaplanan sonucu Unity zaman/ses/imleç API'lerine ve mevcut owner kilitlerine uygulama | Geçiş kararları, buton/kamera sunumu |
+| Mevcut `RunRestartController` | Kabul edilmiş yeniden yükleme işlemi ve hata sınırı | Pause/ödül/final sunumu |
+
+Akış: ekran isteği → policy uygunluk kontrolü → sahneye ait sahiplik kaydı → hesaplanan erişim durumu → Unity uygulayıcısı. Her sistemin üstünde başka bir yönetici gerekmez; Inspector bağlantıları bunları birleştirir. Global singleton veya her bileşenin eriştiği servis deposu kullanılmaz.
+
+**Sahiplik sözleşmesi:** Her ekran kendine ait bir token alır; tekrar kapatma güvenlidir. Token bırakılması yalnız o talebi kaldırır, eski global değerlerin kopyasını geri yazmaz. Zamanı durdurma ve sesi susturma talepleri birleşir: en az bir etkin talep varsa ilgili engel sürer. Cursor için açık öncelik kullanılır: Loading > terminal ekran/final > giriş > ödül > pause > oynanış. Öncelik izinsiz ekranları açma hakkı vermez. Pause ile ödül aynı anda kabul edilmez. Başka bir sistemin oyuncu kilidi kaldırılmaz ve ölümün kapattığı temel izinler açılmaz.
+
+**İlk davranış hedefi:** Görünüm ve mevcut oynanış korunur.
+
+| Durum | Dünya zamanı | Ses | Cursor / oyuncu |
+| --- | --- | --- | --- |
+| Oynanış | Normal oyun ölçeği | Normal ses politikası | Kilitli/gizli; temel izinler ve diğer sahipler uygunsa kontrol açık |
+| Giriş menüsü / kamera yaklaşması | Durur | Yeni bir global susturma eklenmez | Menüde görünür; yaklaşmada gizli; kontrol kilitli |
+| Pause | Durur | Pause susturması | Görünür/serbest; kontrol kilitli |
+| Sandık seçimi | Durur | Yeni bir global susturma eklenmez | Görünür/serbest; kontrol kilitli |
+| Ölüm | Mevcut gibi dünya devam eder | Mevcut gibi | Görünür/serbest; ölüm sistemi temel kontrolleri kapatır |
+| Final animasyonu / sonuç | Durur | Final sesleri korunur | Animasyonda gizli/kilitli, sonuçta görünür/serbest; kontrol kilitli |
+| Yeniden yükleme | Durur | Susturulur | Kaynak ekranın cursor görünümü korunur; ekran ve oyuncu etkileşimi kapalı |
+
+Normal zaman ölçeği eski bir ekranın snapshot'ından alınmaz; sahne oturumunun temel değeridir. Bu dilim yavaş çekim sistemi eklemez. UI ve kamera geçişleri unscaled time kullanmayı sürdürür. Menü seçme/onaylama input'u oyuncu kilidinden etkilenmez; basılı onay/geri tuşunun oyuna sızmasını önleyen mevcut bekleme korunur.
+
+**Dosyalarda yapılacaklar:**
+
+- `DemoEntryController`: kamera ve giriş görünümü kalır; menü/yaklaşma/oynanış geçişlerini bildirir, yerel zaman/cursor snapshot'ları kaldırılır.
+- `DemoPauseController`: kartlar, animasyon ve input kalır; açık/kapalı talepleri ortak katmana taşınır. Resume kapanış animasyonu ve input bırakılması tamamlanmadan token bırakmaz.
+- `RewardSelectionController`: teklif/claim/multi-claim sorumluluğu kalır; doğrudan zaman ve `SetControlEnabled` geri yüklemesi kaldırılır. Son seçim veya iptal tek kez sahiplik bırakır; ölümle çakışmada oyuncu yeniden etkinleşmez.
+- `DemoFinalController`: `DemoFinalSession` ve Cinemachine/sunum kararı korunur; global yan etkiler ortak katmana taşınır. Finalin tamamlanması mevcut session'dan okunur.
+- `DemoOpeningController`: ölüm menüsü sunumu kalır; görünürlük/restart uygunluğu ortak kurallarla uyumlu olur.
+- `PlayerController`: ortak yönetim bağlıyken bağımsız cursor yazmaz. `PlayerDeathController` sağlık olaylarının üreticisi/temel ölüm kontrolü olarak kalır; UI kapatılması bu durumu geri alamaz.
+- `RunRestartController`: mevcut işlem sınıfı ve yükleyici korunur. Loading talebi önce alınır; başlangıç hatasında yalnız bu talep bırakılır. Önceki pause/ölüm/final durumu yeniden hesaplanır.
+- İki kayıtlı sahne ve ilgili builder/test fixture bağlantıları güncellenir. `RewardSelectionController` ve `PlayerController` kullanan diğer sahne/prefab/test kurulumları taranır; ortak katman zorunlu yapılmadan önce açıkça bağlanır. Sessiz otomatik manager oluşturma veya yalnız demo sahnesinde çalışan gizli bağımlılık eklenmez.
+
+**Küçük teslimler:**
+
+1. B1: saf policy, sahiplik/token sözleşmesi ve çakışma testleri. Henüz mevcut ekranların davranışı değişmez.
+2. B2: Unity uygulayıcısı, sahne koordinasyonu ve yukarıdaki tüm global yazarların birlikte taşınması. Yalnız pause'u taşıyıp kalanlarla aynı global alanları kontrolsüz paylaşan bir ara sürüm kabul edilmez.
+3. Kullanıcı testleri ve oynanış kabulü; ardından ayrı check-in. Görsel yenileme veya yeni oyun mekaniği eklenmez.
+
+**Kabul kontrolleri:** İki sahibin farklı sırada kapanması; aynı token'ın iki kez bırakılması; temel izin kapalıyken UI kapanması; giriş/pause/ödül/final sırasında reddedilen isteklerin yan etkisiz olması; multi-claim odağının korunması; ödül açıkken ölüm; pause kapanırken restart; yükleme hatası/yeniden deneme; eski sahnenin temizliğinin yeni sahnenin zaman/cursor'unu değiştirmemesi; sahne devre dışı kalınca sarkan token kalmaması. Mouse/klavye ve gamepad, tüm ekran animasyonları ve final sesi manuel doğrulanır. Yeni run nesli eski token'ları geçersiz kılar; global uygulayıcının sahne devri açıkça test edilir.
+
+Önceki test sahnelerinde ortak yönetim kullanılmayan kurulumlar geçiş boyunca açıkça desteklenir veya aynı check-in'de taşınır; geride kalan fallback varsa belgeye yazılır. B2 sonunda hedef iki sahnede zaman/ses/cursor için tek uygulama sahibi bulunduğu kod taramasıyla doğrulanır.
 
 A için saf testler: başarılı kabul, reddedilen kaynak, çift istek, yükleyici hatası/null operation, hata sonrası tekrar deneme. Entegrasyon: pause/ölüm/finalden restart, menü atlama, yeni build ve mühimmat sıfırlaması, yüklemede kontrol engeli, mevcut owner kilidini koruma.
 

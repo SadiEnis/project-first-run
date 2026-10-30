@@ -2,9 +2,24 @@
 
 ## Durum
 
-A dilimi uygulandı; kullanıcı pause/ölüm/finalden restart oynanışını onayladı ve check-in aldığını bildirdi. Unity test sonuçları ayrıca bildirilmedi. 30 Ekim 2026: B diliminin aşağıdaki uygulama planı netleştirildi; bu doküman güncellemesinde runtime veya sahne değişikliği yok. Ana geliştirme alanı mevcut oyun sahnesidir. Eski demo sürümü etiketinde kalır.
+A dilimi uygulandı; kullanıcı pause/ölüm/finalden restart oynanışını onayladı ve check-in aldığını bildirdi. 30 Ekim 2026: B1 ve B2 kodu mevcut; B2 sahne bağlantıları tamamlandı. Kullanıcı B2 oynanışında sorun görmediğini ve testlerin yeşil olduğunu bildirdi; B2 kabul edildi. Ana geliştirme alanı mevcut oyun sahnesidir. Eski demo sürümü etiketinde kalır.
 
-### A dilimi uygulaması
+### B2 uygulaması ve doğrulama sınırı
+
+- İki oyun sahnesindeki `Demo opening services` nesnesine `GameFlowController` ve `GameplayAccessController` eklendi. Giriş, pause, ödül seçimi ve restart serialized referanslarla bağlandı. Final/ölüm/pusu hatası mevcut sağlık/session durumlarından okunur; ikinci bir mutable run modeli yoktur.
+- Giriş ve pause kendi token'larını alıp bırakır. Giriş yaklaşması aynı token ile değişir; pause kapanış animasyonu ve basılı tuş beklemesi bitmeden bırakmaz. Finalin Ending/Completed ve ölüm token'ını koordinatör mevcut kaynaklardan türetir. Ödül ekranı claim/multi-claim sunumunu korur; ortak yolda temel kontrol boolean'ını değiştirmez. Ölüm olursa açık ödül kapatılır; ölümün temel kontrol yasağı korunur.
+- `GameplayAccessController` hedef sahnelerde zaman/ses/cursor'un tek yazarıdır. Motor/hasar/input/silah/yetenek kilitleri kendi sahibiyle uygulanır. Hasar koruması giriş/pause/final/yükleme/hata ekranındadır; ödül veya ölüm oyuncuyu ayrıca ölümsüz yapmaz. PlayerController ortak cursor sahibi bağlıyken cursor yazmaz. Input reader, kendi Awake'inden önce gelen kilit kaydını güvenle saklar.
+- Temel zaman ölçeği Inspector'da 1'dir; normal ses politikası susturulmamıştır. Kamera/UI animasyonları unscaled kalır. Yeni yükleme önce Loading token'ı alır; başlatma hatasında yalnız bunu bırakır. Başarılı yükleme eski uygulayıcıyı emekliye ayırır. Uygulayıcının özel statik sahiplik işareti yalnız Unity'nin global alanlarına yazma hakkını sınırlar; servis bulma veya global oyun yöneticisi API'si değildir. Yeni sahne sahipliği aldıktan sonra eski sahnenin geç kapanması global değerleri ezemez.
+- Taramada bulunan `DemoKeyAmbushController.RestartFailedRun` da ortak yükleyiciye taşındı. Yalnız `KeyAmbushPhase.Failed` durumunda `FailedEncounter` isteği kabul edilir. Hata ekranı dünyayı durdurup oyuncuyu korur; yükleme hatasında ekranda kalıp tekrar denenebilir. Normal pusu davranışı değişmez.
+- Geometri, prefab görselleri, başlangıç loadout'u ve slot sayıları değiştirilmedi. Yeni sahne üretilmedi. Builder yeni opening kurulumuna aynı bağımlılıkları bağlar.
+
+**Açık uyumluluk kapsamı:** `Test_ContentArena`, `Test_Waves`, `PlayableMapFixture`, `PlayableMapDestination` ve bağımsız reward test fixture'ları bu dilimde ortak yönetime taşınmadı. RewardSelectionUI prefab'ında `_flow` boş kalır; iki oyun sahnesi prefab override ile bağlar. Ortak yönetim yoksa reward'ın eski zaman/kontrol yolu ve PlayerController'ın eski cursor yolu korunur. Bunlar hedef iki sahnede çalışmaz. Haritalar arası SceneTravel ayrıca ele alınacaktır.
+
+**Doğrulama:** Asistan runtime, EditMode ve PlayMode assembly'lerini statik derledi; Unity testlerini veya build çalıştırmadı. Kullanıcı testleri çalıştırıp yeşil olduklarını ve oynanışta sorun görmediğini bildirdi. Yeni build doğrulaması bildirilmedi. PlayMode derlemesindeki mevcut `PlayerChestInteractorTests.TearDown` CS0114 uyarısı bu işten bağımsızdır. Policy testleri artık 25 vaka; sahne bağlantı kontrolleri genişletildi. `RunRestartTests` giriş/pause sırasında ödül reddi, reward-ölüm çakışması, diğer owner'ların korunması, eski sahne temizliğinin yeni giriş ekranını ezmemesi ve pusu hata restart'ını kapsar. Pusu intermission testi doğrudan global zaman yazmak yerine flow token'ıyla durdurur.
+
+Kullanıcıda hedef testler: EditMode `GameFlowPolicyTests`, `RunRestartOperationTests`, `DemoOpeningLayoutTests`; PlayMode `RunRestartTests`, `DemoEntryTests`, `DemoOpeningTests` ve mevcut `RewardSelectionControllerTests`. Manuel: girişten oynanışa geçiş, pause/resume, çok seçimli sandık, ölüm, final sesi/animasyonu ve üç ana ekrandan restart; klavye/mouse ve gamepad. Kullanıcı genel test/oynanış kabulünü verdi; cihaz bazında ayrı sonuç veya test sayısı bildirmedi.
+
+### A dilimi kabul kaydı (B2 öncesi)
 
 Üç ekran artık iki kayıtlı sahnedeki Demo opening services üzerinde bulunan ortak `RunRestartController` bileşenine istek iletiyor. `RunRestartOperation` tek etkin yükleme isteğini korur ve başlangıç hatasından sonra yeniden denemeye izin verir. Editor/player yükleme API'sini yalnız `UnityRunSceneReloader` çağırır. Mevcut oyuncu kilit sahipleri korunur. Geometri ve başlangıç kapasitesi değiştirilmedi.
 
@@ -73,6 +88,17 @@ A'nın kabulünden sonra ayrı uygulama/check-in:
 ## Doğrulama ve kapsam dışı
 
 ### B dilimi — somut sorumluluklar ve uygulama sırası
+
+#### B1 uygulama durumu
+
+- `Scripts/Flow/GameFlowContext.cs`: mevcut giriş/sağlık/final sistemlerinden gelecek salt okunur phase/readiness/temel kontrol snapshot'ı ve hesaplanan erişim sonucu. Yeni bir mutable run state machine değildir.
+- `Scripts/Flow/GameFlowPolicy.cs`: geçiş uygunluğu, owner referans kimliği, `IDisposable` token, tekrar bırakma güvenliği ve saf erişim hesabı. Aynı owner'ın ikinci acquire isteği reddedilir; başka owner'ların aynı pause talebini tutmasına izin verilir. Pause/ödül çakışması reddedilir.
+- `TryChange` yalnız giriş menüsü → kamera yaklaşması ve final animasyonu → sonuç için aynı token'ı günceller. Loading ayrı bir owner/token alır; yükleme hatasında bunun bırakılması kaynak ekranı korur. Ölüm/final restart'ı ilgili görünür ekranın token'ını gerektirir.
+- `Reset` tüm eski token'ları geçersiz kılar. Eski token'ın gecikmiş Dispose çağrısı yeni run sahibini etkileyemez; başka policy'nin token'ı kaldırılamaz. Unity OnDisable/scene unload bağlantısı B2'nin sorumluluğudur.
+- `FreezeWorld`, `MuteAudio` ve `BlockGameplay` uygulayıcıya taleptir; temel izinleri açma komutu değildir. `AllowsGameplay` dışarıdan gelen temel izni de dikkate alır. Normal zaman ölçeği ve ses tabanı bu sınıfta saklanmaz. Loading yalnız cursor sunumunu yakalar; eski zaman/kontrol snapshot'ını geri yüklemez.
+- `Tests/EditMode/Arenas/GameFlowPolicyTests.cs`: 23 test vakası; retlerin yan etkisizliği, iki sahibin farklı sırada kapanması, loading hatası/tekrar deneme, ölüm-ödül çakışması, temel izin, atomik kamera geçişi, reset ve referans kimliği.
+
+B1 tesliminde runtime ve EditMode test assembly'leri statik olarak derlendi; Unity testleri çalıştırılmadı. B1 tek başına sahne/controller davranışı değiştirmiyordu. Sonraki B2 bağlantıları ve doğrulama durumu yukarıda kayıtlıdır.
 
 İncelemede `PlayerController.ApplyControlState/OnDisable` içinde de cursor yazımı bulundu. `RewardSelectionController` önceki zamanı ve tek boolean kontrol değerini saklayıp geri yüklüyor. `PlayerDeathController` kontrol/silah/yetenek temel izinlerini sağlık olaylarıyla değiştiriyor. Yalnız ekran dosyalarını değiştirmek sahipliği tamamlamaz.
 

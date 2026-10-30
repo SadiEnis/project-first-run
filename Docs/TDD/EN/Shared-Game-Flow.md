@@ -2,9 +2,24 @@
 
 ## Status
 
-Slice A implemented; the user accepted pause/death/finale restart gameplay and reported completing check-ins. Unity test results have not been separately reported. October 30, 2026: Slice B's implementation plan is detailed below; this documentation increment changes no runtime code or scenes. The current game scene remains the main development space; the delivered demo stays preserved by its tag.
+Slice A implemented; the user accepted pause/death/finale restart gameplay and reported completing check-ins. October 30, 2026: B1/B2 code and B2 scene wiring are implemented. The user reported green tests and no observed gameplay issues; B2 is accepted. The current game scene remains the main development space; the delivered demo stays preserved by its tag.
 
-### Slice A implementation
+### B2 implementation and validation boundary
+
+- Both game scenes have `GameFlowController` and `GameplayAccessController` on Demo opening services. Entry, pause, rewards and restart use serialized references. Final/death/ambush failure are read from existing health/session authorities, not another mutable run model.
+- Entry and pause own tokens. Approach updates the entry token; pause releases only after closing animation/input release. The coordinator derives terminal tokens from existing Ending/Completed/death state. Rewards retain claim/multi-claim presentation and no longer rewrite base control on the shared path. Death dismisses an open reward without reversing death-disabled controls.
+- `GameplayAccessController` is the sole time/audio/cursor writer in target scenes. Motor/damage/input/weapon/ability locks use its own identity. Entry/pause/finale/loading/failure protect health; rewards/death do not add immortality. PlayerController skips cursor writes when an owner is bound. Input reader safely retains locks received before its Awake.
+- Baseline time is serialized as 1; normal audio is unmuted. UI/camera animation remains unscaled. Loading acquires its token first; startup failure releases only that token. Successful loading retires the old application component. Its private static ownership marker only guards writes to Unity globals; it exposes no global manager or service lookup API. Late old-scene cleanup cannot overwrite a newer scene's globals.
+- Audit also found `DemoKeyAmbushController.RestartFailedRun`; it now uses the shared loader. `FailedEncounter` requires `KeyAmbushPhase.Failed`. The failure screen freezes/protects the player and permits retry after startup failure. Normal ambush behavior is unchanged.
+- Geometry, visuals, loadout and capacities were not changed; scenes were not regenerated. The opening builder wires the same dependencies for new setups.
+
+**Explicit compatibility boundary:** `Test_ContentArena`, `Test_Waves`, `PlayableMapFixture`, `PlayableMapDestination` and isolated reward fixtures remain outside shared flow in this slice. RewardSelectionUI's prefab `_flow` stays empty; both game scenes bind it with overrides. Without shared management, the legacy reward time/control path and PlayerController cursor path remain supported. Those paths are inactive in target scenes. SceneTravel migration remains separate.
+
+**Validation:** The assistant compiled runtime, EditMode and PlayMode assemblies statically without running Unity tests/builds. The user subsequently reported green tests and no observed gameplay issues. A new build validation was not reported. The existing PlayMode `PlayerChestInteractorTests.TearDown` CS0114 warning is unrelated. Policy tests now contain 25 cases; saved-scene wiring assertions were extended. `RunRestartTests` cover reward rejection during entry/pause, death during rewards, other owners, late old-scene cleanup and ambush-error restart. The ambush intermission test now freezes through a flow token rather than writing global time.
+
+User test targets: EditMode `GameFlowPolicyTests`, `RunRestartOperationTests`, `DemoOpeningLayoutTests`; PlayMode `RunRestartTests`, `DemoEntryTests`, `DemoOpeningTests` and existing `RewardSelectionControllerTests`. Manual acceptance: entry-to-gameplay, pause/resume, multi-claim rewards, death, finale audio/animation and restart from the three main screens, with keyboard/mouse and gamepad. The user provided general test/gameplay acceptance without a separate per-device result or test count.
+
+### Slice A acceptance record (before B2)
 
 The three screens now forward to one serialized `RunRestartController` on Demo opening services in both saved scenes. `RunRestartOperation` guards a single in-flight request and permits retry after startup failure. `UnityRunSceneReloader` alone calls the Editor/player reload API. Existing player lock owners remain intact. No geometry or startup capacity edits.
 
@@ -73,6 +88,17 @@ Separate implementation/check-in after A acceptance:
 ## Validation and non-goals
 
 ### Slice B — concrete responsibilities and delivery order
+
+#### B1 implementation status
+
+- `Scripts/Flow/GameFlowContext.cs`: immutable phase/readiness/base-control snapshot supplied by existing entry/health/final systems and calculated access output. This is not another mutable run state machine.
+- `Scripts/Flow/GameFlowPolicy.cs`: eligibility, owner reference identity, disposable tokens, idempotent release and pure access calculation. Duplicate acquisition by the same owner is rejected; independent owners may retain the same pause requirement. Pause/reward overlap is rejected.
+- `TryChange` updates the same token only for entry menu → approach and finale animation → results. Loading uses a separate owner/token; releasing it on startup failure preserves the source screen. Death/completion reload requires the corresponding visible screen token.
+- `Reset` invalidates all old tokens. A delayed old Dispose cannot affect a new run owner; a foreign policy's token cannot be removed. Unity disable/unload integration belongs to B2.
+- `FreezeWorld`, `MuteAudio` and `BlockGameplay` are application requests, never commands to enable base permissions. `AllowsGameplay` also respects the supplied base permission. Baseline time/audio are not stored here. Loading captures cursor presentation only, never restores old time/control snapshots.
+- `Tests/EditMode/Arenas/GameFlowPolicyTests.cs`: 23 cases covering side-effect-free rejection, out-of-order owner release, loading failure/retry, reward/death overlap, base permissions, atomic cinematic changes, reset and reference identity.
+
+B1 delivery compiled runtime/EditMode assemblies statically without running Unity tests. B1 alone did not change scenes or existing controllers. Subsequent B2 wiring and validation status are recorded above.
 
 Inspection also found cursor writes in `PlayerController.ApplyControlState/OnDisable`. `RewardSelectionController` captures/restores time and a single control boolean. `PlayerDeathController` changes base player/weapon/ability permissions from health events. Editing screen classes alone cannot complete ownership.
 

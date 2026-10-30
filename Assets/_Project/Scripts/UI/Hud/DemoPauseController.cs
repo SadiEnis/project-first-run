@@ -11,7 +11,7 @@ using ProjectFirstRun.Weapons;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+using ProjectFirstRun.Flow;
 using UnityEngine.UI;
 
 namespace ProjectFirstRun.UI.Hud
@@ -20,6 +20,7 @@ namespace ProjectFirstRun.UI.Hud
     public sealed class DemoPauseController : MonoBehaviour
     {
         [SerializeField] private DemoOpeningController _demo;
+        [SerializeField] private RunRestartController _restart;
         [SerializeField] private DemoFinalController _final;
         [SerializeField] private RewardSelectionController _selection;
         [SerializeField] private CanvasGroup _group;
@@ -44,10 +45,11 @@ namespace ProjectFirstRun.UI.Hud
         private int _selected;
         private Vector2 _shown;
         public bool IsPaused { get; private set; }
+        public bool CanRestart => IsPaused && _armed && !_closing && !_restarting;
 
         public void ValidateConfiguration()
         {
-            if (_demo == null || _final == null || _selection == null || _group == null ||
+            if (_demo == null || _restart == null || _final == null || _selection == null || _group == null ||
                 _panel == null || _buildRoot == null || _icons == null || _status == null ||
                 _weaponCardTemplate == null || _itemCardTemplate == null ||
                 _buttons == null || _buttons.Length != 3 || !float.IsFinite(_slideSeconds) || _slideSeconds <= 0)
@@ -148,25 +150,10 @@ namespace ProjectFirstRun.UI.Hud
         public void Resume() { if (IsPaused && !_restarting && _armed) _closing = true; }
         public void Restart()
         {
-            if (!IsPaused || !_armed || _closing || _restarting) return;
-            _restarting = true;
-            string path = _demo.gameObject.scene.path;
-            DemoEntryController.SkipMenuOnNextLoad(path);
-            try
-            {
-                Release();
-#if UNITY_EDITOR
-                UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Single));
-#else
-                SceneManager.LoadSceneAsync(path, LoadSceneMode.Single);
-#endif
-            }
-            catch (Exception error)
-            {
-                DemoEntryController.CancelSkip(); _restarting = false; Open();
-                _status.text = "Restart failed. Please try again.";
-                Debug.LogException(error, this);
-            }
+            if (!CanRestart) return;
+            _restarting = _restart.Request(RunRestartSource.Pause);
+            _status.text = _restarting ? "Restarting..." : _restart.LastError != null ? "Restart failed. Please try again." : "";
+            Present();
         }
         public void Quit()
         {
@@ -191,9 +178,12 @@ namespace ProjectFirstRun.UI.Hud
             if (!IsPaused) return;
             IsPaused = false; _amount = 0; _closing = false;
             SetLocks(false);
-            if (Time.timeScale == 0) Time.timeScale = _oldTime;
-            AudioListener.pause = _oldAudio;
-            Cursor.lockState = _oldLock; Cursor.visible = _oldCursor;
+            if (!_restarting)
+            {
+                if (Time.timeScale == 0) Time.timeScale = _oldTime;
+                AudioListener.pause = _oldAudio;
+                Cursor.lockState = _oldLock; Cursor.visible = _oldCursor;
+            }
             if (_events != null) { _events.sendNavigationEvents = _oldNavigation; _events = null; }
             Present();
         }

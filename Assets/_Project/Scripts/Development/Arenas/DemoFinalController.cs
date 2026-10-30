@@ -7,7 +7,7 @@ using ProjectFirstRun.Player;
 using ProjectFirstRun.UI.Rewards;
 using ProjectFirstRun.Weapons;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using ProjectFirstRun.Flow;
 
 namespace ProjectFirstRun.Development.Arenas
 {
@@ -15,6 +15,7 @@ namespace ProjectFirstRun.Development.Arenas
     public sealed class DemoFinalController : MonoBehaviour
     {
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
+        [SerializeField] private RunRestartController _restart;
         [SerializeField] private HealthComponent _health;
         [SerializeField] private RewardSelectionController _selection;
         [SerializeField] private GameObject _gate;
@@ -28,6 +29,7 @@ namespace ProjectFirstRun.Development.Arenas
         private PlayerAbilityController _abilities;
         private CharacterController _body;
         private bool _locked;
+        private bool _restarting;
         private readonly DemoMenuInput _completionMenu = new();
         private float _previousTimeScale;
         private CursorLockMode _previousCursorLock;
@@ -41,7 +43,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_keyAmbush == null || _health == null || _selection == null || _gate == null ||
+            if (_keyAmbush == null || _restart == null || _health == null || _selection == null || _gate == null ||
                 _entryVolume == null || !_entryVolume.isTrigger || !_entryVolume.enabled ||
                 _gate.GetComponent<Collider>() == null || _gate.GetComponent<Collider>().isTrigger ||
                 transform.IsChildOf(_gate.transform) || _presentation == null || !_presentation.isActiveAndEnabled)
@@ -119,26 +121,9 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void Replay()
         {
-            if (!IsEnding || !Session.TryRequestReplay()) return;
-            try
-            {
-                DemoEntryController.SkipMenuOnNextLoad(gameObject.scene.path);
-                Time.timeScale = 1;
-#if UNITY_EDITOR
-                var operation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                    gameObject.scene.path, new LoadSceneParameters(LoadSceneMode.Single));
-#else
-                var operation = SceneManager.LoadSceneAsync(gameObject.scene.path, LoadSceneMode.Single);
-#endif
-                if (operation == null) throw new InvalidOperationException("Demo scene reload did not start.");
-            }
-            catch (Exception error)
-            {
-                DemoEntryController.CancelSkip();
-                Time.timeScale = 0;
-                Session.CancelFailedReplay();
-                LastError = "Replay failed: " + error.Message;
-            }
+            if (!_restart.Request(RunRestartSource.Completion)) return;
+            _restarting = true;
+            Session.TryRequestReplay();
         }
 
         private void OnDisable()
@@ -152,9 +137,12 @@ namespace ProjectFirstRun.Development.Arenas
             if (_motor != null) _motor.SetSuspended(this, false);
             if (_weapon != null) _weapon.SetWeaponBlocked(this, false);
             if (_abilities != null) _abilities.SetAbilityBlocked(this, false);
-            if (Time.timeScale == 0) Time.timeScale = _previousTimeScale;
-            Cursor.lockState = _previousCursorLock;
-            Cursor.visible = _previousCursorVisible;
+            if (!_restarting)
+            {
+                if (Time.timeScale == 0) Time.timeScale = _previousTimeScale;
+                Cursor.lockState = _previousCursorLock;
+                Cursor.visible = _previousCursorVisible;
+            }
         }
 
         private void OnGUI()
@@ -163,6 +151,8 @@ namespace ProjectFirstRun.Development.Arenas
             GUI.depth = -1000;
             if (IsEnding) _presentation.DrawOverlay();
             if (LastError != null) GUI.Box(new Rect(20, 250, 650, 70), "Final error: " + LastError);
+            if (_restart != null && _restart.LastError != null)
+                GUI.Box(new Rect(20, 325, 650, 40), "Restart failed. Please try again.");
             if (IsEnding && Session.Phase == DemoFinalPhase.Completed)
             {
                 GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 100, 560, 235),

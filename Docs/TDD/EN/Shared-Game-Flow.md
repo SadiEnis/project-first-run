@@ -2,9 +2,19 @@
 
 ## Status
 
-Pre-implementation plan. Only documentation changed in this increment; no runtime or scene edits. The current game scene remains the main development space; the delivered demo stays preserved by its tag.
+Slice A implemented; Unity test execution and gameplay acceptance pending. The current game scene remains the main development space; the delivered demo stays preserved by its tag.
 
-## Findings and responsibilities
+### Slice A implementation
+
+The three screens now forward to one serialized `RunRestartController` on Demo opening services in both saved scenes. `RunRestartOperation` guards a single in-flight request and permits retry after startup failure. `UnityRunSceneReloader` alone calls the Editor/player reload API. Existing player lock owners remain intact. No geometry or startup capacity edits.
+
+The old scene stays frozen/muted with restart-owned player locks until it unloads. Pause/final cleanup does not restore global state during a successful restart. A target-scoped arrival marker resets time/audio/cursor before the new entry controller awakens, then existing startup initializes the fresh player. Entry consumes its menu-bypass marker; unmatched scenes discard it.
+
+Failure recovery covers synchronous exceptions and a null loading operation before loading starts. It restores the source time/audio/cursor, clears both markers and removes only restart's locks. After Unity accepts asynchronous loading, the old scene cannot be promised recoverable; no speculative timeout/retry is implemented.
+
+Validation: runtime and EditMode/PlayMode test assemblies compiled statically. Added pure operation tests, saved-scene wiring assertions and PlayMode tests with a fake loader for pause/death/completion, retry, duplicate suppression, owner preservation and unload/arrival. Unity tests/build were not run by the assistant. Manual acceptance: restart from each screen, verify fresh loadout and working controls/audio, repeat rapidly. Full shared time/screen ownership remains Slice B.
+
+## Original findings and responsibilities
 
 - `DemoOpeningController.Restart` checks death, marks entry bypass, resets time and loads the scene.
 - `DemoPauseController.Restart` releases pause ownership, loads the scene and attempts to reopen pause on failure.

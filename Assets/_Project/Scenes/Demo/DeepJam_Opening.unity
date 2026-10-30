@@ -2501,6 +2501,7 @@ GameObject:
   - component: {fileID: 1671489926}
   - component: {fileID: 1671489936}
   - component: {fileID: 4300000002}
+  - component: {fileID: 4700000002}
   m_Layer: 0
   m_Name: Demo opening services
   m_TagString: Untagged
@@ -2685,6 +2686,7 @@ MonoBehaviour:
   _optionalReward: {fileID: 0}
   _keyAmbush: {fileID: 3400000002}
   _final: {fileID: 3500000002}
+  _restart: {fileID: 4700000002}
 --- !u!1 &1716859391
 GameObject:
   m_ObjectHideFlags: 0
@@ -29411,6 +29413,7 @@ MonoBehaviour:
   _gate: {fileID: 3100000821}
   _entryVolume: {fileID: 3500000003}
   _presentation: {fileID: 3600000002}
+  _restart: {fileID: 4700000002}
 --- !u!1 &3600000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -31581,6 +31584,7 @@ MonoBehaviour:
   _status: {fileID: 4500001103}
   _icons: {fileID: 11400000, guid: 16fc8b25fb744110baaf111f00400030, type: 2}
   _slideSeconds: 0.25
+  _restart: {fileID: 4700000002}
 --- !u!1 &4500000400
 GameObject:
   m_ObjectHideFlags: 0
@@ -33473,3 +33477,20 @@ SceneRoots:
   - {fileID: 1294752821}
   - {fileID: 559829100}
   - {fileID: 1670506022}
+
+--- !u!114 &4700000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45ad07d492a947d294e5194fe6488e30, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _demo: {fileID: 1671489936}
+  _pause: {fileID: 4500000306}
+  _final: {fileID: 3500000002}
+  _selection: {fileID: 2132724448}

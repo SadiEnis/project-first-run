@@ -9,7 +9,7 @@ using ProjectFirstRun.Progression;
 using ProjectFirstRun.UI.Rewards;
 using ProjectFirstRun.Weapons;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using ProjectFirstRun.Flow;
 
 namespace ProjectFirstRun.Development.Arenas
 {
@@ -31,8 +31,9 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private DemoFinalController _final;
         [SerializeField] private ProjectFirstRun.UI.Hud.DemoHudController _hud;
         [SerializeField] private DemoEntryController _entry;
+        [SerializeField] private RunRestartController _restart;
         public bool IsEntryBlocking => _entry != null && _entry.IsBlocking;
-        private bool _restarting;
+        private bool IsRestarting => _restart != null && _restart.IsLoading;
         private readonly DemoMenuInput _deathMenu = new();
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
@@ -45,7 +46,7 @@ namespace ProjectFirstRun.Development.Arenas
         {
             if (_loadout == null || _health == null || _experience == null || _weapon == null ||
                 _encounter == null || _chests == null || _firstReward == null ||
-                _rewardPoint == null || _selection == null)
+                _rewardPoint == null || _selection == null || _restart == null)
                 throw new InvalidOperationException("Assign all demo opening scene references.");
             _loadout.ValidateConfiguredSettings();
             _firstReward.Validate();
@@ -92,7 +93,7 @@ namespace ProjectFirstRun.Development.Arenas
         {
             // Match the visible death screen; never compete with reward UI or the finale.
             bool visible = IsReady && !_selection.IsOpen && (_final == null || !_final.IsEnding) &&
-                _health.IsDead && !_restarting;
+                _health.IsDead && !IsEntryBlocking && !IsRestarting;
             int choice = _deathMenu.Poll(visible);
             if (choice == 0) Restart();
             else if (choice == 1) Application.Quit();
@@ -100,16 +101,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void Restart()
         {
-            if (_restarting || !_health.IsDead || (_final != null && _final.IsEnding)) return;
-            _restarting = true;
-            DemoEntryController.SkipMenuOnNextLoad(gameObject.scene.path);
-            Time.timeScale = 1;
-#if UNITY_EDITOR
-            UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                gameObject.scene.path, new LoadSceneParameters(LoadSceneMode.Single));
-#else
-            SceneManager.LoadSceneAsync(gameObject.scene.path, LoadSceneMode.Single);
-#endif
+            _restart.Request(RunRestartSource.Death);
         }
 
         private void OnGUI()
@@ -144,10 +136,12 @@ namespace ProjectFirstRun.Development.Arenas
             }
             GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 65, 560, 175), "You died — restart with a fresh run");
             bool wasEnabled = GUI.enabled;
-            GUI.enabled = wasEnabled && !_restarting;
+            GUI.enabled = wasEnabled && !IsRestarting;
             if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f - 25, 290, 35), 0, "Retry")) Restart();
             if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), 1, "Quit")) Application.Quit();
             GUI.enabled = wasEnabled;
+            if (_restart.LastError != null)
+                GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f + 115, 560, 40), "Restart failed. Please try again.");
             ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 70, 540, 30), DemoMenuInput.Hint);
         }
 

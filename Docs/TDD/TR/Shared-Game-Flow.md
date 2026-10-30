@@ -2,9 +2,19 @@
 
 ## Durum
 
-Uygulama öncesi plan. Bu adımda yalnızca doküman oluşturuldu; runtime veya sahneler değiştirilmedi. Ana geliştirme alanı mevcut oyun sahnesidir. Eski demo sürümü etiketinde kalır.
+A dilimi uygulandı; Unity test çalıştırması ve oynanış kabulü bekleniyor. Ana geliştirme alanı mevcut oyun sahnesidir. Eski demo sürümü etiketinde kalır.
 
-## İnceleme ve sorumluluklar
+### A dilimi uygulaması
+
+Üç ekran artık iki kayıtlı sahnedeki Demo opening services üzerinde bulunan ortak `RunRestartController` bileşenine istek iletiyor. `RunRestartOperation` tek etkin yükleme isteğini korur ve başlangıç hatasından sonra yeniden denemeye izin verir. Editor/player yükleme API'sini yalnız `UnityRunSceneReloader` çağırır. Mevcut oyuncu kilit sahipleri korunur. Geometri ve başlangıç kapasitesi değiştirilmedi.
+
+Eski sahne kaldırılana kadar zaman/ses durur ve restart'ın kendi oyuncu kilitleri tutulur. Başarılı restart sırasında pause/final temizliği global durumu geri yüklemez. Hedef sahneye özel varış işareti, yeni entry bileşeninden önce zaman/ses/imleci oyun durumuna alır; mevcut başlangıç akışı yeni oyuncuyu hazırlar. Entry kendi menü atlama işaretini tüketir; eşleşmeyen sahnelerde işaret temizlenir.
+
+Hata telafisi, yükleme başlamadan oluşan senkron exception veya null yükleme işlemiyle sınırlıdır. Kaynak ekranın zaman/ses/imleç durumu korunur; iki işaret temizlenir ve yalnız restart'ın kilitleri kaldırılır. Unity asenkron yüklemeyi kabul ettikten sonra eski sahneye güvenli dönüş garanti edilmez; varsayımsal zaman aşımı/yeniden deneme eklenmedi.
+
+Doğrulama: runtime ve EditMode/PlayMode test assembly'leri statik olarak derlendi. Saf işlem testleri, kayıtlı sahne bağlantı kontrolleri ve sahte yükleyiciyle pause/ölüm/final, tekrar deneme, çift istek, kilit sahipliği ve sahne kaldırma/varış PlayMode testleri eklendi. Asistan Unity testlerini/build'i çalıştırmadı. Manuel kabul: üç ekrandan restart, temiz başlangıç ve kontrol/ses dönüşü, hızlı yinelenen istekler. Tüm ekran/zaman sahipliğinin ortaklaşması B diliminde kalır.
+
+## İlk inceleme ve sorumluluklar
 
 - `DemoOpeningController.Restart`: ölüm koşulunu kontrol edip menüyü atlama işaretini koyuyor, zamanı 1 yapıp sahneyi yüklüyor.
 - `DemoPauseController.Restart`: pause sahipliğini bırakıp sahneyi yüklüyor; hata olursa menüyü yeniden açmaya çalışıyor.

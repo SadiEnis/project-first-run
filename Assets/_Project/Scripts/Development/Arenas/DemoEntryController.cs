@@ -83,6 +83,7 @@ namespace ProjectFirstRun.Development.Arenas
                     _view.Hide();
                     return;
                 }
+                _skipNextScene = null;
                 _localPosition = _camera.transform.localPosition;
                 _localRotation = _camera.transform.localRotation;
                 _endFov = _camera.fieldOfView;

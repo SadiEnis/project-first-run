@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using ProjectFirstRun.Arenas;
 using ProjectFirstRun.Builds;
+using ProjectFirstRun.Flow;
 using ProjectFirstRun.Chests;
 using ProjectFirstRun.Chests.Spawning;
 using ProjectFirstRun.Combat;
@@ -135,6 +136,9 @@ namespace ProjectFirstRun.Editor
             float bottom = (box.center.y - box.size.y * .5f) * reward.WorldPrefab.transform.localScale.y;
             rewardPoint.position = new Vector3(0, .02f - bottom, 38);
             var demo = services.AddComponent<DemoOpeningController>();
+            var restart = services.AddComponent<RunRestartController>();
+            Set(restart, "_demo", demo); Set(restart, "_selection", selection);
+            Set(demo, "_restart", restart);
             Set(demo, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());
             Set(demo, "_health", player.GetComponent<HealthComponent>());
             Set(demo, "_weapon", player.GetComponent<PlayerWeaponController>());

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SO_GameStartingLoadout
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Builds.PlayerStartingLoadoutSettings
   _startingWeapon: {fileID: 11400000, guid: 6e0508fdb37a4571a926b42bc41cfbb5, type: 2}
-  _weaponSlots: 1
-  _abilitySlots: 3
-  _upgradeSlots: 5
+  _weaponSlots: 2
+  _abilitySlots: 5
+  _upgradeSlots: 8

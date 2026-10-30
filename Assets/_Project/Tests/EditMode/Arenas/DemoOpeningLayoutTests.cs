@@ -28,6 +28,18 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             {
                 var demo = scene.GetRootGameObjects()
                     .SelectMany(x => x.GetComponentsInChildren<DemoOpeningController>(true)).Single();
+                var restart = scene.GetRootGameObjects().SelectMany(x =>
+                    x.GetComponentsInChildren<ProjectFirstRun.Flow.RunRestartController>(true)).Single();
+                Assert.DoesNotThrow(restart.ValidateConfiguration);
+                var restartData = new SerializedObject(restart);
+                Assert.That(restartData.FindProperty("_demo").objectReferenceValue, Is.SameAs(demo));
+                foreach (var component in new Object[] { demo,
+                    restartData.FindProperty("_pause").objectReferenceValue,
+                    restartData.FindProperty("_final").objectReferenceValue })
+                {
+                    Assert.That(component, Is.Not.Null);
+                    Assert.That(new SerializedObject(component).FindProperty("_restart").objectReferenceValue, Is.SameAs(restart));
+                }
                 var loadout = (PlayerStartingLoadoutInitializer)new SerializedObject(demo)
                     .FindProperty("_loadout").objectReferenceValue;
                 var settings = AssetDatabase.LoadAssetAtPath<PlayerStartingLoadoutSettings>(

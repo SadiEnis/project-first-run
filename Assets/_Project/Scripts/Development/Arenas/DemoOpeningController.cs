@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using ProjectFirstRun.Arenas;
-using ProjectFirstRun.Builds;
 using ProjectFirstRun.Chests;
 using ProjectFirstRun.Chests.Spawning;
 using ProjectFirstRun.Combat;
@@ -16,7 +15,7 @@ namespace ProjectFirstRun.Development.Arenas
     /// <summary>First demo slice only; geometry and dependencies are authored in the saved scene.</summary>
     public sealed class DemoOpeningController : MonoBehaviour
     {
-        [SerializeField] private PlayerStartingLoadoutInitializer _loadout;
+        [SerializeField] private RunSceneStartup _startup;
         [SerializeField] private HealthComponent _health;
         [SerializeField] private PlayerExperienceController _experience;
         [SerializeField] private PlayerWeaponController _weapon;
@@ -37,6 +36,7 @@ namespace ProjectFirstRun.Development.Arenas
         private readonly DemoMenuInput _deathMenu = new();
         private bool _rewardClaimed;
         public bool IsReady { get; private set; }
+        public string StartupError => _startup != null ? _startup.LastError : "Missing run startup.";
         public ChestController Reward { get; private set; }
         public PreparedRegionEncounter Encounter => _encounter;
         public HealthComponent Health => _health;
@@ -44,11 +44,11 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_loadout == null || _health == null || _experience == null || _weapon == null ||
+            if (_startup == null || _health == null || _experience == null || _weapon == null ||
                 _encounter == null || _chests == null || _firstReward == null ||
                 _rewardPoint == null || _selection == null || _restart == null)
                 throw new InvalidOperationException("Assign all demo opening scene references.");
-            _loadout.ValidateConfiguredSettings();
+            _startup.ValidateConfiguration();
             _firstReward.Validate();
             foreach (var room in _roomEncounters)
                 if (room == null) throw new InvalidOperationException("Missing demo room encounter reference.");
@@ -60,19 +60,21 @@ namespace ProjectFirstRun.Development.Arenas
         private void Awake()
         {
             ValidateConfiguration();
-            // The scene's shared settings own weapon and capacity, in Editor and player builds.
-            if (!_loadout.IsInitialized)
-                _loadout.InitializeConfigured();
             _encounter.Victory += HandleVictory;
         }
 
         private IEnumerator Start()
         {
+            while (!_startup.IsReady)
+            {
+                if (_startup.LastError != null) yield break;
+                yield return null;
+            }
             float deadline = Time.realtimeSinceStartup + 10;
-            while (!_encounter.IsInitialized || !_chests.IsInitialized || !_experience.IsInitialized)
+            while (!_encounter.IsInitialized)
             {
                 if (Time.realtimeSinceStartup > deadline)
-                    throw new InvalidOperationException("Demo opening services did not initialize.");
+                    throw new InvalidOperationException("Demo corridor encounter did not initialize.");
                 yield return null;
             }
             _encounter.RequestPreparation();

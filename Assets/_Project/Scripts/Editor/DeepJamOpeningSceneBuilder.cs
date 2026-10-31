@@ -145,7 +145,12 @@ namespace ProjectFirstRun.Editor
             PrefabUtility.RecordPrefabInstancePropertyModifications(selection);
             Set(restart, "_demo", demo); Set(restart, "_selection", selection);
             Set(demo, "_restart", restart);
-            Set(demo, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());
+            var startup = services.AddComponent<RunSceneStartup>();
+            Set(startup, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());
+            Set(startup, "_experience", player.GetComponent<PlayerExperienceController>());
+            Set(startup, "_chests", services.GetComponent<ChestSpawner>());
+            Set(startup, "_abilities", services.GetComponent<ProjectFirstRun.Abilities.PlayerAbilityRuntimeInstaller>());
+            Set(demo, "_startup", startup);
             Set(demo, "_health", player.GetComponent<HealthComponent>());
             Set(demo, "_weapon", player.GetComponent<PlayerWeaponController>());
             Set(demo, "_experience", player.GetComponent<PlayerExperienceController>());

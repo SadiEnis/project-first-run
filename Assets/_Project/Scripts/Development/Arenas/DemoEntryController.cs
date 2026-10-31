@@ -160,7 +160,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (_menu.Poll(menuVisible) == 0) Begin();
             float alpha = Phase == DemoEntryPhase.Menu ? 1 : 1 - Mathf.Clamp01(_elapsed / .35f);
             _view.Present(alpha, menuVisible && Phase == DemoEntryPhase.Menu && _menu.IsArmed,
-                _pointerMode, _menu.Selected, LastError ?? (_demo.IsReady ? "" : "Preparing demo..."));
+                _pointerMode, _menu.Selected, LastError ?? _demo.StartupError ?? (_demo.IsReady ? "" : "Preparing demo..."));
             // Settings deliberately has no click action.
         }
 

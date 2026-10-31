@@ -3176,6 +3176,7 @@ GameObject:
   - component: {fileID: 4700000002}
   - component: {fileID: 4800000002}
   - component: {fileID: 4800000003}
+  - component: {fileID: 4900000002}
   m_Layer: 0
   m_Name: Demo opening services
   m_TagString: Untagged
@@ -3346,7 +3347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 320ec05a3f134741ae8d0193b684b753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Development.Arenas.DemoOpeningController
-  _loadout: {fileID: 1562420487}
+  _startup: {fileID: 4900000002}
   _health: {fileID: 872807819}
   _experience: {fileID: 872807818}
   _weapon: {fileID: 1878455837}
@@ -57052,3 +57053,20 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _health: {fileID: 872807819}
   _baselineTimeScale: 1
+--- !u!114 &4900000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47add340fb6a4c72a589223e8a7375fe, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _loadout: {fileID: 1562420487}
+  _experience: {fileID: 872807818}
+  _chests: {fileID: 1671489931}
+  _abilities: {fileID: 1671489932}
+  _timeoutSeconds: 10

@@ -48,8 +48,16 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                     Assert.That(component, Is.Not.Null);
                     Assert.That(new SerializedObject(component).FindProperty("_restart").objectReferenceValue, Is.SameAs(restart));
                 }
-                var loadout = (PlayerStartingLoadoutInitializer)new SerializedObject(demo)
-                    .FindProperty("_loadout").objectReferenceValue;
+                var startup = scene.GetRootGameObjects().SelectMany(x =>
+                    x.GetComponentsInChildren<ProjectFirstRun.Flow.RunSceneStartup>(true)).Single();
+                Assert.That(new SerializedObject(demo).FindProperty("_startup").objectReferenceValue, Is.SameAs(startup));
+                Assert.DoesNotThrow(startup.ValidateConfiguration);
+                var startupData = new SerializedObject(startup);
+                Assert.That(startupData.FindProperty("_experience").objectReferenceValue,
+                    Is.SameAs(demo.Health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceController>()));
+                Assert.That(startupData.FindProperty("_abilities").objectReferenceValue,
+                    Is.SameAs(startup.GetComponent<ProjectFirstRun.Abilities.PlayerAbilityRuntimeInstaller>()));
+                var loadout = startup.Loadout;
                 var settings = AssetDatabase.LoadAssetAtPath<PlayerStartingLoadoutSettings>(
                     DeepJamOpeningSceneBuilder.StartingLoadoutPath);
                 Assert.That(settings, Is.Not.Null);

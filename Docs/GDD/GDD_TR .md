@@ -648,7 +648,32 @@ Oyuncu öldüğünde toplanan altının yalnızca bir kısmı korunur.
 
 Planlanan maksimum koruma oranı şu anda %70'tir.
 
-Son boss'un başarıyla yenilmesi durumunda tur ödüllerinin korunması ve ek Altın Sandık ödülü verilmesi beklenmektedir. Ara boss'lardan sonra altının bir kısmının güvenceye alınıp alınmayacağı açık sorudur.
+Zaferde turun tüm kaynak kazancı ve ek boss ödülü kalıcı birikime aktarılır. Ara boss'lardan sonra altının bir kısmının güvenceye alınıp alınmayacağı açık sorudur.
+
+### 18.1 Meta ekonomi temeli — 9 Kasım 2026
+
+Kabul edilen kural: Tur sırasında kazanılan kaynak ve üste güvenceye alınmış kalıcı birikim ayrıdır. Kaynağın geçici adı altındır; nihai adı daha sonra belirlenebilir.
+
+| Tur sonucu | Kalıcı cüzdana aktarılan |
+| --- | --- |
+| Ölüm | O turda toplanan kaynağın koruma oranına karşılık gelen kısmı |
+| Zafer | O turda toplanan kaynağın tamamı + boss bitiriş ödülü |
+
+Ölüm kesintisi yalnızca mevcut turun kazancına uygulanır. Önceden güvenceye alınmış birikim ve satın alınmış kalıcı gelişimler korunur. Yeni turun kazancı sıfırdan başlar. Aynı turun sonucu birden fazla kez ödeme yapmamalıdır.
+
+Sonuç ekranı toplanan kaynak, kaybedilen miktar, boss ödülü, aktarılan miktar ve yeni kalıcı toplamı göstermelidir. Boss ödülünün miktarı ve sunumu henüz belirlenmemiştir; bir Altın Sandık olması zorunlu değildir.
+
+Mevcut %40 başlangıç koruması ve %70 üst sınır denge önerileridir. Koruma geliştirmelerinin seviyeleri, maliyetleri ve meta gelişim öğeleri araştırma sonrasında seçilecektir.
+
+Uygulama öncesi açık kararlar:
+
+- Menüden run'ı bırakma: ölümle aynı kesinti önerilmektedir; henüz onaylanmadı.
+- Uygulamayı kapatma/çökme: tamamlanmamış run kazancının durumu belirlenmelidir. Kalıcı cüzdan kaydı, run ortasında kaydedip devam etmeyi kapsamaz.
+- Kesirli aktarım: aşağı yuvarlama önerilmektedir; henüz onaylanmadı.
+- Demo finalinin ekonomi testi için zafer sayılıp sayılmayacağı belirlenmelidir.
+- Kaynak düşürme sıklıkları, miktarlar ve boss ödülü denge çalışmasına açıktır.
+
+İlk geliştirme kapsamı kalıcı cüzdan/kayıt, tur kazancı, sonuç hesabı, tek seferlik aktarım, sonuç sunumu ve oynanıştan kaynak kazanımıdır. Satın alma ve ilk meta gelişim bir sonraki adımda; zorluk katmanları, hikâye/anı kayıtları ve ayrıntılı üs sunumu daha sonra ele alınacaktır.
 
 ---
 

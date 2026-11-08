@@ -648,7 +648,32 @@ The current provisional permanent-upgrade progression is:
 
 The maximum planned retention rate is currently 70%.
 
-Successfully defeating the final boss is expected to preserve the run's reward and provide an additional Golden Chest reward. The exact rules for banking gold after intermediate bosses remain an open question.
+Victory transfers all collected run resource and an additional boss reward to the permanent balance. Banking gold after intermediate bosses remains an open question.
+
+### 18.1 Meta economy foundation — 9 November 2026
+
+Accepted rule: earnings collected during a run are separate from the permanent balance secured at the hub. Gold is a provisional name for this resource.
+
+| Run outcome | Transfer to permanent wallet |
+| --- | --- |
+| Death | The retained percentage of that run's collected resource |
+| Victory | All of that run's collected resource plus the boss completion reward |
+
+Death deductions affect only the current run's earnings. Previously banked funds and purchased permanent improvements remain intact. A new run starts with zero earnings. Settling the same run must not pay more than once.
+
+The result screen should show collected resource, lost amount, boss reward, transferred amount and the new permanent total. The boss reward amount and presentation remain undecided; a Golden Chest is not required.
+
+The existing 40% starting retention and 70% upper limit are balance proposals. Retention upgrade levels, prices and the meta upgrade roster will be selected after research.
+
+Open decisions before implementation:
+
+- Abandoning through the menu: death-equivalent deductions are proposed, not approved.
+- Application exit/crash: treatment of unfinished earnings needs a decision. Permanent wallet persistence does not include mid-run save/resume.
+- Fractional transfers: rounding down is proposed, not approved.
+- Whether the demo finale should count as a victory for economy testing remains undecided.
+- Drop frequencies, amounts and the boss reward remain subject to balancing.
+
+The first development scope covers permanent wallet/storage, run earnings, outcome calculation, single settlement, results presentation and gameplay resource acquisition. Purchasing and one initial meta upgrade follow; difficulty tiers, narrative/memory persistence and detailed hub presentation are later work.
 
 ---
 

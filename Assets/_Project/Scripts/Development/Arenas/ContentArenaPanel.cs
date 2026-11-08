@@ -48,7 +48,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (IsOpen || !isActiveAndEnabled || !_arena.CanMutate || Time.timeScale <= 0 || !_arena.Selection.enabled) return false;
             _previousTimeScale = Time.timeScale;
             _controlWasEnabled = _control.IsControlEnabled;
-            _inputWasEnabled = _input.IsGameplayInputEnabled;
+            _inputWasEnabled = _input.IsGameplayInputRequested;
             _weaponWasEnabled = _weapon.IsWeaponControlEnabled;
             _abilitiesWereEnabled = _abilities.IsAbilityControlEnabled;
             _selectionWasEnabled = _arena.Selection.enabled;

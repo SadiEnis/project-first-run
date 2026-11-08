@@ -24,7 +24,7 @@ This is a flat-arena placement policy, not a general navigation/pathfinding syst
 
 ## Existing reward behavior
 
-Spawning a chest does not open its reward screen. The player still looks at it and presses E / gamepad South. With no eligible rewards the chest stays available, as in chest foundation; this source does not invent a gold fallback. Once the small development reward pool is exhausted, later chests may therefore have nothing to offer until reward progression is expanded.
+Spawning a chest does not open its reward screen. The player still looks at it and presses E / gamepad RB/R1. With no eligible rewards the chest stays available, as in chest foundation; this source does not invent a gold fallback. Once the small development reward pool is exhausted, later chests may therefore have nothing to offer until reward progression is expanded.
 
 ## Verification
 

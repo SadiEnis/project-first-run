@@ -7,8 +7,56 @@ namespace ProjectFirstRun.Input
     public sealed class PlayerInputReader : MonoBehaviour
     {
         private ProjectFirstRunInputActions _inputActions;
+        public InputAction FindGameplayAction(string name) => _inputActions?.asset.FindAction("Gameplay/" + name);
+        private bool _jumpPending;
+        private int _jumpFrame = -1;
+        private int _interactionConsumedFrame = -1;
+
+        public bool TryConsumeInteractionPress()
+        {
+            if (!WasInteractPressedThisFrame || _interactionConsumedFrame == Time.frameCount) return false;
+            _interactionConsumedFrame = Time.frameCount;
+            return true;
+        }
+        private bool _jumpNeedsRelease;
+        private bool _gameplayRequested = true;
+        private readonly System.Collections.Generic.HashSet<object> _gameplayBlocks = new();
+
+        // Temporary owners must not overwrite the state requested by rewards/death.
+        public void SetGameplayBlocked(object owner, bool blocked)
+        {
+            if (owner == null) throw new System.ArgumentNullException(nameof(owner));
+            if (blocked) _gameplayBlocks.Add(owner);
+            else _gameplayBlocks.Remove(owner);
+            ApplyGameplayState();
+        }
+
+        public bool ConsumeJumpPress(bool allowJump)
+        {
+            bool pressed = allowJump && IsGameplayInputEnabled && Time.timeScale > 0f &&
+                _jumpPending && _jumpFrame == Time.frameCount;
+            _jumpPending = false;
+            return pressed;
+        }
+
+        private void HandleJump(UnityEngine.InputSystem.InputAction.CallbackContext context)
+        {
+            if (_jumpNeedsRelease || Time.timeScale <= 0f) return;
+            _jumpPending = true;
+            _jumpFrame = Time.frameCount;
+        }
+
+        private void Update()
+        {
+            if (!_jumpNeedsRelease) return;
+            foreach (var control in _inputActions.Gameplay.Jump.controls)
+                if (control is UnityEngine.InputSystem.Controls.ButtonControl button && button.isPressed)
+                    return;
+            _jumpNeedsRelease = false;
+        }
 
         public bool IsGameplayInputEnabled => _inputActions != null && _inputActions.Gameplay.enabled;
+        public bool IsGameplayInputRequested => _gameplayRequested;
 
         public Vector2 MoveInput =>
             _inputActions.Gameplay.Move.ReadValue<Vector2>();
@@ -26,16 +74,16 @@ namespace ProjectFirstRun.Input
             _inputActions.Gameplay.Fire.IsPressed();
 
         public bool WasFirePressedThisFrame =>
-            _inputActions.Gameplay.Fire.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.Fire.WasPressedThisFrame();
 
         public bool WasReloadPressedThisFrame =>
-            _inputActions.Gameplay.Reload.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.Reload.WasPressedThisFrame();
 
         public bool WasSwitchWeaponPressedThisFrame =>
-            _inputActions.Gameplay.SwitchWeapon.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.SwitchWeapon.WasPressedThisFrame();
 
         public bool WasInteractPressedThisFrame =>
-            _inputActions.Gameplay.Interact.WasPressedThisFrame();
+            IsGameplayInputEnabled && _inputActions.Gameplay.Interact.WasPressedThisFrame();
 
         public bool IsLookInputFromGamepad =>
             _inputActions.Gameplay.Look.activeControl?.device is Gamepad;
@@ -43,16 +91,20 @@ namespace ProjectFirstRun.Input
         private void Awake()
         {
             _inputActions = new ProjectFirstRunInputActions();
+            _inputActions.Gameplay.Jump.performed += HandleJump;
         }
 
         private void OnEnable()
         {
-            _inputActions.Gameplay.Enable();
+            _jumpPending = false;
+            _jumpNeedsRelease = true;
+            ApplyGameplayState();
         }
 
         private void OnDisable()
         {
             _inputActions.Gameplay.Disable();
+            _jumpPending = false;
         }
 
         private void OnDestroy()
@@ -62,6 +114,18 @@ namespace ProjectFirstRun.Input
 
         public void SetGameplayInputEnabled(bool isEnabled)
         {
+            _gameplayRequested = isEnabled;
+            ApplyGameplayState();
+        }
+
+        private void ApplyGameplayState()
+        {
+            // Scene flow may register its ownership before this component's Awake.
+            if (_inputActions == null) return;
+            bool isEnabled = _gameplayRequested && _gameplayBlocks.Count == 0 && isActiveAndEnabled;
+            if (IsGameplayInputEnabled == isEnabled) return;
+            _jumpPending = false;
+            _jumpNeedsRelease = true;
             if (isEnabled)
             {
                 _inputActions.Gameplay.Enable();

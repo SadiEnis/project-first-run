@@ -247,7 +247,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Chests.Interaction
                 (_, _) => attemptCount++;
 
             Press(
-                _gamepad.buttonSouth,
+                _gamepad.rightShoulder,
                 queueEventOnly: true);
 
             yield return null;

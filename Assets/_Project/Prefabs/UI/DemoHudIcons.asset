@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16fc8b25fb744110baaf111f00400012, type: 3}
+  m_Name: DemoHudIcons
+  m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.UI.Hud.HudIconCatalog
+  _entries:
+  - Id: ability.fireball
+    Label: Fireball
+    Tint: {r: 1, g: 0.5, b: 0.2, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.95 0.45,0.55 0.2,0.65 0.16,0.3 0.35,0.12 0.65,0.12 0.85,0.4 0.7,0.75 0.65,0.5 0.5,0.95"
+  - Id: ability.force-wave
+    Label: Force Wave
+    Tint: {r: 0.5, g: 0.8, b: 1, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.2,0.2 0.42,0.5 0.2,0.8;0.45,0.2 0.67,0.5 0.45,0.8;0.7,0.2 0.92,0.5 0.7,0.8"
+  - Id: ability.drone
+    Label: Drone
+    Tint: {r: 0.4, g: 1, b: 0.8, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.2,0.7 0.8,0.7 0.8,0.3 0.2,0.3 0.2,0.7;0.5,0.3 0.5,0.1;0.08,0.85 0.33,0.85;0.68,0.85 0.93,0.85;0.2,0.85 0.2,0.5;0.8,0.85 0.8,0.5"
+  - Id: ability.acid-bottle
+    Label: Acid Bottle
+    Tint: {r: 0.65, g: 1, b: 0.25, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.38,0.9 0.62,0.9 0.62,0.65 0.82,0.2 0.7,0.1 0.3,0.1 0.18,0.2 0.38,0.65 0.38,0.9;0.3,0.4 0.7,0.4"
+  - Id: ability.lightning-staff
+    Label: Lightning Staff
+    Tint: {r: 1, g: 0.85, b: 0.3, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.62,0.94 0.2,0.5 0.48,0.5 0.36,0.06 0.83,0.6 0.54,0.6 0.62,0.94"
+  - Id: ability.shuriken
+    Label: Shuriken
+    Tint: {r: 0.8, g: 0.85, b: 1, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.95 0.6,0.6 0.95,0.5 0.6,0.4 0.5,0.05 0.4,0.4 0.05,0.5 0.4,0.6 0.5,0.95"
+  - Id: ability.sniper-bomb
+    Label: Sniper Bomb
+    Tint: {r: 1, g: 0.55, b: 0.45, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.1 0.2,0.25 0.15,0.6 0.4,0.8 0.65,0.75 0.85,0.5 0.75,0.2 0.5,0.1;0.55,0.77 0.7,0.95 0.9,0.85;0.25,0.45 0.75,0.45;0.5,0.2 0.5,0.7"
+  - Id: ability.enchanted-staff
+    Label: Enchanted Staff
+    Tint: {r: 0.8, g: 0.5, b: 1, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.15,0.1 0.68,0.7;0.65,0.95 0.85,0.8 0.7,0.6 0.5,0.8 0.65,0.95;0.18,0.75 0.33,0.9;0.8,0.3 0.95,0.4"
+  - Id: weapon.shotgun
+    Label: Shotgun
+    Tint: {r: 1, g: 0.73, b: 0.35, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.1,0.55 0.75,0.55 0.9,0.72 0.1,0.72 0.1,0.55;0.3,0.55 0.3,0.32 0.43,0.32 0.5,0.55;0.56,0.55 0.56,0.45 0.75,0.45"
+  - Id: weapon.minigun
+    Label: Minigun
+    Tint: {r: 1, g: 0.7, b: 0.4, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.12,0.7 0.8,0.7 0.9,0.6 0.8,0.45 0.12,0.45 0.12,0.7;0.32,0.45 0.32,0.2 0.48,0.2 0.48,0.45;0.55,0.47 0.55,0.7;0.13,0.57 0.85,0.57"
+  - Id: weapon.rocket-launcher
+    Label: Rocket Launcher
+    Tint: {r: 1, g: 0.45, b: 0.25, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.1,0.5 0.75,0.5 0.95,0.65 0.75,0.8 0.1,0.8 0.1,0.5;0.38,0.5 0.28,0.2 0.45,0.2 0.55,0.5;0.2,0.8 0.2,0.93 0.48,0.93"
+  - Id: weapon.plasma-rifle
+    Label: Plasma Rifle
+    Tint: {r: 0.3, g: 0.85, b: 1, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.1,0.45 0.85,0.45 0.95,0.7 0.1,0.7 0.1,0.45;0.25,0.45 0.25,0.2 0.4,0.2 0.45,0.45;0.5,0.8 0.62,0.94 0.72,0.8"
+  - Id: upgrade.attraction_core
+    Label: Attraction Core
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.2,0.85 0.2,0.3 0.35,0.12 0.65,0.12 0.8,0.3 0.8,0.85;0.1,0.7 0.3,0.7;0.7,0.7 0.9,0.7"
+  - Id: upgrade.blood_pact
+    Label: Blood Pact
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.95 0.17,0.4 0.25,0.15 0.7,0.15 0.83,0.4 0.5,0.95;0.32,0.35 0.68,0.35;0.5,0.2 0.5,0.52"
+  - Id: upgrade.broken_hourglass
+    Label: Broken Hourglass
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.2,0.9 0.8,0.9 0.6,0.6;0.4,0.4 0.2,0.1 0.8,0.1 0.6,0.4;0.2,0.55 0.45,0.6 0.55,0.45 0.85,0.55"
+  - Id: upgrade.crimson_fang
+    Label: Crimson Fang
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.15,0.85 0.8,0.85 0.5,0.12 0.15,0.85;0.3,0.7 0.53,0.35 0.66,0.7"
+  - Id: upgrade.fire_rhythm
+    Label: Fire Rhythm
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.1,0.5 0.3,0.5 0.4,0.9 0.6,0.1 0.7,0.5 0.9,0.5"
+  - Id: upgrade.glass_heart
+    Label: Glass Heart
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.1 0.1,0.65 0.25,0.88 0.5,0.7 0.75,0.88 0.9,0.65 0.5,0.1;0.52,0.7 0.4,0.5 0.57,0.4 0.5,0.1"
+  - Id: upgrade.ironhide
+    Label: Ironhide
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.15,0.85 0.85,0.85 0.77,0.32 0.5,0.1 0.23,0.32 0.15,0.85;0.33,0.68 0.67,0.68;0.33,0.5 0.67,0.5"
+  - Id: upgrade.iron_oath
+    Label: Iron Oath
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.9 0.85,0.75 0.77,0.3 0.5,0.1 0.23,0.3 0.15,0.75 0.5,0.9;0.5,0.7 0.5,0.3;0.35,0.5 0.65,0.5"
+  - Id: upgrade.last_stand
+    Label: Last Stand
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.95 0.65,0.75 0.5,0.25 0.35,0.75 0.5,0.95;0.2,0.25 0.8,0.25;0.5,0.25 0.5,0.05"
+  - Id: upgrade.lifesprout
+    Label: Lifesprout
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.1 0.5,0.6;0.5,0.4 0.15,0.6 0.15,0.85 0.4,0.8 0.5,0.4;0.5,0.6 0.7,0.9 0.9,0.9 0.8,0.65 0.5,0.6"
+  - Id: upgrade.loaded_dice
+    Label: Loaded Dice
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.15,0.15 0.85,0.15 0.85,0.85 0.15,0.85 0.15,0.15;0.3,0.3 0.34,0.34;0.48,0.48 0.52,0.52;0.66,0.66 0.7,0.7"
+  - Id: upgrade.memory_crystal
+    Label: Memory Crystal
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.95 0.85,0.65 0.7,0.2 0.5,0.05 0.3,0.2 0.15,0.65 0.5,0.95;0.15,0.65 0.85,0.65;0.5,0.95 0.35,0.65 0.5,0.05 0.65,0.65 0.5,0.95"
+  - Id: upgrade.second_heart
+    Label: Second Heart
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.45,0.15 0.1,0.6 0.22,0.85 0.45,0.72 0.65,0.85 0.78,0.6 0.45,0.15;0.65,0.2 0.95,0.58 0.88,0.8"
+  - Id: upgrade.windweave
+    Label: Windweave
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.1,0.7 0.7,0.7 0.85,0.85 0.7,0.95;0.15,0.5 0.85,0.5;0.1,0.3 0.6,0.3 0.75,0.15 0.6,0.05"
+  - Id: upgrade.wrath_seal
+    Label: Wrath Seal
+    Tint: {r: 0.95, g: 0.83, b: 0.5, a: 1}
+    Sprite: {fileID: 0}
+    Strokes: "0.5,0.9 0.85,0.7 0.85,0.3 0.5,0.1 0.15,0.3 0.15,0.7 0.5,0.9;0.3,0.7 0.7,0.3;0.3,0.3 0.7,0.7"

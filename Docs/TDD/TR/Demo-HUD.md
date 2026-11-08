@@ -1,0 +1,131 @@
+# Demo HUD — Yerleşim ve Davranış Sözleşmesi
+
+## Silaha özgü nişangah (11.10.2026)
+
+Kullanıcı nişangahları silahlara uygun bulup ilk demo sunumu olarak kabul etti. Bu kabul bütün otomatik testlerin veya manuel regresyon listesinin tamamlandığı anlamına gelmez; Unity test sonucu henüz bildirilmedi.
+
+DemoHUD prefabındaki eski artı yazısı kayıtlı HudCrosshair grafiğiyle değiştirildi; sahne yeniden üretilmez. DemoHudController mevcut oyuncunun silahını bağlar. Sunum salt okunurdur; hasar, saçılma, hareket, geri tepme ve atış temposu değişmez.
+
+- Shotgun: merkez noktası ve gerçek saçılma konisinin sınırında kesikli çember. Minigun: merkez ve 1 derece koninin sınırından dışarı uzanan dört kısa çizgi. Yarıçap = tan(yarı açı) × kamera projection.m11 × piksel yüksekliği / (2 × Canvas ölçeği); güncel seviye/kamera/çözünürlük okunur. Çember tüm saçmaların kenara gideceği anlamına gelmez. Yakın namlu engelleri isabeti değiştirebilir.
+- Minigun dışındaki mavi yay, gerçek PreparationElapsed/PreparationDuration oranını gösterir; ateş basılı tutulunca dolar, bırakınca sıfırlanır. Dolu yay saçılma artışı değildir.
+- Plasma: nokta ve iki kısa kanat. Roket: nokta ve dört köşe braketi. Bunlar yön referansıdır; patlama yarıçapı, otomatik kilitlenme veya hedef öngörüsü değildir. Mermi uçuş süresi korunur.
+- Kamera geri tepmesi nişan yönünü zaten taşır; nişangah kamera viewport merkezinde kalır. Mevcut oyunda hareket/seri atış ek saçılma yaratmadığından yapay genişleyip daralma yok. Başarılı ateşte kısa parlama vardır.
+- Reload veya boş şarjörde işaret amber renkte soluklaşır. Yalnız silah DamageApplied olayı gerçekten hasar verdiyse 0,18 sn isabet çarpısı; öldürücü hasarda kırmızı-turuncu işaret. Aynı yaylımın sonraki ölümcül olmayan hedefi öldürme rengini bastırmaz. Roket alan hasarı ve plasma yanması dahil bu silah kanalından bildirilen hasar işaret verir; otomatik yetenekler bu kanala bağlı değildir. Duvar/boşa atış/reddedilen hasar işaret vermez.
+- Ödül, ölüm, final, pause ve silah kontrol kilidinde gizlenir; eski geri bildirim temizlenir. Silah değişiminde görünüm doğrudan güncellenir; yanlış koni gösterecek yumuşak boyut geçişi yok. Disable'da olay abonelikleri çözülür. Grafik input raycast almaz; koyu kenar çizgisi açık/koyu zeminde okunabilirlik sağlar.
+
+CrosshairTests: dört stil, FOV/çözünürlük/Canvas ölçeği hesabı, prefab referansı, reddedilen/gizli hasar ve aynı yaylımda ölüm önceliği. Runtime ve EditMode statik derleme yapıldı; Unity testleri ve görsel oynanış kabulü kullanıcıya bırakıldı. Manuel: dört silah, shotgun farklı FOV, minigun hazırlık/bırakma, duvar ve düşman isabeti, reload/boş şarjör, Q, ödül/ölüm/final/restart. Renk, kalınlık ve isabet süresi prefab Crosshair bileşeninde ayarlanabilir.
+
+## Cihaza göre tuş ikonları
+
+InputPrompts; TIP, HUD reload/silah değişimi, demo sandık/anahtar yönergeleri ve ölüm/final/ödül menüsü ipuçlarını ortak yönetir. {Reload} gibi oynanış belirteçleri PlayerInputReader binding'lerini okur; action açmaz. İleride tuş atama kodu override sonrasında InputPrompts.RefreshBindings çağırmalıdır. Menü ipuçları mevcut kontrollerle eşleşir; ödülde yatay oklar da gösterilir.
+
+Assets/Resources/InputPromptSettings.asset, eklenen TMP sprite atlasına referans verir. Gamepad Style: Automatic / Xbox / PlayStation. Xbox yüz tuşları renklidir; DualShock/DualSense ayrı algılanır ama ortak PlayStation görseli kullanır. Eksik PlayStation omuz/tetik görsellerinde Xbox ikonu yerine L1/R1/L2/R2 yazılır. Tanınmayan kollarda konumsal tuş ikonları kullanılır. Steam Input Sony kolunu Xbox gibi gösterirse Inspector override kullanılabilir; klavye/fareye geçişi engellemez.
+
+Pause sırasında da son anlamlı girdi esas alınır. Küçük fare hareketi/analog kayması görünümü değiştirmez; aktif kol çıkarılınca klavyeye dönülür. Kayıtlı InputPromptLabel adaptörleri UGUI fontlarını korur, küçük satır içi Text/RawImage parçalarını runtime'da oluşturup yeniden kullanır; sahne üretmez. Ayar asset'i atlasın build'e dahil edilmesini sağlar. Geliştirme amaçlı debug panelleri kapsam dışıdır.
+
+Runtime/test derlemesi kontrol edilir; Unity test çalıştırması yapılmaz. Kullanıcı kontrolü: InputPromptsTests, DemoHudLayoutTests; TIP, reload, ödül, ölüm/finalde klavye/Xbox/PlayStation geçişi ve küçük pencerede okunabilirlik.
+
+## Sağ kenar TIP öğretimi
+
+WideCombat'ın kayıtlı DemoHUD prefab'ına girdi yakalamayan sağ kenar TIP kartı eklendi. Sağdan 0,25 saniyede girer, tam görünürken 1,5 saniye bekler, 0,25 saniyede sağa çıkar. HudTipView bileşeninde giriş/bekleme/çıkış süreleri, sağ boşluk ve klavye/gamepad metinleri Inspector'dan ayarlanır. Kart kayıtlıdır; satır içi ikon/metin parçaları runtime'da oluşturulup yeniden kullanılır. Sahne üretimi veya DOTween gerekmez.
+
+HUD hazır olunca hareket/bakış ve ateş/reload mesajları sırayla gösterilir. İlk ability için sandık açılmasını değil gerçek build edinimini izler; otomatik yetenek/cooldown açıklaması ve ardından upgrade keşif mesajı kuyruğa girer. Koridor atlanırsa başka yerde edinilen ilk ability de öğretimi başlatabilir. Mevcut tuşlarla eşleşir: WASD/fare veya analoglar; sol tık/RT-R2 ateş, R/X-Square reload. Kullanılan girdiye göre mesaj türü güncellenir.
+
+Aynı anda tek kart görünür. Ödül seçimi veya pause kartı gizler, süre ve kuyruğu korur. Ölüm/final bekleyen gösterimi iptal eder. Tamamı gösterilmiş mesajlar sadece mevcut uygulama/Play oturumunda hatırlanır; sahne yeniden yüklenerek retry yapılınca tekrarlanmaz. Yarım kalan mesaj yeniden öğretilebilir. Uygulama açılışında veya domain reload kapalı olsa dahi Play başlangıcında oturum temizlenir. Kalıcı kayıt/meta sistemi eklenmez. UI kontrolleri engellemez, oyun verisini değiştirmez.
+
+DemoHudLayoutTests'e giriş/bekleme/çıkış, sıra/tekrar önleme, pause/retry ve kayıtlı kart süre kontrolleri eklendi. Runtime ve EditMode test assembly'leri derleniyor; Unity testleri ve görsel/ekran oranı kontrolünü kullanıcı yapar.
+
+## Durum ve kapsam
+
+Tasarım onayına dayalı uygulama planı; temel HUD oynanışta kabul edildi; item ikonları, radial karartı, eğimli can ve silah hareketi eklendi, yeni görsel kabul bekleniyor. Kullanıcının çizimi esas alınır: üstte tam genişlikte XP, sol üst yetenekler, sağ üst güçlendirmeler ve altında anahtar; sol altta silah, mermi ve can. İlk entegrasyon WideCombat üzerindedir. Harita geometrisi, düşman yoğunluğu ve oyun dengesi HUD çalışmasıyla değişmez.
+
+İlk checkpoint dokümantasyondu; ardından aşağıdaki temel uygulama dilimi eklendi. Meta progression, HUD ayarlar menüsü, final ikon üretimi ve diğer sahnelere otomatik uygulama kapsam dışıdır. DOTween ücretsiz sürümü animasyon aşamasında kullanılabilir; Pro zorunlu değildir. Henüz paket kurulmadı.
+
+## Yerleşim
+
+| Bölge | İçerik |
+| --- | --- |
+| Üst kenar | Güvenli kenar boşluğuyla tam genişlik XP çubuğu; altında ortada seviye |
+| Sol üst | Aktif kapasite kadar yetenek yuvası |
+| Sağ üst | Aktif kapasite kadar güçlendirme yuvası; altında sahip olunduğunda anahtar |
+| Sol alt | Aktif silah kartı; yanında şarjör/yedek mermi ve can çubuğu |
+| Merkez | Sade nişangâh; gerektiğinde kısa etkileşim bildirimi |
+
+Kayıtlı, Inspector'dan düzenlenebilir Canvas prefab'ı kullanılır. Yerleşim runtime'da sıfırdan sahne kurmaz; yalnızca kapasiteye bağlı slot görünümleri çoğaltılabilir. Anchor, Canvas ölçekleme ve kenar boşlukları farklı çözünürlüklerde korunur; XP çizgisi ile slot/seviye alanı çakışmaz. Can barında mevcut/maksimum can okunur. İkon eksikse ayırt edilebilir kısa ad/placeholder gösterilir; boş kutu ile sahip olunan ikon eksiği birbirinden ayrılır.
+
+## Kapasite ve item'lar
+
+Kaynak PlayerBuildCapacity ve oyuncunun mevcut run envanteridir; HUD kapasite açmaz veya item kazandırmaz. Demo başlangıcı modelin üst sınırlarını kullanır: 2 silah, 5 yetenek, 8 güçlendirme. DemoOpeningController bu kapasiteyi yalnızca demo için verir; normal başlangıç varsayılanları değişmez. Bunlar UI'da sabit slot sayısına çevrilmez. Gelecekte meta tarafından belirlenen run kapasitesi aynı sözleşmeden okunur.
+
+Aktif ama boş slot görünür; henüz açılmamış kapasite için slot gösterilmez. Item alındığında boş slot dolar; level-up aynı slotun seviye göstergesini değiştirir, yeni slot oluşturmaz. Item sırası kararlı kalır. Yeni run'da önceki item, anahtar ve animasyon durumu temizlenir.
+
+## Silah durumları ve reload karartısı
+
+- Ateşe hazır kart normal görünür. Yalnızca yedek merminin sıfır olması, dolu şarjörü karartmaz.
+- Şarjör boş ve yedek de yoksa ikon yarı saydam siyah katmanla karartılır; 0/0 bilgisi okunur.
+- Reload başlayınca (otomatik veya elle, şarjör kısmen doluyken de) karartı tam görünür. Üst noktadan başlayarak saat yönünde silinir; gerçek reload tamamlandığında sıfırlanır.
+- Kısmen açılmış ikon reload sırasında kullanılabilir anlamına gelmez. İptal, silah değişimi veya ölümde gerçek runtime durumu esas alınır.
+- Karartı kalan süre / ilgili işlemin gerçek toplam süresidir; 0..1'e sınırlandırılır. Statlarla değişen sürelerde asset'in temel süresine körlemesine bölünmez. Sıfır süre güvenli işlenir.
+- Normal atış aralığı ve Minigun hazırlığı, reload gibi gösterilmez; ek davranış ayrıca kararlaştırılır.
+
+WeaponRuntimeState.ReloadTimeRemaining ve IsReloading mevcuttur. Uygulamada geçerli işlem süresini salt okunur olarak UI'a sunma gereksinimi kontrol edilir. HUD kendi sayacını çalıştırarak mermi doldurmaz veya silahı hazır ilan etmez.
+
+## Yetenek karartısı
+
+Gerçek kullanımdan sonra ikon kararır; kalan süre azaldıkça üstten saat yönünde açılır. Hedef bulunamadığı veya kullanım başarısız olduğu için cooldown başlamamışsa karartı başlamaz. Normal ikon yalnızca cooldown açısından hazır olmayı ifade eder; otomatik yetenek hedef bekleyebilir.
+
+AbilityRuntimeState.CooldownRemaining mevcuttur; kullanım süresi cooldown çarpanıyla değişir. Normalleştirme gerçek aktif cooldown süresini kullanmalıdır. AbilityRuntimeEntry.IsContinuous tek başına görsel süre seçmeye yetmez: sürekli çalışan executor içinde dönemsel saldırı olabilir. Örneğin DroneRuntime her drone için ayrı süre tutar. İlgili aşamada tüm yeteneklerin zamanlayıcıları incelenip salt okunur sunum durumu sağlanır. Gerçek tek bir cooldown olmayan pasif/sürekli etkide sahte radial sayaç gösterilmez; çoklu drone zamanlaması gibi durumlar ayrıca değerlendirilir.
+
+## Saat yönünde silah kartı geçişi
+
+İki kart ortak yay üzerinde saat yönünde hareket eder. Bekleyen kart sol dışarıdan üst yayla aktif konuma gelir; önceki aktif kart alt yayla sol dışarıya ayrılır. Görünmeyen bölüm maskelenir. Yazılar okunur kalır; hafif eğim mümkün, ters dönmüş kart hedef değildir.
+
+Başlangıç deneme süresi 0,25–0,35 saniye, Inspector'dan ayarlanabilir. Can sabittir. Mermi bilgisi gerçek aktif silaha aittir. Silah değişimi runtime'da gerçekleşir; animasyon ek kullanım gecikmesi yaratmaz. Hızlı Q girişlerinde animasyonlar kuyrukta birikmez, son gerçek seçime doğru yeniden hedeflenir. Tek silah varsa hayali ikinci kart yoktur. Sahip olunan ama mermisiz silahın kartı da durumunu korur.
+
+## Veri ve yaşam döngüsü
+
+Sunum, oyun durumunu yalnızca okur. Sağlık, XP, envanter ve seçim değişiklikleri mümkünse olaylarla; aktif süreler gerektiğinde hafif güncelleme ile okunur. Henüz initialize olmamış kaynaklar güvenle beklenir. Sahne referansları açıkça atanır/doğrulanır; her kare tüm sahneyi tarama yapılmaz.
+
+XP çubuğu CurrentExperience / RequiredExperience kullanır; TotalExperience kullanılmaz. Birden fazla level atlama son gerçek level ve kalan XP ile sonuçlanır. Sağlık maksimumu değişince bar da güncellenir.
+
+Sandık/reward ekranında cooldown ve reload oyunun duraklatılmış durumunu yansıtır; görsel sayaç bağımsız ilerlemez. Dekoratif hareket oyun sürelerinden ayrıdır, gizlenen HUD animasyonları durdurulur. Ölümde kontroller kullanılabilir görünmez; mevcut restart/quit ekranı korunur. Açılış kontrol devri tamamlanınca HUD görünür; final sunumu başlayınca gizlenir. Restart abonelikleri/animasyonları temizler ve yeni oyuncuya bağlanır.
+
+Eski OnGUI debug kutuları yeni HUD ile çift çizilmez. Devre dışı bırakma yalnızca yerine geçirilen sağlık/mermi/XP/nişangâh parçalarını hedefler; henüz taşınmamış hedef metni, hata bildirimi ve ölüm/restart/quit davranışı korunur.
+
+## Uygulama dilimleri ve kabul
+
+1. Docs check-in: bu sözleşme ve indeksler.
+2. Temel prefab: statik aktif silah, can, mermi, XP/seviye, kapasiteye bağlı boş kutular. Animasyon yok. Kullanıcı yerleşimi değerlendirir.
+3. Item bağlantıları: ikon/placeholder, seviye, kararlı slot sırası ve anahtar.
+4. Radial göstergeler: reload/mermisizlik, ardından yetenek türlerine uygun cooldown sunumu.
+5. Silah kartı hareketi: iki yönlü tekrar değişim, hızlı Q, tek silah, ölüm/finalde temizlik.
+6. Entegrasyon: farklı ekran oranları, reward pause, restart, final ve gerektiğinde Windows build kontrolü.
+
+Her anlamlı dilim ayrı değerlendirilir; her küçük işlem ayrı commit gerektirmez. EditMode/PlayMode testleri yazılır; kullanıcının tercihiyle testleri kullanıcı çalıştırır, bildirilen hatalar hedefli ele alınır.
+
+Planlanan testler: kapasite 0/varsayılan/maksimum; acquire/level-up slotları; XP çoklu level; değişen max can; dolu şarjör + sıfır yedek; manuel/otomatik reload; reload kesintisi; cooldown indirimi; başarısız kullanım; hedef bekleme; pause; hızlı silah değişimi; ikon eksikliği; ölüm/final/restart; çift HUD ve abonelik sızıntısı olmaması. Görsel kabul: karartının gerçekten saat yönünde silinmesi ve yay yönünün çizimle eşleşmesi oynanışta kontrol edilir.
+
+## Teslim
+
+Temel uygulama: Assets/_Project/Prefabs/UI/DemoHUD.prefab kayıtlı Canvas'ı WideCombat sahnesine bağlandı. XP/seviye, mevcut/maksimum can, aktif silah adı/seviyesi, şarjör/yedek mermi ve yazılı reload/mermisizlik durumu okunur. Yetenek/güçlendirme yuvaları run kapasitesine göre gösterilir; alınan item'ların sembolik ikonları ve seviyeleri edinim sırasıyla yerleşir. Sahip olunan anahtar etiketi sağ üstte görünür. Radial karartılar ve silah kartı hareketi bağlandı.
+
+DemoHudController sahne referanslarını doğrular ve oyuncu bileşenlerini bir kez çözer. Temel veriler LateUpdate'te okunur; DemoHudView değer önbelleğiyle değişmeyen yazı/barları yeniden oluşturmaz. Oyun verisi değiştirilmez, timer ilerletilmez ve abonelik oluşturulmaz. Başlatılma öncesi, reward modal, ölüm ve final sırasında HUD gizlidir. Eski bilgi kutusu/nişangâh yalnızca geçerli Canvas HUD bağlıyken bastırılır; hedef/hata/restart/quit kodu korunur. Orijinal Opening sahnesinde HUD referansı boş olduğundan eski sunum korunur.
+
+EditMode: DemoHudLayoutTests (prefab referansları, kapasite 0/3-5/5-8, görünürlük durumları, sahne/prefab bağlantısı). PlayMode: DemoHudPresentationTests (can/XP/silah verileri, reload/mermisizlik yazısı, gizle/göster). Testler yazıldı ancak çalıştırılmadı. Tam run/restart/final ve ekran oranı doğrulaması kullanıcı oynanış kabulünde yapılmalıdır. Statik YAML yerel referans ve git whitespace kontrolleri uygulanır; bunlar Unity import/derleme veya görsel test yerine geçmez.
+
+Kullanım: WideCombat'ın diskten güncel halini açıp Play'e bas. Sahne üretme menüsü veya NavMesh bake gerekmez. Prefab Mode'da DemoHUD düzenlenebilir; sahnedeki Demo HUD binding nesnesi veri bağlantılarını içerir. Hedef metni için alt kenarda boşluk bırakılmıştır.
+
+## İkon ve hareket dilimi
+
+Doğrulama: runtime ve iki test assembly'si yerel Unity referanslarıyla Unity'nin Roslyn derleyicisinde derlendi. Derleme hatası yok; mevcut PlayerChestInteractorTests.TearDown gizleme uyarısı bu işten bağımsızdır. Kayıtlı prefab yerel referans/ebeveyn bağları kontrol edildi. Bu derleme/statik kontroldür; Unity test çalıştırması veya görsel kabul değildir.
+
+- DemoHudIcons, Inspector'dan düzenlenen stable-ID kataloğudur. Mevcut silah/yetenek/güçlendirmeler için birbirinden farklı, kodla çizilen sade çizgi ikonları vardır; bunlar final çizimler değil prototip sembolleridir. Katalog girdisinin Sprite alanı doldurulursa sembolün yerini görsel alır. Eksik eşleşme boş yuva gibi görünmez; soru işareti ve seviye gösterir.
+- HudSlantedImage hem can zemininin hem doluluğun sağ ucunu eğimli çizer. Can azaldıkça dolu kısmın eğimi korunur; çok az canda şekil güvenle sıfıra daralır. XP düz kalır.
+- HudRadialShade dikdörtgen ikon/kart üzerinde siyah yarı saydam karartıyı saat 12'den başlayarak saat yönünde kaldırır. Seviye yazısı üstte okunabilir kalır. Kalan oran 1 tamamen karanlık, 0 tamamen açıktır.
+- AbilityRuntimeState.CommittedCooldownDuration ve WeaponRuntimeState.CommittedReloadDuration başarılı işlem başlangıcındaki süreyi saklar. Bekleme sırasında seviye/ayar değişmesi aktif sürenin paydasını veya sayacı değiştirmez.
+- Standart yetenekler gerçek başarılı kullanım beklemesini gösterir. Shuriken dönerken açık, iki dönüşten sonraki beklemede karartılıdır. Drone ikonu en erken ateş edebilecek drone'un kendi atış aralığını gösterir; biri hazırsa açıktır. Bütün drone'lar hazır veya hedef var anlamına gelmez. Pasif etkilere sahte süre eklenmez.
+- HudWeaponCarousel iki kayıtlı kartla, DOTween gerektirmeyen ve Inspector'dan ayarlanabilen 0.3 saniyelik yumuşak yay hareketi yapar. Gelen kart üstten, giden kart alttan saat yönünde ilerler. Her kart kendi ikonu, seviyesi ve reload/mermisizlik durumunu taşır. Ekran dışındaki kart kırpılır, yazılar ters dönmez. Can ve mermi yerinde kalır.
+- Hızlı Q mevcut konumdan son gerçek seçime yönelir; animasyon kuyruğu oluşmaz. Henüz edinilmemiş kart gösterilmez. HUD gizlenince hareket son gösterilen seçime oturur; yeni run temiz durumla başlar. Pause sırasında dekoratif hareket Time.deltaTime ile donar; oyun sayaçları sadece okunur.
+- Sahne üretimi veya NavMesh bake gerekmez. WideCombat'taki Demo HUD binding nesnesine açık anahtar referansı eklendi. Opening, geometri, denge ve kullanıcının encounter düzenlemelerine dokunulmadı.
+
+DemoHudLayoutTests ve DemoHudPresentationTests'e işlem süresi sabitleme, radial yön, yay/yeniden hedefleme, ikon kataloğu kapsamı, item/seviye/anahtar, reload oranı ve gizlemede hareket temizliği için hedefli kapsam eklendi. Unity testlerini kullanıcı çalıştırır. Oynanışta kısmi manuel reload, otomatik reload, sıfır mermi, yetenek hedef beklemesi, hızlı Q, reward pause, anahtar, final ve restart kontrol edilmelidir.

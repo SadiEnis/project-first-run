@@ -22,6 +22,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Builds
         private PlayerStartingLoadoutInitializer _initializer;
 
         private WeaponDefinition _startingWeapon;
+        private PlayerStartingLoadoutSettings _settings;
 
         [SetUp]
         public void SetUp()
@@ -33,6 +34,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Builds
         [TearDown]
         public void TearDown()
         {
+            if (_settings != null) Object.DestroyImmediate(_settings);
             if (_playerObject != null)
             {
                 Object.DestroyImmediate(
@@ -56,6 +58,31 @@ namespace ProjectFirstRun.Tests.PlayMode.Builds
                 Object.DestroyImmediate(
                     _startingWeapon);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator Start_UsesConfiguredSettingsAndDoesNotRepeatAfterReenable()
+        {
+            _settings = ScriptableObject.CreateInstance<PlayerStartingLoadoutSettings>();
+            SetPrivateField(_settings, "_startingWeapon", _startingWeapon);
+            SetPrivateField(_settings, "_weaponSlots", 2);
+            SetPrivateField(_settings, "_abilitySlots", 4);
+            SetPrivateField(_settings, "_upgradeSlots", 7);
+            SetPrivateField(_initializer, "_settings", _settings);
+            SetPrivateField(_initializer, "_startingWeapon", null);
+            int notifications = 0;
+            _initializer.Initialized += () => notifications++;
+            _playerObject.SetActive(true);
+            yield return null;
+            Assert.That(_initializer.IsInitialized, Is.True);
+            Assert.That(_buildController.Build.Capacity.AbilitySlots, Is.EqualTo(4));
+            Assert.That(_buildController.Build.Capacity.UpgradeSlots, Is.EqualTo(7));
+            Assert.That(_initializer.StartingWeapon, Is.SameAs(_startingWeapon));
+            _playerObject.SetActive(false);
+            _playerObject.SetActive(true);
+            yield return null;
+            Assert.That(notifications, Is.EqualTo(1));
+            Assert.That(_buildController.Build.Weapons.Count, Is.EqualTo(1));
         }
 
         [UnityTest]

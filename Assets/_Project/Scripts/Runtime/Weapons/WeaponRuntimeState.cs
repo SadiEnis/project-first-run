@@ -49,6 +49,7 @@ namespace ProjectFirstRun.Weapons
 
         public float FireCooldownRemaining { get; private set; }
         public float ReloadTimeRemaining { get; private set; }
+        public float CommittedReloadDuration { get; private set; }
 
         public bool IsReloading { get; private set; }
 
@@ -140,6 +141,7 @@ namespace ProjectFirstRun.Weapons
 
             IsReloading = true;
             ReloadTimeRemaining = _config.ReloadDuration;
+            CommittedReloadDuration = ReloadTimeRemaining;
 
             return WeaponReloadResult.Started;
         }
@@ -150,6 +152,7 @@ namespace ProjectFirstRun.Weapons
             ReserveAmmo = _config.StartingReserveAmmo;
 
             FireCooldownRemaining = 0f;
+            CommittedReloadDuration = 0f;
             ReloadTimeRemaining = 0f;
             IsReloading = false;
         }

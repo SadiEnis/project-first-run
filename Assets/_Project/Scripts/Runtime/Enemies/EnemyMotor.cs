@@ -7,6 +7,7 @@ using ProjectFirstRun.Combat;
 namespace ProjectFirstRun.Enemies
 {
     [DisallowMultipleComponent]
+    [DefaultExecutionOrder(100)]
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyMotor : MonoBehaviour, IKnockbackReceiver
     {
@@ -19,6 +20,34 @@ namespace ProjectFirstRun.Enemies
         private bool _isInitialized;
         private bool _movementEnabled;
         private bool _destinationOverride;
+        private EnemyController _enemy;
+        private bool _investigationStarted;
+        private bool _investigationFinished;
+        private Vector3 _investigationPoint;
+        private bool SightAllowsMovement => _enemy == null || !_enemy.RequiresPerception ||
+            (_enemy.Perception != null && _enemy.Perception.HasSight);
+
+        // Called only by the attack owner. A hidden position receives one path request,
+        // including partial paths; reaching the accessible endpoint consumes that request.
+        public void Investigate(Vector3 point, float tolerance)
+        {
+            if (!CanUseAgent()) return;
+            if (!_investigationStarted || point != _investigationPoint)
+            {
+                Stop();
+                _investigationStarted = true; _investigationFinished = false;
+                _investigationPoint = point;
+                _movementEnabled = true; _destinationOverride = true;
+                _agent.isStopped = IsStunned;
+                if (!_agent.SetDestination(point)) _investigationFinished = true;
+            }
+            if (Vector3.Distance(transform.position, point) <= tolerance ||
+                (!_agent.pathPending && (_agent.pathStatus == NavMeshPathStatus.PathInvalid ||
+                (_agent.hasPath && _agent.remainingDistance <= tolerance)))) _investigationFinished = true;
+            if (_investigationFinished && _movementEnabled) Stop();
+        }
+
+        public void ClearInvestigation() { _investigationStarted = false; _investigationFinished = false; }
         private float _baseSpeed;
         private float _stunUntil;
         private bool _stunStoppedAgent;
@@ -103,6 +132,7 @@ namespace ProjectFirstRun.Enemies
 
         public bool TrySetDestination(Vector3 destination)
         {
+            if (!SightAllowsMovement) return false;
             if (!CanUseAgent() || !float.IsFinite(destination.x) ||
                 !float.IsFinite(destination.y) || !float.IsFinite(destination.z))
                 return false;
@@ -157,6 +187,7 @@ namespace ProjectFirstRun.Enemies
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
+            _enemy = GetComponent<EnemyController>();
         }
 
         private void Update()
@@ -204,6 +235,8 @@ namespace ProjectFirstRun.Enemies
             }
 
             EnsureAgentReference();
+            _enemy = GetComponent<EnemyController>();
+            ClearInvestigation();
 
             _target = target;
 
@@ -243,6 +276,9 @@ namespace ProjectFirstRun.Enemies
                 return;
             }
 
+            if (!SightAllowsMovement) { if (_movementEnabled) Stop(); return; }
+            if (_enemy != null && _enemy.RequiresPerception) _destinationOverride = false;
+            ClearInvestigation();
             _movementEnabled = true;
             _destinationUpdateTimer = 0f;
 
@@ -269,6 +305,7 @@ namespace ProjectFirstRun.Enemies
 
         private void TryUpdateDestination()
         {
+            if (!SightAllowsMovement) { if (_movementEnabled) Stop(); return; }
             if (IsStunned) return;
             if (_target == null ||
                 !CanUseAgent())

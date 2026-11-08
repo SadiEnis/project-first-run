@@ -65,3 +65,7 @@ Project First Run is the current development codename. The final commercial titl
 59. [Conditional and Trade-off Upgrades](Conditional-Tradeoff-Upgrades.md)
 60. [Crimson Fang](Crimson-Fang-Upgrade.md)
 61. [Loaded Dice](Loaded-Dice-Upgrade.md)
+62. [DeepJam Demo Scope and Scene Design](DeepJam-Demo.md)
+63. [Enemy Perception and Pursuit Memory](Enemy-Perception.md)
+64. [Demo HUD — Layout and Behaviour](Demo-HUD.md)
+65. [Weapon Audio](Weapon-Audio.md)

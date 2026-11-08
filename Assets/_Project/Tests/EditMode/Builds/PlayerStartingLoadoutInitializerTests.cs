@@ -19,6 +19,7 @@ namespace ProjectFirstRun.Tests.EditMode.Builds
             _weaponAcquisitionController;
 
         private WeaponDefinition _startingWeapon;
+        private PlayerStartingLoadoutSettings _settings;
 
         [SetUp]
         public void SetUp()
@@ -61,6 +62,7 @@ namespace ProjectFirstRun.Tests.EditMode.Builds
         [TearDown]
         public void TearDown()
         {
+            if (_settings != null) Object.DestroyImmediate(_settings);
             if (_playerObject != null)
             {
                 Object.DestroyImmediate(
@@ -309,6 +311,95 @@ namespace ProjectFirstRun.Tests.EditMode.Builds
                     .Loadout
                     .WeaponCount,
                 Is.EqualTo(0));
+        }
+
+        private void ConfigureSettings(int weapons = 2, int abilities = 5, int upgrades = 8)
+        {
+            _settings = ScriptableObject.CreateInstance<PlayerStartingLoadoutSettings>();
+            SetPrivateField(_settings, "_startingWeapon", _startingWeapon);
+            SetPrivateField(_settings, "_weaponSlots", weapons);
+            SetPrivateField(_settings, "_abilitySlots", abilities);
+            SetPrivateField(_settings, "_upgradeSlots", upgrades);
+            SetPrivateField(_initializer, "_settings", _settings);
+            SetPrivateField(_initializer, "_startingWeapon", null);
+        }
+
+        [TestCase(2, 5, 8)]
+        [TestCase(1, 2, 4)]
+        public void ConfiguredInitialization_UsesSettingsAndPublishesOnce(int weapons, int abilities, int upgrades)
+        {
+            ConfigureSettings(weapons, abilities, upgrades);
+            int notifications = 0;
+            _initializer.Initialized += () =>
+            {
+                notifications++;
+                Assert.That(_initializer.IsInitialized, Is.True);
+                Assert.That(_buildController.Contains(_startingWeapon), Is.True);
+            };
+            _initializer.InitializeConfigured();
+            Assert.That(_initializer.StartingWeapon, Is.SameAs(_startingWeapon));
+            Assert.That(_buildController.Build.Capacity.WeaponSlots, Is.EqualTo(weapons));
+            Assert.That(_buildController.Build.Capacity.AbilitySlots, Is.EqualTo(abilities));
+            Assert.That(_buildController.Build.Capacity.UpgradeSlots, Is.EqualTo(upgrades));
+            Assert.Throws<System.InvalidOperationException>(() => _initializer.InitializeConfigured());
+            Assert.That(notifications, Is.EqualTo(1));
+            SetPrivateField(_settings, "_abilitySlots", 1);
+            SetPrivateField(_settings, "_startingWeapon", null);
+            Assert.That(_buildController.Build.Capacity.AbilitySlots, Is.EqualTo(abilities));
+            Assert.That(_initializer.StartingWeapon, Is.SameAs(_startingWeapon));
+        }
+
+        [TestCase("_weaponSlots", 0)]
+        [TestCase("_weaponSlots", 3)]
+        [TestCase("_abilitySlots", 6)]
+        [TestCase("_upgradeSlots", 9)]
+        public void InvalidConfiguredCapacity_DoesNotPartiallyInitialize(string field, int value)
+        {
+            ConfigureSettings();
+            SetPrivateField(_settings, field, value);
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => _initializer.InitializeConfigured());
+            Assert.That(_buildController.IsInitialized, Is.False);
+            Assert.That(_weaponController.IsInitialized, Is.False);
+            Assert.That(_initializer.IsInitialized, Is.False);
+        }
+
+        [Test]
+        public void ConfiguredInitialization_RequiresSettingsAndWeapon()
+        {
+            Assert.Throws<System.InvalidOperationException>(() => _initializer.InitializeConfigured());
+            ConfigureSettings();
+            SetPrivateField(_settings, "_startingWeapon", null);
+            Assert.Throws<System.InvalidOperationException>(() => _initializer.InitializeConfigured());
+            Assert.That(_buildController.IsInitialized, Is.False);
+        }
+
+        [Test]
+        public void ConfiguredInitialization_RejectsInvalidWeaponBeforeBuildCreation()
+        {
+            ConfigureSettings();
+            SetPrivateField(_startingWeapon, "_magazineCapacity", 0, typeof(WeaponDefinition));
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => _initializer.InitializeConfigured());
+            Assert.That(_buildController.IsInitialized, Is.False);
+            Assert.That(_weaponController.IsInitialized, Is.False);
+        }
+
+        [Test]
+        public void RequiredSettingsMissing_RejectsLegacyFallback()
+        {
+            SetPrivateField(_initializer, "_requireSettings", true);
+            Assert.Throws<System.InvalidOperationException>(() => _initializer.InitializeConfigured());
+            Assert.Throws<System.InvalidOperationException>(() =>
+                _initializer.Initialize(PlayerBuildCapacity.CreateDefault()));
+            Assert.That(_buildController.IsInitialized, Is.False);
+        }
+
+        [Test]
+        public void ConfiguredInitialization_RejectsLegacyCapacityOverride()
+        {
+            ConfigureSettings();
+            Assert.Throws<System.InvalidOperationException>(() =>
+                _initializer.Initialize(PlayerBuildCapacity.CreateDefault()));
+            Assert.That(_buildController.IsInitialized, Is.False);
         }
 
         private static WeaponDefinition

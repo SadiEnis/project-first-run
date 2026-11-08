@@ -103,9 +103,7 @@ namespace ProjectFirstRun.Editor
             var xp = services.AddComponent<ExperienceRunBootstrap>();
             Set(xp, "_playerExperience", player.GetComponent<PlayerExperienceController>());
             Set(xp, "_definition", Load<ExperienceDefinition>("Assets/_Project/Data/Progression/XP_DefaultRun.asset"));
-            var abilities = services.AddComponent<FireballDevelopmentBootstrap>();
-            Set(abilities, "_fireballDefinition", Load<FireballDefinition>("Assets/_Project/Data/Abilities/Fireball/AD_Fireball.asset"));
-            Set(abilities, "_grantStartingAbility", false);
+            var abilities = services.AddComponent<PlayerAbilityRuntimeInstaller>();
             Set(abilities, "_playerAbilityAcquisitionController", player.GetComponent<PlayerAbilityAcquisitionController>());
             Set(abilities, "_playerStatsController", player.GetComponent<PlayerStatsController>());
             Set(abilities, "_damageSource", player);

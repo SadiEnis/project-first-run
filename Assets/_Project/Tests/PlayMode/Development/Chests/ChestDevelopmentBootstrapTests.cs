@@ -140,6 +140,13 @@ namespace ProjectFirstRun.Tests.PlayMode.Development.Chests
             Assert.That(setup.IsInstalled, Is.True);
             Assert.That(_playerObject.GetComponent<PlayerAbilityController>().AbilityCount, Is.EqualTo(1));
             Assert.That(_playerObject.GetComponent<PlayerBuildController>().Build.Abilities.Count, Is.EqualTo(1));
+            setup.gameObject.SetActive(true);
+            yield return null;
+            setup.enabled = false;
+            setup.enabled = true;
+            yield return null;
+            Assert.That(_playerObject.GetComponent<PlayerAbilityController>().AbilityCount, Is.EqualTo(1),
+                "Starting and reenabling the legacy adapter must not grant Fireball twice.");
         }
 
         private FireballDevelopmentBootstrap CreateFireballSetup(bool? grant)

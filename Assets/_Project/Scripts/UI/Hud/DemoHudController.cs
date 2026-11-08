@@ -1,0 +1,111 @@
+using System;
+using ProjectFirstRun.Builds;
+using ProjectFirstRun.Combat;
+using ProjectFirstRun.Development.Arenas;
+using ProjectFirstRun.Progression;
+using ProjectFirstRun.UI.Rewards;
+using ProjectFirstRun.Weapons;
+using UnityEngine;
+
+namespace ProjectFirstRun.UI.Hud
+{
+    [DefaultExecutionOrder(500)]
+    public sealed class DemoHudController : MonoBehaviour
+    {
+        [SerializeField] private DemoHudView _view;
+        [SerializeField] private DemoOpeningController _demo;
+        [SerializeField] private RewardSelectionController _selection;
+        [SerializeField] private DemoFinalController _final;
+        [SerializeField] private DemoKeyAmbushController _keyAmbush;
+        private Abilities.PlayerAbilityController _abilities;
+        private HealthComponent _health;
+        private PlayerBuildController _build;
+        private PlayerExperienceController _experience;
+        private PlayerWeaponController _weapon;
+        private bool _bound;
+        private bool _openingTipsQueued, _abilityTipsQueued;
+        public bool ReplacesDebugHud => isActiveAndEnabled && _bound && _view != null && _view.isActiveAndEnabled;
+
+        public void ValidateConfiguration()
+        {
+            if (_view == null || _demo == null || _selection == null || _final == null || _keyAmbush == null || _demo.Health == null)
+                throw new InvalidOperationException("Assign HUD view, demo, reward and final scene references.");
+            _view.ValidateConfiguration();
+            var player = _demo.Health.gameObject;
+            if (player.GetComponent<PlayerBuildController>() == null ||
+                player.GetComponent<PlayerExperienceController>() == null ||
+                player.GetComponent<PlayerWeaponController>() == null)
+                throw new InvalidOperationException("HUD player is missing build, experience or weapon data.");
+        }
+
+        private void Start()
+        {
+            try
+            {
+                ValidateConfiguration();
+                _health = _demo.Health;
+                _build = _health.GetComponent<PlayerBuildController>();
+                _experience = _health.GetComponent<PlayerExperienceController>();
+                _weapon = _health.GetComponent<PlayerWeaponController>();
+                _abilities = _health.GetComponent<Abilities.PlayerAbilityController>();
+                _bound = true;
+            }
+            catch (Exception error)
+            {
+                if (_view != null) _view.gameObject.SetActive(false);
+                Debug.LogException(error, this);
+                enabled = false; // Leave the legacy debug HUD available on invalid wiring.
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (!_bound || _view == null) return;
+            bool ready = _demo.IsReady && !_demo.IsEntryBlocking && _build.IsInitialized && _experience.IsInitialized && _weapon.IsInitialized;
+            bool visible = ShouldShow(ready, _health.IsDead, _selection.IsOpen, _final.IsEnding);
+            _view.SetVisible(visible);
+            _view.SetCrosshair(_weapon, visible && _weapon.IsWeaponControlEnabled && Time.timeScale > 0);
+            if (ready && !_health.IsDead && !_final.IsEnding)
+            {
+                if (!_openingTipsQueued)
+                {
+                    _view.Tips.Enqueue("move");
+                    _view.Tips.Enqueue("weapon");
+                    _openingTipsQueued = true;
+                }
+                var firstChest = _demo.Reward;
+                if (_demo.RewardClaimed || (firstChest != null && firstChest.Status != Chests.ChestStatus.Available))
+                    _view.Tips.Dismiss("chest");
+                else if (visible && firstChest != null &&
+                         Vector3.SqrMagnitude(_health.transform.position - firstChest.transform.position) <= 36f)
+                    _view.Tips.Enqueue("chest");
+
+                // Actual inventory acquisition, not opening a chest or displaying its choices.
+                if (!_abilityTipsQueued && _build.Build.Abilities.Count > 0)
+                {
+                    _view.Tips.Enqueue("ability");
+                    _view.Tips.Enqueue("upgrade");
+                    _abilityTipsQueued = true;
+                }
+            }
+            _view.Tips.Refresh(visible, _health.IsDead || _final.IsEnding);
+            if (!visible) return;
+            var capacity = _build.Build.Capacity;
+            _view.SetCapacity(capacity.AbilitySlots, capacity.UpgradeSlots);
+            _view.SetHealth(_health.CurrentHealth, _health.MaximumHealth);
+            _view.SetExperience(_experience.Level, _experience.CurrentExperience, _experience.RequiredExperience);
+            _view.SetWeapon(_weapon.ActiveDefinition.DisplayName, _weapon.ActiveEntry?.Level ?? 1,
+                _weapon.MagazineAmmo, _weapon.ReserveAmmo, _weapon.IsReloading);
+            _view.SetItems(_build.Build, _abilities, _keyAmbush.Session.HasKey);
+            _view.SetWeaponCard(_weapon.ActiveEntry);
+        }
+
+        public static bool ShouldShow(bool ready, bool dead, bool rewardOpen, bool ending) =>
+            ready && !dead && !rewardOpen && !ending;
+
+        private void OnDisable()
+        {
+            if (_view != null) _view.SetVisible(false);
+        }
+    }
+}

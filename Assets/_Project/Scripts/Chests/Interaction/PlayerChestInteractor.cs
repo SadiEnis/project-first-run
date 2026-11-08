@@ -52,7 +52,7 @@ namespace ProjectFirstRun.Chests.Interaction
             }
 
             TryInteract(
-                out _);
+                out _, true);
         }
 
         public void Initialize(
@@ -74,14 +74,14 @@ namespace ProjectFirstRun.Chests.Interaction
         }
 
         public bool TryInteract(
-            out ChestOpenResult result)
+            out ChestOpenResult result, bool consumeInput = false)
         {
             EnsureReferences();
             ValidateConfiguration();
 
             result = default;
 
-            if (!_playerController.IsControlEnabled)
+            if (!_playerController.IsControlEnabled || !_inputReader.IsGameplayInputEnabled)
             {
                 return false;
             }
@@ -105,6 +105,8 @@ namespace ProjectFirstRun.Chests.Interaction
             {
                 return false;
             }
+
+            if (consumeInput && !_inputReader.TryConsumeInteractionPress()) return false;
 
             result =
                 chestController.TryOpen();

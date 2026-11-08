@@ -29,6 +29,7 @@ namespace ProjectFirstRun.Weapons
         private PlayerWeaponRuntimeEntry _activeEntry;
         private HitscanVolleyResolver _shotResolver;
         private PlayerLook _look;
+        private WeaponAudioPlayback _audio;
         private readonly PreparedAutomaticFire _preparedFire = new PreparedAutomaticFire();
         private readonly System.Random _criticalRandom = new System.Random();
         public float PreparationElapsed => _preparedFire.PreparationElapsed;
@@ -36,6 +37,13 @@ namespace ProjectFirstRun.Weapons
         
 
         private bool _weaponControlEnabled = true;
+        private readonly System.Collections.Generic.HashSet<object> _controlBlocks = new();
+        public void SetWeaponBlocked(object owner, bool blocked)
+        {
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+            if (blocked) _controlBlocks.Add(owner);
+            else _controlBlocks.Remove(owner);
+        }
 
         public event Action<HitscanVolleyResult> ShotFired;
         public event Action<RocketProjectile> ProjectileLaunched;
@@ -52,6 +60,7 @@ namespace ProjectFirstRun.Weapons
 
         public WeaponDefinition ActiveDefinition =>
             _activeDefinition;
+        public Camera AimCamera => _aimCamera;
 
         public int MagazineAmmo =>
             IsInitialized
@@ -68,7 +77,7 @@ namespace ProjectFirstRun.Weapons
             _runtimeState.IsReloading;
 
         public bool IsWeaponControlEnabled =>
-            _weaponControlEnabled;
+            _weaponControlEnabled && _controlBlocks.Count == 0;
 
         public float CurrentDamage =>
             IsInitialized
@@ -80,6 +89,7 @@ namespace ProjectFirstRun.Weapons
 
         private void Awake()
         {
+            _audio = new WeaponAudioPlayback(transform);
             _look = GetComponent<PlayerLook>();
             _inputReader =
                 GetComponent<PlayerInputReader>();
@@ -115,14 +125,21 @@ namespace ProjectFirstRun.Weapons
 
         private void Update()
         {
+            _audio?.SetPaused(Time.timeScale <= 0f || !IsWeaponControlEnabled);
             if (!IsInitialized ||
-                !_weaponControlEnabled || Time.timeScale <= 0f)
+                !IsWeaponControlEnabled || Time.timeScale <= 0f)
             {
                 _preparedFire.Reset();
                 return;
             }
 
             TryAutoReload();
+            if (!_inputReader.IsGameplayInputEnabled)
+            {
+                _preparedFire.Reset();
+                UpdateRuntimeState(Time.deltaTime);
+                return;
+            }
             if (_activeEntry.Fire.PreparationDuration > 0)
             {
                 HandleReloadInput();
@@ -136,7 +153,7 @@ namespace ProjectFirstRun.Weapons
                 }
                 var entry = _activeEntry;
                 _preparedFire.Tick(_runtimeState, Time.deltaTime, entry.Fire.PreparationDuration,
-                    () => _weaponControlEnabled && isActiveAndEnabled && Time.timeScale > 0 &&
+                    () => IsWeaponControlEnabled && isActiveAndEnabled && Time.timeScale > 0 &&
                           ReferenceEquals(entry, _activeEntry) && TryFire(false));
                 TryAutoReload();
                 return;
@@ -178,6 +195,7 @@ namespace ProjectFirstRun.Weapons
 
             _preparedFire.Reset();
             LastShotWasCritical = false;
+            _audio?.Stop();
             _activeEntry =
                 entry;
 
@@ -198,6 +216,7 @@ namespace ProjectFirstRun.Weapons
             }
 
             _runtimeState.Reset();
+            _audio?.Stop();
             _preparedFire.Reset();
             LastShotWasCritical = false;
 
@@ -212,7 +231,11 @@ namespace ProjectFirstRun.Weapons
             if (!isEnabled) _preparedFire.Reset();
         }
 
-        private void OnDisable() => _preparedFire.Reset();
+        private void OnDisable()
+        {
+            _preparedFire.Reset();
+            _audio?.Stop();
+        }
 
         private void UpdateRuntimeState(
             float deltaTime)
@@ -228,6 +251,7 @@ namespace ProjectFirstRun.Weapons
 
             PublishAmmoChanged();
 
+            _audio?.Reload(_activeDefinition, true);
             ReloadCompleted?.Invoke();
         }
 
@@ -244,7 +268,7 @@ namespace ProjectFirstRun.Weapons
 
         private void TryAutoReload()
         {
-            if (IsInitialized && isActiveAndEnabled && _weaponControlEnabled && Time.timeScale > 0 &&
+            if (IsInitialized && isActiveAndEnabled && IsWeaponControlEnabled && Time.timeScale > 0 &&
                 _runtimeState.MagazineAmmo == 0 && _runtimeState.ReserveAmmo > 0 && !_runtimeState.IsReloading)
                 StartReload();
         }
@@ -258,6 +282,7 @@ namespace ProjectFirstRun.Weapons
                 WeaponReloadResult.Started)
             {
                 _preparedFire.Reset();
+                _audio?.Reload(_activeDefinition, false);
                 ReloadStarted?.Invoke();
             }
         }
@@ -371,6 +396,7 @@ namespace ProjectFirstRun.Weapons
                     entry.Shot, critical);
 
             LastShotWasCritical = critical;
+            _audio?.Fire(entry.Definition);
             if (profile.RecoilDegrees > 0) _look.ApplyRecoil(profile.Recoil);
             PublishAmmoChanged();
 

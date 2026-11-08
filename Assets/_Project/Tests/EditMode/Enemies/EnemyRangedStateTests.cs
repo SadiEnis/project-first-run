@@ -6,6 +6,17 @@ namespace ProjectFirstRun.Tests.EditMode.Enemies
 {
     public sealed class EnemyRangedStateTests
     {
+        [Test]
+        public void RangerAssetReferencesSavedUrpProjectileMaterial()
+        {
+            var definition = UnityEditor.AssetDatabase.LoadAssetAtPath<EnemyDefinition>(
+                "Assets/_Project/Data/Enemies/ED_Ranger.asset");
+            Assert.That(definition.RangedProjectileMaterial, Is.Not.Null);
+            Assert.That(UnityEditor.AssetDatabase.GetAssetPath(definition.RangedProjectileMaterial),
+                Is.EqualTo("Assets/_Project/Data/Enemies/Ranger-Projectile.mat"));
+            Assert.That(definition.RangedProjectileMaterial.shader.name, Is.EqualTo("Universal Render Pipeline/Unlit"));
+        }
+
         private static EnemyRangedState Create() => new EnemyRangedState(
             new EnemyRangedConfig(5f, 9f, 12f, .6f, 1.5f, 7f, 4f, .15f));
 

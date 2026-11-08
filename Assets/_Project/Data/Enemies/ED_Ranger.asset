@@ -16,6 +16,7 @@ MonoBehaviour:
   _displayName: Ranger
   _rank: 0
   _behavior: 2
+  _rangedProjectileMaterial: {fileID: 2100000, guid: a72ab567e9544d259825d2898f178101, type: 2}
   _maximumHealth: 75
   _experienceReward: 25
   _chestDropProfile: {fileID: 11400000, guid: 5a520fbedc93422a994c64eb24e509b7, type: 2}

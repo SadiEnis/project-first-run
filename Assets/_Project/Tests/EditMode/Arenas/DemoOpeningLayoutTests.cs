@@ -1,0 +1,133 @@
+using System.Linq;
+using NUnit.Framework;
+using ProjectFirstRun.Arenas;
+using ProjectFirstRun.Builds;
+using ProjectFirstRun.Weapons;
+using ProjectFirstRun.Development.Arenas;
+using ProjectFirstRun.Development.Weapons;
+using ProjectFirstRun.Editor;
+using ProjectFirstRun.Player;
+using ProjectFirstRun.Enemies;
+using Unity.AI.Navigation;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+
+namespace ProjectFirstRun.Tests.EditMode.Arenas
+{
+    public sealed class DemoOpeningLayoutTests
+    {
+        [TestCase("Assets/_Project/Scenes/Demo/DeepJam_Opening.unity")]
+        [TestCase("Assets/_Project/Scenes/Demo/DeepJam_WideCombat.unity")]
+        public void OpeningUsesIsolatedTrainingEnemiesAndGuaranteedAbilityReward(string path)
+        {
+            var existing = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+            bool opened = !existing.IsValid() || !existing.isLoaded;
+            var scene = opened ? EditorSceneManager.OpenScene(path, OpenSceneMode.Additive) : existing;
+            try
+            {
+                var demo = scene.GetRootGameObjects()
+                    .SelectMany(x => x.GetComponentsInChildren<DemoOpeningController>(true)).Single();
+                var restart = scene.GetRootGameObjects().SelectMany(x =>
+                    x.GetComponentsInChildren<ProjectFirstRun.Flow.RunRestartController>(true)).Single();
+                Assert.DoesNotThrow(restart.ValidateConfiguration);
+                var flow = scene.GetRootGameObjects().SelectMany(x =>
+                    x.GetComponentsInChildren<ProjectFirstRun.Flow.GameFlowController>(true)).Single();
+                Assert.DoesNotThrow(flow.ValidateConfiguration);
+                foreach (var component in scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<MonoBehaviour>(true))
+                    .Where(x => x is DemoEntryController || x is DemoFinalController ||
+                        x is ProjectFirstRun.UI.Hud.DemoPauseController || x is ProjectFirstRun.UI.Rewards.RewardSelectionController ||
+                        x is ProjectFirstRun.Flow.RunRestartController))
+                    Assert.That(new SerializedObject(component).FindProperty("_flow").objectReferenceValue, Is.SameAs(flow));
+                var restartData = new SerializedObject(restart);
+                Assert.That(restartData.FindProperty("_demo").objectReferenceValue, Is.SameAs(demo));
+                foreach (var component in new Object[] { demo,
+                    restartData.FindProperty("_pause").objectReferenceValue,
+                    restartData.FindProperty("_final").objectReferenceValue })
+                {
+                    Assert.That(component, Is.Not.Null);
+                    Assert.That(new SerializedObject(component).FindProperty("_restart").objectReferenceValue, Is.SameAs(restart));
+                }
+                var startup = scene.GetRootGameObjects().SelectMany(x =>
+                    x.GetComponentsInChildren<ProjectFirstRun.Flow.RunSceneStartup>(true)).Single();
+                Assert.That(new SerializedObject(demo).FindProperty("_startup").objectReferenceValue, Is.SameAs(startup));
+                Assert.DoesNotThrow(startup.ValidateConfiguration);
+                var startupData = new SerializedObject(startup);
+                Assert.That(startupData.FindProperty("_experience").objectReferenceValue,
+                    Is.SameAs(demo.Health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceController>()));
+                Assert.That(startupData.FindProperty("_abilities").objectReferenceValue,
+                    Is.SameAs(startup.GetComponent<ProjectFirstRun.Abilities.PlayerAbilityRuntimeInstaller>()));
+                var loadout = startup.Loadout;
+                var settings = AssetDatabase.LoadAssetAtPath<PlayerStartingLoadoutSettings>(
+                    DeepJamOpeningSceneBuilder.StartingLoadoutPath);
+                Assert.That(settings, Is.Not.Null);
+                Assert.That(loadout.Settings, Is.SameAs(settings));
+                Assert.That(new SerializedObject(loadout).FindProperty("_requireSettings").boolValue, Is.True);
+                Assert.DoesNotThrow(loadout.ValidateConfiguredSettings);
+                Assert.That(loadout.StartingWeapon, Is.SameAs(settings.StartingWeapon));
+                var capacity = settings.CreateCapacity();
+                Assert.That(capacity.WeaponSlots, Is.InRange(1, PlayerBuildCapacity.MaximumWeaponSlots));
+                Assert.That(capacity.AbilitySlots, Is.InRange(1, PlayerBuildCapacity.MaximumAbilitySlots));
+                Assert.That(capacity.UpgradeSlots, Is.InRange(1, PlayerBuildCapacity.MaximumUpgradeSlots));
+                var wave = new SerializedObject(new SerializedObject(demo.Encounter)
+                    .FindProperty("_group").objectReferenceValue);
+                var entries = wave.FindProperty("_entries");
+                Assert.That(entries.arraySize, Is.EqualTo(1));
+                var entry = entries.GetArrayElementAtIndex(0);
+                Assert.That(entry.FindPropertyRelative("_count").intValue, Is.EqualTo(4));
+                var definition = (EnemyDefinition)entry.FindPropertyRelative("_enemyDefinition").objectReferenceValue;
+                Assert.That(definition.StableId, Is.EqualTo("enemy.demo-opening-chaser"));
+                Assert.That(definition.ExperienceReward, Is.EqualTo(10), "Four training enemies give 40 XP, below the first level threshold.");
+                Assert.That(definition.ChestDropProfile, Is.Null);
+                var normal = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/ED_ChaserChestDropTest.asset");
+                Assert.That(normal.ExperienceReward, Is.EqualTo(25), "Other encounters keep their rewards.");
+                Assert.That(normal.ChestDropProfile, Is.Not.Null);
+                var reward = new SerializedObject(new SerializedObject(demo).FindProperty("_firstReward").objectReferenceValue);
+                Assert.That(reward.FindProperty("_stableId").stringValue, Is.EqualTo("chest.common.ability"));
+            }
+            finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+        }
+
+        [Test]
+        public void SavedOpeningHasRuntimeWiringAndNoContentControlPanel()
+        {
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(DeepJamOpeningSceneBuilder.ScenePath) == null)
+                Assert.Ignore("Run Project First Run/Demo/Create Opening Greybox once before scene acceptance.");
+            var scene = EditorSceneManager.OpenScene(DeepJamOpeningSceneBuilder.ScenePath, OpenSceneMode.Additive);
+            try
+            {
+                var roots = scene.GetRootGameObjects();
+                var demo = roots.SelectMany(x => x.GetComponentsInChildren<DemoOpeningController>(true)).Single();
+                Assert.DoesNotThrow(demo.ValidateConfiguration);
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<PlayerController>(true)).Count(), Is.EqualTo(1));
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<ContentArenaController>(true)), Is.Empty);
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<ContentArenaPanel>(true)), Is.Empty);
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<WeaponSwitchingDevelopmentBootstrap>(true)), Is.Empty);
+                var surface = roots.SelectMany(x => x.GetComponentsInChildren<NavMeshSurface>(true)).Single();
+                Assert.That(surface.navMeshData, Is.Not.Null);
+                Assert.That(AssetDatabase.GetAssetPath(surface.navMeshData), Does.StartWith(DeepJamOpeningSceneBuilder.Folder));
+                var encounter = new SerializedObject(demo.Encounter);
+                foreach (string name in new[] { "_group", "_spawner", "_registry", "_player", "_playerHealth" })
+                    Assert.That(encounter.FindProperty(name).objectReferenceValue, Is.Not.Null, name);
+                Assert.That(encounter.FindProperty("_spawnPoints").arraySize, Is.EqualTo(4));
+                var spawner = new SerializedObject(encounter.FindProperty("_spawner").objectReferenceValue);
+                var profile = spawner.FindProperty("_perceptionProfile").objectReferenceValue as EnemyPerceptionProfile;
+                Assert.That(profile, Is.Not.Null);
+                Assert.DoesNotThrow(profile.Validate);
+                Assert.That(AssetDatabase.GetAssetPath(profile), Is.EqualTo(DeepJamOpeningSceneBuilder.PerceptionPath));
+                for (int i = 0; i < 4; i++)
+                {
+                    var point = (Transform)encounter.FindProperty("_spawnPoints").GetArrayElementAtIndex(i).objectReferenceValue;
+                    Assert.That(Vector3.Dot(point.forward, Vector3.back), Is.GreaterThan(.99f));
+                }
+                var trigger = roots.SelectMany(x => x.GetComponentsInChildren<RegionPreparationTrigger>(true))
+                    .Single(x => new SerializedObject(x).FindProperty("_encounter").objectReferenceValue == demo.Encounter);
+                var properties = new SerializedObject(trigger);
+                Assert.That(properties.FindProperty("_encounter").objectReferenceValue, Is.SameAs(demo.Encounter));
+                Assert.That(properties.FindProperty("_volume").objectReferenceValue, Is.Not.Null);
+                Assert.That(properties.FindProperty("_player").objectReferenceValue, Is.Not.Null);
+            }
+            finally { EditorSceneManager.CloseScene(scene, true); }
+        }
+    }
+}

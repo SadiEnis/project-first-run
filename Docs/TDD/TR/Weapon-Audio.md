@@ -1,0 +1,11 @@
+# Silah sesleri - ilk dilim
+
+11.10.2026. Dört silah için isteğe bağlı, WeaponDefinition üzerinden doğrudan AudioClip referansları. Paketler Assets/_Project/ThirdParty altında; Resources taraması veya sahne yeniden üretimi yok. Ateş sesi yalnız başarılı atışta bir kez çalar: shotgun saçma başına değil, minigun gerçek atış temposunda, plasma/roket başarılı fırlatmada. Oynanış değerleri değişmez.
+
+Başlangıç adayları: Free Weapon SFX shotgun üç varyant; minigun için assault rifle üç varyant; roket için grenade launcher fire. Plasma için Free Laser Weapons light_blast_1. Shotgun ve minigun varyantları sırayla döner; oynanış rastgeleliği etkilenmez. Kullanıcı sesleri temel ateş geri bildirimi için yeterli bulup ilk demo sürümü olarak kabul etti; nihai ses tasarımı değildir. Minigun özel motor/namlu döndürme sesi değildir.
+
+Her silahın Inspector Audio bölümünde Fire Sounds, Reload Start/End Sound ve ses seviyeleri ayarlanır. Reload sesleri gerçek başlangıç ve tamamlanma olaylarına bağlı iki kısa işarettir; bütün reload boyunca uzatılmış bir kayıt değildir. Otomatik ve manuel reload aynı yolu kullanır. Hız güçlendirmelerinde bitiş sesi gerçek tamamlanmayı izler. İptal/eksik mermi başarısız denemelerinde ses yok. Kuru tetik, equip, roket patlaması, yetenek, düşman ve ortam sesleri sonraki dilimdir.
+
+Yerel oyuncu sesi 2D; en fazla sekiz ateş kanalı ve ayrı reload kanalı gerektiğinde oluşturulur. Dokuzuncu örtüşen atış en eski kanalı keser. Pause ve silah kontrol kilidinde kanallar duraklar; silah değişimi, reset ve disable eski sesleri keser. Ses kökü oyuncunun çocuğudur, sahneyle temizlenir. Yeni AudioListener oluşturulmaz. AudioMixer/ayar ekranı bu dilimde yoktur.
+
+Doğrulama: WeaponAudioContentTests dört kayıtlı silahın referanslarını ve opsiyonel boş ayarı kapsar. Runtime ve EditMode kodları statik derlendi; bu dilim için Unity test sonucu bildirilmedi. Unity testlerini kullanıcı çalıştırır. Manuel kontrol listesi: dört silahla ateş et; minigunu basılı tut/bırak; shotgun tek atışını dinle; R ve otomatik reload dene; reload sırasında Q ile değiştir; ödül/pause, ölüm, final ve restart sırasında eski sesin sürmediğini kontrol et. Kullanıcının ilk ses kabulü bütün bu regresyonların tek tek doğrulandığı anlamına gelmez. Sonraki çalışma nişangah sunumudur.

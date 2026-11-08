@@ -11,6 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
   m_Name: WD_Minigun
+  _fireSounds:
+  - {fileID: 8300000, guid: 7a1788b10a259394b9019d21bef463ae, type: 3}
+  - {fileID: 8300000, guid: 4ae73664f9fa52f41b51a2e050901696, type: 3}
+  - {fileID: 8300000, guid: ada2ae050ed4f114eba3fab31db4313e, type: 3}
+  _reloadStartSound: {fileID: 8300000, guid: 08edb2bef8ffb1f4a8de1858af2f36fb, type: 3}
+  _reloadEndSound: {fileID: 8300000, guid: d80439cbec359c2429722491566cc218, type: 3}
+  _fireVolume: 0.18
+  _reloadVolume: 0.4
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
   _stableId: weapon.minigun
   _displayName: Minigun

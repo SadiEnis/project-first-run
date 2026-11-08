@@ -89,7 +89,7 @@ basar.
 
 ```text
 Klavye / Mouse  E
-Gamepad          Button South
+Gamepad          Right Shoulder (RB/R1)
 ```
 
 `PlayerChestInteractor` raycast'in sahibidir ve odaktaki gerçek
@@ -320,7 +320,7 @@ disabled/dead gameplay input etkileşemez
 ```text
 gameplay başlat
     ↓
-sandığa bak ve E / Gamepad South'a bas
+sandığa bak ve E / Gamepad RB/R1'a bas
     ↓
 reward selection açılır
     ↓

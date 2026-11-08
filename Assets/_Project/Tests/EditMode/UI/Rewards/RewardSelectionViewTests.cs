@@ -6,6 +6,7 @@ using ProjectFirstRun.Rewards;
 using ProjectFirstRun.UI.Rewards;
 using ProjectFirstRun.Weapons;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -45,6 +46,29 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
             Assert.That(
                 definition.GameplayEffect,
                 Is.EqualTo("Deals test damage."));
+        }
+
+        [Test]
+        public void ChoiceFeedbackShowsOnlyTheActiveInputMode()
+        {
+            var choice = CreateChoiceView("Feedback");
+            var original = choice.Button.colors;
+            original.normalColor = Color.black;
+            original.highlightedColor = Color.yellow;
+            original.selectedColor = Color.cyan;
+            choice.Button.colors = original;
+            choice.OnPointerEnter(null);
+            choice.SetPointerFeedback(false);
+            Assert.That(choice.Button.colors.highlightedColor, Is.EqualTo(Color.black));
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.cyan));
+            choice.SetPointerFeedback(true);
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.yellow));
+            choice.OnPointerExit(null);
+            choice.SetPointerFeedback(true);
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.black));
+            Assert.That(choice.Button.colors.highlightedColor, Is.EqualTo(Color.yellow));
+            choice.SetPointerFeedback(false);
+            Assert.That(choice.Button.colors.selectedColor, Is.EqualTo(Color.cyan));
         }
 
         [Test]
@@ -376,6 +400,56 @@ namespace ProjectFirstRun.Tests.EditMode.UI.Rewards
             Assert.That(
                 feedback.text,
                 Is.EqualTo("Inventory is full."));
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void MultiClaimRestoresFocusAndAllowsNavigationAndSecondSubmit(int claimedIndex)
+        {
+            EventSystem previous = EventSystem.current;
+            EventSystem events = CreateGameObject("Reward EventSystem", typeof(EventSystem)).GetComponent<EventSystem>();
+            // EventSystem does not execute its lifecycle automatically in EditMode.
+            // Register through its lifecycle before assigning current, rather than suppressing its error.
+            typeof(EventSystem).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(events, null);
+            EventSystem.current = events;
+            try
+            {
+                var choices = new[] { CreateChoiceView("First"), CreateChoiceView("Second"), CreateChoiceView("Third") };
+                var items = new ItemDefinition[]
+                {
+                    CreateWeapon("weapon.first", "First", "Effect"),
+                    CreateWeapon("weapon.second", "Second", "Effect"),
+                    CreateWeapon("weapon.third", "Third", "Effect")
+                };
+                for (int i = 0; i < choices.Length; i++)
+                    choices[i].transform.position = new Vector3(i * 200, 0, 0);
+                var view = CreateSelectionView(choices, out _, out _, out _, out _);
+                view.Show(new RewardOffer(items), null, 2);
+                events.SetSelectedGameObject(choices[claimedIndex].gameObject);
+                view.MarkSelectionCommitted(items[claimedIndex], 1);
+
+                int firstRemaining = claimedIndex == 0 ? 1 : 0;
+                int lastRemaining = claimedIndex == 2 ? 1 : 2;
+                Assert.That(events.currentSelectedGameObject, Is.SameAs(choices[firstRemaining].gameObject));
+                var move = new AxisEventData(events) { moveDir = MoveDirection.Right };
+                ExecuteEvents.Execute(events.currentSelectedGameObject, move, ExecuteEvents.moveHandler);
+                Assert.That(events.currentSelectedGameObject, Is.SameAs(choices[lastRemaining].gameObject));
+
+                ItemDefinition selected = null;
+                view.ChoiceSelected += item => selected = item;
+                ExecuteEvents.Execute(events.currentSelectedGameObject, new BaseEventData(events), ExecuteEvents.submitHandler);
+                Assert.That(selected, Is.SameAs(items[lastRemaining]));
+                Assert.That(choices[claimedIndex].Button.interactable, Is.False);
+            }
+            finally
+            {
+                typeof(EventSystem).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(events, null);
+                // Assigning null is also invalid in this uGUI version; unregistering restores an empty list.
+                if (previous != null) EventSystem.current = previous;
+            }
         }
 
         private RewardSelectionView CreateSelectionView(

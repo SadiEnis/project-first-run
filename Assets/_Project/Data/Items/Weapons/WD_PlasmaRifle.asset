@@ -11,6 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
   m_Name: WD_PlasmaRifle
+  _fireSounds:
+  - {fileID: 8300000, guid: 5ff5bd936a30a904da907f35c8dd382e, type: 3}
+  _reloadStartSound: {fileID: 8300000, guid: f84a2bf3a6b43994a970dab1c4bc6fe8, type: 3}
+  _reloadEndSound: {fileID: 8300000, guid: 9807aed188be2a3459ced8e23a168765, type: 3}
+  _fireVolume: 0.3
+  _reloadVolume: 0.4
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
   _stableId: weapon.plasma-rifle
   _displayName: PlasmaRifle

@@ -30,6 +30,13 @@ namespace ProjectFirstRun.Player
         public float RecoilOffset => _recoil.Offset;
         public float CurrentPitch => Mathf.Clamp(_aimPitch - _recoil.Offset, _minimumPitch, _maximumPitch);
 
+        public void ResetPitch(float pitch = 0f)
+        {
+            _aimPitch = Mathf.Clamp(pitch, _minimumPitch, _maximumPitch);
+            _recoil.Reset();
+            if (_cameraPivot != null) ApplyPitch();
+        }
+
         public void ApplyRecoil(float degrees)
             => ApplyRecoil(new WeaponRecoilConfig(degrees, maximumOffset: Mathf.Max(12, degrees)));
 

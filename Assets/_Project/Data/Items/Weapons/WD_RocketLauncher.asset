@@ -11,6 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2121bf6aa4254d93b5214de3e3cda183, type: 3}
   m_Name: WD_RocketLauncher
+  _fireSounds:
+  - {fileID: 8300000, guid: a98537918d51770428f1314034a17112, type: 3}
+  _reloadStartSound: {fileID: 8300000, guid: dc159cd35eef8f34ca16c2a347948b91, type: 3}
+  _reloadEndSound: {fileID: 8300000, guid: cdae3b170ecf26e4fa1e9a6e4dec6195, type: 3}
+  _fireVolume: 0.45
+  _reloadVolume: 0.4
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Weapons.WeaponDefinition
   _stableId: weapon.rocket-launcher
   _displayName: Rocket Launcher

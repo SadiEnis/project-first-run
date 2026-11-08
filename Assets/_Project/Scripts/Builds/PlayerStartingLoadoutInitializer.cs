@@ -12,8 +12,16 @@ namespace ProjectFirstRun.Builds
         MonoBehaviour
     {
         [Header("Starting Loadout")]
+        [SerializeField] private PlayerStartingLoadoutSettings _settings;
+        [Tooltip("Fail closed if Settings is missing; enable on game scenes. Legacy fixtures may leave this off.")]
+        [SerializeField] private bool _requireSettings;
+        [Header("Legacy fixture fallback (ignored with Settings)")]
+        [Tooltip("Legacy fixture fallback only. Ignored when Settings is assigned.")]
         [SerializeField]
         private WeaponDefinition _startingWeapon;
+
+        private WeaponDefinition _initializedWeapon;
+        public PlayerStartingLoadoutSettings Settings => _settings;
 
         private PlayerBuildController _buildController;
         private PlayerWeaponController _weaponController;
@@ -23,11 +31,13 @@ namespace ProjectFirstRun.Builds
 
         private bool _isInitialized;
 
+        public event Action Initialized;
+
         public bool IsInitialized =>
             _isInitialized;
 
         public WeaponDefinition StartingWeapon =>
-            _startingWeapon;
+            _isInitialized ? _initializedWeapon : (_settings != null ? _settings.StartingWeapon : _startingWeapon);
 
         private void Awake()
         {
@@ -41,12 +51,32 @@ namespace ProjectFirstRun.Builds
                 return;
             }
 
-            Initialize(
-                PlayerBuildCapacity.CreateDefault());
+            if (_requireSettings || _settings != null) InitializeConfigured();
+            else Initialize(PlayerBuildCapacity.CreateDefault());
+        }
+
+        public void ValidateConfiguredSettings()
+        {
+            if (_settings == null)
+                throw new InvalidOperationException("Assign starting loadout settings for this scene.");
+            _settings.Validate();
+        }
+
+        public void InitializeConfigured()
+        {
+            ValidateConfiguredSettings();
+            InitializeCore(_settings.CreateCapacity(), _settings.StartingWeapon);
         }
 
         public void Initialize(
             PlayerBuildCapacity capacity)
+        {
+            if (_requireSettings || _settings != null)
+                throw new InvalidOperationException("Configured loadouts cannot use legacy capacity overrides. Use InitializeConfigured.");
+            InitializeCore(capacity, _startingWeapon);
+        }
+
+        private void InitializeCore(PlayerBuildCapacity capacity, WeaponDefinition startingWeapon)
         {
             if (_isInitialized)
             {
@@ -61,7 +91,7 @@ namespace ProjectFirstRun.Builds
                     nameof(capacity));
             }
 
-            if (_startingWeapon == null)
+            if (startingWeapon == null)
             {
                 throw new InvalidOperationException(
                     $"{nameof(PlayerStartingLoadoutInitializer)} " +
@@ -89,25 +119,27 @@ namespace ProjectFirstRun.Builds
              * PlayerBuild so malformed starting content fails
              * before run ownership state is created.
              */
-            _ = _startingWeapon.CreateRuntimeConfig();
+            _ = startingWeapon.CreateRuntimeConfig();
 
             _buildController.Initialize(
                 capacity);
 
             WeaponAcquireResult acquireResult =
                 _weaponAcquisitionController.TryAcquire(
-                    _startingWeapon);
+                    startingWeapon);
 
             if (acquireResult !=
                 WeaponAcquireResult.Acquired)
             {
                 throw new InvalidOperationException(
-                    $"Starting weapon '{_startingWeapon.name}' " +
+                        $"Starting weapon '{startingWeapon.name}' " +
                     $"could not be acquired. " +
                     $"Result: {acquireResult}.");
             }
 
+            _initializedWeapon = startingWeapon;
             _isInitialized = true;
+            Initialized?.Invoke();
         }
 
         private void EnsureReferences()

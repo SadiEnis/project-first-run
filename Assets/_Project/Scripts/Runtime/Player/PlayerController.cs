@@ -20,6 +20,19 @@ namespace ProjectFirstRun.Player
         private PlayerInputReader _inputReader;
         private PlayerMotor _playerMotor;
         private PlayerLook _playerLook;
+        private object _cursorOwner;
+
+        public void SetCursorManaged(object owner, bool managed)
+        {
+            if (owner == null) throw new System.ArgumentNullException(nameof(owner));
+            if (managed)
+            {
+                if (_cursorOwner != null && !ReferenceEquals(_cursorOwner, owner))
+                    throw new System.InvalidOperationException("Player cursor already has an owner.");
+                _cursorOwner = owner;
+            }
+            else if (ReferenceEquals(_cursorOwner, owner)) _cursorOwner = null;
+        }
         
         public bool IsControlEnabled =>
             _controlEnabled;
@@ -39,8 +52,10 @@ namespace ProjectFirstRun.Player
         private void Update()
         {
             float deltaTime = Time.deltaTime;
+            bool acceptsInput = _controlEnabled && _inputReader.IsGameplayInputEnabled;
+            bool jumpPressed = _inputReader.ConsumeJumpPress(acceptsInput && deltaTime > 0f);
 
-            if (_controlEnabled)
+            if (acceptsInput)
             {
                 _playerLook.Tick(
                     _inputReader.LookInput,
@@ -48,24 +63,25 @@ namespace ProjectFirstRun.Player
                     deltaTime);
             }
 
-            Vector2 moveInput = _controlEnabled
+            Vector2 moveInput = acceptsInput
                 ? _inputReader.MoveInput
                 : Vector2.zero;
 
             bool isSprinting =
-                _controlEnabled &&
+                acceptsInput &&
                 _inputReader.IsSprintHeld;
 
             // Motor continues processing gravity even when player input is disabled.
             _playerMotor.Tick(
                 moveInput,
                 isSprinting,
-                deltaTime);
+                deltaTime,
+                jumpPressed);
         }
 
         private void OnDisable()
         {
-            SetCursorLocked(false);
+            if (_cursorOwner == null) SetCursorLocked(false);
         }
 
         public void SetControlEnabled(bool isEnabled)
@@ -79,7 +95,7 @@ namespace ProjectFirstRun.Player
             _inputReader.SetGameplayInputEnabled(
                 _controlEnabled);
 
-            if (_lockCursorWhileControlled)
+            if (_lockCursorWhileControlled && _cursorOwner == null)
             {
                 SetCursorLocked(_controlEnabled);
             }

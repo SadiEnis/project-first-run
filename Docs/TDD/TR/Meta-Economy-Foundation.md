@@ -1,6 +1,6 @@
 # Meta ekonomi temeli
 
-Durum: Tasarım taslağı, 9 Kasım 2026. Henüz uygulanmadı.
+Durum: 9 Kasım 2026. Kalıcı cüzdanın ilk kod adımı hazır; Unity test kabulü ve oyun akışı bağlantısı bekleniyor.
 
 ## Amaç ve önkoşul
 
@@ -47,3 +47,13 @@ Her anlamlı adımda kullanıcı oynanış kabulü ve check-in yapılır. Unity 
 Meta öğeleri henüz seçilmedi. Oyun araştırması kaynak kazanımı, ölüm/zafer farkı, satın alma temposu, seviye sınırları ve run içi güçlendirmelerle ilişkiyi karşılaştıracaktır. Ardından tek bir gelişim için satın alma → kayıt → yeni run'da uygulama tamamlanacaktır.
 
 İlk kapsam dışında: gelişim ağacı, ayrıntılı üs, zorluk/hikâye ilerlemesi, anı kayıtları, run ortasında devam kaydı ve bulut kayıt.
+
+## İlk uygulama adımı — kalıcı cüzdan
+
+Runtime temeli feature/meta-economy branch'ine birleştirildi. PersistentMetaWallet, Progression altında tek sınıf olarak eklendi. OpenDefault kullanıcı veri dizinini; Open(directory) ise izole test dizinini kullanır. Sürüm 1 kaydı bakiye tutar. Run kimliği ve tek seferlik sonuç aktarımı sonraki adımda aynı kayda eklenecektir; Credit doğrudan bir run ödülü API'si değildir.
+
+İlk açılış sıfır bakiye dosyasını oluşturur. Artış önce geçici dosyaya yazılıp diske aktarılır; mevcut dosya yedeklenerek değiştirilir. Bellekteki bakiye yalnızca başarılı yazmadan sonra değişir. Ayrı örnekler eski dosya içeriğini ezemez; dosya kilidi eşzamanlı yazmayı engeller.
+
+Bozuk veya bilinmeyen sürümlü kayıt korunarak hata bildirilir. Ana dosya yokken kurtarma dosyası varsa sıfırdan kayıt açılmaz. Otomatik yedeğe dönüş yapılmaz; kurtarma UI'sı sonraki sahne bağlantısı işidir. Sahnelere henüz bağlanmadığı için bu adım oynanışta görünür değişiklik üretmez.
+
+Odaklı EditMode testleri: ilk açılış/yeniden açılış, önceki kayıt yedeği, bozuk/eksik/yeni sürümlü kayıt, kayıp ana dosya, başarısız yazma ve yeniden deneme, eski örnekten yazma, negatif tutar ve taşma. Test yürütme kullanıcıdadır; derleme kontrolü testlerin geçtiği anlamına gelmez.

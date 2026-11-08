@@ -1,6 +1,6 @@
 # Meta economy foundation
 
-Status: Design draft, 9 November 2026. Not implemented.
+Status: 9 November 2026. Initial wallet code is ready; Unity test acceptance and gameplay integration are pending.
 
 ## Purpose and prerequisite
 
@@ -47,3 +47,13 @@ User gameplay acceptance and check-ins follow each meaningful slice. The user ru
 The meta upgrade roster is not selected. Game research compares earning sources, death/victory differences, purchasing pace, level limits and interaction with run upgrades. Then complete purchase → save → application in a new run for one selected upgrade.
 
 Outside the first scope: upgrade tree, detailed hub, difficulty/story progression, memory persistence, mid-run save/resume and cloud saves.
+
+## First implementation slice — persistent wallet
+
+The runtime foundation has been merged into feature/meta-economy. PersistentMetaWallet is one class under Progression. OpenDefault uses the user data directory; Open(directory) supports isolated test storage. Version 1 stores the balance. Run identity and single settlement will be added to the same record in the next slice; Credit is not a run reward API.
+
+First launch creates a zero-balance save. Credits write and flush a temporary file, then replace the primary with a previous-version backup. Memory changes only after a successful write. Stale instances cannot overwrite newer file contents; a file lock prevents concurrent writers.
+
+Corrupt and unknown-version saves remain untouched and report errors. A missing primary with recovery files does not initialize a new wallet. There is no automatic backup rollback; recovery UI belongs to subsequent scene integration. This slice has no scene wiring or visible gameplay change.
+
+Focused EditMode coverage: initial/repeated opens, prior-save backup, invalid/missing/new-version records, missing primary, failed writes and retry, stale writers, invalid amounts and overflow. Unity test execution remains user-run; compilation does not imply passing tests.

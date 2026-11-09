@@ -65,9 +65,11 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void Update()
         {
+            if (Session.Phase == DemoFinalPhase.Completed)
+                _restart.ObserveOutcome(ProjectFirstRun.Progression.RunEconomyOutcome.Victory);
             int choice = _completionMenu.Poll(IsEnding && Session.Phase == DemoFinalPhase.Completed && !Session.ReplayRequested);
             if (choice == 0) Replay();
-            else if (choice == 1) Application.Quit();
+            else if (choice == 1) _restart.RequestQuit(RunRestartSource.Completion);
             if (LastError != null || _health == null || _body == null) return;
             if (_health.IsDead) { Session.TryDie(); return; }
             if (Session.Phase != DemoFinalPhase.Playing) return;
@@ -126,7 +128,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (IsEnding) _presentation.DrawOverlay();
             if (LastError != null) GUI.Box(new Rect(20, 250, 650, 70), "Final error: " + LastError);
             if (_restart != null && _restart.LastError != null)
-                GUI.Box(new Rect(20, 325, 650, 40), "Restart failed. Please try again.");
+                GUI.Box(new Rect(20, 325, 650, 40), "Save or restart failed. Please try again.");
             if (IsEnding && Session.Phase == DemoFinalPhase.Completed)
             {
                 GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 100, 560, 235),
@@ -135,7 +137,7 @@ namespace ProjectFirstRun.Development.Arenas
                 bool wasEnabled = GUI.enabled;
                 GUI.enabled = wasEnabled && !Session.ReplayRequested;
                 if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 5, 380, 35), 0, "Play again")) Replay();
-                if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f + 40, 380, 35), 1, "Quit")) Application.Quit();
+                if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f + 40, 380, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Completion);
                 GUI.enabled = wasEnabled;
                 ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 90, 540, 30), DemoMenuInput.Hint);
             }

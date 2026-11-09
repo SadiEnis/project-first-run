@@ -29,6 +29,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         private Scene _scene, _original, _additional;
         private DemoOpeningController _demo;
         private RunRestartController _restart;
+        private string _economyDirectory;
         private float _time;
         private bool _audio, _cursor;
         private CursorLockMode _lock;
@@ -51,6 +52,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         public IEnumerator Load()
         {
             base.Setup();
+            _economyDirectory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "PFR-restart-tests", System.Guid.NewGuid().ToString("N"));
             InputSystem.AddDevice<Keyboard>(); InputSystem.AddDevice<Mouse>(); InputSystem.AddDevice<Gamepad>();
             _time = Time.timeScale; _audio = AudioListener.pause; _cursor = Cursor.visible; _lock = Cursor.lockState;
             ClearTicket(); DemoEntryController.CancelSkip();
@@ -64,12 +66,37 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             _scene = SceneManager.GetSceneByPath(Path);
             SceneManager.SetActiveScene(_scene);
             _demo = Find<DemoOpeningController>(); _restart = Find<RunRestartController>();
+            Find<ProjectFirstRun.Progression.RunEconomyController>().ConfigureStorage(_economyDirectory);
             for (int i = 0; i < 300 && !_demo.IsReady; i++) yield return null;
             Assert.That(_demo.IsReady, Is.True);
         }
         private T Find<T>() where T : Component => _scene.GetRootGameObjects().SelectMany(x => x.GetComponentsInChildren<T>(true)).Single();
         private void Inject(Loader loader) => typeof(RunRestartController).GetMethod("SetReloader", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(_restart, new object[] { loader });
         private static void ClearTicket() => typeof(RunRestartController).GetMethod("ResetSession", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+
+        [UnityTest]
+        public IEnumerator SaveFailurePreventsReloadAndResumeUntilRetry()
+        {
+            var loader = new Loader(); Inject(loader);
+            Find<DemoEntryController>().enabled = false;
+            var economy = Find<ProjectFirstRun.Progression.RunEconomyController>();
+            economy.Add(103);
+            var wallet = ProjectFirstRun.Progression.PersistentMetaWallet.Open(_economyDirectory);
+            System.IO.Directory.CreateDirectory(wallet.SavePath + ".tmp");
+            var pause = Find<DemoPauseController>();
+            pause.Open(); yield return null;
+            pause.Restart();
+            Assert.That(loader.Calls, Is.Zero);
+            Assert.That(_restart.LastError, Is.Not.Null);
+            pause.Resume();
+            Assert.That(pause.IsClosing, Is.False);
+            System.IO.Directory.Delete(wallet.SavePath + ".tmp");
+            pause.Restart();
+            Assert.That(loader.Calls, Is.EqualTo(1));
+            Assert.That(ProjectFirstRun.Progression.PersistentMetaWallet.Open(_economyDirectory).Balance, Is.EqualTo(41));
+            pause.Restart();
+            Assert.That(ProjectFirstRun.Progression.PersistentMetaWallet.Open(_economyDirectory).Balance, Is.EqualTo(41));
+        }
 
         [UnityTest]
         public IEnumerator PauseFailurePreservesOwnersAndRetryArrivesWithFreshPlayer()
@@ -259,6 +286,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             if (_additional.IsValid() && _additional.isLoaded) yield return SceneManager.UnloadSceneAsync(_additional);
             ClearTicket(); DemoEntryController.CancelSkip();
             Time.timeScale = _time; AudioListener.pause = _audio; Cursor.visible = _cursor; Cursor.lockState = _lock;
+            if (System.IO.Directory.Exists(_economyDirectory)) System.IO.Directory.Delete(_economyDirectory, true);
             base.TearDown();
         }
     }

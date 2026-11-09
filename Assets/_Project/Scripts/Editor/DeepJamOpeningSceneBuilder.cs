@@ -145,6 +145,7 @@ namespace ProjectFirstRun.Editor
             PrefabUtility.RecordPrefabInstancePropertyModifications(selection);
             Set(restart, "_demo", demo); Set(restart, "_selection", selection);
             Set(demo, "_restart", restart);
+            Set(restart, "_economy", services.AddComponent<ProjectFirstRun.Progression.RunEconomyController>());
             var startup = services.AddComponent<RunSceneStartup>();
             Set(startup, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());
             Set(startup, "_experience", player.GetComponent<PlayerExperienceController>());

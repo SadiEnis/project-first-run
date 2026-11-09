@@ -130,23 +130,19 @@ namespace ProjectFirstRun.UI.Hud
             RefreshBuild();
             Present();
         }
-        public void Resume() { if (IsPaused && !_restarting && _armed) _closing = true; }
+        public void Resume() { if (IsPaused && !_restarting && _armed && !_restart.HasEndedRun) _closing = true; }
         public void Restart()
         {
             if (!CanRestart) return;
             _restarting = _restart.Request(RunRestartSource.Pause);
-            _status.text = _restarting ? "Restarting..." : _restart.LastError != null ? "Restart failed. Please try again." : "";
+            _status.text = _restarting ? "Restarting..." : _restart.LastError != null ? "Save or restart failed. Please try again." : "";
             Present();
         }
         public void Quit()
         {
             if (!IsPaused || !_armed || _closing || _restarting) return;
-#if UNITY_EDITOR
-            Release();
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            if (!_restart.RequestQuit(RunRestartSource.Pause))
+                _status.text = _restart.LastError != null ? "Save failed. Please try again." : "";
         }
         private void Release()
         {
@@ -166,6 +162,8 @@ namespace ProjectFirstRun.UI.Hud
             _group.interactable = IsPaused && _armed && !_closing && !_restarting;
             _group.blocksRaycasts = IsPaused;
             if (_buttons == null) return;
+            _buttons[0].interactable = !_restart.HasEndedRun;
+            if (_restart.HasEndedRun && _selected == 0) _selected = 1;
             for (int i = 0; i < _buttons.Length; i++)
             {
                 var feedback = _buttons[i].GetComponent<EntryButtonFeedback>();

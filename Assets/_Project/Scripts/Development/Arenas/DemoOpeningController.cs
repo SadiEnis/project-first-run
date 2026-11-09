@@ -96,9 +96,10 @@ namespace ProjectFirstRun.Development.Arenas
             // Match the visible death screen; never compete with reward UI or the finale.
             bool visible = IsReady && !_selection.IsOpen && (_final == null || !_final.IsEnding) &&
                 _health.IsDead && !IsEntryBlocking && !IsRestarting;
+            if (visible) _restart.ObserveOutcome(ProjectFirstRun.Progression.RunEconomyOutcome.Death);
             int choice = _deathMenu.Poll(visible);
             if (choice == 0) Restart();
-            else if (choice == 1) Application.Quit();
+            else if (choice == 1) _restart.RequestQuit(RunRestartSource.Death);
         }
 
         public void Restart()
@@ -140,10 +141,10 @@ namespace ProjectFirstRun.Development.Arenas
             bool wasEnabled = GUI.enabled;
             GUI.enabled = wasEnabled && !IsRestarting;
             if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f - 25, 290, 35), 0, "Retry")) Restart();
-            if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), 1, "Quit")) Application.Quit();
+            if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Death);
             GUI.enabled = wasEnabled;
             if (_restart.LastError != null)
-                GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f + 115, 560, 40), "Restart failed. Please try again.");
+                GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f + 115, 560, 40), "Save or restart failed. Please try again.");
             ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 70, 540, 30), DemoMenuInput.Hint);
         }
 

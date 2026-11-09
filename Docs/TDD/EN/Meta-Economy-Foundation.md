@@ -69,3 +69,13 @@ PersistentMetaWallet.Settle saves balance and run identity together. Subsequent 
 Save version is 2. Version 1 balance loads and migrates on the first successful mutation, preserving the previous save as a backup. Failed writes change neither balance nor in-memory history; retry with the same immutable result. Direct Credit remains a low-level wallet operation; gameplay outcomes must use Settle.
 
 User-run coverage: RunEconomyTests and PersistentMetaWalletTests. Runtime/test compilation was checked; the agent did not run Unity suites. Scene wiring, result UI, enemy earnings and abandon/exit policy remain pending.
+
+## Third slice — scene outcome and exit integration
+
+Accepted temporary policy: Restart and menu Quit from an active run settle like death at 40%. Quit closes only after a successful save; Restart starts a fresh run. The demo finale counts as victory. Exit requests cannot change a previously frozen death/victory result. When run save/resume arrives, Quit will be revised to preserve the active run rather than end it. Forced exit/crash still has no unfinished-run resume save.
+
+RunEconomyController is on Demo opening services in both demo scenes. Retention and boss reward are Inspector fields. Boss reward remains 0 pending a balance decision and can be changed for testing. Earnings sources and result summary UI are the next slice, not included here.
+
+RunRestartController requires successful settlement before Restart/Quit. Failed saves prevent reload/exit. Death and completed finale screens report their first outcome without automatic save retries. An explicit exit request retries a failed save. Frozen outcomes disable pause Resume so failed loading cannot resume earning in the same run.
+
+RunEconomyControllerTests and RunRestartTests cover failed saves, retry and duplicate-payment prevention. Restart tests use temporary storage. Runtime/EditMode/PlayMode assemblies compiled; Unity execution and gameplay acceptance remain user-run.

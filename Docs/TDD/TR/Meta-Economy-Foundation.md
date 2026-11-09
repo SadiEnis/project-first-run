@@ -69,3 +69,13 @@ PersistentMetaWallet.Settle sonucu bakiye ve run kimliğiyle birlikte kaydeder. 
 Kayıt sürümü 2'dir. Sürüm 1 bakiyesi okunur; ilk başarılı değişiklikte kimlik geçmişiyle sürüm 2 olarak yazılır, eski kayıt yedeklenir. Başarısız yazma bakiyeyi veya bellekteki kimlik geçmişini değiştirmez; aynı immutable sonuçla yeniden denenir. Doğrudan Credit yalnızca düşük seviyeli cüzdan işlemidir, oyun sonuçları Settle kullanmalıdır.
 
 RunEconomyTests ve PersistentMetaWalletTests kullanıcı tarafından çalıştırılmalıdır. Runtime/test derleme kontrolü yapıldı; Unity testleri bu adımda ajan tarafından yürütülmedi. Sahne bağlantısı, sonuç ekranı, düşman kazanımı ve bırakma/kapanma politikası henüz eklenmedi.
+
+## Üçüncü adım — sahne sonuç/çıkış bağlantısı
+
+Kabul edilen geçici politika: aktif run'dan Restart ve menü Quit ölümle aynı %40 aktarımı yapar. Quit kayıt başarılıysa uygulamayı kapatır; Restart yeni run açar. Demo finali zaferdir. Önceden ölüm/zaferle sabitlenmiş sonuç çıkış isteğiyle değiştirilmez. Run kaydet/devam et eklendiğinde Quit aktif run'ı sonlandırmadan kapanacak şekilde yeniden ele alınacaktır. Zorla kapatma/çökmede tamamlanmamış kazanç için henüz devam kaydı yoktur.
+
+RunEconomyController iki demo sahnesinde Demo opening services üzerinde bulunur. Koruma oranı ve boss ödülü Inspector alanlarıdır. Boss ödülü henüz denge kararı verilmediğinden 0'dır; test için değiştirilebilir. Kaynak kazanımı ve sonuç özeti UI'sı sonraki küçük adımdır; bu adım onları eklemez.
+
+RunRestartController, Restart/Quit öncesinde kaydı ister; başarısızsa sahneyi değiştirmez/kapatmaz. Ölüm ve tamamlanmış final ekranları ilk sonucu bildirir, otomatik kayıt tekrarına girmez. Kullanıcının çıkış isteği başarısız kaydı yeniden dener. Sonuç sabitlendiğinde pause Resume kapatılır; yükleme hatasından sonra aynı run'da kazanç toplanamaz.
+
+RunEconomyControllerTests ve RunRestartTests kayıt hatası, yeniden deneme ve tekrar ödeme engelini kapsar. Restart testleri geçici dizin kullanır. Runtime/EditMode/PlayMode kodları derlendi; Unity test yürütme ve oyun içi kabul kullanıcıdadır.

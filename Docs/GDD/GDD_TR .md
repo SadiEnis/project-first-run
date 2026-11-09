@@ -667,10 +667,10 @@ Mevcut %40 başlangıç koruması ve %70 üst sınır denge önerileridir. Korum
 
 Uygulama öncesi açık kararlar:
 
-- Menüden run'ı bırakma: ölümle aynı kesinti önerilmektedir; henüz onaylanmadı.
+- Restart ve menü Quit şimdilik aktif run'ı ölümle aynı kesintiyle sonlandırır. Quit, run kaydet/devam et sistemi geldiğinde son kayıtla kapanma davranışına geçecektir.
 - Uygulamayı kapatma/çökme: tamamlanmamış run kazancının durumu belirlenmelidir. Kalıcı cüzdan kaydı, run ortasında kaydedip devam etmeyi kapsamaz.
 - Kesirli aktarım aşağı yuvarlanır (onay: 9 Kasım 2026). Başlangıç ölüm koruması şimdilik %40 olarak uygulanır; ayarlanabilir kalır.
-- Demo finalinin ekonomi testi için zafer sayılıp sayılmayacağı belirlenmelidir.
+- Demo finali ekonomi akışında zafer sayılır.
 - Kaynak düşürme sıklıkları, miktarlar ve boss ödülü denge çalışmasına açıktır.
 
 İlk geliştirme kapsamı kalıcı cüzdan/kayıt, tur kazancı, sonuç hesabı, tek seferlik aktarım, sonuç sunumu ve oynanıştan kaynak kazanımıdır. Satın alma ve ilk meta gelişim bir sonraki adımda; zorluk katmanları, hikâye/anı kayıtları ve ayrıntılı üs sunumu daha sonra ele alınacaktır.

@@ -667,10 +667,10 @@ The existing 40% starting retention and 70% upper limit are balance proposals. R
 
 Open decisions before implementation:
 
-- Abandoning through the menu: death-equivalent deductions are proposed, not approved.
+- Restart and menu Quit temporarily end an active run with death-equivalent deductions. Quit will preserve the latest run save once save/resume is implemented.
 - Application exit/crash: treatment of unfinished earnings needs a decision. Permanent wallet persistence does not include mid-run save/resume.
 - Fractional transfers round down (approved 9 November 2026). Initial death retention is provisionally 40% and remains configurable.
-- Whether the demo finale should count as a victory for economy testing remains undecided.
+- The demo finale counts as victory for the economy flow.
 - Drop frequencies, amounts and the boss reward remain subject to balancing.
 
 The first development scope covers permanent wallet/storage, run earnings, outcome calculation, single settlement, results presentation and gameplay resource acquisition. Purchasing and one initial meta upgrade follow; difficulty tiers, narrative/memory persistence and detailed hub presentation are later work.

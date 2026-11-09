@@ -669,7 +669,7 @@ Open decisions before implementation:
 
 - Abandoning through the menu: death-equivalent deductions are proposed, not approved.
 - Application exit/crash: treatment of unfinished earnings needs a decision. Permanent wallet persistence does not include mid-run save/resume.
-- Fractional transfers: rounding down is proposed, not approved.
+- Fractional transfers round down (approved 9 November 2026). Initial death retention is provisionally 40% and remains configurable.
 - Whether the demo finale should count as a victory for economy testing remains undecided.
 - Drop frequencies, amounts and the boss reward remain subject to balancing.
 

@@ -57,3 +57,15 @@ Runtime temeli feature/meta-economy branch'ine birleştirildi. PersistentMetaWal
 Bozuk veya bilinmeyen sürümlü kayıt korunarak hata bildirilir. Ana dosya yokken kurtarma dosyası varsa sıfırdan kayıt açılmaz. Otomatik yedeğe dönüş yapılmaz; kurtarma UI'sı sonraki sahne bağlantısı işidir. Sahnelere henüz bağlanmadığı için bu adım oynanışta görünür değişiklik üretmez.
 
 Odaklı EditMode testleri: ilk açılış/yeniden açılış, önceki kayıt yedeği, bozuk/eksik/yeni sürümlü kayıt, kayıp ana dosya, başarısız yazma ve yeniden deneme, eski örnekten yazma, negatif tutar ve taşma. Test yürütme kullanıcıdadır; derleme kontrolü testlerin geçtiği anlamına gelmez.
+
+## İkinci adım — run kazancı ve sonuç aktarımı
+
+RunEarnings yalnızca bir run'ın kimliğini, kazancını ve sabitlenmiş sonucunu tutar. Add pozitif miktar kabul eder; Finish sonrası kazanç eklenemez veya sonuç değiştirilemez. Yeni run için yeni nesne oluşturulur.
+
+RunEconomyResult hesaplaması dosya/UI bağımlılığı taşımaz. Ölümde varsayılan %40 korunur ve kesir aşağı yuvarlanır; boss ödülü verilmez. Zaferde tüm kazanç ve boss ödülü aktarılır. Oran parametreyle değiştirilebilir (0–100); Inspector ayarı sahne bağlantısında eklenecektir. Geçersiz tutar ve taşmalar reddedilir.
+
+PersistentMetaWallet.Settle sonucu bakiye ve run kimliğiyle birlikte kaydeder. Aynı kimlik için sonraki çağrılar false döner ve ödeme yapılmaz; sıfır kazançlı sonuç da kaydedilir. Kimlik geçmişi şimdilik tüm ödenmiş run'ları tutar; yalnızca son kimliği tutmak eski bir sonucun yeniden ödenmesine izin vereceğinden kullanılmamıştır.
+
+Kayıt sürümü 2'dir. Sürüm 1 bakiyesi okunur; ilk başarılı değişiklikte kimlik geçmişiyle sürüm 2 olarak yazılır, eski kayıt yedeklenir. Başarısız yazma bakiyeyi veya bellekteki kimlik geçmişini değiştirmez; aynı immutable sonuçla yeniden denenir. Doğrudan Credit yalnızca düşük seviyeli cüzdan işlemidir, oyun sonuçları Settle kullanmalıdır.
+
+RunEconomyTests ve PersistentMetaWalletTests kullanıcı tarafından çalıştırılmalıdır. Runtime/test derleme kontrolü yapıldı; Unity testleri bu adımda ajan tarafından yürütülmedi. Sahne bağlantısı, sonuç ekranı, düşman kazanımı ve bırakma/kapanma politikası henüz eklenmedi.

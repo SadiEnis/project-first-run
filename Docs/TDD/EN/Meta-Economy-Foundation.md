@@ -57,3 +57,15 @@ First launch creates a zero-balance save. Credits write and flush a temporary fi
 Corrupt and unknown-version saves remain untouched and report errors. A missing primary with recovery files does not initialize a new wallet. There is no automatic backup rollback; recovery UI belongs to subsequent scene integration. This slice has no scene wiring or visible gameplay change.
 
 Focused EditMode coverage: initial/repeated opens, prior-save backup, invalid/missing/new-version records, missing primary, failed writes and retry, stale writers, invalid amounts and overflow. Unity test execution remains user-run; compilation does not imply passing tests.
+
+## Second slice — run earnings and settlement
+
+RunEarnings owns one run identity, collected amount and frozen result. Add accepts positive amounts; after Finish neither earnings nor the result can change. A new run uses a new instance.
+
+RunEconomyResult calculates without file/UI dependencies. Death defaults to 40% retention rounded down and pays no boss reward. Victory transfers all earnings plus the boss reward. Retention is a parameter (0–100); Inspector configuration follows with scene integration. Invalid amounts and arithmetic overflow are rejected.
+
+PersistentMetaWallet.Settle saves balance and run identity together. Subsequent calls for the same identity return false without payment, including zero-value results. History currently retains all settled identities; keeping only the latest would allow older results to pay again.
+
+Save version is 2. Version 1 balance loads and migrates on the first successful mutation, preserving the previous save as a backup. Failed writes change neither balance nor in-memory history; retry with the same immutable result. Direct Credit remains a low-level wallet operation; gameplay outcomes must use Settle.
+
+User-run coverage: RunEconomyTests and PersistentMetaWalletTests. Runtime/test compilation was checked; the agent did not run Unity suites. Scene wiring, result UI, enemy earnings and abandon/exit policy remain pending.

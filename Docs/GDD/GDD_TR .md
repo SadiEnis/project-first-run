@@ -669,7 +669,7 @@ Uygulama öncesi açık kararlar:
 
 - Menüden run'ı bırakma: ölümle aynı kesinti önerilmektedir; henüz onaylanmadı.
 - Uygulamayı kapatma/çökme: tamamlanmamış run kazancının durumu belirlenmelidir. Kalıcı cüzdan kaydı, run ortasında kaydedip devam etmeyi kapsamaz.
-- Kesirli aktarım: aşağı yuvarlama önerilmektedir; henüz onaylanmadı.
+- Kesirli aktarım aşağı yuvarlanır (onay: 9 Kasım 2026). Başlangıç ölüm koruması şimdilik %40 olarak uygulanır; ayarlanabilir kalır.
 - Demo finalinin ekonomi testi için zafer sayılıp sayılmayacağı belirlenmelidir.
 - Kaynak düşürme sıklıkları, miktarlar ve boss ödülü denge çalışmasına açıktır.
 

@@ -17,13 +17,13 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
         [Test]
         public void FirstLaunchAndReopenPreserveBalanceAndPreviousBackup()
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             Assert.That(wallet.Balance, Is.Zero);
             wallet.Credit(40);
-            string previous = File.ReadAllText(wallet.SavePath);
+            string previous = File.ReadAllText(System.IO.Path.Combine(_directory, "meta-wallet.json"));
             wallet.Credit(100);
-            Assert.That(PersistentMetaWallet.Open(_directory).Balance, Is.EqualTo(140));
-            Assert.That(File.ReadAllText(wallet.SavePath + ".bak"), Is.EqualTo(previous));
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.EqualTo(140));
+            Assert.That(File.ReadAllText(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".bak"), Is.EqualTo(previous));
         }
 
         [TestCase("broken json")]
@@ -33,59 +33,59 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
         [TestCase("{\"version\":1,\"balance\":\"-1\"}")]
         public void InvalidSaveIsNeverOverwritten(string text)
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
-            File.WriteAllText(wallet.SavePath, text);
-            Assert.Throws<InvalidDataException>(() => PersistentMetaWallet.Open(_directory));
-            Assert.That(File.ReadAllText(wallet.SavePath), Is.EqualTo(text));
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
+            File.WriteAllText(System.IO.Path.Combine(_directory, "meta-wallet.json"), text);
+            Assert.Throws<InvalidDataException>(() => new PersistentMetaWallet(new JsonMetaWalletStore(_directory)));
+            Assert.That(File.ReadAllText(System.IO.Path.Combine(_directory, "meta-wallet.json")), Is.EqualTo(text));
         }
 
         [Test]
         public void MissingPrimaryWithBackupDoesNotResetWallet()
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             wallet.Credit(10);
-            File.Delete(wallet.SavePath);
-            Assert.Throws<InvalidDataException>(() => PersistentMetaWallet.Open(_directory));
-            Assert.That(File.Exists(wallet.SavePath), Is.False);
-            Assert.That(File.Exists(wallet.SavePath + ".bak"), Is.True);
+            File.Delete(System.IO.Path.Combine(_directory, "meta-wallet.json"));
+            Assert.Throws<InvalidDataException>(() => new PersistentMetaWallet(new JsonMetaWalletStore(_directory)));
+            Assert.That(File.Exists(System.IO.Path.Combine(_directory, "meta-wallet.json")), Is.False);
+            Assert.That(File.Exists(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".bak"), Is.True);
         }
 
         [Test]
         public void FailedWritePreservesMemoryAndPrimaryAndCanRetry()
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             wallet.Credit(25);
-            string previous = File.ReadAllText(wallet.SavePath);
-            Directory.CreateDirectory(wallet.SavePath + ".tmp");
+            string previous = File.ReadAllText(System.IO.Path.Combine(_directory, "meta-wallet.json"));
+            Directory.CreateDirectory(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".tmp");
             var error = Assert.Catch(() => wallet.Credit(5));
             Assert.That(error is IOException || error is UnauthorizedAccessException, Is.True);
             Assert.That(wallet.Balance, Is.EqualTo(25));
-            Assert.That(File.ReadAllText(wallet.SavePath), Is.EqualTo(previous));
-            Directory.Delete(wallet.SavePath + ".tmp");
+            Assert.That(File.ReadAllText(System.IO.Path.Combine(_directory, "meta-wallet.json")), Is.EqualTo(previous));
+            Directory.Delete(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".tmp");
             wallet.Credit(5);
-            Assert.That(PersistentMetaWallet.Open(_directory).Balance, Is.EqualTo(30));
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.EqualTo(30));
         }
 
         [Test]
         public void StaleOwnerCannotOverwriteNewerBalance()
         {
-            var first = PersistentMetaWallet.Open(_directory);
-            var stale = PersistentMetaWallet.Open(_directory);
+            var first = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
+            var stale = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             first.Credit(100);
             Assert.Throws<InvalidOperationException>(() => stale.Credit(5));
             Assert.That(stale.Balance, Is.Zero);
-            Assert.That(PersistentMetaWallet.Open(_directory).Balance, Is.EqualTo(100));
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.EqualTo(100));
         }
 
         [Test]
         public void InvalidAmountAndOverflowDoNotChangeSavedBalance()
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             Assert.Throws<ArgumentOutOfRangeException>(() => wallet.Credit(-1));
             Assert.Throws<ArgumentOutOfRangeException>(() => wallet.Credit(0));
             wallet.Credit(long.MaxValue);
             Assert.Throws<OverflowException>(() => wallet.Credit(1));
-            Assert.That(PersistentMetaWallet.Open(_directory).Balance, Is.EqualTo(long.MaxValue));
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.EqualTo(long.MaxValue));
         }
     }
 }

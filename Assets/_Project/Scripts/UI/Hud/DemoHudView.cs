@@ -13,6 +13,11 @@ namespace ProjectFirstRun.UI.Hud
         [SerializeField] private Text _healthText;
         [SerializeField] private Text _levelText;
         [SerializeField] private Text _experienceText;
+        [SerializeField] private Text _goldText;
+        public void SetGold(long amount)
+        {
+            if (_goldText != null) _goldText.text = "GOLD  " + amount;
+        }
         [SerializeField] private Text _weaponText;
         [SerializeField] private Text _ammoText;
         [SerializeField] private Text _statusText;

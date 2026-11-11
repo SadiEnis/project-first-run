@@ -12,6 +12,7 @@ namespace ProjectFirstRun.Flow
     [DisallowMultipleComponent]
     public sealed class RunSceneStartup : MonoBehaviour
     {
+        [SerializeField] private RunEconomyController _economy;
         [SerializeField] private PlayerStartingLoadoutInitializer _loadout;
         [SerializeField] private PlayerExperienceController _experience;
         [SerializeField] private ChestSpawner _chests;
@@ -24,7 +25,7 @@ namespace ProjectFirstRun.Flow
 
         public void ValidateConfiguration()
         {
-            if (_loadout == null || _experience == null || _chests == null || _abilities == null)
+            if (_economy == null || _loadout == null || _experience == null || _chests == null || _abilities == null)
                 throw new InvalidOperationException("Assign run startup loadout, experience, chests and abilities.");
             if (_experience.gameObject != _loadout.gameObject)
                 throw new InvalidOperationException("Run startup experience and loadout must belong to the same player.");
@@ -38,6 +39,7 @@ namespace ProjectFirstRun.Flow
             try
             {
                 ValidateConfiguration();
+                _economy.ConfigureStore(new JsonMetaWalletStore(Application.persistentDataPath));
                 if (!_loadout.IsInitialized) _loadout.InitializeConfigured();
             }
             catch (Exception error) { Fail(error.Message); }

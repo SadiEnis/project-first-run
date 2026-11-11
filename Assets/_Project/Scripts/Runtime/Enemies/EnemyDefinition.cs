@@ -65,6 +65,10 @@ namespace ProjectFirstRun.Enemies
 
         public int ExperienceReward => _experienceReward;
 
+        [Header("Meta Resource")]
+        [SerializeField, Min(0)] private int _metaResourceReward;
+        public int MetaResourceReward => _metaResourceReward;
+
         [Header("Chest drops")]
         [SerializeField] private EnemyChestDropProfile _chestDropProfile;
         public EnemyChestDropProfile ChestDropProfile => _chestDropProfile;
@@ -115,6 +119,7 @@ namespace ProjectFirstRun.Enemies
             _stableId = _stableId?.Trim();
             _displayName = _displayName?.Trim();
             _experienceReward = Mathf.Max(0, _experienceReward);
+            _metaResourceReward = Mathf.Max(0, _metaResourceReward);
 
             _maximumHealth = SanitizePositive(
                 _maximumHealth,

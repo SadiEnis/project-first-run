@@ -806,6 +806,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 5200000004}
+    - targetCorrespondingSourceObject: {fileID: 5539692866985262834, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1878455838}
   m_SourcePrefab: {fileID: 100100000, guid: 116fb74f796930f42acd9236fbd803f4, type: 3}
 --- !u!114 &872807814 stripped
@@ -2506,6 +2509,9 @@ GameObject:
   - component: {fileID: 4800000003}
   - component: {fileID: 4900000002}
   - component: {fileID: 5000000002}
+  - component: {fileID: 5100000002}
+  - component: {fileID: 5200000002}
+  - component: {fileID: 5200000003}
   m_Layer: 0
   m_Name: Demo opening services
   m_TagString: Untagged
@@ -29424,6 +29430,7 @@ MonoBehaviour:
   _presentation: {fileID: 3600000002}
   _restart: {fileID: 4700000002}
   _flow: {fileID: 4800000002}
+  _runEnd: {fileID: 5200000002}
 --- !u!1 &3600000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -33508,7 +33515,7 @@ MonoBehaviour:
   _selection: {fileID: 2132724448}
   _flow: {fileID: 4800000002}
   _ambush: {fileID: 3400000002}
-  _economy: {fileID: 5000000002}
+  _runEnd: {fileID: 5200000002}
 --- !u!114 &4800000002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33558,6 +33565,7 @@ MonoBehaviour:
   _chests: {fileID: 1671489931}
   _abilities: {fileID: 1671489932}
   _timeoutSeconds: 10
+  _economy: {fileID: 5000000002}
 --- !u!114 &5000000002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33572,3 +33580,59 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _deathRetentionPercent: 40
   _bossReward: 0
+--- !u!114 &5100000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 341ea6d43a2749df93c4eebd6f556d27, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _registry: {fileID: 1671489934}
+  _spawner: {fileID: 5200000003}
+--- !u!114 &5200000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc6021e68a28844a4dbaa9a5a8aab1d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _health: {fileID: 872807819}
+  _economy: {fileID: 5000000002}
+--- !u!114 &5200000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671489923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeb3158173bc15254d2dae4ffa66a5eb, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _collector: {fileID: 5200000004}
+  _pickupPrefab: {fileID: 6778892090975693941, guid: 846af439f2fe442b90e2d1a46a95617d, type: 3}
+--- !u!114 &5200000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872807817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4279c42d92ea08346507328e32203f07, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _economy: {fileID: 5000000002}
+  _attractionRadius: 2

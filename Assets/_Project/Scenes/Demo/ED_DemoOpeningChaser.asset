@@ -16,6 +16,7 @@ MonoBehaviour:
   _displayName: BasicChaser
   _maximumHealth: 100
   _experienceReward: 10
+  _metaResourceReward: 1
   _chestDropProfile: {fileID: 0}
   _movementSpeed: 3.5
   _acceleration: 12

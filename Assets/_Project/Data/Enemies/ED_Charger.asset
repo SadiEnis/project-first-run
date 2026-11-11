@@ -14,16 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectFirstRun.Runtime::ProjectFirstRun.Enemies.EnemyDefinition
   _stableId: enemy.charger
   _displayName: Charger
-  _maximumHealth: 100
-  _experienceReward: 25
-  _movementSpeed: 3.5
-  _acceleration: 12
-  _angularSpeed: 720
-  _stoppingDistance: 1.5
-  _destinationUpdateInterval: 0.1
-  _attackDamage: 15
-  _attackRange: 1.75
-  _attackCooldown: 1
   _rank: 0
   _behavior: 1
   _chargeActivationRange: 7
@@ -32,4 +22,23 @@ MonoBehaviour:
   _chargeDistance: 8
   _chargeHitRadius: 0.7
   _chargeRecovery: 1.2
+  _rangedProjectileMaterial: {fileID: 0}
+  _rangedPreferredMin: 5
+  _rangedPreferredMax: 9
+  _rangedFireRange: 12
+  _rangedWindup: 0.6
+  _rangedProjectileSpeed: 7
+  _rangedProjectileLifetime: 4
+  _rangedProjectileRadius: 0.15
+  _maximumHealth: 100
+  _experienceReward: 25
+  _metaResourceReward: 8
   _chestDropProfile: {fileID: 11400000, guid: 5a520fbedc93422a994c64eb24e509b7, type: 2}
+  _movementSpeed: 3.5
+  _acceleration: 12
+  _angularSpeed: 720
+  _stoppingDistance: 1.5
+  _destinationUpdateInterval: 0.1
+  _attackDamage: 15
+  _attackRange: 1.75
+  _attackCooldown: 1

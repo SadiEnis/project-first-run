@@ -16,6 +16,7 @@ namespace ProjectFirstRun.Development.Arenas
     {
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
         [SerializeField] private RunRestartController _restart;
+        [SerializeField] private RunEndController _runEnd;
         [SerializeField] private GameFlowController _flow;
         [SerializeField] private HealthComponent _health;
         [SerializeField] private RewardSelectionController _selection;
@@ -40,7 +41,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_keyAmbush == null || _flow == null || _restart == null || _health == null || _selection == null || _gate == null ||
+            if (_keyAmbush == null || _flow == null || _restart == null || _runEnd == null || _health == null || _selection == null || _gate == null ||
                 _entryVolume == null || !_entryVolume.isTrigger || !_entryVolume.enabled ||
                 _gate.GetComponent<Collider>() == null || _gate.GetComponent<Collider>().isTrigger ||
                 transform.IsChildOf(_gate.transform) || _presentation == null || !_presentation.isActiveAndEnabled)
@@ -57,6 +58,9 @@ namespace ProjectFirstRun.Development.Arenas
             _presentation.ValidateConfiguration();
         }
 
+        private void OnEnable() => Session.Completed += OnCompleted;
+        private void OnCompleted() => _runEnd.CompleteVictory();
+
         private void Start()
         {
             try { ValidateConfiguration(); }
@@ -65,8 +69,6 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void Update()
         {
-            if (Session.Phase == DemoFinalPhase.Completed)
-                _restart.ObserveOutcome(ProjectFirstRun.Progression.RunEconomyOutcome.Victory);
             int choice = _completionMenu.Poll(IsEnding && Session.Phase == DemoFinalPhase.Completed && !Session.ReplayRequested);
             if (choice == 0) Replay();
             else if (choice == 1) _restart.RequestQuit(RunRestartSource.Completion);
@@ -114,6 +116,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         private void OnDisable()
         {
+            Session.Completed -= OnCompleted;
             _completionMenu.Tick(false, 0, false);
             if (_flow != null) _flow.Refresh();
             if (!_locked) return;

@@ -6,6 +6,7 @@ namespace ProjectFirstRun.Arenas
     public sealed class DemoFinalSession
     {
         public DemoFinalPhase Phase { get; private set; } = DemoFinalPhase.Playing;
+        public event System.Action Completed;
         public bool ReplayRequested { get; private set; }
         public bool TryRequestReplay()
         {
@@ -32,6 +33,7 @@ namespace ProjectFirstRun.Arenas
         {
             if (Phase != DemoFinalPhase.Ending) return false;
             Phase = DemoFinalPhase.Completed;
+            Completed?.Invoke();
             return true;
         }
     }

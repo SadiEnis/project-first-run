@@ -20,6 +20,19 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
             Assert.That(new DemoFinalSession().ReplayRequested, Is.False);
         }
 
+        [Test]
+        public void CompletionEventIsPublishedOnceAfterPhaseChanges()
+        {
+            var session = new DemoFinalSession();
+            int calls = 0;
+            session.Completed += () => { calls++; Assert.That(session.Phase, Is.EqualTo(DemoFinalPhase.Completed)); };
+            session.TryComplete();
+            Assert.That(calls, Is.Zero);
+            session.TryBegin(true, true, true, true);
+            session.TryComplete(); session.TryComplete();
+            Assert.That(calls, Is.EqualTo(1));
+        }
+
         [TestCase(false, true, true)]
         [TestCase(true, false, true)]
         [TestCase(true, true, false)]

@@ -96,7 +96,6 @@ namespace ProjectFirstRun.Development.Arenas
             // Match the visible death screen; never compete with reward UI or the finale.
             bool visible = IsReady && !_selection.IsOpen && (_final == null || !_final.IsEnding) &&
                 _health.IsDead && !IsEntryBlocking && !IsRestarting;
-            if (visible) _restart.ObserveOutcome(ProjectFirstRun.Progression.RunEconomyOutcome.Death);
             int choice = _deathMenu.Poll(visible);
             if (choice == 0) Restart();
             else if (choice == 1) _restart.RequestQuit(RunRestartSource.Death);

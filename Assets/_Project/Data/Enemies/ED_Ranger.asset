@@ -16,9 +16,23 @@ MonoBehaviour:
   _displayName: Ranger
   _rank: 0
   _behavior: 2
+  _chargeActivationRange: 7
+  _chargeWindup: 0.8
+  _chargeSpeed: 10
+  _chargeDistance: 8
+  _chargeHitRadius: 0.7
+  _chargeRecovery: 1.2
   _rangedProjectileMaterial: {fileID: 2100000, guid: a72ab567e9544d259825d2898f178101, type: 2}
+  _rangedPreferredMin: 5
+  _rangedPreferredMax: 9
+  _rangedFireRange: 12
+  _rangedWindup: 0.6
+  _rangedProjectileSpeed: 7
+  _rangedProjectileLifetime: 4
+  _rangedProjectileRadius: 0.15
   _maximumHealth: 75
   _experienceReward: 25
+  _metaResourceReward: 3
   _chestDropProfile: {fileID: 11400000, guid: 5a520fbedc93422a994c64eb24e509b7, type: 2}
   _movementSpeed: 3.5
   _acceleration: 12
@@ -28,16 +42,3 @@ MonoBehaviour:
   _attackDamage: 10
   _attackRange: 12
   _attackCooldown: 1.5
-  _chargeActivationRange: 7
-  _chargeWindup: 0.8
-  _chargeSpeed: 10
-  _chargeDistance: 8
-  _chargeHitRadius: 0.7
-  _chargeRecovery: 1.2
-  _rangedPreferredMin: 5
-  _rangedPreferredMax: 9
-  _rangedFireRange: 12
-  _rangedWindup: 0.6
-  _rangedProjectileSpeed: 7
-  _rangedProjectileLifetime: 4
-  _rangedProjectileRadius: 0.15

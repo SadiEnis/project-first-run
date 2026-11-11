@@ -66,7 +66,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             _scene = SceneManager.GetSceneByPath(Path);
             SceneManager.SetActiveScene(_scene);
             _demo = Find<DemoOpeningController>(); _restart = Find<RunRestartController>();
-            Find<ProjectFirstRun.Progression.RunEconomyController>().ConfigureStorage(_economyDirectory);
+            Find<ProjectFirstRun.Progression.RunEconomyController>().ConfigureStore(new ProjectFirstRun.Progression.JsonMetaWalletStore(_economyDirectory));
             for (int i = 0; i < 300 && !_demo.IsReady; i++) yield return null;
             Assert.That(_demo.IsReady, Is.True);
         }
@@ -81,8 +81,8 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Find<DemoEntryController>().enabled = false;
             var economy = Find<ProjectFirstRun.Progression.RunEconomyController>();
             economy.Add(103);
-            var wallet = ProjectFirstRun.Progression.PersistentMetaWallet.Open(_economyDirectory);
-            System.IO.Directory.CreateDirectory(wallet.SavePath + ".tmp");
+            var wallet = new ProjectFirstRun.Progression.PersistentMetaWallet(new ProjectFirstRun.Progression.JsonMetaWalletStore(_economyDirectory));
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(_economyDirectory, "meta-wallet.json") + ".tmp");
             var pause = Find<DemoPauseController>();
             pause.Open(); yield return null;
             pause.Restart();
@@ -90,12 +90,12 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Assert.That(_restart.LastError, Is.Not.Null);
             pause.Resume();
             Assert.That(pause.IsClosing, Is.False);
-            System.IO.Directory.Delete(wallet.SavePath + ".tmp");
+            System.IO.Directory.Delete(System.IO.Path.Combine(_economyDirectory, "meta-wallet.json") + ".tmp");
             pause.Restart();
             Assert.That(loader.Calls, Is.EqualTo(1));
-            Assert.That(ProjectFirstRun.Progression.PersistentMetaWallet.Open(_economyDirectory).Balance, Is.EqualTo(41));
+            Assert.That(new ProjectFirstRun.Progression.PersistentMetaWallet(new ProjectFirstRun.Progression.JsonMetaWalletStore(_economyDirectory)).Balance, Is.EqualTo(41));
             pause.Restart();
-            Assert.That(ProjectFirstRun.Progression.PersistentMetaWallet.Open(_economyDirectory).Balance, Is.EqualTo(41));
+            Assert.That(new ProjectFirstRun.Progression.PersistentMetaWallet(new ProjectFirstRun.Progression.JsonMetaWalletStore(_economyDirectory)).Balance, Is.EqualTo(41));
         }
 
         [UnityTest]

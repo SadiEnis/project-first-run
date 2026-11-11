@@ -22,6 +22,7 @@ namespace ProjectFirstRun.UI.Hud
         private PlayerBuildController _build;
         private PlayerExperienceController _experience;
         private PlayerWeaponController _weapon;
+        private RunEconomyController _economy;
         private bool _bound;
         private bool _openingTipsQueued, _abilityTipsQueued;
         public bool ReplacesDebugHud => isActiveAndEnabled && _bound && _view != null && _view.isActiveAndEnabled;
@@ -44,6 +45,7 @@ namespace ProjectFirstRun.UI.Hud
             {
                 ValidateConfiguration();
                 _health = _demo.Health;
+                _economy = _demo.GetComponent<RunEconomyController>();
                 _build = _health.GetComponent<PlayerBuildController>();
                 _experience = _health.GetComponent<PlayerExperienceController>();
                 _weapon = _health.GetComponent<PlayerWeaponController>();
@@ -92,6 +94,7 @@ namespace ProjectFirstRun.UI.Hud
             if (!visible) return;
             var capacity = _build.Build.Capacity;
             _view.SetCapacity(capacity.AbilitySlots, capacity.UpgradeSlots);
+            _view.SetGold(_economy != null ? _economy.Collected : 0);
             _view.SetHealth(_health.CurrentHealth, _health.MaximumHealth);
             _view.SetExperience(_experience.Level, _experience.CurrentExperience, _experience.RequiredExperience);
             _view.SetWeapon(_weapon.ActiveDefinition.DisplayName, _weapon.ActiveEntry?.Level ?? 1,

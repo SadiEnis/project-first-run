@@ -33,7 +33,7 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
         [Test]
         public void VictoryPaysOnceEvenAfterAnotherRunAndReopen()
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             wallet.Credit(200);
             var run = new RunEarnings();
             run.Add(100);
@@ -42,7 +42,7 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
             Assert.That(wallet.Settle(result), Is.True);
             Assert.That(wallet.Settle(result), Is.False);
             wallet.Settle(new RunEarnings().Finish(RunEconomyOutcome.Death));
-            var reopened = PersistentMetaWallet.Open(_directory);
+            var reopened = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             Assert.That(reopened.Settle(result), Is.False);
             Assert.That(reopened.Balance, Is.EqualTo(350));
             var changed = RunEconomyResult.Calculate(result.RunId, 999, RunEconomyOutcome.Victory);
@@ -52,17 +52,17 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
         [Test]
         public void FailedSettlementCanRetryWithoutLosingOrDuplicatingReward()
         {
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             var run = new RunEarnings();
             run.Add(100);
             var result = run.Finish(RunEconomyOutcome.Death);
-            Directory.CreateDirectory(wallet.SavePath + ".tmp");
+            Directory.CreateDirectory(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".tmp");
             Assert.Catch(() => wallet.Settle(result));
             Assert.That(wallet.Balance, Is.Zero);
-            Assert.That(PersistentMetaWallet.Open(_directory).Balance, Is.Zero);
-            Directory.Delete(wallet.SavePath + ".tmp");
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.Zero);
+            Directory.Delete(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".tmp");
             Assert.That(wallet.Settle(result), Is.True);
-            Assert.That(PersistentMetaWallet.Open(_directory).Settle(result), Is.False);
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Settle(result), Is.False);
             Assert.That(wallet.Balance, Is.EqualTo(40));
         }
 
@@ -72,12 +72,12 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
             Directory.CreateDirectory(_directory);
             var path = Path.Combine(_directory, "meta-wallet.json");
             File.WriteAllText(path, "{\"version\":1,\"balance\":\"200\"}");
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             var run = new RunEarnings();
             run.Add(100);
             var result = run.Finish(RunEconomyOutcome.Death);
             wallet.Settle(result);
-            var reopened = PersistentMetaWallet.Open(_directory);
+            var reopened = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             Assert.That(reopened.Balance, Is.EqualTo(240));
             Assert.That(reopened.Settle(result), Is.False);
             Assert.That(File.ReadAllText(path + ".bak"), Does.Contain("\"version\":1"));
@@ -94,11 +94,11 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
             Assert.Throws<ArgumentOutOfRangeException>(() => RunEconomyResult.Calculate(id, -1, RunEconomyOutcome.Death));
             Assert.Throws<ArgumentOutOfRangeException>(() => RunEconomyResult.Calculate(id, 1, (RunEconomyOutcome)99));
             Assert.Throws<OverflowException>(() => RunEconomyResult.Calculate(id, long.MaxValue, RunEconomyOutcome.Victory, bossReward: 1));
-            var wallet = PersistentMetaWallet.Open(_directory);
+            var wallet = new PersistentMetaWallet(new JsonMetaWalletStore(_directory));
             wallet.Credit(long.MaxValue);
             var result = RunEconomyResult.Calculate(id, 1, RunEconomyOutcome.Victory);
             Assert.Throws<OverflowException>(() => wallet.Settle(result));
-            Assert.That(PersistentMetaWallet.Open(_directory).Balance, Is.EqualTo(long.MaxValue));
+            Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.EqualTo(long.MaxValue));
         }
     }
 }

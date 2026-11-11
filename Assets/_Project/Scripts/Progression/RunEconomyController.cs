@@ -11,7 +11,7 @@ namespace ProjectFirstRun.Progression
         [SerializeField, Min(0)] private int _bossReward;
         private readonly RunEarnings _earnings = new();
         private PersistentMetaWallet _wallet;
-        private string _saveDirectory;
+        private IMetaWalletStore _store;
         public RunEconomyResult Result => _earnings.Result;
         public long Collected => _earnings.Collected;
         public long? PermanentBalance => _wallet?.Balance;
@@ -27,7 +27,7 @@ namespace ProjectFirstRun.Progression
             try
             {
                 if (Result == null) _earnings.Finish(outcome, _deathRetentionPercent, _bossReward);
-                _wallet ??= _saveDirectory == null ? PersistentMetaWallet.OpenDefault() : PersistentMetaWallet.Open(_saveDirectory);
+                _wallet ??= new PersistentMetaWallet(_store ?? throw new InvalidOperationException("Assign a wallet store at scene startup."));
                 _wallet.Settle(Result);
                 IsSettled = true;
                 LastError = null;
@@ -43,11 +43,10 @@ namespace ProjectFirstRun.Progression
         }
 
         // Tests and development fixtures can isolate their saves before any terminal result.
-        public void ConfigureStorage(string directory)
+        public void ConfigureStore(IMetaWalletStore store)
         {
             if (Result != null || _wallet != null) throw new InvalidOperationException("Configure storage before ending the run.");
-            if (string.IsNullOrWhiteSpace(directory)) throw new ArgumentException("Assign a storage directory.", nameof(directory));
-            _saveDirectory = directory;
+            _store = store ?? throw new ArgumentNullException(nameof(store));
         }
     }
 }

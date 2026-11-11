@@ -76,6 +76,28 @@ Kabul edilen geçici politika: aktif run'dan Restart ve menü Quit ölümle ayn�
 
 RunEconomyController iki demo sahnesinde Demo opening services üzerinde bulunur. Koruma oranı ve boss ödülü Inspector alanlarıdır. Boss ödülü henüz denge kararı verilmediğinden 0'dır; test için değiştirilebilir. Kaynak kazanımı ve sonuç özeti UI'sı sonraki küçük adımdır; bu adım onları eklemez.
 
-RunRestartController, Restart/Quit öncesinde kaydı ister; başarısızsa sahneyi değiştirmez/kapatmaz. Ölüm ve tamamlanmış final ekranları ilk sonucu bildirir, otomatik kayıt tekrarına girmez. Kullanıcının çıkış isteği başarısız kaydı yeniden dener. Sonuç sabitlendiğinde pause Resume kapatılır; yükleme hatasından sonra aynı run'da kazanç toplanamaz.
+RunRestartController, Restart/Quit öncesinde kaydı ister; başarısızsa sahneyi değiştirmez/kapatmaz. RunEndController ölümü HealthComponent.Died olayından, zaferi final tamamlanma olayından alır; ekranın görünmesine bağlı değildir ve otomatik kayıt tekrarına girmez. Kullanıcının çıkış isteği başarısız kaydı yeniden dener. Sonuç sabitlendiğinde pause Resume kapatılır; yükleme hatasından sonra aynı run'da kazanç toplanamaz.
 
 RunEconomyControllerTests ve RunRestartTests kayıt hatası, yeniden deneme ve tekrar ödeme engelini kapsar. Restart testleri geçici dizin kullanır. Runtime/EditMode/PlayMode kodları derlendi; Unity test yürütme ve oyun içi kabul kullanıcıdadır.
+
+## Dördüncü adım — yerden meta kaynak toplama
+
+İki demo sahnesindeki EnemyMetaResourceDrops, kayıtlı düşmanın Died olayını dinler. Registry olayları yalnızca abonelikleri yönetir; registry'den ayrılma tek başına ödül üretmez. Normal despawn ödül oluşturmaz. Ödül miktarı her düşmanın EnemyDefinition asset'indeki Meta Resource Reward alanındadır. Düşürme bileşeni düşman türü/rank ayrımı yapmaz. 0 değerinde collectible oluşmaz; pozitif değerde o miktarı taşıyan bir collectible oluşur. Mevcut normal düşman asset'lerine 1, elit asset'ine 5 deneme değeri yazılmıştır; yeni asset'in varsayılanı 0'dır. Boss asset'ine de istenirse miktar verilebilir; zafer ödülü ayrı kalır.
+
+MetaResourcePickup ayrı altın renkli prefab/materyaldir. Spawn anında bakiye artmaz; atanmış oyuncu topladığında run kazancı artar. Pause, ölüm ve kesinleşmiş run sonucunda toplama engellenir. 2 metre sabit çekim yarıçapı PlayerMetaResourceCollector üzerinden, 8 hız pickup prefab'ından ayarlanır; bu sürüm XP çekim güçlendirmelerini meta kaynağına uygulamaz. Haritayla birlikte temizlenir.
+
+HUD'da XP yazısının altında GOLD run sayacı bulunur. Kalıcı bakiye ve sonuç dökümü sonraki sunum adımıdır. MetaResourcePickupTests, bir kez toplama, spawn'da kazanç olmaması, pause ve ölüm korumasını kapsar. Unity test yürütme ve görsel kabul kullanıcıdadır.
+
+## Refactor sonrası sorumluluk sınırları
+
+Yukarıdaki adımlar geliştirme geçmişini anlatır. Güncel sorumluluk dağılımı:
+
+- PersistentMetaWallet bakiye, taşma kontrolü ve aynı run için tek ödeme kuralını yönetir. Tek kayıt sınırı IMetaWalletStore sözleşmesidir. Immutable MetaWalletSnapshot bakiye ve ödenmiş kimlikleri birlikte taşır.
+- JsonMetaWalletStore JSON sürümü, dosya yolu, kilit, eski kaydı ezmeme, atomik yazma ve yedek korumayı yönetir. Sürüm 1/2 kayıtları uyumludur; kayıt yolu ve şema değişmedi.
+- RunEconomyController sonucu sabitler, enjekte edilen kayıt deposuyla aktarım ve yeniden denemeyi koordine eder. Yerel JSON deposunu sahne bağlantı noktası RunSceneStartup seçer.
+- RunEndController terminal sonuçları alır. Demo final oturumu tamamlanmayı bir kez yayımlar; final controller bu sinyali iletir. Restart/Quit çıkmadan önce kaydı ister, menü kaynağından ölüm/zafer seçmez.
+- EnemyMetaResourceDrops ölen düşmanın asset ödülünü okur ve spawn ister. MetaResourceSpawner prefab oluşturma ve sahneye yerleştirmeyi üstlenir. PlayerMetaResourceCollector kabul koşullarını kontrol edip run kazancına ekler. MetaResourcePickup hareket/temas ve tüketilmeyi yönetir; can/ekonomi bağımlılığı taşımaz.
+
+İki kayıtlı demo sahnesinde Demo opening services üzerinde run-end controller ve resource spawner, Player (demo) üzerinde collector bulunur. Sahne geometrisi yeniden üretilmeden bağlantılar güncellendi. Genel event bus, service locator veya her somut sınıf için interface eklenmedi.
+
+Doğrulama: Runtime, Editor, EditMode ve PlayMode derlemeleri başarılı. Unity test yürütmesi kullanıcıdadır. Odaklı kontroller: PersistentMetaWalletTests, MetaWalletStoreContractTests, RunEconomyTests, RunEconomyControllerTests, DemoFinalSessionTests; RunEndControllerTests, RunRestartTests, EnemyMetaResourceDropsTests ve MetaResourcePickupTests. Oynanışta yerden toplama, ölümde %40 aktarım, zaferde tam aktarım ve tekrar çıkış isteğinde çift ödeme olmaması kontrol edilmelidir.

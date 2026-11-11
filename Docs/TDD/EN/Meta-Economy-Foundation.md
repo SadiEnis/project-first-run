@@ -76,6 +76,28 @@ Accepted temporary policy: Restart and menu Quit from an active run settle like 
 
 RunEconomyController is on Demo opening services in both demo scenes. Retention and boss reward are Inspector fields. Boss reward remains 0 pending a balance decision and can be changed for testing. Earnings sources and result summary UI are the next slice, not included here.
 
-RunRestartController requires successful settlement before Restart/Quit. Failed saves prevent reload/exit. Death and completed finale screens report their first outcome without automatic save retries. An explicit exit request retries a failed save. Frozen outcomes disable pause Resume so failed loading cannot resume earning in the same run.
+RunRestartController requires successful settlement before Restart/Quit. Failed saves prevent reload/exit. RunEndController receives death from HealthComponent.Died and victory from the finale completion event, independently of screen visibility and without automatic save retries. An explicit exit request retries a failed save. Frozen outcomes disable pause Resume so failed loading cannot resume earning in the same run.
 
 RunEconomyControllerTests and RunRestartTests cover failed saves, retry and duplicate-payment prevention. Restart tests use temporary storage. Runtime/EditMode/PlayMode assemblies compiled; Unity execution and gameplay acceptance remain user-run.
+
+## Fourth slice — ground resource collection
+
+EnemyMetaResourceDrops in both demo scenes subscribes to registered enemies' Died events. Registry events manage subscriptions only; removal itself never awards loot. Ordinary despawns do not award loot. Each EnemyDefinition asset owns its Meta Resource Reward amount. The drop component does not branch on enemy type/rank. Zero produces no collectible; a positive value produces one collectible carrying that amount. Existing normal assets have trial value 1 and the elite asset has 5; new assets default to 0. Boss assets may also specify a drop, independently of victory rewards.
+
+MetaResourcePickup has its own gold-colored prefab/material. Spawning does not credit earnings; collection by the assigned player does. Pause, death and frozen run outcomes block collection. PlayerMetaResourceCollector owns the fixed 2 metre attraction radius; the pickup prefab owns speed 8; XP attraction upgrades do not affect it in this slice. Loot unloads with the map.
+
+The HUD shows GOLD run earnings below XP. Permanent balance and the result breakdown are the next presentation step. MetaResourcePickupTests cover collection once, no reward on spawning, pause and death guards. Unity test execution and visual acceptance remain user-run.
+
+## Responsibility boundaries after refactoring
+
+The earlier slices describe implementation history. The current ownership is:
+
+- PersistentMetaWallet owns balance, overflow protection and exactly-once run settlement. IMetaWalletStore is its single storage boundary. Immutable MetaWalletSnapshot carries balance and settled IDs together.
+- JsonMetaWalletStore owns JSON versions, paths, exclusive file locks, stale-write detection, atomic replacement and backup preservation. Version 1/2 saves remain compatible; no save path or schema change.
+- RunEconomyController freezes the result and coordinates settlement/retry through the injected store. RunSceneStartup selects the local JSON implementation at the scene composition boundary.
+- RunEndController receives terminal outcomes. The demo final session publishes completion once; its controller forwards the signal. Restart/Quit request settlement before exit and do not infer the outcome from their menu source.
+- EnemyMetaResourceDrops reads the dead enemy definition and requests a spawn. MetaResourceSpawner owns prefab creation and scene placement. PlayerMetaResourceCollector owns acceptance and credits the run. MetaResourcePickup owns movement/contact and consumption, with no health/economy dependency.
+
+In both saved demo scenes, Demo opening services contains the run-end controller and resource spawner; Player (demo) contains the collector. Scene authoring was updated without regenerating geometry. No generic event bus, service locator or interface for every concrete component was introduced.
+
+Validation: Runtime, Editor, EditMode and PlayMode assemblies compile. Unity suites remain user-run. Focused checks: PersistentMetaWalletTests, MetaWalletStoreContractTests, RunEconomyTests, RunEconomyControllerTests, DemoFinalSessionTests; RunEndControllerTests, RunRestartTests, EnemyMetaResourceDropsTests and MetaResourcePickupTests. Gameplay: ground collection, death/40% retention, victory/full transfer, and repeated exit requests without duplicate payment.

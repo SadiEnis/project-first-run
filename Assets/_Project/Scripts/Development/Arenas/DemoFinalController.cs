@@ -17,6 +17,7 @@ namespace ProjectFirstRun.Development.Arenas
         [SerializeField] private DemoKeyAmbushController _keyAmbush;
         [SerializeField] private RunRestartController _restart;
         [SerializeField] private RunEndController _runEnd;
+        [SerializeField] private ProjectFirstRun.Progression.RunEconomyController _economy;
         [SerializeField] private GameFlowController _flow;
         [SerializeField] private HealthComponent _health;
         [SerializeField] private RewardSelectionController _selection;
@@ -41,7 +42,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_keyAmbush == null || _flow == null || _restart == null || _runEnd == null || _health == null || _selection == null || _gate == null ||
+            if (_economy == null || _keyAmbush == null || _flow == null || _restart == null || _runEnd == null || _health == null || _selection == null || _gate == null ||
                 _entryVolume == null || !_entryVolume.isTrigger || !_entryVolume.enabled ||
                 _gate.GetComponent<Collider>() == null || _gate.GetComponent<Collider>().isTrigger ||
                 transform.IsChildOf(_gate.transform) || _presentation == null || !_presentation.isActiveAndEnabled)
@@ -130,19 +131,25 @@ namespace ProjectFirstRun.Development.Arenas
             GUI.depth = -1000;
             if (IsEnding) _presentation.DrawOverlay();
             if (LastError != null) GUI.Box(new Rect(20, 250, 650, 70), "Final error: " + LastError);
-            if (_restart != null && _restart.LastError != null)
-                GUI.Box(new Rect(20, 325, 650, 40), "Save or restart failed. Please try again.");
             if (IsEnding && Session.Phase == DemoFinalPhase.Completed)
             {
-                GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 100, 560, 235),
-                    "PROJECT FIRST RUN — DEMO COMPLETE");
-                GUI.Label(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 65, 400, 40), "This was only the beginning. Thanks for playing.");
+                float width = Mathf.Min(560, Screen.width - 32);
+                var panel = new Rect((Screen.width - width) / 2, Mathf.Max(8, (Screen.height - 440) / 2), width, 440);
+                GUI.Box(panel, "PROJECT FIRST RUN — DEMO COMPLETE");
+                GUI.BeginGroup(panel);
+                GUI.Label(new Rect(24, 32, width - 48, 26), "This was only the beginning. Thanks for playing.");
+                ProjectFirstRun.UI.Hud.RunEconomySummaryView.Draw(new Rect(24, 72, width - 48, 196), _economy);
+                if (_economy.IsSettled && _restart.LastError != null)
+                    GUI.Label(new Rect(24, 268, width - 48, 24), "Restart failed. Your reward is saved. Please try again.");
                 bool wasEnabled = GUI.enabled;
                 GUI.enabled = wasEnabled && !Session.ReplayRequested;
-                if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f - 5, 380, 35), 0, "Play again")) Replay();
-                if (_completionMenu.Button(new Rect(Screen.width / 2f - 190, Screen.height / 2f + 40, 380, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Completion);
+                float buttonWidth = Mathf.Min(380, width - 48);
+                float buttonLeft = (width - buttonWidth) / 2;
+                if (_completionMenu.Button(new Rect(buttonLeft, 300, buttonWidth, 35), 0, "Play again")) Replay();
+                if (_completionMenu.Button(new Rect(buttonLeft, 345, buttonWidth, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Completion);
                 GUI.enabled = wasEnabled;
-                ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 90, 540, 30), DemoMenuInput.Hint);
+                ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(12, 395, width - 24, 30), DemoMenuInput.Hint);
+                GUI.EndGroup();
             }
             GUI.depth = oldDepth;
         }

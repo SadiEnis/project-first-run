@@ -16,6 +16,7 @@ namespace ProjectFirstRun.Development.Arenas
     public sealed class DemoOpeningController : MonoBehaviour
     {
         [SerializeField] private RunSceneStartup _startup;
+        [SerializeField] private RunEconomyController _economy;
         [SerializeField] private HealthComponent _health;
         [SerializeField] private PlayerExperienceController _experience;
         [SerializeField] private PlayerWeaponController _weapon;
@@ -44,7 +45,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void ValidateConfiguration()
         {
-            if (_startup == null || _health == null || _experience == null || _weapon == null ||
+            if (_economy == null || _startup == null || _health == null || _experience == null || _weapon == null ||
                 _encounter == null || _chests == null || _firstReward == null ||
                 _rewardPoint == null || _selection == null || _restart == null)
                 throw new InvalidOperationException("Assign all demo opening scene references.");
@@ -136,15 +137,23 @@ namespace ProjectFirstRun.Development.Arenas
                 if (!canvasHud) GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 10, 20, 20), "+");
                 return;
             }
-            GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f - 65, 560, 175), "You died — restart with a fresh run");
+            float width = Mathf.Min(560, Screen.width - 32);
+            var panel = new Rect((Screen.width - width) / 2, Mathf.Max(8, (Screen.height - 440) / 2), width, 440);
+            GUI.Box(panel, "YOU DIED");
+            GUI.BeginGroup(panel);
+            GUI.Label(new Rect(24, 32, width - 48, 26), "Your run has ended. Start again when you are ready.");
+            ProjectFirstRun.UI.Hud.RunEconomySummaryView.Draw(new Rect(24, 72, width - 48, 196), _economy);
+            if (_economy.IsSettled && _restart.LastError != null)
+                GUI.Label(new Rect(24, 268, width - 48, 24), "Restart failed. Your reward is saved. Please try again.");
             bool wasEnabled = GUI.enabled;
             GUI.enabled = wasEnabled && !IsRestarting;
-            if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f - 25, 290, 35), 0, "Retry")) Restart();
-            if (_deathMenu.Button(new Rect(Screen.width / 2f - 145, Screen.height / 2f + 20, 290, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Death);
+            float buttonWidth = Mathf.Min(380, width - 48);
+            float buttonLeft = (width - buttonWidth) / 2;
+            if (_deathMenu.Button(new Rect(buttonLeft, 300, buttonWidth, 35), 0, "Retry")) Restart();
+            if (_deathMenu.Button(new Rect(buttonLeft, 345, buttonWidth, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Death);
             GUI.enabled = wasEnabled;
-            if (_restart.LastError != null)
-                GUI.Box(new Rect(Screen.width / 2f - 280, Screen.height / 2f + 115, 560, 40), "Save or restart failed. Please try again.");
-            ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(Screen.width / 2f - 270, Screen.height / 2f + 70, 540, 30), DemoMenuInput.Hint);
+            ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(12, 395, width - 24, 30), DemoMenuInput.Hint);
+            GUI.EndGroup();
         }
 
         private void OnDisable() => _deathMenu.Tick(false, 0, false);

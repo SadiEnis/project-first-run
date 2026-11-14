@@ -52,6 +52,11 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                     x.GetComponentsInChildren<ProjectFirstRun.Flow.RunSceneStartup>(true)).Single();
                 Assert.That(new SerializedObject(demo).FindProperty("_startup").objectReferenceValue, Is.SameAs(startup));
                 Assert.DoesNotThrow(startup.ValidateConfiguration);
+                var economy = startup.GetComponent<ProjectFirstRun.Progression.RunEconomyController>();
+                Assert.That(economy, Is.Not.Null);
+                Assert.That(new SerializedObject(demo).FindProperty("_economy").objectReferenceValue, Is.SameAs(economy));
+                var final = restartData.FindProperty("_final").objectReferenceValue;
+                Assert.That(new SerializedObject(final).FindProperty("_economy").objectReferenceValue, Is.SameAs(economy));
                 var startupData = new SerializedObject(startup);
                 Assert.That(startupData.FindProperty("_experience").objectReferenceValue,
                     Is.SameAs(demo.Health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceController>()));

@@ -3370,6 +3370,7 @@ MonoBehaviour:
   _hud: {fileID: 4100000012}
   _entry: {fileID: 4300000002}
   _restart: {fileID: 4700000002}
+  _economy: {fileID: 5000000002}
 --- !u!1 &1716859391
 GameObject:
   m_ObjectHideFlags: 0
@@ -29988,6 +29989,7 @@ MonoBehaviour:
   _restart: {fileID: 4700000002}
   _flow: {fileID: 4800000002}
   _runEnd: {fileID: 5200000002}
+  _economy: {fileID: 5000000002}
 --- !u!65 &3500000003
 BoxCollider:
   m_ObjectHideFlags: 0

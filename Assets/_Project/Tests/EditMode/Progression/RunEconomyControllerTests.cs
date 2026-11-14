@@ -45,11 +45,15 @@ namespace ProjectFirstRun.Tests.EditMode.Progression
             Assert.That(_controller.Complete(RunEconomyOutcome.Death), Is.False);
             Assert.That(_controller.LastError, Is.Not.Null);
             Assert.That(_controller.IsSettled, Is.False);
+            Assert.That(ProjectFirstRun.UI.Hud.RunEconomySummaryView.Describe(_controller.Result,
+                _controller.IsSettled, _controller.PermanentBalance), Does.Contain("Pending transfer: 41 GOLD"));
             Assert.Throws<InvalidOperationException>(() => _controller.Add(1));
             Directory.Delete(System.IO.Path.Combine(_directory, "meta-wallet.json") + ".tmp");
             Assert.That(_controller.Complete(RunEconomyOutcome.Victory), Is.True);
             Assert.That(_controller.LastError, Is.Null);
             Assert.That(_controller.PermanentBalance, Is.EqualTo(41));
+            Assert.That(ProjectFirstRun.UI.Hud.RunEconomySummaryView.Describe(_controller.Result,
+                _controller.IsSettled, _controller.PermanentBalance), Does.Contain("Saved to your permanent wallet."));
             Assert.That(_controller.Result.Outcome, Is.EqualTo(RunEconomyOutcome.Death));
             Assert.That(_controller.Complete(RunEconomyOutcome.Death), Is.True);
             Assert.That(new PersistentMetaWallet(new JsonMetaWalletStore(_directory)).Balance, Is.EqualTo(41));

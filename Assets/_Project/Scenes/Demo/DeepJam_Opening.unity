@@ -2697,6 +2697,7 @@ MonoBehaviour:
   _keyAmbush: {fileID: 3400000002}
   _final: {fileID: 3500000002}
   _restart: {fileID: 4700000002}
+  _economy: {fileID: 5000000002}
 --- !u!1 &1716859391
 GameObject:
   m_ObjectHideFlags: 0
@@ -29431,6 +29432,7 @@ MonoBehaviour:
   _restart: {fileID: 4700000002}
   _flow: {fileID: 4800000002}
   _runEnd: {fileID: 5200000002}
+  _economy: {fileID: 5000000002}
 --- !u!1 &3600000000
 GameObject:
   m_ObjectHideFlags: 0

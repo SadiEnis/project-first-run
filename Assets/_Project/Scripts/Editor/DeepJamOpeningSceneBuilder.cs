@@ -146,6 +146,7 @@ namespace ProjectFirstRun.Editor
             Set(restart, "_demo", demo); Set(restart, "_selection", selection);
             Set(demo, "_restart", restart);
             var economy = services.AddComponent<RunEconomyController>();
+            Set(demo, "_economy", economy);
             var runEnd = services.AddComponent<RunEndController>();
             Set(runEnd, "_health", player.GetComponent<HealthComponent>());
             Set(runEnd, "_economy", economy);

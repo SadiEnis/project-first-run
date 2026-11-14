@@ -101,3 +101,11 @@ The earlier slices describe implementation history. The current ownership is:
 In both saved demo scenes, Demo opening services contains the run-end controller and resource spawner; Player (demo) contains the collector. Scene authoring was updated without regenerating geometry. No generic event bus, service locator or interface for every concrete component was introduced.
 
 Validation: Runtime, Editor, EditMode and PlayMode assemblies compile. Unity suites remain user-run. Focused checks: PersistentMetaWalletTests, MetaWalletStoreContractTests, RunEconomyTests, RunEconomyControllerTests, DemoFinalSessionTests; RunEndControllerTests, RunRestartTests, EnemyMetaResourceDropsTests and MetaResourcePickupTests. Gameplay: ground collection, death/40% retention, victory/full transfer, and repeated exit requests without duplicate payment.
+
+## Fifth slice — terminal economy summary
+
+Death and completed-finale menus now share RunEconomySummaryView. Both saved demo scenes explicitly reference their run economy controller. The view displays frozen collected/lost/boss/transfer amounts and the total permanent balance; it performs no calculation, settlement, retry or file access. Existing input navigation and two exit actions remain in their menu owners.
+
+Successful settlement shows Transferred and Saved to your permanent wallet. A failed/unconfirmed save shows Pending transfer and an unavailable balance rather than zero or a stale value. Retry/Play again and Quit use the existing exit flow to retry saving the same result before leaving; the view itself cannot pay twice. A scene reload failure after successful settlement keeps the saved summary and displays a separate restart error.
+
+User-run validation: RunEconomySummaryViewTests, RunEconomyControllerTests and DemoOpeningLayoutTests; existing RunRestartTests for terminal navigation and retry. Manual acceptance: collect resources then die (40% retained, rounded down); complete the demo (full earnings plus configured boss reward); check permanent balance includes earlier runs, and Retry/Play again starts fresh. This slice does not add a hub, upgrades or purchase logic.

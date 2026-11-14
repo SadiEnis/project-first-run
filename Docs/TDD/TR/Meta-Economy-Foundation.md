@@ -101,3 +101,11 @@ Yukarıdaki adımlar geliştirme geçmişini anlatır. Güncel sorumluluk dağı
 İki kayıtlı demo sahnesinde Demo opening services üzerinde run-end controller ve resource spawner, Player (demo) üzerinde collector bulunur. Sahne geometrisi yeniden üretilmeden bağlantılar güncellendi. Genel event bus, service locator veya her somut sınıf için interface eklenmedi.
 
 Doğrulama: Runtime, Editor, EditMode ve PlayMode derlemeleri başarılı. Unity test yürütmesi kullanıcıdadır. Odaklı kontroller: PersistentMetaWalletTests, MetaWalletStoreContractTests, RunEconomyTests, RunEconomyControllerTests, DemoFinalSessionTests; RunEndControllerTests, RunRestartTests, EnemyMetaResourceDropsTests ve MetaResourcePickupTests. Oynanışta yerden toplama, ölümde %40 aktarım, zaferde tam aktarım ve tekrar çıkış isteğinde çift ödeme olmaması kontrol edilmelidir.
+
+## Beşinci adım — run sonu ekonomi özeti
+
+Ölüm ve tamamlanmış final menüleri ortak RunEconomySummaryView kullanır. İki kayıtlı demo sahnesindeki ekranlar kendi RunEconomyController referansına açıkça bağlıdır. Görünüm sabitlenmiş toplanan/kaybedilen/boss/aktarım miktarlarını ve toplam kalıcı bakiyeyi gösterir; hesaplama, ödeme, yeniden deneme veya dosya erişimi yapmaz. Mevcut gezinme ve iki çıkış eylemi menü sahiplerinde kalır.
+
+Başarılı kayıtta Transferred ve Saved to your permanent wallet görünür. Başarısız/doğrulanmamış kayıtta Pending transfer ve bilinmeyen bakiye gösterilir; sıfır veya eski bakiye sunulmaz. Retry/Play again ve Quit mevcut çıkış akışı üzerinden aynı sonucu kaydetmeyi yeniden dener; görünüm çift ödeme üretemez. Kayıt başarılı olup sahne yüklenemezse kaydedilmiş özet korunur ve ayrı restart hatası gösterilir.
+
+Kullanıcının çalıştıracağı kontroller: RunEconomySummaryViewTests, RunEconomyControllerTests, DemoOpeningLayoutTests; terminal gezinme/yeniden deneme için mevcut RunRestartTests. Oynanış kabulü: kaynak toplayıp ölme (%40, aşağı yuvarlama), demoyu tamamlama (tüm kazanç ve ayarlı boss ödülü), kalıcı bakiyenin önceki run'ları içermesi ve Retry/Play again ile temiz başlangıç. Bu adım ana bölge, meta geliştirme veya satın alma eklemez.

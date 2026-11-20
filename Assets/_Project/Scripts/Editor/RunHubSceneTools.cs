@@ -8,6 +8,7 @@ namespace ProjectFirstRun.Editor
 {
     public static class RunHubSceneTools
     {
+        public const string AmmoUpgradePath = "Assets/_Project/Data/Progression/SO_StartingAmmoUpgrade.asset";
         public const string RoutesPath = "Assets/_Project/Data/Progression/SO_RunSceneRoutes.asset";
         public static string[] BuildScenePaths()
         {

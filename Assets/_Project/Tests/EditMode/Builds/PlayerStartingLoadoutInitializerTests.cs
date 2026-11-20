@@ -313,6 +313,28 @@ namespace ProjectFirstRun.Tests.EditMode.Builds
                 Is.EqualTo(0));
         }
 
+        [TestCase(8, 1)]
+        [TestCase(80, 3)]
+        public void MetaAmmoAddsOnlyToStartingReserveAndCannotApplyTwice(int capacity, int magazines)
+        {
+            ConfigureSettings();
+            SetPrivateField(_startingWeapon, "_magazineCapacity", capacity, typeof(WeaponDefinition));
+            int baseReserve = _startingWeapon.CreateRuntimeConfig().StartingReserveAmmo;
+            _initializer.InitializeConfigured(magazines);
+            Assert.That(_weaponController.MagazineAmmo, Is.EqualTo(capacity));
+            Assert.That(_weaponController.ReserveAmmo, Is.EqualTo(baseReserve + capacity * magazines));
+            Assert.That(_startingWeapon.CreateRuntimeConfig().StartingReserveAmmo, Is.EqualTo(baseReserve));
+            Assert.Throws<System.InvalidOperationException>(() => _initializer.InitializeConfigured(magazines));
+            Assert.That(_weaponController.ReserveAmmo, Is.EqualTo(baseReserve + capacity * magazines));
+        }
+        [Test] public void OverflowingMetaAmmoFailsBeforeBuildInitialization()
+        {
+            ConfigureSettings();
+            Assert.Throws<System.OverflowException>(() => _initializer.InitializeConfigured(int.MaxValue));
+            Assert.That(_buildController.IsInitialized, Is.False);
+            Assert.That(_weaponController.IsInitialized, Is.False);
+        }
+
         private void ConfigureSettings(int weapons = 2, int abilities = 5, int upgrades = 8)
         {
             _settings = ScriptableObject.CreateInstance<PlayerStartingLoadoutSettings>();

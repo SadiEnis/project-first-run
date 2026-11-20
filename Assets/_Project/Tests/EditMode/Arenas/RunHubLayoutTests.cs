@@ -28,6 +28,10 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 var hub = roots.SelectMany(x => x.GetComponentsInChildren<RunHubController>(true)).Single();
                 var view = roots.SelectMany(x => x.GetComponentsInChildren<RunHubView>(true)).Single();
                 Assert.DoesNotThrow(hub.ValidateConfiguration);
+                var ammo = AssetDatabase.LoadAssetAtPath<StartingAmmoUpgradeDefinition>(RunHubSceneTools.AmmoUpgradePath);
+                Assert.That(ammo, Is.Not.Null);
+                Assert.DoesNotThrow(ammo.Validate);
+                Assert.That(hub.AmmoUpgrade, Is.SameAs(ammo));
                 Assert.That(new SerializedObject(hub).FindProperty("_routes").objectReferenceValue, Is.SameAs(routes));
                 Assert.That(new SerializedObject(view).FindProperty("_hub").objectReferenceValue, Is.SameAs(hub));
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<RunEconomyController>(true)), Is.Empty);

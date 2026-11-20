@@ -7,6 +7,19 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
 {
     public sealed class DemoMenuInputTests : InputTestFixture
     {
+        [Test] public void ThreeOptionHubMenuNavigatesBothDirectionsAndWraps()
+        {
+            var menu = new DemoMenuInput();
+            menu.Tick(true, 0, false, optionCount: 3); menu.Tick(true, 0, false, optionCount: 3);
+            menu.Tick(true, -1, false, optionCount: 3);
+            Assert.That(menu.Selected, Is.EqualTo(1));
+            menu.Tick(true, 0, false, optionCount: 3); menu.Tick(true, -1, false, optionCount: 3);
+            Assert.That(menu.Selected, Is.EqualTo(2));
+            menu.Tick(true, 0, false, optionCount: 3); menu.Tick(true, -1, false, optionCount: 3);
+            Assert.That(menu.Selected, Is.Zero);
+            menu.Tick(true, 0, false, optionCount: 3); menu.Tick(true, 1, false, optionCount: 3);
+            Assert.That(menu.Selected, Is.EqualTo(2));
+        }
         [Test]
         public void HeldOpeningInputMustBeReleasedBeforeEitherMenuCanSubmit()
         {

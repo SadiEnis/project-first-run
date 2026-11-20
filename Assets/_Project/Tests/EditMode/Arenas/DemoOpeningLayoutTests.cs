@@ -59,6 +59,8 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 var final = restartData.FindProperty("_final").objectReferenceValue;
                 Assert.That(new SerializedObject(final).FindProperty("_economy").objectReferenceValue, Is.SameAs(economy));
                 var startupData = new SerializedObject(startup);
+                Assert.That(startupData.FindProperty("_ammoUpgrade").objectReferenceValue,
+                    Is.SameAs(AssetDatabase.LoadAssetAtPath<ProjectFirstRun.Progression.StartingAmmoUpgradeDefinition>(RunHubSceneTools.AmmoUpgradePath)));
                 Assert.That(startupData.FindProperty("_experience").objectReferenceValue,
                     Is.SameAs(demo.Health.GetComponent<ProjectFirstRun.Progression.PlayerExperienceController>()));
                 Assert.That(startupData.FindProperty("_abilities").objectReferenceValue,

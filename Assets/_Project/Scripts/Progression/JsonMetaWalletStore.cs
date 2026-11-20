@@ -8,7 +8,7 @@ namespace ProjectFirstRun.Progression
     /// <summary>Versioned, atomic local storage. Each instance tracks its last loaded revision.</summary>
     public sealed class JsonMetaWalletStore : IMetaWalletStore
     {
-        private const int CurrentVersion = 2;
+        private const int CurrentVersion = 3;
         private readonly string _path;
         private string _savedText;
         [Serializable] private sealed class Record
@@ -16,7 +16,9 @@ namespace ProjectFirstRun.Progression
             public int version;
             public string balance;
             public string[] settledRuns;
+            public UpgradeRecord[] upgrades;
         }
+        [Serializable] private sealed class UpgradeRecord { public string id; public int level; }
         public JsonMetaWalletStore(string directory)
         {
             if (string.IsNullOrWhiteSpace(directory)) throw new ArgumentException("Assign a save directory.", nameof(directory));
@@ -31,11 +33,10 @@ namespace ProjectFirstRun.Progression
                 {
                     if (File.Exists(_path + ".bak") || File.Exists(_path + ".tmp"))
                         throw new InvalidDataException("Wallet is missing but recovery files exist. Preserve them and recover explicitly.");
-                    Write(_path, Serialize(0, new HashSet<string>()));
+                    Write(_path, Serialize(new MetaWalletSnapshot(0, Array.Empty<string>())));
                 }
                 string text = File.ReadAllText(_path, Encoding.UTF8);
-                long balance = ReadBalance(text, out var runs);
-                var snapshot = new MetaWalletSnapshot(balance, runs);
+                var snapshot = ReadSnapshot(text);
                 _savedText = text;
                 return snapshot;
             }
@@ -43,7 +44,7 @@ namespace ProjectFirstRun.Progression
         public void Save(MetaWalletSnapshot snapshot)
         {
             if (snapshot == null) throw new ArgumentNullException(nameof(snapshot));
-            string text = Serialize(snapshot.Balance, new HashSet<string>(snapshot.SettledRuns, StringComparer.Ordinal));
+            string text = Serialize(snapshot);
             using (AcquireLock(_path))
             {
                 if (_savedText == null || !File.Exists(_path) || File.ReadAllText(_path, Encoding.UTF8) != _savedText)
@@ -55,35 +56,37 @@ namespace ProjectFirstRun.Progression
         private static FileStream AcquireLock(string path) =>
             new FileStream(path + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
 
-        private static string Serialize(long balance, HashSet<string> settledRuns) => JsonUtility.ToJson(new Record
+        private static string Serialize(MetaWalletSnapshot snapshot)
         {
-            version = CurrentVersion,
-            balance = balance.ToString(System.Globalization.CultureInfo.InvariantCulture),
-            settledRuns = new List<string>(settledRuns).ToArray()
-        }, true);
-
-        private static long ReadBalance(string text, out HashSet<string> settledRuns)
+            var upgrades = new List<UpgradeRecord>();
+            foreach (var pair in snapshot.UpgradeLevels) upgrades.Add(new UpgradeRecord { id = pair.Key, level = pair.Value });
+            return JsonUtility.ToJson(new Record {
+                version = CurrentVersion,
+                balance = snapshot.Balance.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                settledRuns = new List<string>(snapshot.SettledRuns).ToArray(),
+                upgrades = upgrades.ToArray()
+            }, true);
+        }
+        private static MetaWalletSnapshot ReadSnapshot(string text)
         {
             Record record;
             try { record = JsonUtility.FromJson<Record>(text); }
             catch (ArgumentException error) { throw new InvalidDataException("Wallet JSON is invalid. Original file was preserved.", error); }
-            if (record == null || (record.version != 1 && record.version != CurrentVersion))
+            if (record == null || record.version < 1 || record.version > CurrentVersion)
                 throw new InvalidDataException("Unsupported or missing wallet version. Original file was preserved.");
             if (!long.TryParse(record.balance, System.Globalization.NumberStyles.None,
                 System.Globalization.CultureInfo.InvariantCulture, out long balance))
                 throw new InvalidDataException("Wallet balance is missing, negative or outside its supported range.");
-            settledRuns = new HashSet<string>(StringComparer.Ordinal);
-            if (record.version == CurrentVersion)
+            if (record.version >= 2 && record.settledRuns == null) throw new InvalidDataException("Missing settled run history.");
+            if (record.version >= 3 && record.upgrades == null) throw new InvalidDataException("Missing upgrade history.");
+            var upgrades = new List<KeyValuePair<string, int>>();
+            if (record.version >= 3) foreach (var upgrade in record.upgrades)
             {
-                if (record.settledRuns == null) throw new InvalidDataException("Missing settled run history.");
-                foreach (string value in record.settledRuns)
-                {
-                    if (!Guid.TryParseExact(value, "N", out var id) || id == Guid.Empty ||
-                        !settledRuns.Add(id.ToString("N")))
-                        throw new InvalidDataException("Invalid or duplicate settled run identity.");
-                }
+                if (upgrade == null) throw new InvalidDataException("Missing upgrade entry.");
+                upgrades.Add(new KeyValuePair<string, int>(upgrade.id, upgrade.level));
             }
-            return balance;
+            try { return new MetaWalletSnapshot(balance, record.version >= 2 ? record.settledRuns : Array.Empty<string>(), upgrades); }
+            catch (ArgumentException error) { throw new InvalidDataException("Invalid wallet history. Original file was preserved.", error); }
         }
 
         private static void Write(string path, string text)

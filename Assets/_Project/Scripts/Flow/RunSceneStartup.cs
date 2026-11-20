@@ -13,6 +13,7 @@ namespace ProjectFirstRun.Flow
     public sealed class RunSceneStartup : MonoBehaviour
     {
         [SerializeField] private RunEconomyController _economy;
+        [SerializeField] private StartingAmmoUpgradeDefinition _ammoUpgrade;
         [SerializeField] private PlayerStartingLoadoutInitializer _loadout;
         [SerializeField] private PlayerExperienceController _experience;
         [SerializeField] private ChestSpawner _chests;
@@ -25,22 +26,28 @@ namespace ProjectFirstRun.Flow
 
         public void ValidateConfiguration()
         {
-            if (_economy == null || _loadout == null || _experience == null || _chests == null || _abilities == null)
+            if (_ammoUpgrade == null || _economy == null || _loadout == null || _experience == null || _chests == null || _abilities == null)
                 throw new InvalidOperationException("Assign run startup loadout, experience, chests and abilities.");
             if (_experience.gameObject != _loadout.gameObject)
                 throw new InvalidOperationException("Run startup experience and loadout must belong to the same player.");
             if (float.IsNaN(_timeoutSeconds) || float.IsInfinity(_timeoutSeconds) || _timeoutSeconds <= 0)
                 throw new InvalidOperationException("Run startup timeout must be finite and positive.");
             _loadout.ValidateConfiguredSettings();
+            _ammoUpgrade.Validate();
         }
 
         private void Awake()
         {
+            _loadout?.DeferAutoInitialization();
             try
             {
                 ValidateConfiguration();
-                _economy.ConfigureStore(new JsonMetaWalletStore(Application.persistentDataPath));
-                if (!_loadout.IsInitialized) _loadout.InitializeConfigured();
+                var store = new JsonMetaWalletStore(Application.persistentDataPath);
+                var snapshot = store.Load();
+                int magazines = _ammoUpgrade.GetBonusMagazines(snapshot.GetUpgradeLevel(_ammoUpgrade.StableId));
+                _economy.ConfigureStore(store);
+                if (_loadout.IsInitialized) throw new InvalidOperationException("Run startup must own initial loadout creation.");
+                _loadout.InitializeConfigured(magazines);
             }
             catch (Exception error) { Fail(error.Message); }
         }

@@ -61,6 +61,25 @@ namespace ProjectFirstRun.Tests.PlayMode.Builds
         }
 
         [UnityTest]
+        public IEnumerator DeferredStartupCannotSilentlyInitializeWithoutMetaProfile()
+        {
+            _settings = ScriptableObject.CreateInstance<PlayerStartingLoadoutSettings>();
+            SetPrivateField(_settings, "_startingWeapon", _startingWeapon);
+            SetPrivateField(_initializer, "_settings", _settings);
+            _initializer.DeferAutoInitialization();
+            _playerObject.SetActive(true);
+            yield return null;
+            Assert.That(_initializer.IsInitialized, Is.False);
+            Assert.That(_buildController.IsInitialized, Is.False);
+            _initializer.InitializeConfigured(2);
+            int expected = _startingWeapon.CreateRuntimeConfig().StartingReserveAmmo +
+                _startingWeapon.CreateRuntimeConfig().MagazineCapacity * 2;
+            Assert.That(_weaponController.ReserveAmmo, Is.EqualTo(expected));
+            _playerObject.SetActive(false); _playerObject.SetActive(true);
+            yield return null;
+            Assert.That(_weaponController.ReserveAmmo, Is.EqualTo(expected));
+        }
+        [UnityTest]
         public IEnumerator Start_UsesConfiguredSettingsAndDoesNotRepeatAfterReenable()
         {
             _settings = ScriptableObject.CreateInstance<PlayerStartingLoadoutSettings>();

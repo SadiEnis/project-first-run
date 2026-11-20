@@ -46,6 +46,11 @@ namespace ProjectFirstRun.Weapons
 
         public int MagazineAmmo { get; private set; }
         public int ReserveAmmo { get; private set; }
+        public void AddReserveAmmo(int amount)
+        {
+            if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
+            ReserveAmmo = checked(ReserveAmmo + amount);
+        }
 
         public float FireCooldownRemaining { get; private set; }
         public float ReloadTimeRemaining { get; private set; }

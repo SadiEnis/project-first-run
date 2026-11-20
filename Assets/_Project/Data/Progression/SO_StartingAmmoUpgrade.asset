@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2279f1c85ecdce12d1097c80313135c2, type: 3}
+  m_Name: SO_StartingAmmoUpgrade
+  m_EditorClassIdentifier:
+  _stableId: meta.starting-ammo
+  _displayName: Reserve Cache
+  _levels:
+  - cost: 50
+    totalBonusMagazines: 1
+  - cost: 100
+    totalBonusMagazines: 2
+  - cost: 150
+    totalBonusMagazines: 3

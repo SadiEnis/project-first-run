@@ -30,6 +30,9 @@ namespace ProjectFirstRun.Builds
             _weaponAcquisitionController;
 
         private bool _isInitialized;
+        private bool _externalInitialization;
+        public int AppliedBonusReserveAmmo { get; private set; }
+        public void DeferAutoInitialization() => _externalInitialization = true;
 
         public event Action Initialized;
 
@@ -46,7 +49,7 @@ namespace ProjectFirstRun.Builds
 
         private void Start()
         {
-            if (_isInitialized)
+            if (_isInitialized || _externalInitialization)
             {
                 return;
             }
@@ -62,10 +65,12 @@ namespace ProjectFirstRun.Builds
             _settings.Validate();
         }
 
-        public void InitializeConfigured()
+        public void InitializeConfigured() => InitializeConfigured(0);
+
+        public void InitializeConfigured(int extraReserveMagazines)
         {
             ValidateConfiguredSettings();
-            InitializeCore(_settings.CreateCapacity(), _settings.StartingWeapon);
+            InitializeCore(_settings.CreateCapacity(), _settings.StartingWeapon, extraReserveMagazines);
         }
 
         public void Initialize(
@@ -76,7 +81,7 @@ namespace ProjectFirstRun.Builds
             InitializeCore(capacity, _startingWeapon);
         }
 
-        private void InitializeCore(PlayerBuildCapacity capacity, WeaponDefinition startingWeapon)
+        private void InitializeCore(PlayerBuildCapacity capacity, WeaponDefinition startingWeapon, int extraReserveMagazines = 0)
         {
             if (_isInitialized)
             {
@@ -119,7 +124,10 @@ namespace ProjectFirstRun.Builds
              * PlayerBuild so malformed starting content fails
              * before run ownership state is created.
              */
-            _ = startingWeapon.CreateRuntimeConfig();
+            if (extraReserveMagazines < 0) throw new ArgumentOutOfRangeException(nameof(extraReserveMagazines));
+            var config = startingWeapon.CreateRuntimeConfig();
+            int bonusAmmo = checked(config.MagazineCapacity * extraReserveMagazines);
+            _ = checked(config.StartingReserveAmmo + bonusAmmo);
 
             _buildController.Initialize(
                 capacity);
@@ -137,6 +145,8 @@ namespace ProjectFirstRun.Builds
                     $"Result: {acquireResult}.");
             }
 
+            if (bonusAmmo > 0) _weaponController.AddReserveAmmo(bonusAmmo);
+            AppliedBonusReserveAmmo = bonusAmmo;
             _initializedWeapon = startingWeapon;
             _isInitialized = true;
             Initialized?.Invoke();

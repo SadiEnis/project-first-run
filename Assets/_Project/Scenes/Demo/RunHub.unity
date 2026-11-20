@@ -162,6 +162,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   _routes: {fileID: 11400000, guid: 90a4c3fb0a97032c5fa0cdaf468fe766, type: 2}
+  _ammoUpgrade: {fileID: 11400000, guid: ae7f83bb54293e48aa0b2f35e45b44f8, type: 2}
 --- !u!114 &103
 MonoBehaviour:
   m_ObjectHideFlags: 0

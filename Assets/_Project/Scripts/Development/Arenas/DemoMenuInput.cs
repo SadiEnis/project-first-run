@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace ProjectFirstRun.Development.Arenas
 {
-    /// <summary>Shared two-option menu input, independent of gameplay action maps and time scale.</summary>
+    /// <summary>Shared menu input, independent of gameplay action maps and time scale.</summary>
     public sealed class DemoMenuInput
     {
         private bool _visible, _armed, _confirmHeld, _axisHeld;
@@ -11,8 +11,10 @@ namespace ProjectFirstRun.Development.Arenas
         public bool IsArmed => _visible && _armed;
 
         // Returns the submitted option, or -1. One move per stick deflection / button press.
-        public int Tick(bool visible, float vertical, bool confirm, bool pointerHeld = false)
+        public int Tick(bool visible, float vertical, bool confirm, bool pointerHeld = false, int optionCount = 2)
         {
+            if (optionCount < 1) throw new System.ArgumentOutOfRangeException(nameof(optionCount));
+            Selected = Mathf.Clamp(Selected, 0, optionCount - 1);
             if (!visible)
             {
                 _visible = _armed = _confirmHeld = _axisHeld = false;
@@ -35,7 +37,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (Mathf.Abs(vertical) < .25f) _axisHeld = false;
             if (Mathf.Abs(vertical) >= .6f && !_axisHeld)
             {
-                Selected = 1 - Selected;
+                Selected = (Selected + (vertical > 0 ? optionCount - 1 : 1)) % optionCount;
                 _axisHeld = true;
             }
             bool submit = confirm && !_confirmHeld;
@@ -43,7 +45,7 @@ namespace ProjectFirstRun.Development.Arenas
             return submit ? Selected : -1;
         }
 
-        public int Poll(bool visible)
+        public int Poll(bool visible, int optionCount = 2)
         {
             var pad = Gamepad.current;
             var keyboard = Keyboard.current;
@@ -54,7 +56,7 @@ namespace ProjectFirstRun.Development.Arenas
             if (keyboard != null && keyboard.downArrowKey.isPressed) vertical = -1;
             bool confirm = (pad != null && pad.buttonSouth.isPressed) ||
                 (keyboard != null && (keyboard.enterKey.isPressed || keyboard.numpadEnterKey.isPressed || keyboard.spaceKey.isPressed));
-            return Tick(visible, vertical, confirm, Mouse.current != null && Mouse.current.leftButton.isPressed);
+            return Tick(visible, vertical, confirm, Mouse.current != null && Mouse.current.leftButton.isPressed, optionCount);
         }
 
         public bool Button(Rect rect, int index, string label)

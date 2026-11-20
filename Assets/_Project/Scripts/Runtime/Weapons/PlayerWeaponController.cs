@@ -208,6 +208,13 @@ namespace ProjectFirstRun.Weapons
             PublishAmmoChanged();
         }
 
+        public void AddReserveAmmo(int amount)
+        {
+            if (!IsInitialized) throw new InvalidOperationException("Initialize a weapon before adding reserve ammunition.");
+            _runtimeState.AddReserveAmmo(amount);
+            PublishAmmoChanged();
+        }
+
         public void ResetWeaponState()
         {
             if (!IsInitialized)

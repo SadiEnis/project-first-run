@@ -109,3 +109,15 @@ Death and completed-finale menus now share RunEconomySummaryView. Both saved dem
 Successful settlement shows Transferred and Saved to your permanent wallet. A failed/unconfirmed save shows Pending transfer and an unavailable balance rather than zero or a stale value. Retry/Play again and Quit use the existing exit flow to retry saving the same result before leaving; the view itself cannot pay twice. A scene reload failure after successful settlement keeps the saved summary and displays a separate restart error.
 
 User-run validation: RunEconomySummaryViewTests, RunEconomyControllerTests and DemoOpeningLayoutTests; existing RunRestartTests for terminal navigation and retry. Manual acceptance: collect resources then die (40% retained, rounded down); complete the demo (full earnings plus configured boss reward); check permanent balance includes earlier runs, and Retry/Play again starts fresh. This slice does not add a hub, upgrades or purchase logic.
+
+## Sixth slice — hub and run loop
+
+RunHub.unity is a separate saved hub with a fixed camera. This initial version has no walkable player or purchases; it presents permanent balance and Start Run / Quit, using the existing keyboard/mouse/gamepad menu and glyph handling. Future meta-upgrade presentation can expand this scene.
+
+SO_RunSceneRoutes defines the hub and fresh-run destinations (DeepJam_WideCombat by default). Death and victory now offer Return to hub as their first action; the summary stays visible until chosen. Saving must succeed before loading. A failed load preserves the settled result, so retries cannot pay again. Pause Restart and failed-encounter retry still reset the current scene. The temporary abandon/save policy for Quit is unchanged.
+
+RunHubController reads via IMetaWalletStore on arrival and never settles or credits. Failed reads show Unavailable and block new runs; Retry reading save retries the original file without resetting corrupt data. The hub restores menu time/audio/cursor state. Start Run loads the configured scene in Single mode, skips the existing entry menu/camera approach and creates fresh run/player state. Weapons, abilities, XP, run identity and collected run currency reset; permanent balance stays on disk. Direct demo scene testing remains supported.
+
+Open through Project First Run → Run → Open Hub. Build Windows Run Loop includes hub and configured run under Builds/RunLoop. Build Settings starts with the hub and includes both demo scenes, retaining the earlier SampleScene entry. Build Windows Opening also includes its return destinations. Builds remains ignored. No Windows build was executed in this slice.
+
+User-run checks: RunHubLayoutTests, DemoOpeningLayoutTests, RunHubControllerTests and RunRestartTests. Manual: hub balance → Start Run → collect → death/victory summary → Return to hub → updated balance → fresh run; also verify balance survives closing/reopening the application. New coverage includes read-failure blocking, no payment on hub reads, failed-load retries and double-submit rejection.

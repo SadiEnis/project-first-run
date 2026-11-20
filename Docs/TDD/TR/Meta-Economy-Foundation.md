@@ -109,3 +109,15 @@ Doğrulama: Runtime, Editor, EditMode ve PlayMode derlemeleri başarılı. Unity
 Başarılı kayıtta Transferred ve Saved to your permanent wallet görünür. Başarısız/doğrulanmamış kayıtta Pending transfer ve bilinmeyen bakiye gösterilir; sıfır veya eski bakiye sunulmaz. Retry/Play again ve Quit mevcut çıkış akışı üzerinden aynı sonucu kaydetmeyi yeniden dener; görünüm çift ödeme üretemez. Kayıt başarılı olup sahne yüklenemezse kaydedilmiş özet korunur ve ayrı restart hatası gösterilir.
 
 Kullanıcının çalıştıracağı kontroller: RunEconomySummaryViewTests, RunEconomyControllerTests, DemoOpeningLayoutTests; terminal gezinme/yeniden deneme için mevcut RunRestartTests. Oynanış kabulü: kaynak toplayıp ölme (%40, aşağı yuvarlama), demoyu tamamlama (tüm kazanç ve ayarlı boss ödülü), kalıcı bakiyenin önceki run'ları içermesi ve Retry/Play again ile temiz başlangıç. Bu adım ana bölge, meta geliştirme veya satın alma eklemez.
+
+## Altıncı adım — ana bölge ve run döngüsü
+
+RunHub.unity ayrı, kayıtlı, sabit kameralı bir başlangıç ana bölgesidir. Bu ilk sürümde gezilebilir oyuncu veya satın alma bulunmaz; kalıcı bakiye ve Start Run / Quit seçenekleri vardır. Menü klavye, mouse ve gamepad için mevcut ortak giriş ve ikon sistemini kullanır. Gelecekteki meta geliştirme sunumu bu sahne üzerinde genişletilebilir.
+
+SO_RunSceneRoutes hub ve yeni run sahnesini belirler. Varsayılan run DeepJam_WideCombat'tır. Ölüm ve zafer ekranlarındaki ilk seçenek Return to hub oldu; sonuç özeti görünür kalır, otomatik dönüş yapılmaz. Kayıt başarılı olmadan dönüş başlatılmaz. Dönüş yüklenemezse ödenmiş sonuç korunur; tekrar deneme ikinci ödeme yapmaz. Pause Restart ve başarısız encounter yeniden denemesi mevcut sahneyi sıfırlamaya devam eder. Quit'in geçici bırakma/kayıt politikası değişmedi.
+
+RunHubController sahne girişinde kaydı IMetaWalletStore üzerinden okur; ödeme yapmaz. Okuma hatasında bakiye Unavailable olur ve yeni run engellenir; Retry reading save aynı dosyayı yeniden okur, bozuk dosyayı sıfırlamaz. Hub zaman/ses/işaretçiyi menü durumuna getirir. Start Run ayarlı sahneyi Single olarak yükler ve mevcut giriş menüsünü/kamera yaklaşımını atlayarak temiz oyuncuyla başlar. Silahlar, yetenekler, XP, run kimliği ve toplanan run kaynağı yeni sahnede yeniden oluşur; kalıcı bakiye diskte korunur. Doğrudan demo sahnesini açarak test etmek mümkündür.
+
+Project First Run → Run → Open Hub ile açılır. Build Windows Run Loop, hub ve ayarlı run'ı Builds/RunLoop altına dahil eder. Build Settings'te hub ilk sahnedir, iki demo sahnesi de bulunur; eski SampleScene kaydı korunmuştur. Eski Build Windows Opening komutu da dönüş hedeflerini içerir. Builds klasörü takip dışıdır. Bu adımda Windows build çalıştırılmadı.
+
+Kullanıcı testleri: RunHubLayoutTests, DemoOpeningLayoutTests, RunHubControllerTests, RunRestartTests. Elle: hub bakiyesi → Start Run → kaynak toplama → ölüm/zafer özeti → Return to hub → güncel bakiye → yeni ve temiz run. Uygulamayı kapatıp açınca bakiyenin korunması da kontrol edilmeli. Yeni testler okuma hatasında başlatmama, bakiyeyi tekrar ödemeden okuma, yükleme hatasında yeniden deneme ve çift tıklamayı engellemeyi kapsar.

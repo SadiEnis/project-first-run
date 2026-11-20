@@ -424,6 +424,22 @@ namespace ProjectFirstRun.Tests.EditMode.Builds
             Assert.That(_buildController.IsInitialized, Is.False);
         }
 
+        [TestCase(2, 3)]
+        [TestCase(5, 8)]
+        public void ResolvedMetaCapacityAppliesWithoutGrantingItemsOrMutatingSettings(int abilities, int upgrades)
+        {
+            ConfigureSettings();
+            var original = _settings.CreateCapacity();
+            var capacity = new PlayerBuildCapacity(2, abilities, upgrades);
+            _initializer.InitializeConfigured(1, capacity);
+            Assert.That(_buildController.Build.Capacity, Is.SameAs(capacity));
+            Assert.That(_buildController.Build.GetCount(ItemCategory.Ability), Is.Zero);
+            Assert.That(_buildController.Build.GetCount(ItemCategory.Upgrade), Is.Zero);
+            Assert.That(_settings.CreateCapacity().AbilitySlots, Is.EqualTo(original.AbilitySlots));
+            Assert.That(_settings.CreateCapacity().UpgradeSlots, Is.EqualTo(original.UpgradeSlots));
+            Assert.Throws<System.InvalidOperationException>(() => _initializer.InitializeConfigured(1, capacity));
+        }
+
         private static WeaponDefinition
             CreateWeaponDefinition(
                 string stableId)

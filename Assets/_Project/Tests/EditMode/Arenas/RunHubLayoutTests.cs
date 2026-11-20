@@ -32,6 +32,8 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 Assert.That(ammo, Is.Not.Null);
                 Assert.DoesNotThrow(ammo.Validate);
                 Assert.That(hub.AmmoUpgrade, Is.SameAs(ammo));
+                Assert.That(hub.AbilitySlotUpgrade, Is.SameAs(AssetDatabase.LoadAssetAtPath<SlotCapacityUpgradeDefinition>(RunHubSceneTools.AbilitySlotUpgradePath)));
+                Assert.That(hub.UpgradeSlotUpgrade, Is.SameAs(AssetDatabase.LoadAssetAtPath<SlotCapacityUpgradeDefinition>(RunHubSceneTools.UpgradeSlotUpgradePath)));
                 Assert.That(new SerializedObject(hub).FindProperty("_routes").objectReferenceValue, Is.SameAs(routes));
                 Assert.That(new SerializedObject(view).FindProperty("_hub").objectReferenceValue, Is.SameAs(hub));
                 Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<RunEconomyController>(true)), Is.Empty);

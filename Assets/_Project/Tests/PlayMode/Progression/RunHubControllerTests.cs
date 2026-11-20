@@ -29,6 +29,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
         private RunHubController _hub;
         private RunSceneRoutes _routes;
         private StartingAmmoUpgradeDefinition _ammo;
+        private SlotCapacityUpgradeDefinition _ability, _upgrade;
         private Store _store;
         private Loader _loader;
         private float _time;
@@ -45,6 +46,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
             _ammo = ScriptableObject.CreateInstance<StartingAmmoUpgradeDefinition>();
             JsonUtility.FromJsonOverwrite("{\"_levels\":[{\"cost\":50,\"totalBonusMagazines\":1},{\"cost\":100,\"totalBonusMagazines\":2}]}", _ammo);
             Set(_hub, "_ammoUpgrade", _ammo);
+            _ability = ScriptableObject.CreateInstance<SlotCapacityUpgradeDefinition>();
+            _upgrade = ScriptableObject.CreateInstance<SlotCapacityUpgradeDefinition>();
+            JsonUtility.FromJsonOverwrite("{\"_stableId\":\"meta.ability-slots\",\"_displayName\":\"Ability\",\"_startingCapacity\":2,\"_costs\":[75,150,250]}", _ability);
+            JsonUtility.FromJsonOverwrite("{\"_stableId\":\"meta.upgrade-slots\",\"_displayName\":\"Upgrade\",\"_startingCapacity\":3,\"_costs\":[50,100,175,275,400]}", _upgrade);
+            Set(_hub, "_abilitySlotUpgrade", _ability); Set(_hub, "_upgradeSlotUpgrade", _upgrade);
             _store = new Store(); _loader = new Loader();
             Invoke("ConfigureStore", _store); Invoke("SetReloader", _loader);
             _go.SetActive(true);
@@ -52,6 +58,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
         [TearDown] public void Cleanup()
         {
             UnityEngine.Object.DestroyImmediate(_go); UnityEngine.Object.DestroyImmediate(_routes); UnityEngine.Object.DestroyImmediate(_ammo);
+            UnityEngine.Object.DestroyImmediate(_ability); UnityEngine.Object.DestroyImmediate(_upgrade);
             DemoEntryController.CancelSkip();
             Time.timeScale = _time; AudioListener.pause = _audio; Cursor.visible = _cursor; Cursor.lockState = _lock;
         }
@@ -123,6 +130,20 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
             Assert.That(_hub.StartRun(), Is.True);
             Assert.That(_hub.PurchaseAmmo(0), Is.False);
             Assert.That(_store.Saves, Is.Zero);
+        }
+        [Test] public void SlotPurchasesRemainIndependentAndRejectRepeatedOffers()
+        {
+            Assert.That(_hub.PurchaseAbilitySlot(0), Is.True);
+            Assert.That(_hub.PurchaseAbilitySlot(0), Is.False);
+            Assert.That(_hub.PurchaseUpgradeSlot(0), Is.True);
+            Assert.That(_hub.AbilitySlotLevel, Is.EqualTo(1));
+            Assert.That(_hub.UpgradeSlotLevel, Is.EqualTo(1));
+            Assert.That(_hub.AmmoLevel, Is.Zero);
+            Assert.That(_hub.PermanentBalance, Is.EqualTo(125));
+            Assert.That(_store.Saves, Is.EqualTo(2));
+            Assert.That(_hub.RefreshBalance(), Is.True);
+            Assert.That(_ability.GetCapacity(_hub.AbilitySlotLevel), Is.EqualTo(3));
+            Assert.That(_upgrade.GetCapacity(_hub.UpgradeSlotLevel), Is.EqualTo(4));
         }
         private void Invoke(string method, object value) => typeof(RunHubController)
             .GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(_hub, new[] { value });

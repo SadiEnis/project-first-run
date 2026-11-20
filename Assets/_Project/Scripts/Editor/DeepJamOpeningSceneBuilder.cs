@@ -155,6 +155,8 @@ namespace ProjectFirstRun.Editor
             var startup = services.AddComponent<RunSceneStartup>();
             Set(startup, "_economy", economy);
             Set(startup, "_ammoUpgrade", Load<StartingAmmoUpgradeDefinition>(RunHubSceneTools.AmmoUpgradePath));
+            Set(startup, "_abilitySlotUpgrade", Load<SlotCapacityUpgradeDefinition>(RunHubSceneTools.AbilitySlotUpgradePath));
+            Set(startup, "_upgradeSlotUpgrade", Load<SlotCapacityUpgradeDefinition>(RunHubSceneTools.UpgradeSlotUpgradePath));
             Set(startup, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());
             Set(startup, "_experience", player.GetComponent<PlayerExperienceController>());
             Set(startup, "_chests", services.GetComponent<ChestSpawner>());

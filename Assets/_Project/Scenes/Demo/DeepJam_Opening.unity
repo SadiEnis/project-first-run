@@ -33570,6 +33570,8 @@ MonoBehaviour:
   _timeoutSeconds: 10
   _economy: {fileID: 5000000002}
   _ammoUpgrade: {fileID: 11400000, guid: ae7f83bb54293e48aa0b2f35e45b44f8, type: 2}
+  _abilitySlotUpgrade: {fileID: 11400000, guid: bae8721c7f820300504baf22c086be53, type: 2}
+  _upgradeSlotUpgrade: {fileID: 11400000, guid: bc0eebdd3c1741c0e70267b03497ae6a, type: 2}
 --- !u!114 &5000000002
 MonoBehaviour:
   m_ObjectHideFlags: 0

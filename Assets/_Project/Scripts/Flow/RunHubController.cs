@@ -1,6 +1,7 @@
 using System;
 using ProjectFirstRun.Development.Arenas;
 using ProjectFirstRun.Progression;
+using ProjectFirstRun.Builds;
 using UnityEngine;
 namespace ProjectFirstRun.Flow
 {
@@ -9,6 +10,12 @@ namespace ProjectFirstRun.Flow
     {
         [SerializeField] private RunSceneRoutes _routes;
         [SerializeField] private StartingAmmoUpgradeDefinition _ammoUpgrade;
+        [SerializeField] private SlotCapacityUpgradeDefinition _abilitySlotUpgrade;
+        [SerializeField] private SlotCapacityUpgradeDefinition _upgradeSlotUpgrade;
+        public SlotCapacityUpgradeDefinition AbilitySlotUpgrade => _abilitySlotUpgrade;
+        public SlotCapacityUpgradeDefinition UpgradeSlotUpgrade => _upgradeSlotUpgrade;
+        public int AbilitySlotLevel => _wallet?.GetUpgradeLevel(_abilitySlotUpgrade.StableId) ?? 0;
+        public int UpgradeSlotLevel => _wallet?.GetUpgradeLevel(_upgradeSlotUpgrade.StableId) ?? 0;
         private PersistentMetaWallet _wallet;
         public StartingAmmoUpgradeDefinition AmmoUpgrade => _ammoUpgrade;
         public int AmmoLevel => _wallet != null ? _wallet.GetUpgradeLevel(_ammoUpgrade.StableId) : 0;
@@ -24,9 +31,17 @@ namespace ProjectFirstRun.Flow
         public string LastError => _readError ?? _operation.Error?.Message;
         public void ValidateConfiguration()
         {
-            if (_routes == null || _ammoUpgrade == null) throw new InvalidOperationException("Assign hub scene routes.");
+            if (_routes == null) throw new InvalidOperationException("Hub scene routes are not assigned.");
+            if (_ammoUpgrade == null) throw new InvalidOperationException("Hub starting ammo upgrade is not assigned.");
+            if (_abilitySlotUpgrade == null) throw new InvalidOperationException("Hub ability slot upgrade is not assigned. Reopen the saved Hub scene.");
+            if (_upgradeSlotUpgrade == null) throw new InvalidOperationException("Hub upgrade slot upgrade is not assigned. Reopen the saved Hub scene.");
             _routes.ValidateConfiguration();
             _ammoUpgrade.Validate();
+            _abilitySlotUpgrade.Validate(PlayerBuildCapacity.MaximumAbilitySlots);
+            _upgradeSlotUpgrade.Validate(PlayerBuildCapacity.MaximumUpgradeSlots);
+            if (_abilitySlotUpgrade.StableId == _upgradeSlotUpgrade.StableId ||
+                _ammoUpgrade.StableId == _abilitySlotUpgrade.StableId || _ammoUpgrade.StableId == _upgradeSlotUpgrade.StableId)
+                throw new InvalidOperationException("Meta upgrade IDs must be distinct.");
         }
         private void Start()
         {
@@ -48,6 +63,8 @@ namespace ProjectFirstRun.Flow
                 if (_store == null) throw new InvalidOperationException("Hub storage has not initialized.");
                 var wallet = new PersistentMetaWallet(_store);
                 _ = _ammoUpgrade.GetBonusMagazines(wallet.GetUpgradeLevel(_ammoUpgrade.StableId));
+                _ = _abilitySlotUpgrade.GetCapacity(wallet.GetUpgradeLevel(_abilitySlotUpgrade.StableId));
+                _ = _upgradeSlotUpgrade.GetCapacity(wallet.GetUpgradeLevel(_upgradeSlotUpgrade.StableId));
                 _wallet = wallet;
                 _readError = null;
                 PurchaseMessage = null;
@@ -60,18 +77,25 @@ namespace ProjectFirstRun.Flow
                 return false;
             }
         }
-        public bool PurchaseAmmo(int expectedLevel)
+        public bool PurchaseAmmo(int expectedLevel) =>
+            Purchase(_ammoUpgrade.StableId, expectedLevel, _ammoUpgrade.MaxLevel, _ammoUpgrade.GetNextCost);
+        public bool PurchaseAbilitySlot(int expectedLevel) =>
+            Purchase(_abilitySlotUpgrade.StableId, expectedLevel, _abilitySlotUpgrade.MaxLevel, _abilitySlotUpgrade.GetNextCost);
+        public bool PurchaseUpgradeSlot(int expectedLevel) =>
+            Purchase(_upgradeSlotUpgrade.StableId, expectedLevel, _upgradeSlotUpgrade.MaxLevel, _upgradeSlotUpgrade.GetNextCost);
+        private bool Purchase(string id, int expectedLevel, int maxLevel, Func<int, int> getCost)
         {
             if (!isActiveAndEnabled || IsLoading) return false;
             PurchaseMessage = null;
             if (!RefreshBalance()) return false;
-            if (AmmoLevel != expectedLevel) { PurchaseMessage = "Your upgrade level changed. Review the new offer."; return false; }
-            if (AmmoLevel >= _ammoUpgrade.MaxLevel) { PurchaseMessage = "Maximum level reached."; return false; }
-            int price = _ammoUpgrade.GetNextCost(AmmoLevel);
+            int level = _wallet.GetUpgradeLevel(id);
+            if (level != expectedLevel) { PurchaseMessage = "Your upgrade level changed. Review the new offer."; return false; }
+            if (level >= maxLevel) { PurchaseMessage = "Maximum level reached."; return false; }
+            int price = getCost(level);
             if (_wallet.Balance < price) { PurchaseMessage = "Not enough GOLD."; return false; }
             try
             {
-                bool purchased = _wallet.TryPurchase(_ammoUpgrade.StableId, expectedLevel, price);
+                bool purchased = _wallet.TryPurchase(id, expectedLevel, price);
                 PurchaseMessage = purchased ? "Purchased. Applies to your next run." : "Offer changed. Please review it again.";
                 return purchased;
             }

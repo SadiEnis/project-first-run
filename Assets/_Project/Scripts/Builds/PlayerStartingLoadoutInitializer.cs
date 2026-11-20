@@ -70,7 +70,13 @@ namespace ProjectFirstRun.Builds
         public void InitializeConfigured(int extraReserveMagazines)
         {
             ValidateConfiguredSettings();
-            InitializeCore(_settings.CreateCapacity(), _settings.StartingWeapon, extraReserveMagazines);
+            InitializeConfigured(extraReserveMagazines, null);
+        }
+
+        public void InitializeConfigured(int extraReserveMagazines, PlayerBuildCapacity resolvedCapacity)
+        {
+            ValidateConfiguredSettings();
+            InitializeCore(resolvedCapacity ?? _settings.CreateCapacity(), _settings.StartingWeapon, extraReserveMagazines);
         }
 
         public void Initialize(

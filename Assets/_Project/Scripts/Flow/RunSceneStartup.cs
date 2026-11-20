@@ -14,6 +14,8 @@ namespace ProjectFirstRun.Flow
     {
         [SerializeField] private RunEconomyController _economy;
         [SerializeField] private StartingAmmoUpgradeDefinition _ammoUpgrade;
+        [SerializeField] private SlotCapacityUpgradeDefinition _abilitySlotUpgrade;
+        [SerializeField] private SlotCapacityUpgradeDefinition _upgradeSlotUpgrade;
         [SerializeField] private PlayerStartingLoadoutInitializer _loadout;
         [SerializeField] private PlayerExperienceController _experience;
         [SerializeField] private ChestSpawner _chests;
@@ -26,7 +28,7 @@ namespace ProjectFirstRun.Flow
 
         public void ValidateConfiguration()
         {
-            if (_ammoUpgrade == null || _economy == null || _loadout == null || _experience == null || _chests == null || _abilities == null)
+            if (_abilitySlotUpgrade == null || _upgradeSlotUpgrade == null || _ammoUpgrade == null || _economy == null || _loadout == null || _experience == null || _chests == null || _abilities == null)
                 throw new InvalidOperationException("Assign run startup loadout, experience, chests and abilities.");
             if (_experience.gameObject != _loadout.gameObject)
                 throw new InvalidOperationException("Run startup experience and loadout must belong to the same player.");
@@ -34,6 +36,11 @@ namespace ProjectFirstRun.Flow
                 throw new InvalidOperationException("Run startup timeout must be finite and positive.");
             _loadout.ValidateConfiguredSettings();
             _ammoUpgrade.Validate();
+            _abilitySlotUpgrade.Validate(PlayerBuildCapacity.MaximumAbilitySlots);
+            _upgradeSlotUpgrade.Validate(PlayerBuildCapacity.MaximumUpgradeSlots);
+            if (_abilitySlotUpgrade.StableId == _upgradeSlotUpgrade.StableId ||
+                _ammoUpgrade.StableId == _abilitySlotUpgrade.StableId || _ammoUpgrade.StableId == _upgradeSlotUpgrade.StableId)
+                throw new InvalidOperationException("Meta upgrade IDs must be distinct.");
         }
 
         private void Awake()
@@ -47,7 +54,10 @@ namespace ProjectFirstRun.Flow
                 int magazines = _ammoUpgrade.GetBonusMagazines(snapshot.GetUpgradeLevel(_ammoUpgrade.StableId));
                 _economy.ConfigureStore(store);
                 if (_loadout.IsInitialized) throw new InvalidOperationException("Run startup must own initial loadout creation.");
-                _loadout.InitializeConfigured(magazines);
+                var capacity = new PlayerBuildCapacity(_loadout.Settings.CreateCapacity().WeaponSlots,
+                    _abilitySlotUpgrade.GetCapacity(snapshot.GetUpgradeLevel(_abilitySlotUpgrade.StableId)),
+                    _upgradeSlotUpgrade.GetCapacity(snapshot.GetUpgradeLevel(_upgradeSlotUpgrade.StableId)));
+                _loadout.InitializeConfigured(magazines, capacity);
             }
             catch (Exception error) { Fail(error.Message); }
         }

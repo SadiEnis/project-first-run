@@ -133,3 +133,14 @@ Hub coordinates purchases; the wallet persists spending and level changes; the v
 Presentation: Reserve Cache name, current/max level, current bonus, next total bonus and price. Hub now has Start Run, Buy upgrade and Quit, all reachable by keyboard/gamepad. Save failures do not claim success; rereading retrieves the actual disk state. Maximum level disables buying; insufficient funds displays a message. Configure prices/bonuses in Assets/_Project/Data/Progression/SO_StartingAmmoUpgrade.asset. Saves reference stable ID; do not rename it after purchases without migration.
 
 Checks: MetaUpgradePurchaseTests (atomic purchase, repeated offer, insufficient balance, legacy migration, invalid level history and preserving other upgrades); PlayerStartingLoadoutInitializerTests and PlayerStartingLoadoutIntegrationTests (different capacities, overflow, one-time application and deferred startup); RunHubControllerTests, DemoMenuInputTests and scene layout tests. Runtime/Editor/test compilation checked; Unity execution remains user-run. Manual: buy at hub → balance/level update → verify reserve ammo in a fresh run → return/reopen → purchased level persists. No purchase was made in the user's actual save and no Windows build was produced.
+
+## Meta slot capacity
+- New profiles start with 2 weapons, 2 abilities and 3 upgrades.
+- Ability capacity: 2 → 3 → 4 → 5. Trial prices: 75 / 150 / 250 GOLD.
+- Upgrade capacity: 3 → 4 → 5 → 6 → 7 → 8. Trial prices: 50 / 100 / 175 / 275 / 400 GOLD.
+- Two independent SlotCapacityUpgradeDefinition assets own starting capacity and one-slot purchase prices: SO_AbilitySlotUpgrade and SO_UpgradeSlotUpgrade. Prices are provisional.
+- RunSceneStartup resolves those capacities from the saved levels; weapon capacity and starting weapon remain in SO_GameStartingLoadout. Its ability/upgrade fields are fallback capacities for initialization without meta startup.
+- RunHubController shares one purchase path with ammunition upgrades. Existing version-3 saves require no migration: absent IDs mean level zero; balance and ammo purchases remain intact.
+- Purchases affect only the next run. They grant capacity, not items. HUD, pause and chest eligibility consume the same initialized build capacity.
+- Hub offers support mouse, keyboard and gamepad. Failed saves, stale offers and insufficient funds cannot grant a slot.
+- Focused checks: SlotCapacityUpgradeTests, PlayerStartingLoadoutInitializerTests, RunHubControllerTests and scene layout tests. Manually check fresh 2/2/3, independent purchases, next-run HUD/pause and restart persistence.

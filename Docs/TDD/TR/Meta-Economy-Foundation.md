@@ -133,3 +133,14 @@ Hub satın almayı koordine eder, cüzdan ödeme/seviye değişikliğini saklar;
 Görünüm: Reserve Cache adı, mevcut/maksimum seviye, mevcut bonus, sonraki toplam bonus ve fiyat. Hub menüsü üç seçenekli: Start Run, Buy upgrade, Quit; klavye/gamepad ile üçüne de gidilebilir. Kayıt hatasında başarı gösterilmez; tekrar okuma ile dosyadaki kesin durum alınır. Maksimum seviyede satın alma kapatılır; yetersiz bakiye mesaj verir. Fiyat/bonusları değiştirmek için Assets/_Project/Data/Progression/SO_StartingAmmoUpgrade.asset kullanılır. Kayıtlar stable ID ile bağlı olduğundan satın almalardan sonra kimlik değiştirilmemelidir.
 
 Kontroller: MetaUpgradePurchaseTests (atomik satın alma, tekrar teklif, yetersiz bakiye, eski kayıt yükseltme, bozuk seviye geçmişi, başka geliştirmeleri koruma); PlayerStartingLoadoutInitializerTests ve PlayerStartingLoadoutIntegrationTests (farklı kapasite, taşma, bir kez uygulama, profil olmadan otomatik başlatmama); RunHubControllerTests, DemoMenuInputTests ve sahne layout testleri. Runtime/Editor/test derleme kontrolü yapıldı; Unity test yürütmesi kullanıcıdadır. Elle Hub'da satın al → bakiye/seviye değişsin → yeni run'da yedek mermiyi kontrol et → Hub'a dön veya uygulamayı yeniden aç → satın alınan seviye korunsun. Bu adım mevcut gerçek kayıt dosyasına geliştirme satın almaz ve Windows build üretmez.
+
+## Meta slot kapasitesi
+- Yeni profil 2 silah, 2 yetenek ve 3 güçlendirme kapasitesiyle başlar.
+- Yetenek kapasitesi: 2 → 3 → 4 → 5. Deneme fiyatları: 75 / 150 / 250 GOLD.
+- Güçlendirme kapasitesi: 3 → 4 → 5 → 6 → 7 → 8. Deneme fiyatları: 50 / 100 / 175 / 275 / 400 GOLD.
+- İki ayrı SlotCapacityUpgradeDefinition asset'i başlangıç kapasitesini ve her seferinde bir slot açan fiyatları yönetir: SO_AbilitySlotUpgrade ve SO_UpgradeSlotUpgrade. Fiyatlar nihai denge değildir.
+- RunSceneStartup kayıtlı seviyelerden kapasiteyi çözer. Silah kapasitesi ve başlangıç silahı SO_GameStartingLoadout içindedir. Bu loadout'un yetenek/güçlendirme alanları meta startup kullanılmayan başlangıçlar için yedek değerlerdir.
+- RunHubController mühimmat ve slotlar için ortak satın alma akışını kullanır. Sürüm 3 kayıt formatı değişmez; eksik geliştirme ID'si seviye sıfırdır. Mevcut altın ve mühimmat geliştirmeleri korunur.
+- Satın alma yalnızca sonraki run'a uygulanır; item vermez, kapasite açar. HUD, pause ekranı ve sandık uygunluğu aynı build kapasitesini kullanır.
+- Hub fare, klavye ve gamepad ile kullanılabilir. Başarısız kayıt, eski teklif ve yetersiz bakiye slot kazandırmaz.
+- Odak testler: SlotCapacityUpgradeTests, PlayerStartingLoadoutInitializerTests, RunHubControllerTests ve sahne yerleşim testleri. Elle yeni profilde 2/2/3, bağımsız satın alma, sonraki run HUD/pause ve restart sonrası kalıcılık kontrol edilir.

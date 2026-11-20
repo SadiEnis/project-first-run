@@ -37,10 +37,11 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         {
             public int Calls;
             public bool Succeed;
+            public string ExpectedPath = Path;
             public bool Begin(string path)
             {
                 Calls++;
-                Assert.That(path, Is.EqualTo(Path));
+                Assert.That(path, Is.EqualTo(ExpectedPath));
                 Assert.That(Time.timeScale, Is.Zero);
                 Assert.That(AudioListener.pause, Is.True);
                 return Succeed;
@@ -148,7 +149,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
         {
             Find<DemoEntryController>().enabled = false;
             yield return null;
-            var loader = new Loader(); Inject(loader);
+            var loader = new Loader { ExpectedPath = _restart.Routes.HubScenePath }; Inject(loader);
             _demo.Restart(); Assert.That(loader.Calls, Is.Zero, "Alive is not eligible for death restart.");
             _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
             yield return null;
@@ -170,7 +171,7 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             Find<DemoEntryController>().enabled = false;
             yield return null;
             var final = Find<DemoFinalController>();
-            var loader = new Loader(); Inject(loader);
+            var loader = new Loader { ExpectedPath = _restart.Routes.HubScenePath }; Inject(loader);
             Assert.That(final.Session.TryBegin(true, true, true, true), Is.True);
             final.Replay(); Assert.That(loader.Calls, Is.Zero);
             Assert.That(final.Session.TryComplete(), Is.True);
@@ -184,6 +185,33 @@ namespace ProjectFirstRun.Tests.PlayMode.Arenas
             final.Replay(); final.Replay();
             Assert.That(loader.Calls, Is.EqualTo(2));
             Assert.That(final.Session.ReplayRequested, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator ReturnToHubWaitsForSaveAndDoesNotPayAgainOnLoadRetry()
+        {
+            Find<DemoEntryController>().enabled = false;
+            yield return null;
+            var economy = Find<ProjectFirstRun.Progression.RunEconomyController>();
+            economy.Add(103);
+            var store = new ProjectFirstRun.Progression.JsonMetaWalletStore(_economyDirectory);
+            store.Load();
+            string temporary = System.IO.Path.Combine(_economyDirectory, "meta-wallet.json.tmp");
+            System.IO.Directory.CreateDirectory(temporary);
+            var loader = new Loader { ExpectedPath = _restart.Routes.HubScenePath }; Inject(loader);
+            _demo.Health.ApplyDamage(new DamageInfo(10000, null, Vector3.zero, Vector3.zero));
+            _demo.Restart();
+            Assert.That(loader.Calls, Is.Zero);
+            Assert.That(economy.IsSettled, Is.False);
+            System.IO.Directory.Delete(temporary);
+            _demo.Restart();
+            Assert.That(loader.Calls, Is.EqualTo(1));
+            Assert.That(economy.IsSettled, Is.True);
+            Assert.That(store.Load().Balance, Is.EqualTo(41));
+            loader.Succeed = true;
+            _demo.Restart();
+            Assert.That(loader.Calls, Is.EqualTo(2));
+            Assert.That(store.Load().Balance, Is.EqualTo(41));
         }
 
         private RewardClaimSession RewardSession() => new(new RewardOffer(new ItemDefinition[]

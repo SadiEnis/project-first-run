@@ -104,7 +104,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void Restart()
         {
-            _restart.Request(RunRestartSource.Death);
+            _restart.RequestReturnToHub(RunRestartSource.Death);
         }
 
         private void OnGUI()
@@ -141,15 +141,15 @@ namespace ProjectFirstRun.Development.Arenas
             var panel = new Rect((Screen.width - width) / 2, Mathf.Max(8, (Screen.height - 440) / 2), width, 440);
             GUI.Box(panel, "YOU DIED");
             GUI.BeginGroup(panel);
-            GUI.Label(new Rect(24, 32, width - 48, 26), "Your run has ended. Start again when you are ready.");
+            GUI.Label(new Rect(24, 32, width - 48, 26), "Your run has ended. Return to the hub when you are ready.");
             ProjectFirstRun.UI.Hud.RunEconomySummaryView.Draw(new Rect(24, 72, width - 48, 196), _economy);
             if (_economy.IsSettled && _restart.LastError != null)
-                GUI.Label(new Rect(24, 268, width - 48, 24), "Restart failed. Your reward is saved. Please try again.");
+                GUI.Label(new Rect(24, 268, width - 48, 24), "Return failed. Your reward is saved. Please try again.");
             bool wasEnabled = GUI.enabled;
             GUI.enabled = wasEnabled && !IsRestarting;
             float buttonWidth = Mathf.Min(380, width - 48);
             float buttonLeft = (width - buttonWidth) / 2;
-            if (_deathMenu.Button(new Rect(buttonLeft, 300, buttonWidth, 35), 0, "Retry")) Restart();
+            if (_deathMenu.Button(new Rect(buttonLeft, 300, buttonWidth, 35), 0, "Return to hub")) Restart();
             if (_deathMenu.Button(new Rect(buttonLeft, 345, buttonWidth, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Death);
             GUI.enabled = wasEnabled;
             ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(12, 395, width - 24, 30), DemoMenuInput.Hint);

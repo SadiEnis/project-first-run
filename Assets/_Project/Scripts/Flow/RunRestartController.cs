@@ -18,6 +18,7 @@ namespace ProjectFirstRun.Flow
         [SerializeField] private GameFlowController _flow;
         [SerializeField] private DemoKeyAmbushController _ambush;
         [SerializeField] private RunEndController _runEnd;
+        [SerializeField] private RunSceneRoutes _routes;
         private GameFlowPolicy.Token _loading;
         private static string _arrivalScene;
         private IRunSceneReloader _reloader = new UnityRunSceneReloader();
@@ -31,9 +32,12 @@ namespace ProjectFirstRun.Flow
 
         public void ValidateConfiguration()
         {
-            if (_demo == null || _flow == null || _demo.Health == null || _selection == null || _runEnd == null)
-                throw new InvalidOperationException("Assign run restart's demo, health, reward selection and run-end references.");
+            if (_demo == null || _flow == null || _demo.Health == null || _selection == null || _runEnd == null || _routes == null)
+                throw new InvalidOperationException("Assign run restart's demo, health, reward selection and run-end and scene route references.");
+            _routes.ValidateConfiguration();
         }
+
+        public RunSceneRoutes Routes => _routes;
 
         private void Awake()
         {
@@ -63,14 +67,23 @@ namespace ProjectFirstRun.Flow
             }
         }
 
-        public bool Request(RunRestartSource source)
+        public bool Request(RunRestartSource source) => Transition(source, false);
+
+        public bool RequestReturnToHub(RunRestartSource source)
+        {
+            if (source != RunRestartSource.Death && source != RunRestartSource.Completion) return false;
+            return Transition(source, true);
+        }
+
+        private bool Transition(RunRestartSource source, bool returnToHub)
         {
             if (!CanRequest(source)) return false;
             if (!_runEnd.TryEndForExit()) return false;
             if (!_flow.TryAcquire(this, GameFlowRequest.Loading, out _loading)) return false;
-            string path = gameObject.scene.path;
-            _arrivalScene = path;
-            DemoEntryController.SkipMenuOnNextLoad(path);
+            string path = returnToHub ? _routes.HubScenePath : gameObject.scene.path;
+            _arrivalScene = returnToHub ? null : path;
+            if (returnToHub) DemoEntryController.CancelSkip();
+            else DemoEntryController.SkipMenuOnNextLoad(path);
             if (_operation.TryStart(true, path, _reloader))
             {
                 _flow.RetireForReload();

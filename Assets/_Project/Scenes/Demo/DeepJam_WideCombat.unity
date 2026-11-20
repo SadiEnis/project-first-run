@@ -57032,6 +57032,7 @@ MonoBehaviour:
   _flow: {fileID: 4800000002}
   _ambush: {fileID: 3400000002}
   _runEnd: {fileID: 5200000002}
+  _routes: {fileID: 11400000, guid: 90a4c3fb0a97032c5fa0cdaf468fe766, type: 2}
 --- !u!114 &4800000002
 MonoBehaviour:
   m_ObjectHideFlags: 0

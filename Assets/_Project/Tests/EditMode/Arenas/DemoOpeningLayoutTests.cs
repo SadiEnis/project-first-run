@@ -31,6 +31,7 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 var restart = scene.GetRootGameObjects().SelectMany(x =>
                     x.GetComponentsInChildren<ProjectFirstRun.Flow.RunRestartController>(true)).Single();
                 Assert.DoesNotThrow(restart.ValidateConfiguration);
+                Assert.That(restart.Routes, Is.SameAs(AssetDatabase.LoadAssetAtPath<ProjectFirstRun.Flow.RunSceneRoutes>(RunHubSceneTools.RoutesPath)));
                 var flow = scene.GetRootGameObjects().SelectMany(x =>
                     x.GetComponentsInChildren<ProjectFirstRun.Flow.GameFlowController>(true)).Single();
                 Assert.DoesNotThrow(flow.ValidateConfiguration);

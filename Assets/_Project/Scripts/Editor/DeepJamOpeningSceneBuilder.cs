@@ -151,6 +151,7 @@ namespace ProjectFirstRun.Editor
             Set(runEnd, "_health", player.GetComponent<HealthComponent>());
             Set(runEnd, "_economy", economy);
             Set(restart, "_runEnd", runEnd);
+            Set(restart, "_routes", Load<RunSceneRoutes>(RunHubSceneTools.RoutesPath));
             var startup = services.AddComponent<RunSceneStartup>();
             Set(startup, "_economy", economy);
             Set(startup, "_loadout", player.GetComponent<PlayerStartingLoadoutInitializer>());
@@ -237,9 +238,11 @@ namespace ProjectFirstRun.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) == null)
                 throw new InvalidOperationException("Create Opening Greybox first.");
-            // Explicit scenes; no changes to the project's existing Build Settings list.
+            var routes = Load<RunSceneRoutes>(RunHubSceneTools.RoutesPath);
+            routes.ValidateConfiguration();
+            // Include return destinations even when deliberately starting in the opening scene.
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                scenes = new[] { ScenePath }, target = BuildTarget.StandaloneWindows64,
+                scenes = new[] { ScenePath, routes.HubScenePath, routes.RunScenePath }.Distinct().ToArray(), target = BuildTarget.StandaloneWindows64,
                 locationPathName = "Builds/DeepJamOpening/ProjectFirstRun.exe", options = BuildOptions.Development });
             if (report.summary.result != BuildResult.Succeeded)
                 throw new InvalidOperationException("Demo Windows build: " + report.summary.result);

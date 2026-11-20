@@ -111,7 +111,7 @@ namespace ProjectFirstRun.Development.Arenas
 
         public void Replay()
         {
-            if (!_restart.Request(RunRestartSource.Completion)) return;
+            if (!_restart.RequestReturnToHub(RunRestartSource.Completion)) return;
             Session.TryRequestReplay();
         }
 
@@ -140,12 +140,12 @@ namespace ProjectFirstRun.Development.Arenas
                 GUI.Label(new Rect(24, 32, width - 48, 26), "This was only the beginning. Thanks for playing.");
                 ProjectFirstRun.UI.Hud.RunEconomySummaryView.Draw(new Rect(24, 72, width - 48, 196), _economy);
                 if (_economy.IsSettled && _restart.LastError != null)
-                    GUI.Label(new Rect(24, 268, width - 48, 24), "Restart failed. Your reward is saved. Please try again.");
+                    GUI.Label(new Rect(24, 268, width - 48, 24), "Return failed. Your reward is saved. Please try again.");
                 bool wasEnabled = GUI.enabled;
                 GUI.enabled = wasEnabled && !Session.ReplayRequested;
                 float buttonWidth = Mathf.Min(380, width - 48);
                 float buttonLeft = (width - buttonWidth) / 2;
-                if (_completionMenu.Button(new Rect(buttonLeft, 300, buttonWidth, 35), 0, "Play again")) Replay();
+                if (_completionMenu.Button(new Rect(buttonLeft, 300, buttonWidth, 35), 0, "Return to hub")) Replay();
                 if (_completionMenu.Button(new Rect(buttonLeft, 345, buttonWidth, 35), 1, "Quit")) _restart.RequestQuit(RunRestartSource.Completion);
                 GUI.enabled = wasEnabled;
                 ProjectFirstRun.UI.Hud.InputPrompts.Draw(new Rect(12, 395, width - 24, 30), DemoMenuInput.Hint);

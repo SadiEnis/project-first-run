@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/Demo/RunHub.unity
+    guid: 19e96b4ca4ad70afa4fa214f01ce2d4e
+  - enabled: 1
+    path: Assets/_Project/Scenes/Demo/DeepJam_WideCombat.unity
+    guid: 34b7d9317cda49f083a6ae309be1e410
+  - enabled: 1
+    path: Assets/_Project/Scenes/Demo/DeepJam_Opening.unity
+    guid: 7f1cae4ffa167f046953126f7e0754de
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:

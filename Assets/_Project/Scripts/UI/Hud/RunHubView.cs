@@ -1,93 +1,203 @@
-using System.Globalization;
-using ProjectFirstRun.Development.Arenas;
+using System;
 using ProjectFirstRun.Flow;
-using ProjectFirstRun.Progression;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
 namespace ProjectFirstRun.UI.Hud
 {
+    /// <summary>Authored merchant grid and Hub menu. Purchases remain owned by RunHubController.</summary>
     public sealed class RunHubView : MonoBehaviour
     {
         [SerializeField] private RunHubController _hub;
-        private readonly DemoMenuInput _menu = new();
-        private readonly int[] _displayedLevels = new int[3];
+        [SerializeField] private RunHubInteraction _interaction;
+        [SerializeField] private CanvasGroup _shop;
+        [SerializeField] private CanvasGroup _menu;
+        [SerializeField] private Button[] _cards;
+        [SerializeField] private Text[] _cardLabels;
+        [SerializeField] private HudGlyphGraphic[] _icons;
+        [SerializeField] private Button _buy;
+        [SerializeField] private Button _back;
+        [SerializeField] private Button _resume;
+        [SerializeField] private Button _quit;
+        [SerializeField] private Text _balance;
+        [SerializeField] private Text _description;
+        [SerializeField] private Text _buyLabel;
+        [SerializeField] private Text _status;
+        [SerializeField] private Text _prompt;
+        [SerializeField] private Text _crosshair;
+        [SerializeField] private EventSystem _events;
+        private int _selected, _quotedLevel;
+        private bool _armed, _bound;
+        private float _openedAt;
+
+        public void ValidateConfiguration()
+        {
+            if (_hub == null || _interaction == null || _shop == null || _menu == null || _events == null ||
+                _buy == null || _back == null || _resume == null || _quit == null || _balance == null ||
+                _description == null || _buyLabel == null || _status == null || _prompt == null || _crosshair == null ||
+                _cards == null || _cards.Length != 3 || _cardLabels == null || _cardLabels.Length != 3 ||
+                _icons == null || _icons.Length != 3)
+                throw new InvalidOperationException("Assign the saved Hub grid, detail panel, controls and prompts.");
+            for (int i = 0; i < 3; i++)
+                if (_cards[i] == null || _cardLabels[i] == null || _icons[i] == null)
+                    throw new InvalidOperationException("Assign all Hub upgrade cards.");
+        }
+        private void Start()
+        {
+            ValidateConfiguration();
+            for (int i = 0; i < _cards.Length; i++)
+            {
+                int index = i;
+                _cards[i].onClick.AddListener(() => { if (_armed) Select(index); });
+                BindPointer(_cards[i], () => Select(index));
+            }
+            BindPointer(_buy, null); BindPointer(_back, null); BindPointer(_resume, null); BindPointer(_quit, null);
+            _buy.onClick.AddListener(Buy);
+            _back.onClick.AddListener(Close);
+            _resume.onClick.AddListener(Close);
+            _quit.onClick.AddListener(Quit);
+            _interaction.Changed += PresentMode;
+            _bound = true;
+            _icons[0].SetPath("0.2,0.15 0.2,0.7 0.3,0.9 0.4,0.7 0.4,0.15 0.2,0.15;0.6,0.15 0.6,0.7 0.7,0.9 0.8,0.7 0.8,0.15 0.6,0.15");
+            _icons[1].SetPath("0.6,0.95 0.2,0.5 0.48,0.5 0.38,0.05 0.85,0.6 0.55,0.6 0.6,0.95");
+            _icons[2].SetPath("0.5,0.95 0.85,0.75 0.75,0.3 0.5,0.05 0.25,0.3 0.15,0.75 0.5,0.95;0.5,0.7 0.5,0.3;0.3,0.5 0.7,0.5");
+            PresentMode();
+        }
+        private void BindPointer(Button button, Action selected)
+        {
+            var trigger = button.GetComponent<EventTrigger>();
+            var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+            entry.callback.AddListener(_ =>
+            {
+                if (!_armed) return;
+                _events.SetSelectedGameObject(button.gameObject);
+                selected?.Invoke();
+            });
+            trigger.triggers.Add(entry);
+        }
+        private void PresentMode()
+        {
+            _armed = false;
+            _openedAt = Time.unscaledTime;
+            SetGroup(_shop, _interaction.ShopOpen, false);
+            SetGroup(_menu, _interaction.MenuOpen, false);
+            _events.sendNavigationEvents = false;
+            _events.SetSelectedGameObject(null);
+            RefreshOffer();
+        }
+        private static void SetGroup(CanvasGroup group, bool visible, bool interactive)
+        {
+            group.alpha = visible ? 1 : 0;
+            group.blocksRaycasts = visible;
+            group.interactable = visible && interactive;
+        }
         private void Update()
         {
-            int choice = _menu.Poll(_hub != null && !_hub.IsLoading, 5);
-            Activate(choice);
-        }
-        private void Activate(int choice)
-        {
-            if (_hub == null) return;
-            if (choice == 0) { if (_hub.IsReady) _hub.StartRun(); else _hub.RefreshBalance(); }
-            else if (choice == 1) _hub.PurchaseAmmo(_displayedLevels[0]);
-            else if (choice == 2) _hub.PurchaseAbilitySlot(_displayedLevels[1]);
-            else if (choice == 3) _hub.PurchaseUpgradeSlot(_displayedLevels[2]);
-            else if (choice == 4) _hub.Quit();
-        }
-        private void OnDisable() => _menu.Tick(false, 0, false);
-        private void OnGUI()
-        {
-            if (_hub == null) return;
-            // Keep every offer and the controller selection visible on smaller windows.
-            Matrix4x4 matrix = GUI.matrix;
-            float scale = Mathf.Min(1, Mathf.Min(Screen.width / 640f, Screen.height / 700f));
-            GUI.matrix = Matrix4x4.Scale(Vector3.one * scale);
-            float width = 600;
-            var panel = new Rect((Screen.width / scale - width) / 2, (Screen.height / scale - 680) / 2, width, 680);
-            GUI.Box(panel, "PROJECT FIRST RUN — HUB");
-            GUI.BeginGroup(panel);
-            var label = new GUIStyle(GUI.skin.label) { wordWrap = true, alignment = TextAnchor.MiddleCenter };
-            string balance = _hub.PermanentBalance.HasValue ?
-                _hub.PermanentBalance.Value.ToString("N0", CultureInfo.InvariantCulture) + " GOLD" : "Unavailable";
-            GUI.Label(new Rect(20, 30, width - 40, 35), "Permanent balance: " + balance,
-                new GUIStyle(label) { fontSize = 20 });
-            GUI.Label(new Rect(20, 68, width - 40, 38), _hub.IsLoading ? "Starting a new run..." :
-                _hub.LastError != null ? _hub.LastError :
-                "Purchases apply to your next run.", label);
-            bool enabled = GUI.enabled;
-            GUI.enabled = enabled && !_hub.IsLoading;
-            if (_menu.Button(new Rect(40, 110, width - 80, 38), 0, _hub.IsReady ? "Start Run" : "Retry reading save")) Activate(0);
-            for (int index = 0; index < 3; index++)
+            if (!_bound) return;
+            bool modal = _interaction.HasModal;
+            if (modal && !_armed && Time.unscaledTime - _openedAt >= .15f && ControlsReleased())
             {
-                bool ready = _hub.IsReady;
-                int level = index == 0 ? _hub.AmmoLevel : index == 1 ? _hub.AbilitySlotLevel : _hub.UpgradeSlotLevel;
-                _displayedLevels[index] = level;
-                string title = "Upgrade unavailable";
-                bool max = false;
-                if (ready)
-                {
-                    if (index == 0)
-                    {
-                        var def = _hub.AmmoUpgrade;
-                        max = level == def.MaxLevel;
-                        title = def.DisplayName + " — Level " + level + "/" + def.MaxLevel +
-                            "\nCurrent: +" + def.GetBonusMagazines(level) + " reserve magazines" +
-                            (max ? "" : " → +" + def.GetBonusMagazines(level + 1) + " | " + def.GetNextCost(level) + " GOLD");
-                    }
-                    else
-                    {
-                        SlotCapacityUpgradeDefinition def = index == 1 ? _hub.AbilitySlotUpgrade : _hub.UpgradeSlotUpgrade;
-                        max = level == def.MaxLevel;
-                        title = def.DisplayName + " — " + (index == 1 ? "Ability slots" : "Upgrade slots") +
-                            "\nCurrent: " + def.GetCapacity(level) + (max ? "" : " → " + def.GetCapacity(level + 1) +
-                            " | " + def.GetNextCost(level) + " GOLD");
-                    }
-                }
-                float y = 165 + index * 125;
-                GUI.enabled = enabled;
-                GUI.Label(new Rect(24, y, width - 48, 60), title, new GUIStyle(label) { fontSize = 16 });
-                GUI.enabled = enabled && ready && !_hub.IsLoading && !max;
-                if (_menu.Button(new Rect(40, y + 65, width - 80, 36), index + 1, max ? "Maximum level" : "Buy upgrade"))
-                    Activate(index + 1);
+                _armed = true;
+                SetGroup(_shop, _interaction.ShopOpen, true);
+                SetGroup(_menu, _interaction.MenuOpen, true);
+                _events.sendNavigationEvents = true;
+                _events.SetSelectedGameObject((_interaction.ShopOpen ? _cards[_selected] : _resume).gameObject);
             }
-            GUI.enabled = enabled;
-            GUI.Label(new Rect(24, 540, width - 48, 42), _hub.PurchaseMessage ?? "", label);
-            GUI.enabled = enabled && !_hub.IsLoading;
-            if (_menu.Button(new Rect(40, 590, width - 80, 38), 4, "Quit")) Activate(4);
-            GUI.enabled = enabled;
-            InputPrompts.Draw(new Rect(12, 643, width - 24, 28), DemoMenuInput.Hint);
-            GUI.EndGroup();
-            GUI.matrix = matrix;
+            if (_interaction.ShopOpen && _armed)
+            {
+                for (int i = 0; i < _cards.Length; i++)
+                    if (_events.currentSelectedGameObject == _cards[i].gameObject && i != _selected) Select(i);
+                if (_events.currentSelectedGameObject == null && NavigationRequested())
+                    _events.SetSelectedGameObject(_cards[_selected].gameObject);
+            }
+            _crosshair.enabled = !modal && !_hub.IsLoading;
+            _prompt.text = modal ? "" : _hub.IsLoading ? "Entering the dungeon..." :
+                _interaction.Status ?? (_interaction.CanTrade ? "{Interact} Trade with the merchant" : "{Pause} Menu");
+        }
+        private static bool NavigationRequested()
+        {
+            var key = Keyboard.current;
+            return InputPrompts.IsGamepad || (key != null && (key.upArrowKey.isPressed || key.downArrowKey.isPressed ||
+                key.leftArrowKey.isPressed || key.rightArrowKey.isPressed || key.tabKey.isPressed));
+        }
+        private static bool ControlsReleased()
+        {
+            var pad = Gamepad.current;
+            var key = Keyboard.current;
+            return !(Mouse.current?.leftButton.isPressed ?? false) &&
+                !(key != null && (key.enterKey.isPressed || key.spaceKey.isPressed || key.eKey.isPressed || key.escapeKey.isPressed)) &&
+                !(pad != null && (pad.buttonSouth.isPressed || pad.buttonWest.isPressed || pad.buttonEast.isPressed ||
+                    pad.startButton.isPressed || pad.rightShoulder.isPressed || pad.leftStick.ReadValue().sqrMagnitude > .1f || pad.dpad.ReadValue().sqrMagnitude > .1f));
+        }
+        private void Select(int index)
+        {
+            _selected = index;
+            RefreshOffer();
+            var nav = _buy.navigation;
+            nav.selectOnLeft = _cards[index];
+            _buy.navigation = nav;
+        }
+        private void RefreshOffer()
+        {
+            _balance.text = _hub.PermanentBalance.HasValue ? _hub.PermanentBalance.Value.ToString("N0") + " GOLD" : "GOLD unavailable";
+            for (int i = 0; i < 3; i++)
+            {
+                string title = i == 0 ? _hub.AmmoUpgrade.DisplayName : i == 1 ? _hub.AbilitySlotUpgrade.DisplayName : _hub.UpgradeSlotUpgrade.DisplayName;
+                int level = Level(i), max = Maximum(i);
+                _cardLabels[i].text = title + "\n" + (_hub.IsReady ? level == max ? "MAX" : "LEVEL " + level + " / " + max : "Unavailable");
+                _icons[i].color = i == _selected ? new Color(1, .76f, .35f) : new Color(.55f, .68f, .75f);
+            }
+            _quotedLevel = Level(_selected);
+            _status.text = _hub.LastError ?? _hub.PurchaseMessage ?? "Permanent improvements. Applied to your next run.";
+            if (!_hub.IsReady)
+            {
+                _description.text = "Your profile could not be confirmed. Retry reading before making a purchase.";
+                _buyLabel.text = "Retry reading save";
+                _buy.interactable = true;
+                return;
+            }
+            bool maximum = _quotedLevel == Maximum(_selected);
+            string effect, titleText;
+            if (_selected == 0)
+            {
+                var def = _hub.AmmoUpgrade;
+                titleText = def.DisplayName;
+                effect = "Extra reserve magazines for your starting weapon.\n\nCurrent: +" + def.GetBonusMagazines(_quotedLevel) +
+                    (maximum ? "" : "\nNext: +" + def.GetBonusMagazines(_quotedLevel + 1));
+            }
+            else
+            {
+                var def = _selected == 1 ? _hub.AbilitySlotUpgrade : _hub.UpgradeSlotUpgrade;
+                titleText = def.DisplayName;
+                effect = "Carry more " + (_selected == 1 ? "abilities" : "upgrades") + " during a run. Opens capacity; does not grant items.\n\nCurrent slots: " +
+                    def.GetCapacity(_quotedLevel) + (maximum ? "" : "\nNext slots: " + def.GetCapacity(_quotedLevel + 1));
+            }
+            int cost = maximum ? 0 : Cost(_selected, _quotedLevel);
+            _description.text = titleText + "\n\n" + effect + "\n\n" + (maximum ? "Fully developed." : "Cost: " + cost + " GOLD");
+            // Keep the purchase button navigable, even at MAX or with insufficient funds.
+            _buy.interactable = true;
+            _buyLabel.text = maximum ? "Maximum level" : _hub.PermanentBalance < cost ? "Not enough GOLD" : "Purchase";
+        }
+        private int Level(int i) => i == 0 ? _hub.AmmoLevel : i == 1 ? _hub.AbilitySlotLevel : _hub.UpgradeSlotLevel;
+        private int Maximum(int i) => i == 0 ? _hub.AmmoUpgrade.MaxLevel : i == 1 ? _hub.AbilitySlotUpgrade.MaxLevel : _hub.UpgradeSlotUpgrade.MaxLevel;
+        private int Cost(int i, int level) => i == 0 ? _hub.AmmoUpgrade.GetNextCost(level) :
+            i == 1 ? _hub.AbilitySlotUpgrade.GetNextCost(level) : _hub.UpgradeSlotUpgrade.GetNextCost(level);
+        private void Buy()
+        {
+            if (!_armed || !_interaction.ShopOpen || _hub.IsLoading) return;
+            if (!_hub.IsReady) _hub.RefreshBalance();
+            else if (_selected == 0) _hub.PurchaseAmmo(_quotedLevel);
+            else if (_selected == 1) _hub.PurchaseAbilitySlot(_quotedLevel);
+            else _hub.PurchaseUpgradeSlot(_quotedLevel);
+            RefreshOffer();
+        }
+        private void Close() { if (_armed) _interaction.Close(); }
+        private void Quit() { if (_armed && _interaction.MenuOpen) _hub.Quit(); }
+        private void OnDestroy()
+        {
+            if (_interaction != null) _interaction.Changed -= PresentMode;
         }
     }
 }

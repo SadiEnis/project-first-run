@@ -28,6 +28,19 @@ namespace ProjectFirstRun.Tests.EditMode.Arenas
                 var hub = roots.SelectMany(x => x.GetComponentsInChildren<RunHubController>(true)).Single();
                 var view = roots.SelectMany(x => x.GetComponentsInChildren<RunHubView>(true)).Single();
                 Assert.DoesNotThrow(hub.ValidateConfiguration);
+                Assert.DoesNotThrow(view.ValidateConfiguration);
+                var interaction = roots.SelectMany(x => x.GetComponentsInChildren<RunHubInteraction>(true)).Single();
+                Assert.DoesNotThrow(interaction.ValidateConfiguration);
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<ProjectFirstRun.Player.PlayerController>(true)).Count(), Is.EqualTo(1));
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<ProjectFirstRun.Builds.PlayerBuildController>(true)), Is.Empty);
+                Assert.That(roots.SelectMany(x => x.GetComponentsInChildren<ProjectFirstRun.Combat.HealthComponent>(true)), Is.Empty);
+                var cards = new SerializedObject(view).FindProperty("_cards");
+                Assert.That(cards.arraySize, Is.EqualTo(3));
+                foreach (var button in roots.SelectMany(x => x.GetComponentsInChildren<UnityEngine.UI.Button>(true)))
+                {
+                    Assert.That(button.navigation.mode, Is.EqualTo(UnityEngine.UI.Navigation.Mode.Explicit));
+                    Assert.That(button.GetComponent<UnityEngine.EventSystems.EventTrigger>(), Is.Not.Null);
+                }
                 var ammo = AssetDatabase.LoadAssetAtPath<StartingAmmoUpgradeDefinition>(RunHubSceneTools.AmmoUpgradePath);
                 Assert.That(ammo, Is.Not.Null);
                 Assert.DoesNotThrow(ammo.Validate);

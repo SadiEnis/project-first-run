@@ -145,6 +145,47 @@ namespace ProjectFirstRun.Tests.PlayMode.Progression
             Assert.That(_ability.GetCapacity(_hub.AbilitySlotLevel), Is.EqualTo(3));
             Assert.That(_upgrade.GetCapacity(_hub.UpgradeSlotLevel), Is.EqualTo(4));
         }
+        [UnityTest] public IEnumerator MerchantBlocksOnlyHubMovementAndPreventsDepartureUntilClosed()
+        {
+            var rig = new GameObject("Hub test exploration"); rig.SetActive(false);
+            var player = new GameObject("Hub movement"); player.transform.SetParent(rig.transform);
+            var camera = new GameObject("Hub camera").AddComponent<Camera>(); camera.transform.SetParent(player.transform);
+            camera.transform.localPosition = Vector3.up * 1.6f;
+            player.AddComponent<CharacterController>();
+            var input = player.AddComponent<ProjectFirstRun.Input.PlayerInputReader>();
+            var motor = player.AddComponent<ProjectFirstRun.Player.PlayerMotor>();
+            var look = player.AddComponent<ProjectFirstRun.Player.PlayerLook>(); Set(look, "_cameraPivot", camera.transform);
+            var control = player.AddComponent<ProjectFirstRun.Player.PlayerController>();
+            var vendor = GameObject.CreatePrimitive(PrimitiveType.Cube); vendor.transform.SetParent(rig.transform);
+            vendor.transform.position = new Vector3(0, 1.6f, 2);
+            var exit = new GameObject("Exit").AddComponent<BoxCollider>(); exit.transform.SetParent(rig.transform);
+            exit.transform.position = Vector3.right * 20; exit.isTrigger = true;
+            var interaction = rig.AddComponent<RunHubInteraction>();
+            Set(interaction, "_hub", _hub); Set(interaction, "_player", control); Set(interaction, "_camera", camera);
+            Set(interaction, "_vendor", vendor.GetComponent<Collider>()); Set(interaction, "_exit", exit);
+            try
+            {
+                rig.SetActive(true); Physics.SyncTransforms();
+                yield return null;
+                yield return null;
+                Assert.That(interaction.CanTrade, Is.True);
+                Assert.That(interaction.OpenShop(), Is.True);
+                Assert.That(input.IsGameplayInputEnabled, Is.False);
+                var position = player.transform.position;
+                motor.Tick(Vector2.up, false, .1f);
+                Assert.That(player.transform.position, Is.EqualTo(position));
+                Assert.That(interaction.TryEnterRun(), Is.False);
+                Assert.That(_loader.Calls, Is.Zero);
+                Assert.That(_store.Saves, Is.Zero, "Opening the vendor is read-only.");
+                interaction.Close();
+                Assert.That(input.IsGameplayInputEnabled, Is.True);
+                _loader.Succeed = true;
+                Assert.That(interaction.TryEnterRun(), Is.True);
+                Assert.That(interaction.TryEnterRun(), Is.False);
+                Assert.That(_loader.Calls, Is.EqualTo(1));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(rig); }
+        }
         private void Invoke(string method, object value) => typeof(RunHubController)
             .GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(_hub, new[] { value });
         private static void Set(object target, string field, object value) => target.GetType()

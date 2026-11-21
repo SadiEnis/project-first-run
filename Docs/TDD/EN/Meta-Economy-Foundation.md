@@ -144,3 +144,17 @@ Checks: MetaUpgradePurchaseTests (atomic purchase, repeated offer, insufficient 
 - Purchases affect only the next run. They grant capacity, not items. HUD, pause and chest eligibility consume the same initialized build capacity.
 - Hub offers support mouse, keyboard and gamepad. Failed saves, stale offers and insufficient funds cannot grant a slot.
 - Focused checks: SlotCapacityUpgradeTests, PlayerStartingLoadoutInitializerTests, RunHubControllerTests and scene layout tests. Manually check fresh 2/2/3, independent purchases, next-run HUD/pause and restart persistence.
+
+## Walkable Hub and merchant grid
+
+RunHub is now an authored walkable preparation area, superseding the fixed-camera menu described in the initial Hub slice. The saved scene contains a movement-only player, a merchant to the left, and an exit threshold inside the gate ahead. Entering that threshold invokes the existing StartRun flow. A failed departure is shown as a prompt; leave/re-enter or interact inside the threshold to retry. Trading is optional.
+
+RunHubInteraction owns exploration access and modal state. It reuses PlayerController, PlayerMotor, PlayerLook and PlayerInputReader; no player build, health, XP, abilities, weapons, rewards or collectibles are installed in the Hub. Merchant interaction requires a short unobstructed camera ray. While shopping or using the Hub menu, this owner blocks movement/look and suspends the motor, then releases only its own locks on close. The departing Hub does not overwrite the incoming scene's cursor.
+
+RunHubView presents an authored Canvas grid with three cards, current levels, permanent balance and a separate right-hand details/purchase panel. Cards select an offer, never purchase directly. Existing atomic wallet purchases and stable IDs are unchanged. Prices, effects and capacity remain defined by their existing assets. Save-read retries live in the merchant screen. A MAX/insufficient-funds purchase control stays navigable and the controller rejects the purchase without spending.
+
+Mouse hover/click, keyboard arrows/Enter and gamepad navigation/confirm are supported by the saved EventSystem. Opening input must be released before menu interaction is armed. Escape, gamepad East (B/Circle) or the Back button closes the shop. Escape/Options/Menu while exploring opens Resume/Quit. Input prompts use the existing device glyph mapping.
+
+Authoring: Project First Run → Run → Prepare Walkable Hub performs a one-time migration of RunHub.unity. It refuses dirty open scenes and preserves existing authored geometry; after migration it is a no-op. Player, merchant target, departure bounds, Canvas, cards and explicit navigation remain visible/editable in Hierarchy. No runtime scene generator or save migration is needed.
+
+User-run checks: RunHubLayoutTests and RunHubControllerTests. Manual: walk to merchant, interact, verify movement/look lock, navigate all cards on keyboard/controller, buy, close with B/Circle/Escape, walk through gate, verify new-run effects, then return via death/victory. A purchase is never performed against the real profile by authoring tools.

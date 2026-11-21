@@ -144,3 +144,17 @@ Kontroller: MetaUpgradePurchaseTests (atomik satın alma, tekrar teklif, yetersi
 - Satın alma yalnızca sonraki run'a uygulanır; item vermez, kapasite açar. HUD, pause ekranı ve sandık uygunluğu aynı build kapasitesini kullanır.
 - Hub fare, klavye ve gamepad ile kullanılabilir. Başarısız kayıt, eski teklif ve yetersiz bakiye slot kazandırmaz.
 - Odak testler: SlotCapacityUpgradeTests, PlayerStartingLoadoutInitializerTests, RunHubControllerTests ve sahne yerleşim testleri. Elle yeni profilde 2/2/3, bağımsız satın alma, sonraki run HUD/pause ve restart sonrası kalıcılık kontrol edilir.
+
+## Yürünebilir Hub ve satıcı grid arayüzü
+
+RunHub artık yürünebilir bir hazırlık alanıdır; ilk Hub adımındaki sabit kamera menüsünün yerini alır. Kayıtlı sahnede yalnızca hareket bileşenlerine sahip oyuncu, solda satıcı ve ileride kapının içindeki run geçiş alanı vardır. Bu alana yürüyünce mevcut StartRun akışı çağrılır. Geçiş başarısızsa bilgi gösterilir; alandan çıkıp girerek veya içeride etkileşim tuşuyla yeniden denenebilir. Satıcıya uğramak zorunlu değildir.
+
+RunHubInteraction keşif kontrolünü ve açık ekran durumunu yönetir. Mevcut PlayerController, PlayerMotor, PlayerLook ve PlayerInputReader kullanılır; Hub oyuncusunda build, can, XP, yetenek, silah, ödül veya collectible sistemleri bulunmaz. Satıcı etkileşimi kısa mesafeli ve engelsiz kamera ray'i gerektirir. Satıcı veya Hub menüsü açıkken hareket/bakış engellenir, motor askıya alınır; kapanınca yalnızca bu sahibin kilitleri bırakılır. Ayrılan Hub yeni sahnenin işaretçi durumunu değiştirmez.
+
+RunHubView kayıtlı Canvas üzerinde üç geliştirme kartı, mevcut seviyeler, kalıcı bakiye ve sağda ayrı detay/satın alma paneli sunar. Kart seçmek satın alma yapmaz. Mevcut atomik cüzdan işlemleri ve stable ID'ler değişmez. Fiyat, etki ve kapasite önceki asset'lerinden yönetilir. Kayıt okumasını yeniden deneme satıcı ekranındadır. MAX/yetersiz bakiye butonu navigasyonda kalır; controller ücret kesmeden işlemi reddeder.
+
+Fareyle üzerine gelme/tıklama, klavye okları/Enter ve gamepad yön/onay kayıtlı EventSystem üzerinden desteklenir. Ekranı açan tuş bırakılmadan menü girdisi açılmaz. Escape, gamepad B/yuvarlak veya Back satıcıyı kapatır. Keşifte Escape/Options/Menu, Resume/Quit menüsünü açar. Tuş görselleri mevcut cihaz eşleme sistemini kullanır.
+
+Sahne hazırlama: Project First Run → Run → Prepare Walkable Hub, RunHub.unity üzerinde bir defalık dönüşüm yapar. Kaydedilmemiş açık sahnede çalışmaz, mevcut geometriyi korur; dönüşüm sonrasında tekrar çalıştırmak sahneyi yeniden üretmez. Oyuncu, satıcı hedefi, kapı geçiş alanı, Canvas, kartlar ve navigasyon Hierarchy'den düzenlenebilir. Çalışma anında sahne üretimi veya kayıt formatı değişikliği yoktur.
+
+Kullanıcı kontrolleri: RunHubLayoutTests ve RunHubControllerTests. Elle satıcıya yürü/etkileş, hareket-bakış kilidini doğrula, klavye/gamepad ile kartlarda gezin, satın al, B/yuvarlak/Escape ile kapat, kapıdan geç, yeni run etkilerini kontrol et ve ölüm/zaferle geri dön. Sahne hazırlama aracı gerçek profilde satın alma yapmaz.
